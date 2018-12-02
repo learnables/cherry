@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import numpy as np
+import sys
 import torch as th
 
-EPS = np.finfo(np.float32).eps.item()
+EPS = sys.float_info.epsilon
 
 
 def totensor(array):

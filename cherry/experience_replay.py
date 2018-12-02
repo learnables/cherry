@@ -12,13 +12,15 @@ class ExperienceReplay(object):
                  actions=None,
                  rewards=None,
                  next_states=None,
-                 dones=None):
+                 dones=None,
+                 infos=None):
         self.storage = {
             'states': [] if states is None else states,
             'actions': [] if actions is None else actions,
             'rewards': [] if rewards is None else rewards,
             'next_states': [] if next_states is None else next_states,
             'dones': [] if dones is None else dones,
+            'infos': [] if infos is None else infos,
         }
 
     def _access_property(self, name):
@@ -66,12 +68,17 @@ class ExperienceReplay(object):
     def list_dones(self):
         return self.storage['dones']
 
-    def add(self, state, action, reward, next_state, done):
+    @property
+    def list_infos(self):
+        return self.storage['infos']
+
+    def add(self, state, action, reward, next_state, done, info=None):
         self.storage['states'].append(totensor(state))
         self.storage['actions'].append(totensor(action))
         self.storage['rewards'].append(totensor(reward))
         self.storage['next_states'].append(totensor(next_state))
         self.storage['dones'].append(totensor(done))
+        self.storage['infos'].append(info)
 
     def empty(self):
         self = self.__init__()
