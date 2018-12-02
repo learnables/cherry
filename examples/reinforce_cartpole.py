@@ -6,7 +6,9 @@ Simple example of using cherry to solve cartpole.
 The code is an adaptation of the PyTorch reinforcement learning example.
 """
 
+import random
 import gym
+import numpy as np
 
 from itertools import count
 
@@ -14,19 +16,24 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.distributions import Categorical
 
 import cherry as cr
+from cherry.policies import CategoricalPolicy
+from cherry.envs import TorchEnvWrapper
 from cherry.utils import normalize
 
-SEED = 1234
+SEED = 567
 GAMMA = 0.99
 RENDER = False
 
+random.seed(SEED)
+np.random.seed(SEED)
+th.manual_seed(SEED)
 
-class Policy(nn.Module):
+
+class PolicyNet(nn.Module):
     def __init__(self):
-        super(Policy, self).__init__()
+        super(PolicyNet, self).__init__()
         self.affine1 = nn.Linear(4, 128)
         self.affine2 = nn.Linear(128, 2)
 
@@ -34,13 +41,6 @@ class Policy(nn.Module):
         x = F.relu(self.affine1(x))
         action_scores = self.affine2(x)
         return F.softmax(action_scores, dim=1)
-
-
-def select_action(state):
-    probs = policy(state)
-    m = Categorical(probs)
-    action = m.sample()
-    return action.item()
 
 
 def finish_episode(replay):
@@ -56,15 +56,10 @@ def finish_episode(replay):
     rewards = th.tensor(rewards)
     rewards = normalize(rewards)
 
-    for state, action, reward in zip(replay.list_states,
-                                     replay.list_actions,
-                                     rewards):
-        # Compute log_prob of action
-        probs = policy(state)
-        m = Categorical(probs)
-        log_prob = m.log_prob(action)
-
+    for info, reward in zip(replay.list_infos,
+                            rewards):
         # Compute loss
+        log_prob = info['log_prob']
         policy_loss.append(-log_prob * reward)
 
     optimizer.zero_grad()
@@ -75,23 +70,24 @@ def finish_episode(replay):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
+    env = TorchEnvWrapper(env)
     env.seed(SEED)
-    th.manual_seed(SEED)
 
-    policy = Policy()
+    policy = CategoricalPolicy(PolicyNet())
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = cr.ExperienceReplay()
 
     for i_episode in count(1):
         state = env.reset()
-        state = th.from_numpy(state).float().unsqueeze(0)
         for t in range(10000):  # Don't infinite loop while learning
-            action = select_action(state)
+            mass = policy(state)
+            action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
-            state = th.from_numpy(state).float().unsqueeze(0)
-            replay.add(old_state, action, reward, state, done)
+            replay.add(old_state, action, reward, state, done, info={
+                'log_prob': mass.log_prob(action),  # Cache log_prob for later
+            })
             if RENDER:
                 env.render()
             if done:
