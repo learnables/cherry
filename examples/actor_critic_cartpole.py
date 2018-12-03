@@ -10,8 +10,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
 
-import cherry as cr
+import cherry as ch
 from cherry.envs import TorchEnvWrapper
+from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
 SEED = 567
@@ -40,20 +41,14 @@ class ActorCriticNet(nn.Module):
 
 
 def finish_episode(replay):
-    R = 0
     policy_loss = []
     value_loss = []
-    rewards = []
 
-    # Compute discounted rewards
-    for r in replay.list_rewards[::-1]:
-        R = r + GAMMA * R
-        rewards.insert(0, R)
-
-    # Normalize rewards
+    # Discount and normalize rewards
+    rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
     rewards = normalize(th.tensor(rewards))
 
-    # Compute loss
+    # Compute losses
     for info, reward in zip(replay.list_infos, rewards):
         log_prob = info['log_prob']
         value = info['value']
@@ -75,7 +70,7 @@ if __name__ == '__main__':
     policy = ActorCriticNet()
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
-    replay = cr.ExperienceReplay()
+    replay = ch.ExperienceReplay()
 
     for i_episode in count(1):
         state = env.reset()
