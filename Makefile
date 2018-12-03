@@ -2,7 +2,7 @@
 .PHONY: all
 
 all:
-	python examples/reinforce_cartpole.py
+	python examples/actor_critic_pendulum.py
 
 reinforce:
 	python examples/reinforce_cartpole.py
