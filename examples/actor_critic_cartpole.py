@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-
-"""
-Simple example of using cherry to solve cartpole.
-
-The code is an adaptation of the PyTorch reinforcement learning example.
-"""
-
 import random
 import gym
 import numpy as np
@@ -16,36 +8,41 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.distributions import Categorical
 
 import cherry as cr
-from cherry.policies import CategoricalPolicy
 from cherry.envs import TorchEnvWrapper
 from cherry.utils import normalize
 
 SEED = 567
 GAMMA = 0.99
 RENDER = False
+V_WEIGHT = 0.5
 
 random.seed(SEED)
 np.random.seed(SEED)
 th.manual_seed(SEED)
 
 
-class PolicyNet(nn.Module):
+class ActorCriticNet(nn.Module):
     def __init__(self):
-        super(PolicyNet, self).__init__()
+        super(ActorCriticNet, self).__init__()
         self.affine1 = nn.Linear(4, 128)
-        self.affine2 = nn.Linear(128, 2)
+        self.action_head = nn.Linear(128, 2)
+        self.value_head = nn.Linear(128, 1)
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
-        action_scores = self.affine2(x)
-        return F.softmax(action_scores, dim=1)
+        action_scores = self.action_head(x)
+        action_mass = Categorical(F.softmax(action_scores, dim=1))
+        value = self.value_head(x)
+        return action_mass, value
 
 
 def finish_episode(replay):
     R = 0
     policy_loss = []
+    value_loss = []
     rewards = []
 
     # Compute discounted rewards
@@ -59,12 +56,14 @@ def finish_episode(replay):
     # Compute loss
     for info, reward in zip(replay.list_infos, rewards):
         log_prob = info['log_prob']
-        policy_loss.append(-log_prob * reward)
+        value = info['value']
+        policy_loss.append(-log_prob * (reward - value.item()))
+        value_loss.append(F.mse_loss(value, th.tensor(reward)))
 
     # Take optimization step
     optimizer.zero_grad()
-    policy_loss = th.stack(policy_loss).sum()
-    policy_loss.backward()
+    loss = th.stack(policy_loss).sum() + V_WEIGHT * th.stack(value_loss).sum()
+    loss.backward()
     optimizer.step()
 
 
@@ -73,7 +72,7 @@ if __name__ == '__main__':
     env = TorchEnvWrapper(env)
     env.seed(SEED)
 
-    policy = CategoricalPolicy(PolicyNet())
+    policy = ActorCriticNet()
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = cr.ExperienceReplay()
@@ -81,12 +80,13 @@ if __name__ == '__main__':
     for i_episode in count(1):
         state = env.reset()
         for t in range(10000):  # Don't infinite loop while learning
-            mass = policy(state)
+            mass, value = policy(state)
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
             replay.add(old_state, action, reward, state, done, info={
                 'log_prob': mass.log_prob(action),  # Cache log_prob for later
+                'value': value
             })
             if RENDER:
                 env.render()
