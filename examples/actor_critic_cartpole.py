@@ -40,7 +40,7 @@ class ActorCriticNet(nn.Module):
         return action_mass, value
 
 
-def finish_episode(replay):
+def finish_episode(replay, optimizer):
     policy_loss = []
     value_loss = []
 
@@ -53,7 +53,7 @@ def finish_episode(replay):
         log_prob = info['log_prob']
         value = info['value']
         policy_loss.append(-log_prob * (reward - value.item()))
-        value_loss.append(F.mse_loss(value, th.tensor(reward)))
+        value_loss.append(F.mse_loss(value, reward.detach()))
 
     # Take optimization step
     optimizer.zero_grad()
@@ -89,7 +89,7 @@ if __name__ == '__main__':
                 break
 
         running_reward = running_reward * 0.99 + t * 0.01
-        finish_episode(replay)
+        finish_episode(replay, optimizer)
         replay.empty()
         if i_episode % 10 == 0:
             print('Episode {}\tLast length: {:5d}\tAverage length: {:.2f}'.format(
