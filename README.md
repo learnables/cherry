@@ -11,6 +11,8 @@ Some functionalities that we might want to implement.
 * normalize / serialize / parallelize environments,
 * compute advantages / policy gradients / rewards,
 * print and log training / debugging stats,
+* distributed / async training,
+* fix: what is up with the non-determinism ?
 * sample batches from replay,
 * function to sample experience,
 * handle recurrent policies,
