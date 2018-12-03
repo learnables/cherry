@@ -17,9 +17,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-import cherry as cr
+import cherry as ch
 from cherry.policies import CategoricalPolicy
 from cherry.envs import TorchEnvWrapper
+from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
 SEED = 567
@@ -44,16 +45,10 @@ class PolicyNet(nn.Module):
 
 
 def finish_episode(replay):
-    R = 0
     policy_loss = []
-    rewards = []
 
-    # Compute discounted rewards
-    for r in replay.list_rewards[::-1]:
-        R = r + GAMMA * R
-        rewards.insert(0, R)
-
-    # Normalize rewards
+    # Discount and normalize rewards
+    rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
     rewards = normalize(th.tensor(rewards))
 
     # Compute loss
@@ -76,7 +71,7 @@ if __name__ == '__main__':
     policy = CategoricalPolicy(PolicyNet())
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
-    replay = cr.ExperienceReplay()
+    replay = ch.ExperienceReplay()
 
     for i_episode in count(1):
         state = env.reset()
