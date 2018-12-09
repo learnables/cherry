@@ -10,7 +10,7 @@ import torch.optim as optim
 from torch.distributions import Normal
 
 import cherry as ch
-from cherry.envs import TorchEnvWrapper
+import cherry.envs as envs
 from cherry.rewards import discount_rewards
 
 from actor_critic_cartpole import finish_episode
@@ -43,7 +43,8 @@ class ActorCriticNet(nn.Module):
 
 if __name__ == '__main__':
     env = gym.make('Pendulum-v0')
-    env = TorchEnvWrapper(env)
+    env = envs.Logger(env, interval=1000)
+    env = envs.Torch(env)
     env.seed(SEED)
 
     policy = ActorCriticNet()
@@ -53,30 +54,29 @@ if __name__ == '__main__':
 
     for i_episode in count(1):
         state = env.reset()
-        for _ in range(50):
-            for t in range(10000):  # Don't infinite loop while learning
-                mass, value = policy(state)
-                action = mass.sample()
-                old_state = state
-                state, reward, done, _ = env.step(action)
-                replay.add(old_state, action, reward, state, done, info={
-                    'log_prob': mass.log_prob(action),  # Cache log_prob for later
-                    'value': value
-                })
-                if RENDER:
-                    env.render()
-                if done:
-                    break
+        for t in range(10000):  # Don't infinite loop while learning
+            mass, value = policy(state)
+            action = mass.sample()
+            old_state = state
+            state, reward, done, _ = env.step(action)
+            replay.add(old_state, action, reward, state, done, info={
+                'log_prob': mass.log_prob(action),  # Cache log_prob for later
+                'value': value
+            })
+            if RENDER:
+                env.render()
+            if done:
+                break
 
+        # Compute termination criterion
         episode_reward = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
         episode_reward = sum(episode_reward).item()
         running_reward = running_reward * 0.99 + episode_reward * 0.01
-        finish_episode(replay, optimizer)
-        replay.empty()
-        if i_episode % 10 == 0:
-            print('Episode {}\tLast rewards: {:2f}\tRunning discounted reward: {:.2f}'.format(
-                  i_episode, episode_reward, running_reward))
-        if running_reward > 1090.0:
+        if running_reward > -400.0:
             print('Solved! Running reward is now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward, t))
             break
+
+        # Update policy
+        finish_episode(replay, optimizer)
+        replay.empty()
