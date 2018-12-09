@@ -18,8 +18,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import cherry as ch
+import cherry.envs as envs
 from cherry.policies import CategoricalPolicy
-from cherry.envs import TorchEnvWrapper
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
@@ -65,7 +65,8 @@ def finish_episode(replay):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    env = TorchEnvWrapper(env)
+    env = envs.Logger(env, interval=1000)
+    env = envs.Torch(env)
     env.seed(SEED)
 
     policy = CategoricalPolicy(PolicyNet())
@@ -88,13 +89,13 @@ if __name__ == '__main__':
             if done:
                 break
 
+        # Compute termination criterion
         running_reward = running_reward * 0.99 + t * 0.01
-        finish_episode(replay)
-        replay.empty()
-        if i_episode % 10 == 0:
-            print('Episode {}\tLast length: {:5d}\tAverage length: {:.2f}'.format(
-                  i_episode, t, running_reward))
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward is now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward, t))
             break
+
+        # Update policy
+        finish_episode(replay)
+        replay.empty()

@@ -6,7 +6,7 @@ from gym import Wrapper
 from gym.spaces import Discrete
 
 
-class TorchEnvWrapper(Wrapper):
+class Torch(Wrapper):
 
     """
     This wrapper converts
@@ -19,7 +19,7 @@ class TorchEnvWrapper(Wrapper):
     """
 
     def __init__(self, env):
-        super(TorchEnvWrapper, self).__init__(env)
+        super(Torch, self).__init__(env)
 
     def _convert_state(self, state):
         return th.from_numpy(state).float().unsqueeze(0)

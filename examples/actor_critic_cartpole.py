@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+
+"""
+Simple example of using cherry to solve cartpole with an actor-critic.
+
+The code is an adaptation of the PyTorch reinforcement learning example.
+"""
+
 import random
 import gym
 import numpy as np
@@ -11,7 +19,7 @@ import torch.optim as optim
 from torch.distributions import Categorical
 
 import cherry as ch
-from cherry.envs import TorchEnvWrapper
+import cherry.envs as envs
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
@@ -64,7 +72,8 @@ def finish_episode(replay, optimizer):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    env = TorchEnvWrapper(env)
+    env = envs.Logger(env, interval=1000)
+    env = envs.Torch(env)
     env.seed(SEED)
 
     policy = ActorCriticNet()
@@ -88,13 +97,13 @@ if __name__ == '__main__':
             if done:
                 break
 
+        # Compute termination criterion
         running_reward = running_reward * 0.99 + t * 0.01
-        finish_episode(replay, optimizer)
-        replay.empty()
-        if i_episode % 10 == 0:
-            print('Episode {}\tLast length: {:5d}\tAverage length: {:.2f}'.format(
-                  i_episode, t, running_reward))
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward is now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward, t))
             break
+
+        # Update policy
+        finish_episode(replay, optimizer)
+        replay.empty()
