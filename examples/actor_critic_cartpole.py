@@ -73,6 +73,7 @@ def finish_episode(replay, optimizer):
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
     env = envs.Logger(env, interval=1000)
+    env = envs.Normalized(env)
     env = envs.Torch(env)
     env.seed(SEED)
 

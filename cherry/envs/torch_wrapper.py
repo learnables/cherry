@@ -10,7 +10,7 @@ class Torch(Wrapper):
 
     """
     This wrapper converts
-        * actions from Tensors to lists,
+        * actions from Tensors to numpy,
         * states from lists/numpy to Tensors.
 
     Example:
@@ -26,7 +26,7 @@ class Torch(Wrapper):
 
     def step(self, action):
         if isinstance(action, th.Tensor):
-            action = action.view(-1).tolist()
+            action = action.view(-1).numpy()
         if isinstance(self.env.action_space, Discrete):
             action = action[0]
         state, reward, done, info = self.env.step(action)
