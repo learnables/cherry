@@ -43,7 +43,8 @@ class ActorCriticNet(nn.Module):
 
 if __name__ == '__main__':
     env = gym.make('Pendulum-v0')
-    env = envs.Logger(env, interval=1000)
+    logger = envs.Logger(env, interval=1000)
+    env = envs.Normalized(logger, normalize_reward=True)
     env = envs.Torch(env)
     env.seed(SEED)
 
@@ -69,7 +70,10 @@ if __name__ == '__main__':
                 break
 
         # Compute termination criterion
-        episode_reward = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+        # Note: we use the logger's rewards because of the normalization
+        episode_reward = discount_rewards(GAMMA,
+                                          logger.all_rewards[-t:],
+                                          logger.all_dones[-t:])
         episode_reward = sum(episode_reward).item()
         running_reward = running_reward * 0.99 + episode_reward * 0.01
         if running_reward > -400.0:
