@@ -11,9 +11,10 @@ from torch.distributions import Normal
 
 import cherry as ch
 import cherry.envs as envs
+import cherry.rollouts as rollouts
 from cherry.rewards import discount_rewards
 
-from actor_critic_cartpole import finish_episode
+from actor_critic_cartpole import update, get_action_value
 
 SEED = 567
 GAMMA = 0.99
@@ -53,34 +54,24 @@ if __name__ == '__main__':
     running_reward = 10.0
     replay = ch.ExperienceReplay()
 
-    for i_episode in count(1):
-        state = env.reset()
-        for t in range(10000):  # Don't infinite loop while learning
-            mass, value = policy(state)
-            action = mass.sample()
-            old_state = state
-            state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done, info={
-                'log_prob': mass.log_prob(action),  # Cache log_prob for later
-                'value': value
-            })
-            if RENDER:
-                env.render()
-            if done:
-                break
+    get_action = lambda state: get_action_value(state, policy)
+    for episode in count(1):
+        num_samples, num_episodes = rollouts.collect(env,
+                                                     get_action,
+                                                     replay,
+                                                     num_episodes=1)
+        # Update policy
+        update(replay, optimizer)
+        replay.empty()
 
         # Compute termination criterion
-        # Note: we use the logger's rewards because of the normalization
+        # Note: we use the logger's rewards because of normalization
         episode_reward = discount_rewards(GAMMA,
-                                          logger.all_rewards[-t:],
-                                          logger.all_dones[-t:])
+                                          logger.all_rewards[-num_samples:],
+                                          logger.all_dones[-num_samples:])
         episode_reward = sum(episode_reward).item()
         running_reward = running_reward * 0.99 + episode_reward * 0.01
         if running_reward > -400.0:
             print('Solved! Running reward is now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward, t))
             break
-
-        # Update policy
-        finish_episode(replay, optimizer)
-        replay.empty()

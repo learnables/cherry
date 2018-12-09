@@ -44,7 +44,7 @@ class PolicyNet(nn.Module):
         return F.softmax(action_scores, dim=1)
 
 
-def finish_episode(replay):
+def update(replay):
     policy_loss = []
 
     # Discount and normalize rewards
@@ -98,5 +98,5 @@ if __name__ == '__main__':
             break
 
         # Update policy
-        finish_episode(replay)
+        update(replay)
         replay.empty()
