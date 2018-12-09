@@ -28,6 +28,19 @@ class ExperienceReplay(object):
         true_size = values[0].size()[1:]
         return th.cat(values, dim=0).view(len(values), *true_size)
 
+    def __len__(self):
+        return len(self.storage['states'])
+
+    def __getitem__(self, key):
+        return {
+            'state': self.storage['states'][key],
+            'action': self.storage['actions'][key],
+            'reward': self.storage['rewards'][key],
+            'next_state': self.storage['next_states'][key],
+            'done': self.storage['dones'][key],
+            'info': self.storage['infos'][key],
+        }
+
     @property
     def states(self):
         return self._access_property('states')

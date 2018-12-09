@@ -20,6 +20,7 @@ from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
+import cherry.rollouts as rollouts
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
@@ -48,7 +49,7 @@ class ActorCriticNet(nn.Module):
         return action_mass, value
 
 
-def finish_episode(replay, optimizer):
+def update(replay, optimizer):
     policy_loss = []
     value_loss = []
 
@@ -70,6 +71,16 @@ def finish_episode(replay, optimizer):
     optimizer.step()
 
 
+def get_action_value(state, policy):
+    mass, value = policy(state)
+    action = mass.sample()
+    info = {
+        'log_prob': mass.log_prob(action),  # Cache log_prob for later
+        'value': value
+    }
+    return action, info
+
+
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
     env = envs.Logger(env, interval=1000)
@@ -81,30 +92,20 @@ if __name__ == '__main__':
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = ch.ExperienceReplay()
+    get_action = lambda state: get_action_value(state, policy)
 
-    for i_episode in count(1):
-        state = env.reset()
-        for t in range(10000):  # Don't infinite loop while learning
-            mass, value = policy(state)
-            action = mass.sample()
-            old_state = state
-            state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done, info={
-                'log_prob': mass.log_prob(action),  # Cache log_prob for later
-                'value': value
-            })
-            if RENDER:
-                env.render()
-            if done:
-                break
+    for episode in count(1):
+        # We use the rollout collector, but could've written our own
+        num_samples, num_episodes = rollouts.collect(env,
+                                                     get_action,
+                                                     replay,
+                                                     num_episodes=1)
+        # Update policy
+        update(replay, optimizer)
+        replay.empty()
 
         # Compute termination criterion
-        running_reward = running_reward * 0.99 + t * 0.01
+        running_reward = running_reward * 0.99 + num_samples * 0.01
         if running_reward > env.spec.reward_threshold:
-            print('Solved! Running reward is now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward, t))
-            break
-
-        # Update policy
-        finish_episode(replay, optimizer)
-        replay.empty()
+            print('Solved! Running reward now {} and '
+                  'the last episode runs to {} time steps!'.format(running_reward, num_samples))
