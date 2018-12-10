@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import random
 import gym
 import numpy as np
@@ -16,6 +17,8 @@ import cherry.rollouts as rollouts
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
+from statistics import mean
+
 from models import NatureCNN
 from utils import copy_params, dist_average
 
@@ -23,6 +26,7 @@ from utils import copy_params, dist_average
 This is a demonstration of how to use cherry to train an agent in a distributed 
 setting.
 
+Note: It does not aim to replicate any existing implementation.
 """
 
 GAMMA = 0.99
@@ -71,16 +75,16 @@ def run(rank,
         shared_params,
         sync=True,
         seed=1234):
-    th.set_num_threads(1)
+    th.set_num_threads(int(os.environ['MKL_NUM_THREADS']))
     random.seed(seed + rank)
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
     env = gym.make(env)
+    if rank == 0:
+        logger = env = envs.Logger(env, interval=5000)
     env = envs.Atari(env)
     env = envs.ClipReward(env)
-    if rank == 0:
-        env = envs.Logger(env, interval=5000)
     env = envs.Torch(env)
     env.seed(seed + rank)
 
@@ -107,7 +111,19 @@ def run(rank,
                barrier,
                sync=sync)
         replay.empty()
-        total_steps += num_samples
+        if rank == 0:
+            total_steps += num_samples
+
+    if rank == 0:
+        exp = ro.Experiment('dev', directory='results')
+        rewards = logger.all_rewards
+        dones = logger.all_dones
+        result = mean(rewards[-1000:])
+        data = {
+            'rewards': rewards,
+            'dones': dones,
+        }
+        exp.add_result(result, data)
 
 
 @ro.cli
@@ -132,7 +148,19 @@ def main(num_workers=2,
             seed
             )
     if num_workers > 1:
-        mp.spawn(run, arguments, num_workers, join=True)
+        processes = []
+        for rank in range(num_workers):
+            p = mp.Process(target=run, args=(rank,) + arguments)
+            p.start()
+            processes.append(p)
+
+        # Wait for main process to finish
+        processes[0].join()
+
+        # Kill other workers
+        for p in processes[1:]:
+            p.terminate()
+
     else:
         run(0, *arguments)
 
