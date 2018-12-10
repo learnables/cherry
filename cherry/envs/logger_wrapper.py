@@ -37,6 +37,9 @@ class Logger(Wrapper):
                 episode_lengths.append(length)
                 accum = 0.0
                 length = 0
+        if length > 0:
+                episode_rewards.append(accum)
+                episode_lengths.append(length)
         mean_rewards = mean(episode_rewards)
         std_rewards = pstdev(episode_rewards)
         mean_length = int(mean(episode_lengths))
