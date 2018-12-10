@@ -17,12 +17,19 @@ from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
 from models import NatureCNN
+from utils import copy_params, dist_average
+
+"""
+This is a demonstration of how to use cherry to train an agent in a distributed 
+setting.
+
+"""
 
 GAMMA = 0.99
 V_WEIGHT = 0.1
 
 
-def update(replay, optimizer):
+def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
     policy_loss = []
     value_loss = []
 
@@ -42,6 +49,8 @@ def update(replay, optimizer):
     loss = th.stack(policy_loss).sum() + V_WEIGHT * th.stack(value_loss).sum()
     loss.backward()
     optimizer.step()
+    dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
+    copy_params(shared_params, policy.parameters())
 
 
 def get_action_value(state, policy):
@@ -68,12 +77,16 @@ def run(rank,
     np.random.seed(seed + rank)
 
     env = gym.make(env)
+    env = envs.Atari(env)
+    env = envs.ClipReward(env)
     if rank == 0:
         env = envs.Logger(env, interval=5000)
     env = envs.Torch(env)
     env.seed(seed + rank)
 
     policy = NatureCNN()
+    copy_params(shared_params, policy.parameters())
+
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
@@ -86,7 +99,13 @@ def run(rank,
                                                      replay,
                                                      num_episodes=1)
         # Update policy
-        update(replay, optimizer)
+        update(replay,
+               optimizer,
+               policy,
+               shared_params,
+               size,
+               barrier,
+               sync=sync)
         replay.empty()
         total_steps += num_samples
 

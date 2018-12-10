@@ -27,7 +27,7 @@ class Flatten(nn.Module):
 
 class NatureCNN(nn.Module):
 
-    def __init__(self, num_inputs=3, num_outputs=2, hidden_size=512):
+    def __init__(self, num_inputs=4, num_outputs=2, hidden_size=512):
         super(NatureCNN, self).__init__()
         init_ = lambda m: init(m,
                                nn.init.orthogonal_,
@@ -62,8 +62,7 @@ class NatureCNN(nn.Module):
 
     def forward(self, inputs):
         # Inputs should be 1, 4, 84, 84
-        inputs = inputs[:, 105-42:105+42, 38:122, :]
-        inputs = inputs.permute(0, 3, 1, 2)
+        inputs = inputs.view(1, 4, 84, 84)
         features = self.features(inputs / 255.0)
         value = self.critic_linear(features)
         action_scores = self.actor_linear(features)
