@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import torch as th
 
 from gym import Wrapper
@@ -22,6 +23,8 @@ class Torch(Wrapper):
         super(Torch, self).__init__(env)
 
     def _convert_state(self, state):
+        if isinstance(state, (float, int)):
+            state = np.array([state])
         return th.from_numpy(state).float().unsqueeze(0)
 
     def step(self, action):

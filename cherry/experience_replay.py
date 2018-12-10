@@ -25,7 +25,9 @@ class ExperienceReplay(object):
 
     def _access_property(self, name):
         values = self.storage[name]
-        true_size = values[0].size()[1:]
+        true_size = values[0].size()
+        while true_size[0] == 1 and len(true_size) > 1:
+            true_size = true_size[1:]
         return th.cat(values, dim=0).view(len(values), *true_size)
 
     def __len__(self):
