@@ -30,50 +30,35 @@ The following snippet demonstrates some of the tools offered by cherry.
 ~~~python
 import cherry as ch
 
-def update(replay, optimizer):
-    policy_loss = []
-    value_loss = []
+# Wrapping environments
+env = ch.envs.Logger(env, interval=1000)  # Prints rollouts statistics
+env = ch.envs.Normalized(env, normalize_state=True, normalize_reward=False)  
+env = ch.envs.Torch(env)  # Converts actions/states to tensors
 
-    # Discount and normalize rewards
-    rewards = ch.rewards.discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
-    rewards = ch.utils.normalize(th.tensor(rewards))
-
-    # Compute losses
-    for info, reward in zip(replay.list_infos, rewards):
-        log_prob = info['log_prob']
-        value = info['value']
-        policy_loss.append(-log_prob * (reward - value.item()))
-        value_loss.append(F.mse_loss(value, reward.detach()))
-
-    # Take optimization step
-    optimizer.zero_grad()
-    loss = th.stack(policy_loss).sum() + V_WEIGHT * th.stack(value_loss).sum()
-    loss.backward()
-    optimizer.step()
-
-env = gym.make('CartPole-v0')
-env = ch.envs.Logger(env, interval=1000)
-env = ch.envs.Normalized(env)
-env = ch.envs.Torch(env)
-env.seed(SEED)
-
-policy = ActorCriticNet() # Standard nn.Module
-optimizer = optim.Adam(policy.parameters(), lr=1e-2)
+# Storing and retrieving experience
 replay = ch.ExperienceReplay()
-get_action = lambda state: policy(state)
+replay.add(old_state, action, reward, state, done, info = {
+        'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
+        'value': value
+})
+replay.list_actions  # List of all stored actions
+replay.states  # Tensor of all stored states
+replay.empty()  # Removes all stored experience
 
-for episode in count(1):
-    # We use the rollout collector, but could've written our own
-    num_samples, num_episodes = ch.rollouts.collect(env,
-                                                    get_action,
-                                                    replay,
-                                                    num_episodes=1)
-    # Update policy the way we want
-    update(replay, optimizer)
-    replay.empty()
+# Discounting and normalizing rewards
+rewards = ch.rewards.discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+rewards = ch.utils.normalize(th.tensor(rewards))
+
+# Sampling rollouts per episode or samples
+num_samples, num_episodes = ch.rollouts.collect(env,
+                                                get_action,
+                                                replay,
+                                                num_episodes=10,
+                                                # alternatively: num_samples=1000,
+)
 ~~~
 
-More fun stuff available in the [examples/](./examples/) folder.
+Concrete examples are available in the [examples/](./examples/) folder.
 
 # Documentation
 
@@ -94,6 +79,7 @@ Some functionalities that we might want to implement.
 * functions for GAE, discounted and bootstrapped rewards,
 * unified support for continuous and discrete environments,
 * one high-performance implementation of A2C on Breakout and Ant-v1. (or pybullet equivalent)
+
 
 # Acknowledgements
 
