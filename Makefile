@@ -4,7 +4,7 @@
 all: dist
 
 dist:
-	python examples/distributed_atari/main.py main --num_steps=100 --num_workers=1
+	python examples/distributed_atari/main.py main --num_steps=7000 --num_workers=1
 
 acp:
 	python examples/actor_critic_pendulum.py
