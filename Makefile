@@ -1,5 +1,5 @@
 
-.PHONY: all tests
+.PHONY: all tests dist
 
 THREAD_PER_PROC=4
 
