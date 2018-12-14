@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.distributions import Categorical
 
 """
 This model is largely inspired from Ilya Kostrikov's implementation:
 
 https://github.com/ikostrikov/pytorch-a2c-ppo-acktr/
-
-TODO: 
-    * His implementation uses OpenAI's fancy pre-processing of Atari images. We should include that.
 """
 
 
@@ -30,6 +26,7 @@ class NatureCNN(nn.Module):
 
     def __init__(self, num_inputs=4, num_outputs=2, hidden_size=512):
         super(NatureCNN, self).__init__()
+        self.num_inputs = num_inputs
         init_ = lambda m: init(m,
                                nn.init.orthogonal_,
                                lambda x: nn.init.constant_(x, 0),
@@ -67,7 +64,7 @@ class NatureCNN(nn.Module):
 
     def forward(self, inputs):
         # Inputs should be 1, 4, 84, 84
-        inputs = inputs.view(1, 4, 84, 84)
+        inputs = inputs.view(1, self.num_inputs, 84, 84)
         features = self.features(inputs / 255.0)
         value = self.critic_linear(features)
         action_scores = self.actor_linear(features)
