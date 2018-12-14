@@ -75,7 +75,7 @@ class Atari(Wrapper):
 
     def _stack_states(self):
         self._state_history = self._state_history[-self.stack_frames:]
-        return np.stack(self._state_history)
+        return np.stack(self._state_history).transpose(3, 0, 1, 2)
 
     def reset(self, *args, **kwargs):
         state = self.env.reset(*args, **kwargs)
