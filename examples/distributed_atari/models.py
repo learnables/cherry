@@ -63,8 +63,8 @@ class NatureCNN(nn.Module):
         self.train()
 
     def forward(self, inputs):
-        # Inputs should be 1, 4, 84, 84
-        inputs = inputs.view(1, self.num_inputs, 84, 84)
+        # Inputs should be 1, 4, 84, 84 for a single state
+        inputs = inputs.view(-1, self.num_inputs, 84, 84)
         features = self.features(inputs / 255.0)
         value = self.critic_linear(features)
         action_scores = self.actor_linear(features)
