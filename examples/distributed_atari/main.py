@@ -9,6 +9,7 @@ import randopt as ro
 import torch as th
 import torch.multiprocessing as mp
 import torch.optim as optim
+import torch.nn as nn
 import torch.nn.functional as F
 
 import cherry as ch
@@ -23,19 +24,23 @@ from models import NatureCNN
 from utils import copy_params, dist_average
 
 """
-This is a demonstration of how to use cherry to train an agent in a distributed 
+This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
 
 Note: It does not aim to replicate any existing implementation.
 """
 
 GAMMA = 0.99
-V_WEIGHT = 0.1
+V_WEIGHT = 0.5
+ENT_WEIGHT = 0.01
+LR = 1e-4
+GRAD_NORM = 5
 
 
 def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
     policy_loss = []
     value_loss = []
+    entropy_loss = []
 
     # Bootstrap rewards
     rewards = replay.list_rewards
@@ -50,13 +55,16 @@ def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
     for info, reward in zip(replay.list_infos, rewards):
         log_prob = info['log_prob']
         value = info['value']
-        policy_loss.append(-log_prob * (reward - value.item()))
-        value_loss.append(F.mse_loss(value, reward.detach()))
+        entropy = info['entropy']
+        entropy_loss.append(-ENT_WEIGHT * entropy)
+        policy_loss.append(-log_prob * (reward - value.detach().item()))
+        value_loss.append(V_WEIGHT * F.mse_loss(value, reward.detach()))
 
     # Take optimization step
     optimizer.zero_grad()
-    loss = th.stack(policy_loss).sum() + V_WEIGHT * th.stack(value_loss).sum()
+    loss = th.stack(policy_loss).sum() + th.stack(value_loss).sum() + th.stack(entropy_loss).sum()
     loss.backward()
+    nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
     dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
     copy_params(shared_params, policy.parameters())
@@ -66,9 +74,10 @@ def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
     info = {
-            'log_prob': mass.log_prob(action),  # Cache log_prob for later
-            'value': value
-            }
+        'log_prob': mass.log_prob(action),  # Cache log_prob for later
+        'value': value,
+        'entropy': mass.entropy(),
+    }
     return action, info
 
 
@@ -96,7 +105,7 @@ def run(rank,
     policy = NatureCNN()
     copy_params(shared_params, policy.parameters())
 
-    optimizer = optim.Adam(policy.parameters(), lr=1e-2)
+    optimizer = optim.Adam(policy.parameters(), lr=LR)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
@@ -133,10 +142,17 @@ def run(rank,
 
 @ro.cli
 def main(num_workers=2,
+<<<<<<< HEAD
         num_steps=10000000,
         env='PongNoFrameskip-v0',
         sync=True,
         seed=1234):
+=======
+         num_steps=10000000,
+         env='PongNoFrameskip-v4',
+         sync=True,
+         seed=1234):
+>>>>>>> d837fecb293ad384713617ea3932cfdf5d6ab8ed
 
     manager = mp.Manager()
     shared_policy = NatureCNN()
