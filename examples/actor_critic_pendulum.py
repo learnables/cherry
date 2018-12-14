@@ -11,7 +11,6 @@ from torch.distributions import Normal
 
 import cherry as ch
 import cherry.envs as envs
-import cherry.rollouts as rollouts
 from cherry.rewards import discount_rewards
 
 from actor_critic_cartpole import update, get_action_value
@@ -56,10 +55,9 @@ if __name__ == '__main__':
 
     get_action = lambda state: get_action_value(state, policy)
     for episode in count(1):
-        num_samples, num_episodes = rollouts.collect(env,
-                                                     get_action,
-                                                     replay,
-                                                     num_episodes=1)
+        # Sample transitions
+        num_samples, num_episodes = env.run(get_action, replay, episodes=1)
+
         # Update policy
         update(replay, optimizer)
         replay.empty()
