@@ -10,18 +10,18 @@ import torch as th
 import torch.multiprocessing as mp
 import torch.optim as optim
 import torch.nn as nn
-import torch.nn.functional as F
 
 import cherry as ch
 import cherry.envs as envs
 import cherry.rollouts as rollouts
-from cherry.rewards import discount_rewards
-from cherry.utils import normalize
+import cherry.rewards as ch_rewards
 
 from statistics import mean
 
 from models import NatureCNN
 from utils import copy_params, dist_average
+
+from deep_rl.component.envs import make_env
 
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
@@ -31,46 +31,61 @@ Note: It does not aim to replicate any existing implementation.
 """
 
 GAMMA = 0.99
-V_WEIGHT = 0.5
+USE_GAE = False
+TAU = 1.0
+V_WEIGHT = 1.0
 ENT_WEIGHT = 0.01
 LR = 1e-4
-GRAD_NORM = 5
+GRAD_NORM = 5.0
+NUM_UPDATES = 0
 
 
 def update(replay, optimizer, policy, shared_params, size, barrier, sync=True, logger=None):
-    policy_loss = []
-    value_loss = []
-    entropy_loss = []
-
-    # Bootstrap rewards
     rewards = replay.list_rewards
-    if not replay.list_dones[-1]:
-        rewards[-1] += replay.list_infos[-1]['value']
+    values = [info['value'] for info in replay.list_infos]
 
     # Discount and normalize rewards
-    rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
-    rewards = normalize(th.tensor(rewards))
+    if USE_GAE:
+        _, next_state_value = policy(replay.list_next_states[-1])
+        values += [next_state_value]
+        rewards, advantages = ch_rewards.gae(GAMMA,
+                                             TAU,
+                                             rewards,
+                                             replay.list_dones,
+                                             values,
+                                             bootstrap=values[-2])
+    else:
+        rewards = ch_rewards.discount(GAMMA,
+                                      rewards,
+                                      replay.list_dones,
+                                      bootstrap=values[-1])
+        advantages = [r - v for r, v in zip(rewards, values)]
 
     # Compute losses
-    for info, reward in zip(replay.list_infos, rewards):
-        log_prob = info['log_prob']
-        value = info['value']
-        entropy = info['entropy']
-        entropy_loss.append(-ENT_WEIGHT * entropy)
-        policy_loss.append(-log_prob * (reward - value.detach().item()))
-        value_loss.append(V_WEIGHT * F.mse_loss(value, reward.detach()))
+    policy_loss = 0.0
+    value_loss = 0.0
+    entropy_loss = 0.0
+    for info, reward, adv in zip(replay.list_infos, rewards, advantages):
+        entropy_loss += - info['entropy']
+        policy_loss += -info['log_prob'] * adv.item()
+        value_loss += 0.5 * (reward.detach() - info['value']).pow(2)
 
     # Take optimization step
     optimizer.zero_grad()
-    loss = th.stack(policy_loss).sum() + th.stack(value_loss).sum() + th.stack(entropy_loss).sum()
+    loss = policy_loss + V_WEIGHT * value_loss + ENT_WEIGHT * entropy_loss
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
-    dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
-    copy_params(shared_params, policy.parameters())
+#    dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
+#    copy_params(shared_params, policy.parameters())
 
+    global NUM_UPDATES
+    NUM_UPDATES += 1
     if logger is not None:
-        logger.log('haha', 23)
+        logger.log('policy loss', policy_loss.item())
+        logger.log('value loss', value_loss.item())
+        logger.log('entropy', entropy_loss.item())
+        logger.log('num updates', NUM_UPDATES)
 
 
 def get_action_value(state, policy):
@@ -99,8 +114,9 @@ def run(rank,
 
     logger = None
     env = gym.make(env)
+#    env = make_env(env, seed=seed + rank, rank=0, log_dir='./logs')()
     if rank == 0:
-        logger = env = envs.Logger(env, interval=500)
+        logger = env = envs.Logger(env, interval=10000)
     env = envs.Atari(env)
     env = envs.ClipReward(env)
     env = envs.Torch(env)
@@ -123,13 +139,13 @@ def run(rank,
                                                    num_steps=5)
         # Update policy
         update(replay,
-                optimizer,
-                policy,
-                shared_params,
-                size,
-                barrier,
-                sync=sync,
-                logger=logger)
+               optimizer,
+               policy,
+               shared_params,
+               size,
+               barrier,
+               sync=sync,
+               logger=logger)
         replay.empty()
         if rank == 0:
             total_steps += num_steps
@@ -153,10 +169,13 @@ def main(num_workers=2,
          sync=True,
          seed=1234):
 
+    random.seed(seed)
+    th.manual_seed(seed)
+    np.random.seed(seed)
     manager = mp.Manager()
     shared_policy = NatureCNN()
     shared_params = [p.data.share_memory_()
-            for p in shared_policy.parameters()]
+                     for p in shared_policy.parameters()]
 
     arguments = (
             num_workers,

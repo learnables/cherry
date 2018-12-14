@@ -15,7 +15,8 @@ TODO:
 
 
 def init(module, weight_init, bias_init, gain=1):
-    weight_init(module.weight.data, gain=gain)
+#    weight_init(module.weight.data, gain=gain)
+    weight_init(module.weight.data)
     bias_init(module.bias.data)
     return module
 
@@ -39,10 +40,12 @@ class NatureCNN(nn.Module):
             nn.ReLU(),
             init_(nn.Conv2d(32, 64, 4, stride=2)),
             nn.ReLU(),
-            init_(nn.Conv2d(64, 32, 3, stride=1)),
+#            init_(nn.Conv2d(64, 32, 3, stride=1)),
+            init_(nn.Conv2d(64, 64, 3, stride=1)),
             nn.ReLU(),
             Flatten(),
-            init_(nn.Linear(32 * 7 * 7, hidden_size)),
+#            init_(nn.Linear(32 * 7 * 7, hidden_size)),
+            init_(nn.Linear(64 * 7 * 7, hidden_size)),
             nn.ReLU()
         )
 
@@ -51,12 +54,14 @@ class NatureCNN(nn.Module):
                                lambda x: nn.init.constant_(x, 0)
         )
         self.critic_linear = init_(nn.Linear(hidden_size, 1))
+        self.critic_linear.weight.data.mul_(1e-3)
 
         init_ = lambda m: init(m,
                                nn.init.orthogonal_,
                                lambda x: nn.init.constant_(x, 0),
                                gain=0.01)
         self.actor_linear = init_(nn.Linear(hidden_size, num_outputs))
+        self.actor_linear.weight.data.mul_(1e-3)
 
         self.train()
 
@@ -66,5 +71,5 @@ class NatureCNN(nn.Module):
         features = self.features(inputs / 255.0)
         value = self.critic_linear(features)
         action_scores = self.actor_linear(features)
-        action_mass = Categorical(F.softmax(action_scores, dim=1))
+        action_mass = Categorical(logits=action_scores)
         return action_mass, value
