@@ -39,6 +39,6 @@ def collect(env,
                 break
             collected_samples += 1
             if collected_samples >= num_steps:
-                return collected_samples, collected_samples
+                return collected_samples, episode
         if episode >= num_episodes:
-                return collected_samples, collected_samples
+                return collected_samples, episode
