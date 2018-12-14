@@ -8,7 +8,7 @@ from setuptools import (
 VERSION = '0.0.1'
 
 setup(
-        name='cherry',
+        name='cherry-rl',
         packages=find_packages(),
         version=VERSION,
         description='PyTorch Reinforcement Learning Framework',
