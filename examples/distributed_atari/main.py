@@ -37,7 +37,7 @@ LR = 1e-4
 GRAD_NORM = 5
 
 
-def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
+def update(replay, optimizer, policy, shared_params, size, barrier, sync=True, logger=None):
     policy_loss = []
     value_loss = []
     entropy_loss = []
@@ -69,6 +69,9 @@ def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
     dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
     copy_params(shared_params, policy.parameters())
 
+    if logger is not None:
+        logger.log('haha', 23)
+
 
 def get_action_value(state, policy):
     mass, value = policy(state)
@@ -94,9 +97,10 @@ def run(rank,
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
+    logger = None
     env = gym.make(env)
     if rank == 0:
-        logger = env = envs.Logger(env, interval=5000)
+        logger = env = envs.Logger(env, interval=500)
     env = envs.Atari(env)
     env = envs.ClipReward(env)
     env = envs.Torch(env)
@@ -109,13 +113,14 @@ def run(rank,
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
+    total_num_steps = num_steps
     total_steps = 0
-    while total_steps < num_steps:
+    while total_steps < total_num_steps:
         # We use the rollout collector, but could've written our own
         num_steps, num_episodes = rollouts.collect(env,
-                get_action,
-                replay,
-                num_steps=5)
+                                                   get_action,
+                                                   replay,
+                                                   num_steps=5)
         # Update policy
         update(replay,
                 optimizer,
@@ -123,7 +128,8 @@ def run(rank,
                 shared_params,
                 size,
                 barrier,
-                sync=sync)
+                sync=sync,
+                logger=logger)
         replay.empty()
         if rank == 0:
             total_steps += num_steps
@@ -142,17 +148,10 @@ def run(rank,
 
 @ro.cli
 def main(num_workers=2,
-<<<<<<< HEAD
-        num_steps=10000000,
-        env='PongNoFrameskip-v0',
-        sync=True,
-        seed=1234):
-=======
          num_steps=10000000,
          env='PongNoFrameskip-v4',
          sync=True,
          seed=1234):
->>>>>>> d837fecb293ad384713617ea3932cfdf5d6ab8ed
 
     manager = mp.Manager()
     shared_policy = NatureCNN()

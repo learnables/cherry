@@ -21,6 +21,8 @@ class Logger(Wrapper):
         self.all_rewards = []
         self.all_dones = []
         self.interval = interval
+        self.values = {}
+        self.values_idx = {}
 
     def stats(self):
         rewards = self.all_rewards[-self.interval:]
@@ -55,10 +57,24 @@ class Logger(Wrapper):
         msg += ' +/- ' + '%.2f' % std_rewards + '\n'
         msg += '- Mean reward: ' + '%.2f' % mean(rewards)
         msg += ' +/- ' + '%.2f' % pstdev(rewards) + '\n'
+        for key in self.values.keys():
+            idx = self.values_idx[key]
+            values = self.values[key][idx:]
+            msg += '- Mean ' + key + ': ' + '%.2f' % mean(values)
+            msg += ' +/- ' + '%.2f' % pstdev(values) + '\n'
+            self.values_idx[key] = len(self.values[key]) - 1
         return msg
 
     def reset(self, *args, **kwargs):
         return self.env.reset(*args, **kwargs)
+
+    def log(self, key, value):
+        if not key in self.values:
+            self.values[key] = []
+            self.values_idx[key] = 0
+            setattr(self, key, self.values[key])
+        self.values[key].append(value)
+
 
     def step(self, *args, **kwargs):
         state, reward, done, info = self.env.step(*args, **kwargs)

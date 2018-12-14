@@ -6,7 +6,7 @@ THREAD_PER_PROC=1
 all: dist
 
 dist:
-	MKL_NUM_THREADS=$(THREAD_PER_PROC) NUMEXPR_NUM_THREADS=$(THREAD_PER_PROC) OMP_NUM_THREADS=$(THREAD_PER_PROC) python examples/distributed_atari/main.py main --num_steps=10000000 --num_workers=64
+	MKL_NUM_THREADS=$(THREAD_PER_PROC) NUMEXPR_NUM_THREADS=$(THREAD_PER_PROC) OMP_NUM_THREADS=$(THREAD_PER_PROC) python examples/distributed_atari/main.py main --num_steps=10000000 --num_workers=1
 
 acp:
 	python examples/actor_critic_pendulum.py
