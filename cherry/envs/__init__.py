@@ -6,4 +6,5 @@ from .logger_wrapper import Logger
 from .torch_wrapper import Torch
 from .normalized_wrapper import Normalized
 from .atari_wrapper import Atari
+from .openai_atari_wrapper import OpenAIAtari
 from .clip_reward_wrapper import ClipReward

@@ -114,8 +114,9 @@ def run(rank,
     env = gym.make(env)
     if rank == 0:
         env = envs.Logger(env, interval=1000)
-    env = envs.Atari(env)
-    env = envs.ClipReward(env)
+    env = envs.OpenAIAtari(env)
+#    env = envs.Atari(env)
+#    env = envs.ClipReward(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(seed + rank)
