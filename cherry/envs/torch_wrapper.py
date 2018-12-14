@@ -25,6 +25,7 @@ class Torch(Wrapper):
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
             state = np.array([state])
+        state = np.array([state])
         return th.from_numpy(state).float().unsqueeze(0)
 
     def step(self, action):
