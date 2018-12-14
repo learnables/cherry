@@ -9,9 +9,6 @@ class Logger(Wrapper):
 
     """
     Tracks and prints some common statistics about the environment.
-
-    TODO:
-        * Make it compatible with the (future) Parallel wrapper.
     """
 
     def __init__(self, env, interval=1000):

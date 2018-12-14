@@ -8,7 +8,6 @@ from gym.spaces import Discrete
 from .base import Wrapper
 
 
-
 class Torch(Wrapper):
 
     """
