@@ -37,6 +37,11 @@ def update(replay, optimizer, policy, shared_params, size, barrier, sync=True):
     policy_loss = []
     value_loss = []
 
+    # Bootstrap rewards
+    rewards = replay.list_rewards
+    if not replay.list_dones[-1]:
+        rewards[-1] += replay.list_infos[-1]['value']
+
     # Discount and normalize rewards
     rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
     rewards = normalize(th.tensor(rewards))
@@ -61,9 +66,9 @@ def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
     info = {
-        'log_prob': mass.log_prob(action),  # Cache log_prob for later
-        'value': value
-    }
+            'log_prob': mass.log_prob(action),  # Cache log_prob for later
+            'value': value
+            }
     return action, info
 
 
@@ -98,21 +103,21 @@ def run(rank,
     total_steps = 0
     while total_steps < num_steps:
         # We use the rollout collector, but could've written our own
-        num_samples, num_episodes = rollouts.collect(env,
-                                                     get_action,
-                                                     replay,
-                                                     num_episodes=1)
+        num_steps, num_episodes = rollouts.collect(env,
+                get_action,
+                replay,
+                num_steps=5)
         # Update policy
         update(replay,
-               optimizer,
-               policy,
-               shared_params,
-               size,
-               barrier,
-               sync=sync)
+                optimizer,
+                policy,
+                shared_params,
+                size,
+                barrier,
+                sync=sync)
         replay.empty()
         if rank == 0:
-            total_steps += num_samples
+            total_steps += num_steps
 
     if rank == 0:
         exp = ro.Experiment('dev', directory='results')
@@ -120,23 +125,23 @@ def run(rank,
         dones = logger.all_dones
         result = mean(rewards[-1000:])
         data = {
-            'rewards': rewards,
-            'dones': dones,
-        }
+                'rewards': rewards,
+                'dones': dones,
+                }
         exp.add_result(result, data)
 
 
 @ro.cli
 def main(num_workers=2,
-         num_steps=10000000,
-         env='PongNoFrameskip-v0',
-         sync=True,
-         seed=1234):
+        num_steps=10000000,
+        env='PongNoFrameskip-v0',
+        sync=True,
+        seed=1234):
 
     manager = mp.Manager()
     shared_policy = NatureCNN()
     shared_params = [p.data.share_memory_()
-                     for p in shared_policy.parameters()]
+            for p in shared_policy.parameters()]
 
     arguments = (
             num_workers,

@@ -6,7 +6,7 @@ from itertools import count
 def collect(env,
             get_action,
             replay,
-            num_samples=None,
+            num_steps=None,
             num_episodes=None,
             render=False):
     """
@@ -14,8 +14,8 @@ def collect(env,
     ExperienceReplay.
     """
 
-    if num_samples is None:
-        num_samples = float('inf')
+    if num_steps is None:
+        num_steps = float('inf')
     if num_episodes is None:
         num_episodes = float('inf')
 
@@ -38,7 +38,7 @@ def collect(env,
             if done:
                 break
             collected_samples += 1
-            if collected_samples >= num_samples:
+            if collected_samples >= num_steps:
                 return collected_samples, collected_samples
         if episode >= num_episodes:
                 return collected_samples, collected_samples
