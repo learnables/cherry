@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from .base import Wrapper
 from .runner_wrapper import Runner
 from .logger_wrapper import Logger
 from .torch_wrapper import Torch

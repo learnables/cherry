@@ -3,8 +3,10 @@
 import numpy as np
 import torch as th
 
-from gym import Wrapper
 from gym.spaces import Discrete
+
+from .base import Wrapper
+
 
 
 class Torch(Wrapper):

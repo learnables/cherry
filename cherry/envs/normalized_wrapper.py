@@ -3,8 +3,9 @@
 import numpy as np
 import cherry as ch
 
-from gym import Wrapper
 from gym.spaces import Box
+
+from .base import Wrapper
 
 """
 Adapted from RLLab by Liyu Chen:
