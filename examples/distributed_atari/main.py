@@ -13,7 +13,6 @@ import torch.nn as nn
 
 import cherry as ch
 import cherry.envs as envs
-import cherry.rollouts as rollouts
 import cherry.rewards as ch_rewards
 
 from statistics import mean
@@ -114,12 +113,12 @@ def run(rank,
 
     logger = None
     env = gym.make(env)
-#    env = make_env(env, seed=seed + rank, rank=0, log_dir='./logs')()
     if rank == 0:
-        logger = env = envs.Logger(env, interval=10000)
+        logger = env = envs.Logger(env, interval=1000)
     env = envs.Atari(env)
     env = envs.ClipReward(env)
     env = envs.Torch(env)
+    env = envs.Runner(env)
     env.seed(seed + rank)
 
     policy = NatureCNN()
@@ -132,24 +131,17 @@ def run(rank,
     total_num_steps = num_steps
     total_steps = 0
     while total_steps < total_num_steps:
-        # We use the rollout collector, but could've written our own
-        num_steps, num_episodes = rollouts.collect(env,
-                                                   get_action,
-                                                   replay,
-                                                   num_steps=5)
+        # Sample some transitions
+        num_steps, num_episodes = env.run(get_action, replay, steps=5)
+
         # Update policy
-        update(replay,
-               optimizer,
-               policy,
-               shared_params,
-               size,
-               barrier,
-               sync=sync,
-               logger=logger)
+        update(replay, optimizer, policy, shared_params, size, barrier,
+               sync=sync, logger=logger)
         replay.empty()
         if rank == 0:
             total_steps += num_steps
 
+    # Save results with randopt
     if rank == 0:
         exp = ro.Experiment('dev', directory='results')
         rewards = logger.all_rewards
@@ -184,7 +176,7 @@ def main(num_workers=2,
             manager.Barrier(num_workers),
             shared_params,
             sync,
-            seed
+            seed,
             )
     if num_workers > 1:
         processes = []

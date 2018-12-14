@@ -39,5 +39,6 @@ def generalized_advantage_estimate(gamma, tau, rewards, dones, values, bootstrap
 
     return discounted, advantages
 
+
 discount = discount_rewards
 gae = generalized_advantage_estimate

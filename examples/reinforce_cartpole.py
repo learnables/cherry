@@ -66,7 +66,6 @@ def update(replay):
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
     env = envs.Logger(env, interval=1000)
-    env = envs.Normalized(env, normalize_reward=True)
     env = envs.Torch(env)
     env.seed(SEED)
 

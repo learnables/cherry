@@ -20,7 +20,6 @@ from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
-import cherry.rollouts as rollouts
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
@@ -84,8 +83,8 @@ def get_action_value(state, policy):
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
     env = envs.Logger(env, interval=1000)
-    env = envs.Normalized(env)
     env = envs.Torch(env)
+    env = envs.Runner(env)
     env.seed(SEED)
 
     policy = ActorCriticNet()
@@ -95,17 +94,19 @@ if __name__ == '__main__':
     get_action = lambda state: get_action_value(state, policy)
 
     for episode in count(1):
-        # We use the rollout collector, but could've written our own
-        num_samples, num_episodes = rollouts.collect(env,
-                                                     get_action,
-                                                     replay,
-                                                     num_episodes=1)
+        # We use the Runner collector, but could've written our own
+        num_samples, num_episodes = env.run(get_action, replay, episodes=1)
+
         # Update policy
         update(replay, optimizer)
         replay.empty()
 
         # Compute termination criterion
         running_reward = running_reward * 0.99 + num_samples * 0.01
+        if episode % 10 == 0:
+            # Should start with 10.41, 12.21, 14.60, then 100:71.30, 200:135.74
+            print(episode, running_reward)
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward, num_samples))
+            break
