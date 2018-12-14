@@ -111,10 +111,9 @@ def run(rank,
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
-    logger = None
     env = gym.make(env)
     if rank == 0:
-        logger = env = envs.Logger(env, interval=1000)
+        env = envs.Logger(env, interval=1000)
     env = envs.Atari(env)
     env = envs.ClipReward(env)
     env = envs.Torch(env)
@@ -136,7 +135,7 @@ def run(rank,
 
         # Update policy
         update(replay, optimizer, policy, shared_params, size, barrier,
-               sync=sync, logger=logger)
+               sync=sync, logger=env)
         replay.empty()
         if rank == 0:
             total_steps += num_steps
@@ -144,8 +143,8 @@ def run(rank,
     # Save results with randopt
     if rank == 0:
         exp = ro.Experiment('dev', directory='results')
-        rewards = logger.all_rewards
-        dones = logger.all_dones
+        rewards = env.all_rewards
+        dones = env.all_dones
         result = mean(rewards[-1000:])
         data = {
                 'rewards': rewards,

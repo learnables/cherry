@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from gym import Wrapper
-
 from statistics import mean, pstdev
+
+from .base import Wrapper
 
 
 class Logger(Wrapper):

@@ -3,6 +3,8 @@
 import gym
 import numpy as np
 
+from .base import Wrapper
+
 """
 Taken from OpenAI's baselines:
 
@@ -32,8 +34,9 @@ THE SOFTWARE.
 """
 
 
-class ClipReward(gym.RewardWrapper):
+class ClipReward(Wrapper, gym.RewardWrapper):
     def __init__(self, env):
+        super(Wrapper, self).__init__(env)
         gym.RewardWrapper.__init__(self, env)
 
     def reward(self, reward):

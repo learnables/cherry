@@ -2,10 +2,12 @@
 
 import numpy as np
 import cv2
-cv2.ocl.setUseOpenCL(False)
 
-from gym import Wrapper
 from gym.spaces import Box
+
+from .base import Wrapper
+
+cv2.ocl.setUseOpenCL(False)
 
 """
 Inspired from OpenAI's baselines:

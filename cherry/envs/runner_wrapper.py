@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import gym
+from .base import Wrapper
 
 
-class Runner(gym.Wrapper):
+class Runner(Wrapper):
 
     def __init__(self, env):
         super(Runner, self).__init__(env)
