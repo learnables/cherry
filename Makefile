@@ -1,7 +1,7 @@
 
 .PHONY: all tests dist
 
-THREAD_PER_PROC=1
+THREAD_PER_PROC=8
 
 all: dist
 
