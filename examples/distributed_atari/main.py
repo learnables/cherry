@@ -20,8 +20,6 @@ from statistics import mean
 from models import NatureCNN
 from utils import copy_params, dist_average
 
-from deep_rl.component.envs import make_env
-
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
@@ -30,7 +28,7 @@ Note: It does not aim to replicate any existing implementation.
 """
 
 GAMMA = 0.99
-USE_GAE = False
+USE_GAE = True
 TAU = 1.0
 V_WEIGHT = 1.0
 ENT_WEIGHT = 0.01
@@ -75,8 +73,8 @@ def update(replay, optimizer, policy, shared_params, size, barrier, sync=True, l
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
-#    dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
-#    copy_params(shared_params, policy.parameters())
+    dist_average(policy.parameters(), shared_params, 1.0 / size, barrier, sync)
+    copy_params(shared_params, policy.parameters())
 
     global NUM_UPDATES
     NUM_UPDATES += 1
@@ -113,7 +111,7 @@ def run(rank,
 
     env = gym.make(env)
     if rank == 0:
-        env = envs.Logger(env, interval=1000)
+        env = envs.Logger(env, interval=5000)
     env = envs.OpenAIAtari(env)
 #    env = envs.Atari(env)
 #    env = envs.ClipReward(env)
@@ -124,19 +122,20 @@ def run(rank,
     policy = NatureCNN()
     copy_params(shared_params, policy.parameters())
 
-    optimizer = optim.Adam(policy.parameters(), lr=LR)
+    optimizer = optim.RMSprop(policy.parameters(), lr=1e-4, alpha=0.99, eps=1e-5)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     total_num_steps = num_steps
     total_steps = 0
+    logger = env if rank == 0 else None
     while total_steps < total_num_steps:
         # Sample some transitions
         num_steps, num_episodes = env.run(get_action, replay, steps=5)
 
         # Update policy
         update(replay, optimizer, policy, shared_params, size, barrier,
-               sync=sync, logger=env)
+               sync=sync, logger=logger)
         replay.empty()
         if rank == 0:
             total_steps += num_steps

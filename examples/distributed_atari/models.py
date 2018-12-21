@@ -24,7 +24,7 @@ class Flatten(nn.Module):
 
 class NatureCNN(nn.Module):
 
-    def __init__(self, num_inputs=4, num_outputs=2, hidden_size=512):
+    def __init__(self, num_inputs=4, num_outputs=6, hidden_size=512):
         super(NatureCNN, self).__init__()
         self.num_inputs = num_inputs
         init_ = lambda m: init(m,
