@@ -1,12 +1,12 @@
 
 .PHONY: all tests dist
 
-THREAD_PER_PROC=8
+THREAD_PER_PROC=1
 
 all: dist
 
 dist:
-	mpirun -n 2 -x MKL_NUM_THREADS=$(THREAD_PER_PROC) python examples/distributed_atari/main.py main --num_steps=10000000
+	mpirun -n 8 python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
 
 ppo:
 	python examples/ppo_pybullet.py
