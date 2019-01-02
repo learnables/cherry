@@ -98,14 +98,14 @@ def main(num_steps=10000000,
          env='PongNoFrameskip-v4',
          seed=1234):
     rank = mpi.rank
-    th.set_num_threads(int(os.environ['MKL_NUM_THREADS']))
+    th.set_num_threads(1)
     random.seed(seed + rank)
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
     env = gym.make(env)
     if rank == 0:
-        env = envs.Logger(env, interval=100)
+        env = envs.Logger(env, interval=5000)
     env = envs.OpenAIAtari(env)
 #    env = envs.Atari(env)
 #    env = envs.ClipReward(env)
@@ -114,7 +114,7 @@ def main(num_steps=10000000,
     env.seed(seed + rank)
 
     policy = NatureCNN(num_outputs=env.action_space.n)
-
+    mpi.broadcast([p.data for p in policy.parameters()])
     optimizer = optim.RMSprop(policy.parameters(), lr=1e-4, alpha=0.99, eps=1e-5)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
