@@ -23,6 +23,12 @@ Upon our first public release, you'll be able to
 pip install cherry-rl
 ```
 
+# Development Guidelines
+
+* The `master` branch is always working, considered stable.
+* The `dev` branch should always work and is ahead of `master`, considered cutting edge.
+* To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
+
 # Usage
 
 The following snippet demonstrates some of the tools offered by cherry.
