@@ -70,7 +70,7 @@ def update(replay, optimizer, policy, logger=None):
     loss = policy_loss + V_WEIGHT * value_loss + ENT_WEIGHT * entropy_loss
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
-    mpi.allreduce([p.grad for p in policy.parameters()])
+#    mpi.allreduce([p.grad for p in policy.parameters()])
     optimizer.step()
 
     global NUM_UPDATES
@@ -116,6 +116,7 @@ def main(num_steps=10000000,
     policy = NatureCNN(num_outputs=env.action_space.n)
     mpi.broadcast([p.data for p in policy.parameters()])
     optimizer = optim.RMSprop(policy.parameters(), lr=1e-4, alpha=0.99, eps=1e-5)
+    optimizer = mpi.Distributed(policy.parameters(), optimizer)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
