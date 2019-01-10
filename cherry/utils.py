@@ -3,11 +3,12 @@
 import sys
 import numpy as np
 import torch as th
-
 import operator
-from functools import reduce
 
-from gym.spaces import Box, Discrete
+from functools import reduce
+from collections import OrderedDict
+
+from gym.spaces import Box, Discrete, Dict
 
 
 EPS = sys.float_info.epsilon
@@ -46,8 +47,13 @@ def flatten_state(space, state):
 
 def get_space_dimension(space):
     msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete)), msg
+    assert isinstance(space, (Box, Discrete, Dict)), msg
     if isinstance(space, Discrete):
         return space.n
     if isinstance(space, Box):
         return reduce(operator.mul, space.shape, 1)
+    if isinstance(space, Dict):
+        dimensions = {
+            k[0]: get_space_dimension(k[1]) for k in space.spaces.items()
+        }
+        return OrderedDict(dimensions)
