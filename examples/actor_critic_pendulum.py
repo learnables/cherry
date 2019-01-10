@@ -11,6 +11,7 @@ from torch.distributions import Normal
 
 import cherry as ch
 import cherry.envs as envs
+import cherry.policies as policies
 from cherry.rewards import discount_rewards
 
 from actor_critic_cartpole import update, get_action_value
@@ -26,17 +27,18 @@ th.manual_seed(SEED)
 
 
 class ActorCriticNet(nn.Module):
-    def __init__(self):
+    def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.affine1 = nn.Linear(3, 128)
-        self.action_head = nn.Linear(128, 1)
+        self.affine1 = nn.Linear(env.state_size, 128)
+        self.action_head = nn.Linear(128, env.action_size)
         self.value_head = nn.Linear(128, 1)
         self.std = th.tensor(0.01, requires_grad=False)
+        self.distribution = policies.ActionDistribution(env, self.std)
 
     def forward(self, x):
         x = th.tanh(self.affine1(x))
         action_scores = th.tanh(self.action_head(x))
-        action_mass = Normal(action_scores, self.std)
+        action_mass = self.distribution(action_scores)
         value = self.value_head(x)
         return action_mass, value
 
@@ -46,9 +48,10 @@ if __name__ == '__main__':
     logger = envs.Logger(env, interval=1000)
     env = envs.Normalized(logger, normalize_reward=True)
     env = envs.Torch(env)
+    env = envs.Runner(env)
     env.seed(SEED)
 
-    policy = ActorCriticNet()
+    policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = ch.ExperienceReplay()

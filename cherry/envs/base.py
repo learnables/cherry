@@ -1,19 +1,8 @@
 #!/usr/bin/env python3
 
-import operator
-from functools import reduce
-
 import gym
-from gym.spaces import Discrete, Box
 
-
-def get_space_dimension(space):
-    msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete)), msg
-    if isinstance(space, Discrete):
-        return space.n
-    if isinstance(space, Box):
-        return reduce(operator.mul, space.shape, 1)
+from cherry.utils import get_space_dimension
 
 
 class Wrapper(gym.Wrapper):
