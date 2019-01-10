@@ -26,7 +26,12 @@ class Torch(Wrapper):
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
             state = np.array([state])
-        return th.from_numpy(state).float().unsqueeze(0)
+        if isinstance(state, dict):
+            state = {k: self._convert_state(state[k]) for k in state}
+            return state
+        if isinstance(state, np.ndarray):
+            return th.from_numpy(state).float().unsqueeze(0)
+        return state
 
     def step(self, action):
         if isinstance(action, th.Tensor):
