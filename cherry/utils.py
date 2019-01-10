@@ -4,6 +4,9 @@ import sys
 import numpy as np
 import torch as th
 
+import operator
+from functools import reduce
+
 from gym.spaces import Box, Discrete
 
 
@@ -39,3 +42,12 @@ def flatten_state(space, state):
     if isinstance(space, Discrete):
         return onehot(state, space.n)
     raise('The space was not recognized.')
+
+
+def get_space_dimension(space):
+    msg = 'Space type not supported.'
+    assert isinstance(space, (Box, Discrete)), msg
+    if isinstance(space, Discrete):
+        return space.n
+    if isinstance(space, Box):
+        return reduce(operator.mul, space.shape, 1)

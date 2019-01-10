@@ -16,12 +16,12 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
+import cherry.policies as policies
 
 SEED = 567
 GAMMA = 0.99
@@ -34,16 +34,17 @@ th.manual_seed(SEED)
 
 
 class ActorCriticNet(nn.Module):
-    def __init__(self):
+    def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.affine1 = nn.Linear(4, 128)
-        self.action_head = nn.Linear(128, 2)
+        self.affine1 = nn.Linear(env.state_size, 128)
+        self.action_head = nn.Linear(128, env.action_size)
         self.value_head = nn.Linear(128, 1)
+        self.distribution = policies.ActionDistribution(env)
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
-        action_mass = Categorical(F.softmax(action_scores, dim=1))
+        action_mass = self.distribution(action_scores)
         value = self.value_head(x)
         return action_mass, value
 
@@ -87,7 +88,7 @@ if __name__ == '__main__':
     env = envs.Runner(env)
     env.seed(SEED)
 
-    policy = ActorCriticNet()
+    policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = ch.ExperienceReplay()
