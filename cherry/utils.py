@@ -28,6 +28,8 @@ def totensor(array):
 
 
 def normalize(tensor):
+    if tensor.numel() <= 1:
+        return tensor
     return (tensor - tensor.mean()) / (tensor.std() + EPS)
 
 
