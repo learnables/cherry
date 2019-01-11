@@ -43,16 +43,15 @@ class ActorCriticNet(nn.Module):
         self.distribution = policies.ActionDistribution(env)
 
     def forward(self, x):
-        x = x['image']
-        x = x.view(-1)
+        x = x['image'].view(-1)
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
-        action_mass = self.distribution(action_scores)
+        action_mass = self.distribution(F.log_softmax(action_scores))
         value = self.value_head(x)
         return action_mass, value
 
 
-def update(replay, optimizer):
+def update(replay, optimizer, policy):
     policy_loss = []
     value_loss = []
 
@@ -85,7 +84,8 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env = gym.make('MiniGrid-Empty-6x6-v0')
+#    env = gym.make('MiniGrid-Empty-6x6-v0')
+    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
     env = envs.Logger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         num_samples, num_episodes = env.run(get_action, replay, episodes=1, render=RENDER)
 
         # Update policy
-        update(replay, optimizer)
+        update(replay, optimizer, policy)
         replay.empty()
 
         # Compute termination criterion
