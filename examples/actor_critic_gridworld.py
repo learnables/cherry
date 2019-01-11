@@ -26,7 +26,7 @@ import cherry.policies as policies
 
 SEED = 567
 GAMMA = 0.99
-RENDER = True
+RENDER = False
 V_WEIGHT = 0.5
 
 random.seed(SEED)
@@ -46,7 +46,7 @@ class ActorCriticNet(nn.Module):
         x = x['image'].view(-1)
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
-        action_mass = self.distribution(F.log_softmax(action_scores))
+        action_mass = self.distribution(F.log_softmax(action_scores, dim=0))
         value = self.value_head(x)
         return action_mass, value
 
@@ -104,6 +104,8 @@ if __name__ == '__main__':
         # Update policy
         update(replay, optimizer, policy)
         replay.empty()
+        if episode > 6400:
+            RENDER = True
 
         # Compute termination criterion
         running_reward = running_reward * 0.99 + num_samples * 0.01

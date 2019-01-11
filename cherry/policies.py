@@ -15,16 +15,19 @@ class ActionDistribution(nn.Module):
     Note: No softmax required after the linear layer of a module.
     """
 
-    def __init__(self, env, cov=1e-2):
+    def __init__(self, env, cov=1e-2, use_probs=False):
         super(ActionDistribution, self).__init__()
         self.env = env
         if isinstance(cov, (float, int)):
             cov = nn.Parameter(T([cov]))
         self.cov = cov
+        self.use_probs = use_probs
         self.is_discrete = isinstance(env.action_space, Discrete)
 
     def forward(self, x):
         if self.is_discrete:
+            if self.use_probs:
+                return Categorical(probs=x)
             return Categorical(logits=x)
         else:
             return Normal(x, self.cov)
