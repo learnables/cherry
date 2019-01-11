@@ -39,12 +39,12 @@ class ActorCriticNet(nn.Module):
         self.affine1 = nn.Linear(env.state_size, 128)
         self.action_head = nn.Linear(128, env.action_size)
         self.value_head = nn.Linear(128, 1)
-        self.distribution = policies.ActionDistribution(env)
+        self.distribution = policies.ActionDistribution(env, use_probs=True)
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
-        action_mass = self.distribution(action_scores)
+        action_mass = self.distribution(F.softmax(action_scores, dim=1))
         value = self.value_head(x)
         return action_mass, value
 
