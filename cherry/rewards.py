@@ -8,10 +8,11 @@ def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
     """
     R = bootstrap
     discounted = []
-    for reward, done in zip(rewards[::-1], dones[::-1]):
-        if done:
+    length = len(rewards)
+    for t in reversed(range(length)):
+        if dones[t]:
             R = 0.0
-        R = reward + gamma * R
+        R = rewards[t] + gamma * R
         discounted.insert(0, R)
     return discounted
 

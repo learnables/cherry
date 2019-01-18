@@ -46,6 +46,7 @@ if __name__ == '__main__':
     logger = envs.Logger(env, interval=1000)
     env = envs.Normalized(logger, normalize_reward=True)
     env = envs.Torch(env)
+    env = envs.Runner(env)
     env.seed(SEED)
 
     policy = ActorCriticNet()

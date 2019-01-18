@@ -64,27 +64,7 @@ class ExperienceReplay(object):
         return self._access_property('dones')
 
     @property
-    def list_states(self):
-        return self.storage['states']
-
-    @property
-    def list_actions(self):
-        return self.storage['actions']
-
-    @property
-    def list_rewards(self):
-        return self.storage['rewards']
-
-    @property
-    def list_next_states(self):
-        return self.storage['next_states']
-
-    @property
-    def list_dones(self):
-        return self.storage['dones']
-
-    @property
-    def list_infos(self):
+    def infos(self):
         return self.storage['infos']
 
     def add(self, state, action, reward, next_state, done, info=None):
