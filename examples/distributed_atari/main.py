@@ -36,23 +36,23 @@ NUM_UPDATES = 0
 
 
 def update(replay, optimizer, policy, logger=None):
-    rewards = replay.list_rewards
-    values = [info['value'] for info in replay.list_infos]
+    rewards = replay.rewards
+    values = [info['value'] for info in replay.infos]
 
     # Discount and normalize rewards
     if USE_GAE:
-        _, next_state_value = policy(replay.list_next_states[-1])
+        _, next_state_value = policy(replay.next_states[-1])
         values += [next_state_value]
         rewards, advantages = ch.rewards.gae(GAMMA,
                                              TAU,
                                              rewards,
-                                             replay.list_dones,
+                                             replay.dones,
                                              values,
                                              bootstrap=values[-2])
     else:
         rewards = ch.rewards.discount(GAMMA,
                                       rewards,
-                                      replay.list_dones,
+                                      replay.dones,
                                       bootstrap=values[-1])
         advantages = [r - v for r, v in zip(rewards, values)]
 
@@ -60,7 +60,7 @@ def update(replay, optimizer, policy, logger=None):
     policy_loss = 0.0
     value_loss = 0.0
     entropy_loss = 0.0
-    for info, reward, adv in zip(replay.list_infos, rewards, advantages):
+    for info, reward, adv in zip(replay.infos, rewards, advantages):
         entropy_loss += - info['entropy']
         policy_loss += -info['log_prob'] * adv.item()
         value_loss += 0.5 * (reward.detach() - info['value']).pow(2)
@@ -104,7 +104,7 @@ def main(num_steps=10000000,
 
     env = gym.make(env)
     if rank == 0:
-        env = envs.Logger(env, interval=5000)
+        env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
 #    env = envs.Atari(env)
 #    env = envs.ClipReward(env)

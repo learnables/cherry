@@ -47,12 +47,12 @@ replay.add(old_state, action, reward, state, done, info = {
         'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
         'value': value
 })
-replay.list_actions  # List of all stored actions
+replay.actions  # Tensor of all stored actions
 replay.states  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
 
 # Discounting and normalizing rewards
-rewards = ch.rewards.discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+rewards = ch.rewards.discount_rewards(GAMMA, replay.rewards, replay.dones)
 rewards = ch.utils.normalize(th.tensor(rewards))
 
 # Sampling rollouts per episode or samples
