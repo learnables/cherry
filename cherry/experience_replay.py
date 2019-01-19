@@ -1,11 +1,30 @@
 #!/usr/bin/env python3
 
+import random
 import torch as th
 
 from cherry.utils import totensor
 
 
-class ExperienceReplay(object):
+class Transition(dict):
+    def __init__(self, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+            self[k] = kwargs[k]
+        self.__attributes = kwargs.keys()
+
+    def __str__(self):
+        name = 'Transition('
+        for k in self.__attributes:
+            name += k + '=' + str(getattr(self, k)) + ', '
+        name += ')'
+        return name
+
+    def __repr__(self):
+        return str(self)
+
+
+class ExperienceReplay(list):
 
     def __init__(self,
                  states=None,
@@ -14,6 +33,7 @@ class ExperienceReplay(object):
                  next_states=None,
                  dones=None,
                  infos=None):
+        list.__init__(self, [])
         self.storage = {
             'states': [] if states is None else states,
             'actions': [] if actions is None else actions,
@@ -30,11 +50,20 @@ class ExperienceReplay(object):
             true_size = true_size[1:]
         return th.cat(values, dim=0).view(len(values), *true_size)
 
+    def __getslice__(self, i, j):
+        return self.__getitem__(slice(i, j))
+
     def __len__(self):
         return len(self.storage['states'])
 
+    def __str__(self):
+        return 'ExperienceReplay(' + str(len(self)) + ')'
+
+    def __repr__(self):
+        return str(self)
+
     def __getitem__(self, key):
-        return {
+        content = {
             'state': self.storage['states'][key],
             'action': self.storage['actions'][key],
             'reward': self.storage['rewards'][key],
@@ -42,6 +71,16 @@ class ExperienceReplay(object):
             'done': self.storage['dones'][key],
             'info': self.storage['infos'][key],
         }
+        if isinstance(key, slice):
+            return ExperienceReplay(
+                states=content['state'][key],
+                actions=content['action'][key],
+                rewards=content['reward'][key],
+                next_states=content['next_state'][key],
+                dones=content['done'][key],
+                infos=content['info'][key],
+            )
+        return Transition(**content)
 
     @property
     def states(self):
@@ -74,6 +113,70 @@ class ExperienceReplay(object):
         self.storage['next_states'].append(totensor(next_state))
         self.storage['dones'].append(totensor(done))
         self.storage['infos'].append(info)
+
+    def sample(self, size=1, contiguous=False, episodes=False):
+        """
+        Samples from the Experience replay.
+
+        Arguments:
+            size: the number of samples.
+            contiguous: whether to sample contiguous transitions.
+            episodes: sample full episodes, instead of transitions.
+
+        Return:
+            ExperienceReplay()
+        """
+        if len(self) < 1 or size < 1:
+            return ExperienceReplay()
+
+        indices = []
+        if episodes:
+            if size > 1 and not contiguous:
+                episodes = [self.sample(1, episodes=True) for _ in range(size)]
+                content = {
+                    'states': sum([e.storage['states'] for e in episodes], []),
+                    'actions': sum([e.storage['actions'] for e in episodes], []),
+                    'rewards': sum([e.storage['rewards'] for e in episodes], []),
+                    'next_states': sum([e.storage['next_states'] for e in episodes], []),
+                    'dones': sum([e.storage['dones'] for e in episodes], []),
+                    'infos': sum([e.storage['infos'] for e in episodes], []),
+                }
+                return ExperienceReplay(**content)
+            else:  # Sample 'size' contiguous episodes
+                num_episodes = self.dones.sum().int().item()
+                end = random.randint(size-1, num_episodes-size)
+                # Find idx of the end-th done
+                count = 0
+                dones = self.dones
+                for idx, d in reversed(list(enumerate(dones))):
+                    if bool(d):
+                        if count >= end:
+                            end_idx = idx
+                            break
+                        count += 1
+                # Fill indices
+                indices.insert(0, end_idx)
+                count = 0
+                for idx in reversed(range(0, end_idx)):
+                    if bool(dones[idx]):
+                        count += 1
+                        if count >= size:
+                            break
+                    indices.insert(0, idx)
+        else:
+            length = len(self) - 1
+            if contiguous:
+                start = random.randint(0, length - size)
+                indices = list(range(start, start + size))
+            else:
+                indices = [random.randint(0, length) for _ in range(size)]
+
+        # Fill the sample
+        sample = ExperienceReplay()
+        for idx in indices:
+            transition = self[idx]
+            sample.add(**transition)
+        return sample
 
     def empty(self):
         self = self.__init__()
