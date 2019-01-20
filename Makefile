@@ -20,5 +20,8 @@ reinforce:
 ac:
 	python examples/actor_critic_cartpole.py
 
+grid:
+	python examples/actor_critic_gridworld.py
+
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
