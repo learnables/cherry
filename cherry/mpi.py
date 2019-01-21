@@ -4,6 +4,7 @@
 Some utilities for using mpi4py with PyTorch tensors.
 """
 
+import signal
 import torch as th
 from torch.optim.optimizer import Optimizer, required
 
@@ -14,6 +15,12 @@ size = comm.Get_size()
 rank = comm.Get_rank()
 
 CUDA_UNSUPPORTED = 'CUDA Tensors are currently unsupported.'
+
+
+# Allow for SIGINT to kill all child processes
+def terminate_mpi(sig, frame):
+    comm.Abort()
+signal.signal(signal.SIGINT, terminate_mpi)
 
 
 def broadcast(tensors, root=0):
