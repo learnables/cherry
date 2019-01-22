@@ -62,6 +62,10 @@ class ExperienceReplay(list):
     def __repr__(self):
         return str(self)
 
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self[i]
+
     def __getitem__(self, key):
         content = {
             'state': self.storage['states'][key],
