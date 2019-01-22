@@ -3,13 +3,13 @@
 
 THREAD_PER_PROC=1
 
-all: dist
+all: ppo
 
 dist:
 	mpirun -n 8 python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
 
 ppo:
-	python examples/ppo_pybullet.py
+	python examples/ppo_pendulum.py
 
 acp:
 	python examples/actor_critic_pendulum.py
