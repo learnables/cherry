@@ -15,11 +15,13 @@ EPS = sys.float_info.epsilon
 
 
 def totensor(array):
+#    if isinstance(array, bool) or isinstance(array, np.bool_):
+#        import pdb; pdb.set_trace()
     if isinstance(array, (int, float)):
         array = [array, ]
     if isinstance(array, list):
         array = np.array(array, dtype=np.float32)
-    if isinstance(array, np.ndarray):
+    if isinstance(array, (np.ndarray, np.bool_)):
         if array.dtype == np.bool_:
             array = array.astype(np.uint8)
         array = th.tensor(array)
