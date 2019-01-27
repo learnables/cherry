@@ -9,7 +9,7 @@ dist:
 	mpirun -n 8 python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
 
 ppo:
-	python examples/ppo_pendulum.py
+	python examples/ppo_cartpole.py
 
 acp:
 	python examples/actor_critic_pendulum.py
