@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
 """
-Simple example of using cherry to solve cartpole with an actor-critic.
-
-The code is an adaptation of the PyTorch reinforcement learning example.
+TODO:
+    * Add clipping objective for the value loss
+    * Clean up code to clone a new ExperienceReplay
+    * Clean up debugging mess
+    * Maybe worth it to have cherry.models that defines commonly used
+      architectures/init/etc for: Atari, Control, ... ?
 """
 
 import ppt
 
-import time
 import random
 import gym
 import numpy as np
@@ -25,17 +27,21 @@ import cherry.envs as envs
 RENDER = False
 RECORD = True
 SEED = 42
+TOTAL_UPDATES = 10000000
+NUM_UPDATES = 0
+LR = 2.5e-4
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 GRAD_NORM = 0.5
-LINEAR_SCHEDULE = True
+LINEAR_SCHEDULE = False
 PPO_CLIP = 0.1
 PPO_EPOCHS = 4
 PPO_STEPS = 2048
 PPO_BSZ = 256
 PPO_CLIP_VALUE = True
+PPO_SCHEDULE_CLIP = True
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -69,7 +75,9 @@ class ActorCriticNet(nn.Module):
             ikostrikov_init(nn.Linear(64, 1)),
         )
 
-        self.action_dist = policies.ActionDistribution(env, use_probs=False, reparam=False)
+        self.action_dist = policies.ActionDistribution(env,
+                                                       use_probs=False,
+                                                       reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -78,7 +86,8 @@ class ActorCriticNet(nn.Module):
         return action_density, value
 
 
-def update(replay, optimizer, policy, env):
+def update(replay, optimizer, policy, env, lr_schedule):
+    global PPO_CLIP, NUM_UPDATES
 
     # GAE
     full_rewards = rewards = replay.rewards
@@ -121,7 +130,6 @@ def update(replay, optimizer, policy, env):
             ratio = th.exp(log_prob - transition.info['log_prob'].detach())
             objective = ratio * transition.info['advantage']
             objective_clipped = ratio.clamp(1.0 - PPO_CLIP, 1.0 + PPO_CLIP) * transition.info['advantage']
-            # TODO: Also compute value loss
             entropy = mass.entropy().sum(-1)
             loss -= th.min(objective, objective_clipped) + ENT_WEIGHT * entropy
             value_loss = (transition.reward - value)**2
@@ -135,6 +143,7 @@ def update(replay, optimizer, policy, env):
             loss = loss + V_WEIGHT * value_loss
         env.log('policy loss', mean(ls).item())
         env.log('policy entropy', mean(ent).item())
+        env.log('ppo clip', PPO_CLIP)
         ppt.plot(mean(ent).item(), 'entropy')
         ppt.plot(mean(ls).item(), 'policy loss')
         ppt.plot(mean(vl).item(), 'value loss')
@@ -145,6 +154,13 @@ def update(replay, optimizer, policy, env):
         loss.backward(retain_graph=True)
         th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
         optimizer.step()
+
+    # Update the parameters on schedule
+    NUM_UPDATES += 1
+    if LINEAR_SCHEDULE:
+        lr_schedule.step()
+    if PPO_SCHEDULE_CLIP:
+        PPO_CLIP = PPO_CLIP * (1.0 - NUM_UPDATES / TOTAL_UPDATES)
 
 
 def get_action_value(state, policy):
@@ -176,17 +192,22 @@ if __name__ == '__main__':
         record_env.seed(SEED)
 
     policy = ActorCriticNet(env)
-    optimizer = optim.RMSprop(policy.parameters(), lr=2.5e-4, eps=1e-5, alpha=0.99)
+    optimizer = optim.RMSprop(policy.parameters(),
+                              lr=LR, eps=1e-5, alpha=0.99)
+    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: LR / (epoch + 1))
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     total_steps = 0
-    while total_steps < 10000000:
+    while total_steps < TOTAL_UPDATES:
         # We use the Runner collector, but could've written our own
-        num_samples, num_episodes = env.run(get_action, replay, steps=PPO_STEPS, render=RENDER)
+        num_samples, num_episodes = env.run(get_action,
+                                            replay,
+                                            steps=PPO_STEPS,
+                                            render=RENDER)
 
         # Update policy
-        update(replay, optimizer, policy, env)
+        update(replay, optimizer, policy, env, lr_schedule)
         replay.empty()
         total_steps += num_samples
 
