@@ -7,6 +7,26 @@ from torch.distributions import Categorical, MultivariateNormal, Normal
 from gym.spaces import Discrete
 
 
+class Reparameterization(object):
+
+    def __init__(self, density):
+        self.density = density
+
+    def sample(self, *args, **kwargs):
+        if self.density.has_rsample:
+            return self.density.rsample(*args, **kwargs)
+        return self.density.sample(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self.density, name)
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return 'Reparameterization(' + str(self.density) + ')'
+
+
 class ActionDistribution(nn.Module):
     """
     A helper module to automatically choose the proper policy distribution,
@@ -15,13 +35,16 @@ class ActionDistribution(nn.Module):
     Note: No softmax required after the linear layer of a module.
     """
 
-    def __init__(self, env, cov=1e-2, use_probs=False):
+    def __init__(self, env, logcov=None, use_probs=False, reparam=True):
         super(ActionDistribution, self).__init__()
         self.env = env
-        if isinstance(cov, (float, int)):
-            cov = nn.Parameter(T([cov]))
-        self.cov = cov
+        if logcov is None:
+            logcov = nn.Parameter(T([0.0] * env.action_size))
+        if isinstance(logcov, (float, int)):
+            logcov = nn.Parameter(T([logcov]))
+        self.logcov = logcov
         self.use_probs = use_probs
+        self.reparam = reparam
         self.is_discrete = isinstance(env.action_space, Discrete)
 
     def forward(self, x):
@@ -30,7 +53,10 @@ class ActionDistribution(nn.Module):
                 return Categorical(probs=x)
             return Categorical(logits=x)
         else:
-            return Normal(x, self.cov)
+            density = Normal(x, self.logcov.exp())
+            if self.reparam:
+                density = Reparameterization(density)
+            return density
 
 
 class CategoricalPolicy(nn.Module):
