@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import cherry as ch
 from .base import Wrapper
 
 
@@ -13,7 +14,7 @@ class Runner(Wrapper):
 
     def run(self,
             get_action,
-            replay,
+            replay=None,
             steps=None,
             episodes=None,
             render=False):
@@ -41,7 +42,8 @@ class Runner(Wrapper):
             if done:
                 collected_episodes += 1
                 state = self.env.reset()
-            replay.add(old_state, action, reward, state, done, info=info)
+            if replay is not None:
+                replay.add(old_state, action, reward, state, done, info=info)
             self._current_state = state
             if render:
                 self.env.render()
