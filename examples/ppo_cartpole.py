@@ -8,6 +8,7 @@ The code is an adaptation of the PyTorch reinforcement learning example.
 
 import ppt
 
+import time
 import random
 import gym
 import numpy as np
@@ -22,16 +23,19 @@ import cherry.policies as policies
 import cherry.envs as envs
 
 RENDER = False
+RECORD = True
 SEED = 42
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 GRAD_NORM = 0.5
+LINEAR_SCHEDULE = True
 PPO_CLIP = 0.1
 PPO_EPOCHS = 4
-PPO_STEPS = 256
-PPO_BSZ = 64
+PPO_STEPS = 2048
+PPO_BSZ = 256
+PPO_CLIP_VALUE = True
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -65,7 +69,7 @@ class ActorCriticNet(nn.Module):
             ikostrikov_init(nn.Linear(64, 1)),
         )
 
-        self.action_dist = policies.ActionDistribution(env, use_probs=False)
+        self.action_dist = policies.ActionDistribution(env, use_probs=False, reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -154,23 +158,38 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v1')
-#    env = gym.make('AntBulletEnv-v0')
+    env_name = 'CartPole-v1'
+    env_name = 'AntBulletEnv-v0'
+    env = gym.make(env_name)
+    env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=2*PPO_STEPS)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
+
+    if RECORD:
+        record_env = gym.make(env_name)
+        record_env = envs.AddTimestep(record_env)
+        record_env = envs.Monitor(record_env, './videos/')
+        record_env = envs.Torch(record_env)
+        record_env = envs.Runner(record_env)
+        record_env.seed(SEED)
 
     policy = ActorCriticNet(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=2.5e-4, eps=1e-5, alpha=0.99)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
-    episode = 0
-    while True:
+    total_steps = 0
+    while total_steps < 10000000:
         # We use the Runner collector, but could've written our own
         num_samples, num_episodes = env.run(get_action, replay, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env)
         replay.empty()
+        total_steps += num_samples
+
+        if RECORD and (total_steps / PPO_STEPS) % 10 == 0:
+            print('Recording')
+            record_env.run(get_action, episodes=3, render=True)
