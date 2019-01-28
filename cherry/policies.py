@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import cherry as ch
 import torch.nn as nn
 from torch import Tensor as T
 from torch.distributions import Categorical, MultivariateNormal, Normal
@@ -35,11 +36,12 @@ class ActionDistribution(nn.Module):
     Note: No softmax required after the linear layer of a module.
     """
 
-    def __init__(self, env, logcov=None, use_probs=False, reparam=True):
+    def __init__(self, env, logcov=None, use_probs=False, reparam=False):
         super(ActionDistribution, self).__init__()
         self.env = env
         if logcov is None:
-            logcov = nn.Parameter(T([0.0] * env.action_size))
+            action_size = ch.utils.get_space_dimension(env.action_space)
+            logcov = nn.Parameter(T([0.0] * action_size))
         if isinstance(logcov, (float, int)):
             logcov = nn.Parameter(T([logcov]))
         self.logcov = logcov

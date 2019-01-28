@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import cherry as ch
 from .base import Wrapper
 
 
