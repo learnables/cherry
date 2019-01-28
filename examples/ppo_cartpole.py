@@ -6,6 +6,8 @@ Simple example of using cherry to solve cartpole with an actor-critic.
 The code is an adaptation of the PyTorch reinforcement learning example.
 """
 
+import ppt
+
 import random
 import gym
 import numpy as np
@@ -20,7 +22,7 @@ import cherry.policies as policies
 import cherry.envs as envs
 
 RENDER = False
-SEED = 1
+SEED = 42
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
@@ -75,7 +77,7 @@ class ActorCriticNet(nn.Module):
 def update(replay, optimizer, policy, env):
 
     # GAE
-    rewards = replay.rewards
+    full_rewards = rewards = replay.rewards
     values = [info['value'] for info in replay.infos]
     _, next_state_value = policy(replay.next_states[-1])
     values += [next_state_value]
@@ -105,25 +107,34 @@ def update(replay, optimizer, policy, env):
         ls = []
         adv = []
         ent = []
+        vl = []
         mean = lambda a: sum(a) / len(a)
         # Compute loss
         loss = 0.0
         for transition in batch_replay:
             mass, value = policy(transition.state)
-            ratio = th.exp(mass.log_prob(transition.action) - transition.info['log_prob'].detach())
+            log_prob = mass.log_prob(transition.action).sum(-1)
+            ratio = th.exp(log_prob - transition.info['log_prob'].detach())
             objective = ratio * transition.info['advantage']
             objective_clipped = ratio.clamp(1.0 - PPO_CLIP, 1.0 + PPO_CLIP) * transition.info['advantage']
             # TODO: Also compute value loss
-            loss -= th.min(objective, objective_clipped) + ENT_WEIGHT * mass.entropy()
+            entropy = mass.entropy().sum(-1)
+            loss -= th.min(objective, objective_clipped) + ENT_WEIGHT * entropy
+            value_loss = (transition.reward - value)**2
             rs.append(ratio)
             obs.append(objective)
             obc.append(objective_clipped)
             ls.append(loss)
-            ent.append(mass.entropy())
+            ent.append(entropy)
             adv.append(transition.info['advantage'])
-            loss += V_WEIGHT * (transition.reward - value)**2
+            vl.append(value_loss)
+            loss = loss + V_WEIGHT * value_loss
         env.log('policy loss', mean(ls).item())
         env.log('policy entropy', mean(ent).item())
+        ppt.plot(mean(ent).item(), 'entropy')
+        ppt.plot(mean(ls).item(), 'policy loss')
+        ppt.plot(mean(vl).item(), 'value loss')
+        ppt.plot(mean(full_rewards).item(), 'rewards')
 
         # Take optimization step
         optimizer.zero_grad()
@@ -136,7 +147,7 @@ def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
     info = {
-        'log_prob': mass.log_prob(action),  # Cache log_prob for later
+        'log_prob': mass.log_prob(action).sum(-1),  # Cache log_prob for later
         'value': value
     }
     return action, info
@@ -145,7 +156,7 @@ def get_action_value(state, policy):
 if __name__ == '__main__':
     env = gym.make('CartPole-v1')
 #    env = gym.make('AntBulletEnv-v0')
-    env = envs.Logger(env, interval=PPO_STEPS)
+    env = envs.Logger(env, interval=2*PPO_STEPS)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
