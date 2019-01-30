@@ -15,8 +15,6 @@ EPS = sys.float_info.epsilon
 
 
 def totensor(array):
-#    if isinstance(array, bool) or isinstance(array, np.bool_):
-#        import pdb; pdb.set_trace()
     if isinstance(array, (int, float)):
         array = [array, ]
     if isinstance(array, list):

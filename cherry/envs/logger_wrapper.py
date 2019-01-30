@@ -85,7 +85,8 @@ class Logger(Wrapper):
         self.num_episodes += steps_stats['num_episodes']
 
         # Overall stats
-        msg = '-' * 50 + '\n'
+        num_logs = len(self.all_rewards) // self.interval
+        msg = '-' * 20 + 'Log ' + str(num_logs) + '-' * 20 + '\n'
         msg += 'Overall:' + '\n'
         msg += '- Steps: ' + str(self.num_steps) + '\n'
         msg += '- Episodes: ' + str(self.num_episodes) + '\n'
