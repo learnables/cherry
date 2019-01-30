@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import torch as th
 import cherry as ch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor as T
 from torch.distributions import Categorical, MultivariateNormal, Normal
 
@@ -36,15 +38,15 @@ class ActionDistribution(nn.Module):
     Note: No softmax required after the linear layer of a module.
     """
 
-    def __init__(self, env, logcov=None, use_probs=False, reparam=False):
+    def __init__(self, env, logstd=None, use_probs=False, reparam=False):
         super(ActionDistribution, self).__init__()
         self.env = env
-        if logcov is None:
+        if logstd is None:
             action_size = ch.utils.get_space_dimension(env.action_space)
-            logcov = nn.Parameter(T([0.0] * action_size))
-        if isinstance(logcov, (float, int)):
-            logcov = nn.Parameter(T([logcov]))
-        self.logcov = logcov
+            logstd = nn.Parameter(th.zeros(action_size))
+        if isinstance(logstd, (float, int)):
+            logstd = nn.Parameter(T([logstd]))
+        self.logstd = logstd
         self.use_probs = use_probs
         self.reparam = reparam
         self.is_discrete = isinstance(env.action_space, Discrete)
@@ -55,7 +57,8 @@ class ActionDistribution(nn.Module):
                 return Categorical(probs=x)
             return Categorical(logits=x)
         else:
-            density = Normal(x, self.logcov.exp())
+            scale = th.zeros_like(self.logstd) + self.logstd
+            density = Normal(loc=x, scale=scale.exp())
             if self.reparam:
                 density = Reparameterization(density)
             return density

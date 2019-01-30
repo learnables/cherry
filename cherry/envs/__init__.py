@@ -10,3 +10,4 @@ from .openai_atari_wrapper import OpenAIAtari
 from .clip_reward_wrapper import ClipReward
 from .timestep_wrapper import AddTimestep
 from .monitor_wrapper import Monitor
+from .openai_normalize_wrapper import OpenAINormalize
