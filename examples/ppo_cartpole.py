@@ -5,6 +5,8 @@ TODO:
     * Add clipping objective for the value loss
     * Clean up code to clone a new ExperienceReplay
     * Clean up debugging mess
+    * Add replay.myattr as a proxy for replay.info['myattr'] (.totensor() if applicable)
+    * Bug in A2C: it seems like I forgot to subtract the value from the advantage.
     * Maybe worth it to have cherry.models that defines commonly used
       architectures/init/etc for: Atari, Control, ... ?
 """
@@ -25,7 +27,7 @@ import cherry.policies as policies
 import cherry.envs as envs
 
 RENDER = False
-RECORD = True
+RECORD = False
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -151,9 +153,17 @@ def update(replay, optimizer, policy, env, lr_schedule):
             ratio = th.exp(log_prob - transition.info['log_prob'].detach())
             objective = ratio * transition.info['advantage']
             objective_clipped = ratio.clamp(1.0 - PPO_CLIP, 1.0 + PPO_CLIP) * transition.info['advantage']
-            policy_loss = th.min(objective, objective_clipped)
+            policy_loss = - th.min(objective, objective_clipped)
             value_loss = 0.5 * (transition.info['return'] - value)**2
-            loss += -policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+
+            if PPO_CLIP_VALUE:
+                old_value = transition.info['value'].detach()
+                clipped_value = old_value + (value - old_value)
+                clipped_value.clamp_(-PPO_CLIP, PPO_CLIP)
+                clipped_loss = 0.5 * (transition.info['return'] - clipped_value)**2
+                value_loss = th.max(value_loss, clipped_loss)
+
+            loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 
             ls.append(policy_loss)
             ent.append(entropy)
