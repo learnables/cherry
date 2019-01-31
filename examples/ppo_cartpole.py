@@ -27,23 +27,21 @@ import cherry.envs as envs
 RENDER = False
 RECORD = True
 SEED = 42
-TOTAL_UPDATES = 10000000
-NUM_UPDATES = 0
+TOTAL_STEPS = 10000000
 LR = 3e-4
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.0
 GRAD_NORM = 0.5
-LINEAR_SCHEDULE = False
+LINEAR_SCHEDULE = True
 PPO_CLIP = 0.2
 PPO_EPOCHS = 10
 PPO_STEPS = 2048
 PPO_BSZ = 64
 PPO_CLIP_VALUE = True
-PPO_SCHEDULE_CLIP = False
 
-OPENAI = False
+OPENAI = True
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -104,8 +102,6 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    global PPO_CLIP, NUM_UPDATES
-
     # GAE
     full_rewards = replay.rewards
     values = [info['value'] for info in replay.infos]
@@ -151,6 +147,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
             mass, value = policy(transition.state)
             entropy = mass.entropy().sum(-1)
             log_prob = mass.log_prob(transition.action).sum(-1)
+
             ratio = th.exp(log_prob - transition.info['log_prob'].detach())
             objective = ratio * transition.info['advantage']
             objective_clipped = ratio.clamp(1.0 - PPO_CLIP, 1.0 + PPO_CLIP) * transition.info['advantage']
@@ -174,18 +171,14 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy entropy', mean(ent).item())
     env.log('value loss', mean(vl).item())
     openai = ' openai' if OPENAI else ''
-    ppt.plot(mean(ls).item(), 'policy cherry' + openai)
-    ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
-    ppt.plot(mean(vl).item(), 'value cherry' + openai)
-    ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
-
+    #ppt.plot(mean(ls).item(), 'policy cherry' + openai)
+    #ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
+    #ppt.plot(mean(vl).item(), 'value cherry' + openai)
+    #ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
 
     # Update the parameters on schedule
-    NUM_UPDATES += 1
     if LINEAR_SCHEDULE:
         lr_schedule.step()
-    if PPO_SCHEDULE_CLIP:
-        PPO_CLIP = PPO_CLIP * (1.0 - NUM_UPDATES / TOTAL_UPDATES)
 
 
 def get_action_value(state, policy):
@@ -199,7 +192,7 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env_name = 'CartPole-v1'
+    env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
@@ -224,17 +217,13 @@ if __name__ == '__main__':
         record_env.seed(SEED)
 
     policy = ActorCriticNet(env)
-    if OPENAI:
-        optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
-    else:
-        optimizer = optim.RMSprop(policy.parameters(),
-                                  lr=LR, eps=1e-5, alpha=0.99)
-    lr_schedule = None
+    optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
+    num_updates = TOTAL_STEPS // PPO_STEPS + 1
+    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
-    total_steps = 0
-    while total_steps < TOTAL_UPDATES:
+    for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
         num_samples, num_episodes = env.run(get_action,
                                             replay,
@@ -244,7 +233,6 @@ if __name__ == '__main__':
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
         replay.empty()
-        total_steps += num_samples
 
-        if RECORD and (total_steps / PPO_STEPS) % 10 == 0:
+        if RECORD and epoch % 10 == 0:
             record_env.run(get_action, episodes=3, render=True)
