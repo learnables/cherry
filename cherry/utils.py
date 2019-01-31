@@ -27,10 +27,10 @@ def totensor(array):
     return array
 
 
-def normalize(tensor):
+def normalize(tensor, epsilon=EPS):
     if tensor.numel() <= 1:
         return tensor
-    return (tensor - tensor.mean()) / (tensor.std() + EPS)
+    return (tensor - tensor.mean()) / (tensor.std() + epsilon)
 
 
 def onehot(x, dim):
