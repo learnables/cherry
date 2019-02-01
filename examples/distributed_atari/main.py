@@ -49,6 +49,8 @@ def update(replay, optimizer, policy, logger=None):
                                              replay.dones,
                                              values,
                                              bootstrap=values[-2])
+        # Testing this new line
+        advantages = [(a - v) for a, v in zip(rewards, values)]
     else:
         rewards = ch.rewards.discount(GAMMA,
                                       rewards,
