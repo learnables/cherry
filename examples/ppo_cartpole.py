@@ -2,10 +2,15 @@
 
 """
 TODO:
-    * Add clipping objective for the value loss
     * Clean up code to clone a new ExperienceReplay
     * Clean up debugging mess
+    * Add network in cherry.models.control
+    * Add useful, efficient methods in algos.ppo
+    * Add hub for trained models.
     * Add replay.myattr as a proxy for replay.info['myattr'] (.totensor() if applicable)
+    * Test for replay save/load
+    * Test for GAE
+    * Test for PPO methods
     * Bug in A2C: it seems like I forgot to subtract the value from the advantage.
     * Maybe worth it to have cherry.models that defines commonly used
       architectures/init/etc for: Atari, Control, ... ?
@@ -39,8 +44,9 @@ GRAD_NORM = 0.5
 LINEAR_SCHEDULE = True
 PPO_CLIP = 0.2
 PPO_EPOCHS = 10
-PPO_STEPS = 2048
 PPO_BSZ = 64
+PPO_NUM_BATCHES = 32
+PPO_STEPS = 2048
 PPO_CLIP_VALUE = True
 
 OPENAI = True
@@ -80,21 +86,22 @@ class ActorCriticNet(nn.Module):
         self.action_dist = policies.ActionDistribution(env,
                                                        use_probs=False,
                                                        reparam=False)
-        # Load debug weights
-        #weights = th.load('./model.pth')
-        #self.actor[0].weight.data.copy_(weights['base.actor.0.weight'])
-        #self.actor[0].bias.data.copy_(weights['base.actor.0.bias'])
-        #self.actor[2].weight.data.copy_(weights['base.actor.2.weight'])
-        #self.actor[2].bias.data.copy_(weights['base.actor.2.bias'])
-        #self.actor[4].weight.data.copy_(weights['dist.fc_mean.weight'])
-        #self.actor[4].bias.data.copy_(weights['dist.fc_mean.bias'])
 
-        #self.critic[0].weight.data.copy_(weights['base.critic.0.weight'])
-        #self.critic[0].bias.data.copy_(weights['base.critic.0.bias'])
-        #self.critic[2].weight.data.copy_(weights['base.critic.2.weight'])
-        #self.critic[2].bias.data.copy_(weights['base.critic.2.bias'])
-        #self.critic[4].weight.data.copy_(weights['base.critic_linear.weight'])
-        #self.critic[4].bias.data.copy_(weights['base.critic_linear.bias'])
+        # Load debug weights
+        weights = th.load('./model.pth')
+        self.actor[0].weight.data.copy_(weights['base.actor.0.weight'])
+        self.actor[0].bias.data.copy_(weights['base.actor.0.bias'])
+        self.actor[2].weight.data.copy_(weights['base.actor.2.weight'])
+        self.actor[2].bias.data.copy_(weights['base.actor.2.bias'])
+        self.actor[4].weight.data.copy_(weights['dist.fc_mean.weight'])
+        self.actor[4].bias.data.copy_(weights['dist.fc_mean.bias'])
+
+        self.critic[0].weight.data.copy_(weights['base.critic.0.weight'])
+        self.critic[0].bias.data.copy_(weights['base.critic.0.bias'])
+        self.critic[2].weight.data.copy_(weights['base.critic.2.weight'])
+        self.critic[2].bias.data.copy_(weights['base.critic.2.bias'])
+        self.critic[4].weight.data.copy_(weights['base.critic_linear.weight'])
+        self.critic[4].bias.data.copy_(weights['base.critic_linear.bias'])
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -109,19 +116,17 @@ def update(replay, optimizer, policy, env, lr_schedule):
     values = [info['value'] for info in replay.infos]
     _, next_state_value = policy(replay.next_states[-1])
     values += [next_state_value]
-    rewards, returns = ch.rewards.gae(GAMMA,
-                                         TAU,
-                                         replay.rewards,
-                                         replay.dones,
-                                         values,
-                                         bootstrap=values[-2])
-    advantages = [(a - v) for a, v in zip(returns, values)]
-    advantages = ch.utils.normalize(ch.utils.totensor(advantages))[0]
+    advantages = ch.rewards.gae(GAMMA,
+                                TAU,
+                                replay.rewards,
+                                replay.dones,
+                                values)
+    returns = [a + v for a, v in zip(advantages, values)]
+    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5)[0]
 
     # Somehow create a new replay with updated rewards (elegant)
     new_replay = ch.ExperienceReplay()
-    for sars, reward, adv, ret in zip(replay, rewards, advantages, returns):
-        sars.reward = reward
+    for sars, adv, ret in zip(replay, advantages, returns):
         sars.info['advantage'] = adv.detach()
         sars.info['return'] = ret.detach()
         new_replay.add(**sars)
@@ -140,51 +145,52 @@ def update(replay, optimizer, policy, env, lr_schedule):
 
     # Perform some optimization steps
     for step in range(PPO_EPOCHS):
-        batch_replay = replay.sample(PPO_BSZ)
+        for batch in range(PPO_NUM_BATCHES):
+            batch_replay = replay.sample(PPO_BSZ)
 
-        # Compute loss
-        loss = 0.0
-        for transition in batch_replay:
+            # Compute loss
+            loss = 0.0
+            for transition in batch_replay:
 
-            mass, value = policy(transition.state)
-            entropy = mass.entropy().sum(-1)
-            log_prob = mass.log_prob(transition.action).sum(-1)
+                mass, value = policy(transition.state)
+                entropy = mass.entropy().sum(-1)
+                log_prob = mass.log_prob(transition.action).sum(-1)
 
-            ratio = th.exp(log_prob - transition.info['log_prob'].detach())
-            objective = ratio * transition.info['advantage']
-            objective_clipped = ratio.clamp(1.0 - PPO_CLIP, 1.0 + PPO_CLIP) * transition.info['advantage']
-            policy_loss = - th.min(objective, objective_clipped)
-            value_loss = 0.5 * (transition.info['return'] - value)**2
+                ratio = th.exp(log_prob - transition.info['log_prob'].detach())
+                objective = ratio * transition.info['advantage']
+                objective_clipped = ratio.clamp(1.0 - PPO_CLIP,
+                                                1.0 + PPO_CLIP) * transition.info['advantage']
+                policy_loss = - th.min(objective, objective_clipped)
+                value_loss = 0.5 * (transition.info['return'] - value)**2
 
-            if PPO_CLIP_VALUE:
-                old_value = transition.info['value'].detach()
-                clipped_value = old_value + (value - old_value)
-                clipped_value.clamp_(-PPO_CLIP, PPO_CLIP)
-                clipped_loss = 0.5 * (transition.info['return'] - clipped_value)**2
-                value_loss = th.max(value_loss, clipped_loss)
+                if PPO_CLIP_VALUE:
+                    old_value = transition.info['value'].detach()
+                    clipped_value = old_value + (value - old_value).clamp(-PPO_CLIP, PPO_CLIP)
+                    clipped_loss = 0.5 * (transition.info['return'] - clipped_value)**2
+                    value_loss = th.max(value_loss, clipped_loss)
 
-            loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+                loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 
-            ls.append(policy_loss)
-            ent.append(entropy)
-            vl.append(value_loss)
+                ls.append(policy_loss)
+                ent.append(entropy)
+                vl.append(value_loss)
 
-        # Take optimization step
-        loss /= len(batch_replay)
-        optimizer.zero_grad()
-        loss.backward()
-        th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
-        optimizer.step()
+            # Take optimization step
+            loss /= len(batch_replay)
+            optimizer.zero_grad()
+            loss.backward()
+            th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
+            optimizer.step()
 
     # Log metrics
     env.log('policy loss', mean(ls).item())
     env.log('policy entropy', mean(ent).item())
     env.log('value loss', mean(vl).item())
     openai = ' openai' if OPENAI else ''
-    #ppt.plot(mean(ls).item(), 'policy cherry' + openai)
-    #ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
-    #ppt.plot(mean(vl).item(), 'value cherry' + openai)
-    #ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
+    ppt.plot(mean(ls).item(), 'policy cherry' + openai)
+    ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
+    ppt.plot(mean(vl).item(), 'value cherry' + openai)
+    ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -205,7 +211,7 @@ if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
-    env = envs.AddTimestep(env)
+#    env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=2*PPO_STEPS)
     if OPENAI:
         env = envs.OpenAINormalize(env)
@@ -241,6 +247,7 @@ if __name__ == '__main__':
                                             render=RENDER)
 
         # Update policy
+#        replay.save('replay_' + str(epoch) + '.pth')
         update(replay, optimizer, policy, env, lr_schedule)
         replay.empty()
 

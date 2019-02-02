@@ -43,19 +43,16 @@ def update(replay, optimizer, policy, logger=None):
     if USE_GAE:
         _, next_state_value = policy(replay.next_states[-1])
         values += [next_state_value]
-        rewards, advantages = ch.rewards.gae(GAMMA,
-                                             TAU,
-                                             rewards,
-                                             replay.dones,
-                                             values,
-                                             bootstrap=values[-2])
-        # Testing this new line
-        advantages = [(a - v) for a, v in zip(rewards, values)]
-    else:
-        rewards = ch.rewards.discount(GAMMA,
-                                      rewards,
-                                      replay.dones,
-                                      bootstrap=values[-1])
+        advantages = ch.rewards.gae(GAMMA,
+                                    TAU,
+                                    rewards,
+                                    replay.dones,
+                                    values)
+    rewards = ch.rewards.discount(GAMMA,
+                                  rewards,
+                                  replay.dones,
+                                  bootstrap=values[-1])
+    if not USE_GAE:
         advantages = [r - v for r, v in zip(rewards, values)]
 
     # Compute losses
