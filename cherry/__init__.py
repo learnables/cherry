@@ -2,8 +2,8 @@
 
 from .experience_replay import ExperienceReplay, Transition
 
-import cherry.rewards as rewards
-import cherry.envs as envs
-import cherry.utils as utils
-import cherry.policies as policies
-import cherry.mpi as mpi
+from . import rewards
+from . import envs
+from . import utils
+from . import policies
+from . import mpi

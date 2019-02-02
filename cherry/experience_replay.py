@@ -2,6 +2,7 @@
 
 import random
 import torch as th
+from torch import Tensor as T
 
 from cherry.utils import totensor
 
@@ -65,6 +66,15 @@ class ExperienceReplay(list):
     def __iter__(self):
         for i in range(len(self)):
             yield self[i]
+
+    def __getattr__(self, attr):
+        name = attr[:-1]
+        values = [info[name] if name in info else None for info in self.infos]
+        if isinstance(values[0], T):
+            size = values[0].size()
+            if all([isinstance(t, T) and t.size() == size for t in values]):
+                return totensor(values).view(len(values), *size)
+        return values
 
     def __getitem__(self, key):
         content = {

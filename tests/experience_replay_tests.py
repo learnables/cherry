@@ -10,6 +10,13 @@ import cherry as ch
 NUM_SAMPLES = 100
 VECTOR_SIZE = 5
 
+"""
+TODO: Tests to add:
+    * save
+    * load
+    * replay.myattr
+"""
+
 
 class TestExperienceReplay(unittest.TestCase):
 
