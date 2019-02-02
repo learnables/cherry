@@ -2,10 +2,6 @@
 
 
 def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
-    """
-    rewards: 0.1119, 0.1131, 0.1142, 0.1154, 0.1165
-    advantages: 0.1120, 0.1132, 0.1143, 0.1155, 0.1166
-    """
     R = bootstrap
     discounted = []
     length = len(rewards)
@@ -17,20 +13,16 @@ def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
     return discounted
 
 
-def generalized_advantage_estimate(gamma, tau, rewards, dones, values):
-    """
-    rewards: 0.1119, 0.1131, 0.1142, 0.1154, 0.1165
-    advantages: -0.1806, -0.1602, -0.1278, -0.1558, -0.0566
-    """
-    msg = 'GAE requires the value of the next state to be appended.'
-    assert len(values) > len(rewards), msg
+def generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value):
+    msg = 'GAE needs as many rewards, values and dones.'
+    assert len(values) == len(rewards) == len(dones), msg
     advantages = []
     advantage = 0
     for i in reversed(range(len(rewards))):
-        td_error = rewards[i] + (1.0 - dones[i]) * gamma * values[i+1] - values[i]
+        td_error = rewards[i] + (1.0 - dones[i]) * gamma * next_value - values[i]
         advantage = advantage * tau * gamma * (1.0 - dones[i]) + td_error
         advantages.insert(0, advantage)
-
+        next_value = values[i]
     return advantages
 
 

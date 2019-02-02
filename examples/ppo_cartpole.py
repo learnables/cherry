@@ -4,9 +4,11 @@
 TODO:
     * Clean up code to clone a new ExperienceReplay
     * Clean up debugging mess
+    * Add enjoy mode
+    * Completely get rid of returns
+    * Add command line argument parsing
     * Add useful, efficient methods in algos.ppo
     * Add hub for trained models.
-    * Add replay.myattr as a proxy for replay.info['myattr'] (.totensor() if applicable)
     * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
     * Test for replay save/load
     * Test for GAE
@@ -92,15 +94,14 @@ class ActorCriticNet(nn.Module):
 def update(replay, optimizer, policy, env, lr_schedule):
     # GAE
     full_rewards = replay.rewards
-    values = [info['value'] for info in replay.infos]
     _, next_state_value = policy(replay.next_states[-1])
-    values += [next_state_value]
     advantages = ch.rewards.gae(GAMMA,
                                 TAU,
                                 replay.rewards,
                                 replay.dones,
-                                values)
-    returns = [a + v for a, v in zip(advantages, values)]
+                                replay.values,
+                                next_state_value)
+    returns = [a + v for a, v in zip(advantages, replay.values)]
     advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5)[0]
 
     # Somehow create a new replay with updated rewards (elegant)
@@ -224,8 +225,6 @@ if __name__ == '__main__':
                                             replay,
                                             steps=PPO_STEPS,
                                             render=RENDER)
-        replay.values
-        import pdb; pdb.set_trace()
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
