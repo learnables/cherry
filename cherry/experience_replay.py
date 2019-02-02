@@ -110,6 +110,13 @@ class ExperienceReplay(list):
     def infos(self):
         return self.storage['infos']
 
+    def save(self, path):
+        th.save(self.storage, path)
+
+    def load(self, path):
+        storage = th.load(path)
+        self.storage = storage
+
     def add(self, state, action, reward, next_state, done, info=None):
         self.storage['states'].append(totensor(state))
         self.storage['actions'].append(totensor(action))
