@@ -224,9 +224,10 @@ if __name__ == '__main__':
                                             replay,
                                             steps=PPO_STEPS,
                                             render=RENDER)
+        replay.values
+        import pdb; pdb.set_trace()
 
         # Update policy
-#        replay.save('replay_' + str(epoch) + '.pth')
         update(replay, optimizer, policy, env, lr_schedule)
         replay.empty()
 
