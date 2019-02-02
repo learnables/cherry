@@ -20,7 +20,13 @@ CUDA_UNSUPPORTED = 'CUDA Tensors are currently unsupported.'
 # Allow for SIGINT to kill all child processes
 def terminate_mpi(sig, frame):
     comm.Abort()
-signal.signal(signal.SIGINT, terminate_mpi)
+
+
+# This kills MPI if it is not used
+if size < 2:
+    MPI.Finalize()
+else:
+    signal.signal(signal.SIGINT, terminate_mpi)
 
 
 def broadcast(tensors, root=0):
