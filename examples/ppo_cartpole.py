@@ -8,6 +8,7 @@ TODO:
     * Add useful, efficient methods in algos.ppo
     * Add hub for trained models.
     * Add replay.myattr as a proxy for replay.info['myattr'] (.totensor() if applicable)
+    * Finish porting OpenAI's normalization scheme.
     * Test for replay save/load
     * Test for GAE
     * Test for PPO methods
@@ -29,6 +30,7 @@ import torch.optim as optim
 
 import cherry as ch
 import cherry.policies as policies
+import cherry.models as models
 import cherry.envs as envs
 
 RENDER = False
@@ -56,32 +58,13 @@ np.random.seed(SEED)
 th.manual_seed(SEED)
 
 
-def ikostrikov_init(module, gain=None):
-    if gain is None:
-        gain = np.sqrt(2.0)
-    nn.init.orthogonal_(module.weight.data, gain=gain)
-    nn.init.constant_(module.bias.data, 0.0)
-    return module
-
-
 class ActorCriticNet(nn.Module):
     def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.actor = nn.Sequential(
-            ikostrikov_init(nn.Linear(env.state_size, 64)),
-            nn.Tanh(),
-            ikostrikov_init(nn.Linear(64, 64)),
-            nn.Tanh(),
-            ikostrikov_init(nn.Linear(64, env.action_size), gain=1.0),
-        )
-
-        self.critic = nn.Sequential(
-            ikostrikov_init(nn.Linear(env.state_size, 64)),
-            nn.Tanh(),
-            ikostrikov_init(nn.Linear(64, 64)),
-            nn.Tanh(),
-            ikostrikov_init(nn.Linear(64, 1)),
-        )
+        self.actor = models.control.Actor(env.state_size,
+                                          env.action_size,
+                                          layer_sizes=[64, 64])
+        self.critic = models.control.ControlMLP(env.state_size, 1)
 
         self.action_dist = policies.ActionDistribution(env,
                                                        use_probs=False,
