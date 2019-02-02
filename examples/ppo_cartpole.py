@@ -4,17 +4,13 @@
 TODO:
     * Clean up code to clone a new ExperienceReplay
     * Clean up debugging mess
-    * Add network in cherry.models.control
     * Add useful, efficient methods in algos.ppo
     * Add hub for trained models.
     * Add replay.myattr as a proxy for replay.info['myattr'] (.totensor() if applicable)
-    * Finish porting OpenAI's normalization scheme.
+    * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
     * Test for replay save/load
     * Test for GAE
     * Test for PPO methods
-    * Bug in A2C: it seems like I forgot to subtract the value from the advantage.
-    * Maybe worth it to have cherry.models that defines commonly used
-      architectures/init/etc for: Atari, Control, ... ?
 """
 
 import ppt
@@ -72,19 +68,19 @@ class ActorCriticNet(nn.Module):
 
         # Load debug weights
         weights = th.load('./model.pth')
-        self.actor[0].weight.data.copy_(weights['base.actor.0.weight'])
-        self.actor[0].bias.data.copy_(weights['base.actor.0.bias'])
-        self.actor[2].weight.data.copy_(weights['base.actor.2.weight'])
-        self.actor[2].bias.data.copy_(weights['base.actor.2.bias'])
-        self.actor[4].weight.data.copy_(weights['dist.fc_mean.weight'])
-        self.actor[4].bias.data.copy_(weights['dist.fc_mean.bias'])
+        self.actor.layers[0].weight.data.copy_(weights['base.actor.0.weight'])
+        self.actor.layers[0].bias.data.copy_(weights['base.actor.0.bias'])
+        self.actor.layers[2].weight.data.copy_(weights['base.actor.2.weight'])
+        self.actor.layers[2].bias.data.copy_(weights['base.actor.2.bias'])
+        self.actor.layers[4].weight.data.copy_(weights['dist.fc_mean.weight'])
+        self.actor.layers[4].bias.data.copy_(weights['dist.fc_mean.bias'])
 
-        self.critic[0].weight.data.copy_(weights['base.critic.0.weight'])
-        self.critic[0].bias.data.copy_(weights['base.critic.0.bias'])
-        self.critic[2].weight.data.copy_(weights['base.critic.2.weight'])
-        self.critic[2].bias.data.copy_(weights['base.critic.2.bias'])
-        self.critic[4].weight.data.copy_(weights['base.critic_linear.weight'])
-        self.critic[4].bias.data.copy_(weights['base.critic_linear.bias'])
+        self.critic.layers[0].weight.data.copy_(weights['base.critic.0.weight'])
+        self.critic.layers[0].bias.data.copy_(weights['base.critic.0.bias'])
+        self.critic.layers[2].weight.data.copy_(weights['base.critic.2.weight'])
+        self.critic.layers[2].bias.data.copy_(weights['base.critic.2.bias'])
+        self.critic.layers[4].weight.data.copy_(weights['base.critic_linear.weight'])
+        self.critic.layers[4].bias.data.copy_(weights['base.critic_linear.bias'])
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -170,10 +166,10 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy entropy', mean(ent).item())
     env.log('value loss', mean(vl).item())
     openai = ' openai' if OPENAI else ''
-    ppt.plot(mean(ls).item(), 'policy cherry' + openai)
-    ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
-    ppt.plot(mean(vl).item(), 'value cherry' + openai)
-    ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
+    #ppt.plot(mean(ls).item(), 'policy cherry' + openai)
+    #ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
+    #ppt.plot(mean(vl).item(), 'value cherry' + openai)
+    #ppt.plot(mean(env.all_rewards[-2048:]), 'rewards cherry' + openai)
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
