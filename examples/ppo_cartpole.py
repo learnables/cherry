@@ -2,13 +2,9 @@
 
 """
 TODO:
-    * Add plotting utilities
     * Add enjoy mode
     * Add command line argument parsing
-    * Add hub for trained models.
     * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
-    * Test for replay save/load
-    * Test for GAE
 """
 
 import random
@@ -42,9 +38,6 @@ PPO_EPOCHS = 10
 PPO_BSZ = 64
 PPO_NUM_BATCHES = 32
 PPO_STEPS = 2048
-PPO_CLIP_VALUE = True
-
-OPENAI = True
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -151,13 +144,7 @@ if __name__ == '__main__':
     env = gym.make(env_name)
 #    env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
-    if OPENAI:
-        env = envs.OpenAINormalize(env)
-    else:
-        env = envs.Normalized(env,
-                              normalize_state=True,
-                              normalize_reward=False,
-                              scale_reward=0.1)
+    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
