@@ -4,7 +4,7 @@ import random
 import torch as th
 from torch import Tensor as T
 
-from cherry.utils import totensor
+from cherry.utils import totensor, min_size
 
 
 class Transition(dict):
@@ -46,9 +46,7 @@ class ExperienceReplay(list):
 
     def _access_property(self, name):
         values = self.storage[name]
-        true_size = values[0].size()
-        while true_size[0] == 1 and len(true_size) > 1:
-            true_size = true_size[1:]
+        true_size = min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
     def __getslice__(self, i, j):
@@ -73,7 +71,8 @@ class ExperienceReplay(list):
         if isinstance(values[0], T):
             size = values[0].size()
             if all([isinstance(t, T) and t.size() == size for t in values]):
-                return totensor(values).view(len(values), *size)
+                true_size = min_size(values[0])
+                return th.cat(values, dim=0).view(len(values), *true_size)
         return values
 
     def __getitem__(self, key):
