@@ -27,6 +27,15 @@ def totensor(array):
     return array
 
 
+def min_size(tensor):
+    true_size = tensor.size()
+    if len(true_size) < 1:
+        return (1, )
+    while true_size[0] == 1 and len(true_size) > 1:
+        true_size = true_size[1:]
+    return true_size
+
+
 def normalize(tensor, epsilon=EPS):
     if tensor.numel() <= 1:
         return tensor

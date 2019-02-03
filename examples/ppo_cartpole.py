@@ -2,9 +2,7 @@
 
 """
 TODO:
-    * Clean up debugging mess
     * Add plotting utilities
-    * Fix replay.myattr to have the right dimensions
     * Add enjoy mode
     * Add command line argument parsing
     * Add hub for trained models.
@@ -12,8 +10,6 @@ TODO:
     * Test for replay save/load
     * Test for GAE
 """
-
-import ppt
 
 import random
 import gym
@@ -30,7 +26,6 @@ import cherry.models as models
 import cherry.envs as envs
 from cherry.algorithms import ppo
 
-USE_VECTORIZED = True
 RENDER = False
 RECORD = False
 SEED = 42
@@ -86,7 +81,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
                                 next_state_value)
 
     rewards = [a + v for a, v in zip(advantages, replay.values)]
-    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5)[0]
+    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5).view(-1, 1)
 
     replay.update(lambda i, sars: {
         'reward': rewards[i].detach(),
@@ -95,11 +90,10 @@ def update(replay, optimizer, policy, env, lr_schedule):
         },
     })
 
-    # Debug stuff
-    ls = []
-    ent = []
-    vl = []
-    values = []
+    # Logging
+    policy_losses = []
+    entropies = []
+    value_losses = []
     mean = lambda a: sum(a) / len(a)
 
     # Perform some optimization steps
@@ -112,11 +106,11 @@ def update(replay, optimizer, policy, env, lr_schedule):
             new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
             entropy = masses.entropy().sum(-1).mean()
             policy_loss = ppo.policy_loss(new_log_probs,
-                                          batch.log_probs.detach(),
-                                          batch.advantages.view(-1, 1),
+                                          batch.log_probs,
+                                          batch.advantages,
                                           clip=PPO_CLIP)
             value_loss = ppo.value_loss(values,
-                                        batch.values.view(-1, 1).detach(),
+                                        batch.values.detach(),
                                         batch.rewards,
                                         clip=PPO_CLIP)
             loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
@@ -127,14 +121,14 @@ def update(replay, optimizer, policy, env, lr_schedule):
             th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
             optimizer.step()
 
-            ls.append(policy_loss)
-            ent.append(entropy)
-            vl.append(value_loss)
+            policy_losses.append(policy_loss)
+            entropies.append(entropy)
+            value_losses.append(value_loss)
 
     # Log metrics
-    env.log('policy loss', mean(ls).item())
-    env.log('policy entropy', mean(ent).item())
-    env.log('value loss', mean(vl).item())
+    env.log('policy loss', mean(policy_losses).item())
+    env.log('policy entropy', mean(entropies).item())
+    env.log('value loss', mean(value_losses).item())
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -145,8 +139,8 @@ def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
     info = {
-        'log_prob': mass.log_prob(action).sum(-1),
-        'value': value
+        'log_prob': mass.log_prob(action).sum(-1).detach(),
+        'value': value,
     }
     return action, info
 
@@ -170,8 +164,9 @@ if __name__ == '__main__':
 
     if RECORD:
         record_env = gym.make(env_name)
-        record_env = envs.AddTimestep(record_env)
+#        record_env = envs.AddTimestep(record_env)
         record_env = envs.Monitor(record_env, './videos/')
+        record_env = envs.OpenAINormalize(record_env)
         record_env = envs.Torch(record_env)
         record_env = envs.Runner(record_env)
         record_env.seed(SEED)
