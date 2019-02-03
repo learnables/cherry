@@ -3,6 +3,10 @@
 """
 TODO:
     * Clean up debugging mess
+    * Add plotting utilities
+    * Solve the difference between vectorized and not.
+    * Weird: if you process samples individually vs in batch, the logprobs are slightly different. -> due to using float32. Is double more stable ?
+    * Remove useless +logstd
     * Add enjoy mode
     * Add command line argument parsing
     * Add useful, efficient methods in algos.ppo
@@ -28,7 +32,9 @@ import cherry as ch
 import cherry.policies as policies
 import cherry.models as models
 import cherry.envs as envs
+from cherry.algorithms import ppo
 
+USE_VECTORIZED = True
 RENDER = False
 RECORD = False
 SEED = 42
@@ -109,50 +115,74 @@ def update(replay, optimizer, policy, env, lr_schedule):
     })
 
     # Debug stuff
-    rs = []
-    obs = []
-    obc = []
     ls = []
-    adv = []
     ent = []
     vl = []
-    ret = []
     mean = lambda a: sum(a) / len(a)
 
     # Perform some optimization steps
     for step in range(PPO_EPOCHS):
-        for batch in range(PPO_NUM_BATCHES):
-            batch_replay = replay.sample(PPO_BSZ)
+        for mb in range(PPO_NUM_BATCHES):
+            batch = replay.sample(PPO_BSZ)
 
-            # Compute loss
-            loss = 0.0
-            for transition in batch_replay:
+            
+            if USE_VECTORIZED:
+            # Vectorized version
 
-                mass, value = policy(transition.state)
-                entropy = mass.entropy().sum(-1)
-                log_prob = mass.log_prob(transition.action).sum(-1)
-
-                ratio = th.exp(log_prob - transition.info['log_prob'].detach())
-                objective = ratio * transition.info['advantage']
-                objective_clipped = ratio.clamp(1.0 - PPO_CLIP,
-                                                1.0 + PPO_CLIP) * transition.info['advantage']
-                policy_loss = - th.min(objective, objective_clipped)
-                value_loss = 0.5 * (transition.reward - value)**2
-
-                if PPO_CLIP_VALUE:
-                    old_value = transition.info['value'].detach()
-                    clipped_value = old_value + (value - old_value).clamp(-PPO_CLIP, PPO_CLIP)
-                    clipped_loss = 0.5 * (transition.reward - clipped_value)**2
-                    value_loss = th.max(value_loss, clipped_loss)
-
-                loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
-
+                masses, values = policy(batch.states)
+                # Compute losses
+                new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
+                entropy = masses.entropy().sum(-1).mean()
+                policy_loss = ppo.policy_loss(new_log_probs,
+                                                  batch.log_probs,
+                                                  batch.advantages,
+                                                  clip=PPO_CLIP)
+                value_loss = ppo.value_loss(values,
+                                                batch.values.view(-1, 1),
+                                                batch.rewards,
+                                                clip=PPO_CLIP)
+                loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
                 ls.append(policy_loss)
                 ent.append(entropy)
                 vl.append(value_loss)
+            else:
+                # Non-vectorized version
+                loss = 0.0
+                lp = []
+                ratios = []
+                ms = []
+                for transition in batch:
+
+                    mass, value = policy(transition.state)
+                    ms.append(mass)
+                    entropy = mass.entropy().sum(-1)
+                    log_prob = mass.log_prob(transition.action).sum(-1)
+                    lp.append(log_prob.item())
+
+                    # Compute clipped policy loss
+                    ratio = th.exp(log_prob - transition.info['log_prob'].detach())
+                    ratios.append(ratio.item())
+                    objective = ratio * transition.info['advantage']
+                    objective_clipped = ratio.clamp(1.0 - PPO_CLIP,
+                                                    1.0 + PPO_CLIP) * transition.info['advantage']
+                    policy_loss = - th.min(objective, objective_clipped)
+
+                    # Compute clipped value loss
+                    value_loss = 0.5 * (transition.reward - value)**2
+                    if PPO_CLIP_VALUE:
+                        old_value = transition.info['value'].detach()
+                        clipped_value = old_value + (value - old_value).clamp(-PPO_CLIP, PPO_CLIP)
+                        clipped_loss = 0.5 * (transition.reward - clipped_value)**2
+                        value_loss = th.max(value_loss, clipped_loss)
+
+                    loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+
+                    ls.append(policy_loss)
+                    ent.append(entropy)
+                    vl.append(value_loss)
+                loss /= len(batch)
 
             # Take optimization step
-            loss /= len(batch_replay)
             optimizer.zero_grad()
             loss.backward()
             th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
@@ -162,7 +192,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy loss', mean(ls).item())
     env.log('policy entropy', mean(ent).item())
     env.log('value loss', mean(vl).item())
-    openai = ' openai' if OPENAI else ''
+#    openai = ' openai' if OPENAI else ''
     #ppt.plot(mean(ls).item(), 'policy cherry' + openai)
     #ppt.plot(mean(ent).item(), 'entropy cherry' + openai)
     #ppt.plot(mean(vl).item(), 'value cherry' + openai)
