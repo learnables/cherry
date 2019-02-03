@@ -232,6 +232,7 @@ class SoftActorCritic():
 
         ''' Calculate Policy Loss '''
 
+        policy_loss = 0
         for transition in batch:
             policy_loss += (alpha*log_pi[transition] - q_next_step)
 
