@@ -56,8 +56,7 @@ class ActionDistribution(nn.Module):
                 return Categorical(probs=x)
             return Categorical(logits=x)
         else:
-            scale = th.zeros_like(self.logstd) + self.logstd
-            density = Normal(loc=x, scale=scale.exp())
+            density = Normal(loc=x, scale=self.logstd.exp())
             if self.reparam:
                 density = Reparameterization(density)
             return density
