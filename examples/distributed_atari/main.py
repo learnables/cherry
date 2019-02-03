@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import gym
 import numpy as np
@@ -22,34 +21,34 @@ from models import NatureCNN
 This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
 
-Note: It does not aim to replicate any existing implementation.
+TODO:
+    * for last 1000 steps, the reward count and lengths are off.
 """
 
 GAMMA = 0.99
-USE_GAE = True
-TAU = 1.0
-V_WEIGHT = 1.0
+USE_GAE = False
+TAU = 0.95
+V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 LR = 1e-4
 GRAD_NORM = 5.0
 NUM_UPDATES = 0
 
 
-def update(replay, optimizer, policy, logger=None):
-    rewards = replay.rewards
+def update(replay, optimizer, policy, env=None):
     values = [info['value'] for info in replay.infos]
 
     # Discount and normalize rewards
     if USE_GAE:
         _, next_state_value = policy(replay.next_states[-1])
-        values += [next_state_value]
         advantages = ch.rewards.gae(GAMMA,
                                     TAU,
-                                    rewards,
+                                    replay.rewards,
                                     replay.dones,
-                                    values)
+                                    replay.values,
+                                    next_state_value)
     rewards = ch.rewards.discount(GAMMA,
-                                  rewards,
+                                  replay.rewards,
                                   replay.dones,
                                   bootstrap=values[-1])
     if not USE_GAE:
@@ -62,7 +61,7 @@ def update(replay, optimizer, policy, logger=None):
     for info, reward, adv in zip(replay.infos, rewards, advantages):
         entropy_loss += - info['entropy']
         policy_loss += -info['log_prob'] * adv.item()
-        value_loss += 0.5 * (reward.detach() - info['value']).pow(2)
+        value_loss += 0.5 * (reward.detach() - info['value'])**2
 
     # Take optimization step
     optimizer.zero_grad()
@@ -73,11 +72,11 @@ def update(replay, optimizer, policy, logger=None):
 
     global NUM_UPDATES
     NUM_UPDATES += 1
-    if logger is not None:
-        logger.log('policy loss', policy_loss.item())
-        logger.log('value loss', value_loss.item())
-        logger.log('entropy', entropy_loss.item())
-        logger.log('num updates', NUM_UPDATES)
+    if env is not None:
+        env.log('policy loss', policy_loss.item())
+        env.log('value loss', value_loss.item())
+        env.log('entropy', entropy_loss.item())
+        env.log('num updates', NUM_UPDATES)
 
 
 def get_action_value(state, policy):
@@ -105,13 +104,12 @@ def main(num_steps=10000000,
     if rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
-#    env = envs.Atari(env)
-#    env = envs.ClipReward(env)
+    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(seed + rank)
 
-    policy = NatureCNN(num_outputs=env.action_space.n)
+    policy = NatureCNN(num_outputs=env.action_size)
     optimizer = optim.RMSprop(policy.parameters(), lr=1e-4, alpha=0.99, eps=1e-5)
     optimizer = mpi.Distributed(policy.parameters(), optimizer)
     replay = ch.ExperienceReplay()
@@ -119,13 +117,12 @@ def main(num_steps=10000000,
 
     total_num_steps = num_steps
     total_steps = 0
-    logger = env if rank == 0 else None
     while total_steps < total_num_steps:
         # Sample some transitions
         num_steps, num_episodes = env.run(get_action, replay, steps=5)
 
         # Update policy
-        update(replay, optimizer, policy, logger=logger)
+        update(replay, optimizer, policy, env=env)
         replay.empty()
         if rank == 0:
             total_steps += num_steps

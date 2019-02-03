@@ -11,6 +11,9 @@ class Runner(Wrapper):
         self._needs_reset = True
         self._current_state = None
 
+    def reset(self, *args, **kwargs):
+        return self.env.reset(*args, **kwargs)
+
     def run(self,
             get_action,
             replay=None,
