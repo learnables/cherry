@@ -96,7 +96,7 @@ class OpenAINormalize(Wrapper):
     def step(self, action):
         state, reward, done, info = self.env.step(action)
         self.ret = self.gamma * self.ret + reward
-        state = self._obfilt(state.reshape(1, -1))[0]
+        state = self._obfilt(state)
         if self.ret_rms:
             reward = np.array([[reward]])
             self.ret_rms.update(self.ret)
