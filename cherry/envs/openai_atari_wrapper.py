@@ -205,8 +205,13 @@ class FrameStack_(Wrapper):
 
     def reset(self):
         ob = self.env.reset()
-        for _ in range(self.k):
-            self.frames.append(ob)
+        for _ in range(self.k-1):
+            self.frames.append(ob*0.0)
+        self.frames.append(ob)
+        # The above is similar to ikostrikov's implementation
+        # Below initializes everything with the same initial frame
+        # for _ in range(self.k):
+        #     self.frames.append(ob)
         return self._get_ob()
 
     def step(self, action):

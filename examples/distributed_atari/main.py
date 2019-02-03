@@ -33,6 +33,7 @@ ENT_WEIGHT = 0.01
 LR = 1e-4
 GRAD_NORM = 5.0
 NUM_UPDATES = 0
+A2C_STEPS = 5
 
 
 def update(replay, optimizer, policy, env=None):
@@ -66,6 +67,7 @@ def update(replay, optimizer, policy, env=None):
     # Take optimization step
     optimizer.zero_grad()
     loss = policy_loss + V_WEIGHT * value_loss + ENT_WEIGHT * entropy_loss
+    loss /= len(rewards)
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
@@ -104,7 +106,6 @@ def main(num_steps=10000000,
     if rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
-    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(seed + rank)
@@ -117,9 +118,10 @@ def main(num_steps=10000000,
 
     total_num_steps = num_steps
     total_steps = 0
+    env.seed(1234)
     while total_steps < total_num_steps:
         # Sample some transitions
-        num_steps, num_episodes = env.run(get_action, replay, steps=5)
+        num_steps, num_episodes = env.run(get_action, replay, steps=A2C_STEPS)
 
         # Update policy
         update(replay, optimizer, policy, env=env)
