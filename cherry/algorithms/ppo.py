@@ -11,7 +11,7 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
 
 
 def value_loss(new_values, old_values, rewards, clip=0.1):
-    loss = (rewards - new_values).pow(2).mul(0.5).mean()
+    loss = (rewards - new_values)**2
     clipped_values = old_values + (new_values - old_values).clamp(-clip, clip)
-    clipped_loss = (rewards - clipped_values).pow(2).mul(0.5).mean()
-    return th.max(loss, clipped_loss)
+    clipped_loss = (rewards - clipped_values)**2
+    return 0.5 * th.max(loss, clipped_loss).mean()

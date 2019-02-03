@@ -140,7 +140,7 @@ class TestExperienceReplay(unittest.TestCase):
                                 vector,
                                 random.choice([False, True]),
                                 info={'vector': vector, 'id': count})
-            for _ in range(50):
+            for _ in range(30):
                 # Test default arguments
                 sample = self.replay.sample()
                 self.assertEqual(len(sample), 1)
@@ -174,6 +174,6 @@ class TestExperienceReplay(unittest.TestCase):
                     num_sampled_episodes = sample.dones.sum().int().item()
                     self.assertEqual(num_sampled_episodes, num_episodes)
                     for i, sars in enumerate(sample[:-1]):
-                        self.assertTrue(not sample[i].done)
-                        self.assertEqual(sample[i]['info']['id']+1,
-                                         sample[i+1]['info']['id'])
+                        if not sample[i].done:
+                            self.assertEqual(sample[i]['info']['id']+1,
+                                             sample[i+1]['info']['id'])
