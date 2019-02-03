@@ -25,3 +25,7 @@ grid:
 
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+
+publish:
+	python setup.py sdist
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
