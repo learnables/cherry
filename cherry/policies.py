@@ -3,7 +3,6 @@
 import torch as th
 import cherry as ch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch import Tensor as T
 from torch.distributions import Categorical, MultivariateNormal, Normal
 
