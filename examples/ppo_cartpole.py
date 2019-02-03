@@ -2,10 +2,8 @@
 
 """
 TODO:
-    * Clean up code to clone a new ExperienceReplay
     * Clean up debugging mess
     * Add enjoy mode
-    * Completely get rid of returns
     * Add command line argument parsing
     * Add useful, efficient methods in algos.ppo
     * Add hub for trained models.
@@ -93,7 +91,6 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     # GAE
-    full_rewards = replay.rewards
     _, next_state_value = policy(replay.next_states[-1])
     advantages = ch.rewards.gae(GAMMA,
                                 TAU,
@@ -101,16 +98,15 @@ def update(replay, optimizer, policy, env, lr_schedule):
                                 replay.dones,
                                 replay.values,
                                 next_state_value)
-    returns = [a + v for a, v in zip(advantages, replay.values)]
+    rewards = [a + v for a, v in zip(advantages, replay.values)]
     advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5)[0]
 
-    # Somehow create a new replay with updated rewards (elegant)
-    new_replay = ch.ExperienceReplay()
-    for sars, adv, ret in zip(replay, advantages, returns):
-        sars.info['advantage'] = adv.detach()
-        sars.info['return'] = ret.detach()
-        new_replay.add(**sars)
-    replay = new_replay
+    replay.update(lambda i, sars: {
+        'reward': rewards[i].detach(),
+        'info': {
+            'advantage': advantages[i].detach()
+        },
+    })
 
     # Debug stuff
     rs = []
@@ -141,12 +137,12 @@ def update(replay, optimizer, policy, env, lr_schedule):
                 objective_clipped = ratio.clamp(1.0 - PPO_CLIP,
                                                 1.0 + PPO_CLIP) * transition.info['advantage']
                 policy_loss = - th.min(objective, objective_clipped)
-                value_loss = 0.5 * (transition.info['return'] - value)**2
+                value_loss = 0.5 * (transition.reward - value)**2
 
                 if PPO_CLIP_VALUE:
                     old_value = transition.info['value'].detach()
                     clipped_value = old_value + (value - old_value).clamp(-PPO_CLIP, PPO_CLIP)
-                    clipped_loss = 0.5 * (transition.info['return'] - clipped_value)**2
+                    clipped_loss = 0.5 * (transition.reward - clipped_value)**2
                     value_loss = th.max(value_loss, clipped_loss)
 
                 loss += policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss

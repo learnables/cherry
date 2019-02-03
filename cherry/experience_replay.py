@@ -135,6 +135,20 @@ class ExperienceReplay(list):
         self.storage['dones'].append(totensor(done))
         self.storage['infos'].append(info)
 
+    def update(self, fn):
+        infos = self.storage['infos']
+        attributes = ['state', 'action', 'reward', 'next_state', 'done']
+        for i, sars in enumerate(self):
+            update = fn(i, sars)
+            for attr in update:
+                if attr == 'info':
+                    for info_name in update[attr]:
+                        infos[i][info_name] = update['info'][info_name]
+                elif attr in attributes:
+                    self.storage[attr + 's'][i] = update[attr]
+                else:
+                    raise Exception('Update not properly formatted.')
+
     def sample(self, size=1, contiguous=False, episodes=False):
         """
         Samples from the Experience replay.
