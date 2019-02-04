@@ -11,8 +11,8 @@ import torch.nn as nn
 import cherry as ch
 import cherry.envs as envs
 import cherry.mpi as mpi
-
-from models import NatureCNN
+import cherry.policies as policies
+from cherry.models import atari
 
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
@@ -25,8 +25,27 @@ TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 LR = 7e-4
-GRAD_NORM = 5.0
+GRAD_NORM = 0.5
 A2C_STEPS = 5
+
+
+class NatureCNN(nn.Module):
+
+    def __init__(self, env, hidden_size=512):
+        super(NatureCNN, self).__init__()
+        self.input_size = 4
+        self.features = atari.NatureFeatures(self.input_size, hidden_size)
+        self.critic = atari.NatureCritic(hidden_size)
+        self.actor = atari.NatureActor(hidden_size, env.action_size)
+        self.action_dist = policies.ActionDistribution(env, use_probs=False)
+
+    def forward(self, x):
+        x = x.view(-1, self.input_size, 84, 84).mul(1 / 255.0)
+        features = self.features(x)
+        value = self.critic(features)
+        density = self.actor(features)
+        mass = self.action_dist(density)
+        return mass, value
 
 
 def update(replay, optimizer, policy, env):
@@ -92,7 +111,7 @@ def main(num_steps=10000000,
     env = envs.Runner(env)
     env.seed(seed + mpi.rank)
 
-    policy = NatureCNN(num_outputs=env.action_size)
+    policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
     optimizer = mpi.Distributed(policy.parameters(), optimizer)
     replay = ch.ExperienceReplay()
@@ -114,3 +133,4 @@ def main(num_steps=10000000,
 
 if __name__ == '__main__':
     main()
+
