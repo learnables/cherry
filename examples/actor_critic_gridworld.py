@@ -56,11 +56,11 @@ def update(replay, optimizer, policy):
     value_loss = []
 
     # Discount and normalize rewards
-    rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
     rewards = normalize(th.tensor(rewards))
 
     # Compute losses
-    for info, reward in zip(replay.list_infos, rewards):
+    for info, reward in zip(replay.infos, rewards):
         log_prob = info['log_prob']
         value = info['value']
         policy_loss.append(-log_prob * (reward - value.item()))
