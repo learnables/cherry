@@ -6,7 +6,11 @@ THREAD_PER_PROC=1
 all: dist
 
 dist:
-	python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
+	mpirun -np 8 \
+	       --oversubscribe \
+	       -x OMP_NUM_THREADS=1 \
+	       -x MKL_NUM_THREADS=1 \
+	       python examples/distributed_atari/main.py
 
 ppo:
 	python examples/ppo_pybullet.py

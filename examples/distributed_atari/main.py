@@ -3,7 +3,6 @@
 import random
 import gym
 import numpy as np
-import randopt as ro
 
 import torch as th
 import torch.optim as optim
@@ -12,7 +11,6 @@ import torch.nn as nn
 import cherry as ch
 import cherry.envs as envs
 import cherry.mpi as mpi
-
 
 from models import NatureCNN
 
@@ -31,7 +29,7 @@ GRAD_NORM = 5.0
 A2C_STEPS = 5
 
 
-def update(replay, optimizer, policy, env=None):
+def update(replay, optimizer, policy, env):
     # Compute advantages
     _, next_state_value = policy(replay.next_states[-1])
     if USE_GAE:
@@ -61,7 +59,7 @@ def update(replay, optimizer, policy, env=None):
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
 
-    if env is not None:
+    if mpi.rank == 0:
         env.log('policy loss', policy_loss.item())
         env.log('value loss', value_loss.item())
         env.log('entropy', entropy.item())
@@ -78,23 +76,21 @@ def get_action_value(state, policy):
     return action, info
 
 
-@ro.cli
 def main(num_steps=10000000,
          env='PongNoFrameskip-v4',
          seed=1234):
-    rank = mpi.rank
     th.set_num_threads(1)
-    random.seed(seed + rank)
-    th.manual_seed(seed + rank)
-    np.random.seed(seed + rank)
+    random.seed(seed + mpi.rank)
+    th.manual_seed(seed + mpi.rank)
+    np.random.seed(seed + mpi.rank)
 
     env = gym.make(env)
-    if rank == 0:
+    if mpi.rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
-    env.seed(seed + rank)
+    env.seed(seed + mpi.rank)
 
     policy = NatureCNN(num_outputs=env.action_size)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
@@ -102,23 +98,19 @@ def main(num_steps=10000000,
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
-    total_num_steps = num_steps
-    total_steps = 0
-    env.seed(1234)
-    while total_steps < total_num_steps:
+    for step in range(num_steps // A2C_STEPS + 1):
         # Sample some transitions
         num_steps, num_episodes = env.run(get_action, replay, steps=A2C_STEPS)
 
         # Update policy
         update(replay, optimizer, policy, env=env)
         replay.empty()
-        if rank == 0:
-            total_steps += num_steps
 
-    if rank == 0:
+    if mpi.rank == 0:
         # Kill all MPI processes
+        mpi.terminate_mpi()
         mpi.comm.Abort()
 
 
 if __name__ == '__main__':
-    ro.parse()
+    main()

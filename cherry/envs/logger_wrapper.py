@@ -108,7 +108,6 @@ class Logger(Wrapper):
         for key in self.values.keys():
             msg += '- Mean ' + key + ': ' + '%.2f' % mean(steps_stats[key]) 
             msg += ' +/- ' + '%.2f' % pstdev(steps_stats[key]) + '\n'
-        import pdb; pdb.set_trace()
         return msg
 
     def reset(self, *args, **kwargs):
