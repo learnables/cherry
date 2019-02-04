@@ -61,20 +61,6 @@ class NatureCNN(nn.Module):
 
         self.train()
 
-        weights = th.load('./model.pth')
-        self.features[0].weight.data.copy_(weights['base.main.0.weight'])
-        self.features[0].bias.data.copy_(weights['base.main.0.bias'])
-        self.features[2].weight.data.copy_(weights['base.main.2.weight'])
-        self.features[2].bias.data.copy_(weights['base.main.2.bias'])
-        self.features[4].weight.data.copy_(weights['base.main.4.weight'])
-        self.features[4].bias.data.copy_(weights['base.main.4.bias'])
-        self.features[7].weight.data.copy_(weights['base.main.7.weight'])
-        self.features[7].bias.data.copy_(weights['base.main.7.bias'])
-        self.critic_linear.weight.data.copy_(weights['base.critic_linear.weight'])
-        self.critic_linear.bias.data.copy_(weights['base.critic_linear.bias'])
-        self.actor_linear.weight.data.copy_(weights['dist.linear.weight'])
-        self.actor_linear.bias.data.copy_(weights['dist.linear.bias'])
-
     def forward(self, inputs):
         # Inputs should be 1, 4, 84, 84 for a single state
         inputs = inputs.view(-1, self.num_inputs, 84, 84)
