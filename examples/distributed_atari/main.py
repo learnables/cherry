@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import ppt
 import random
 import gym
 import numpy as np
@@ -14,7 +13,6 @@ import cherry as ch
 import cherry.envs as envs
 import cherry.mpi as mpi
 
-from statistics import mean
 
 from models import NatureCNN
 
@@ -24,7 +22,7 @@ setting.
 """
 
 GAMMA = 0.99
-USE_GAE = False
+USE_GAE = True
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
@@ -34,8 +32,7 @@ A2C_STEPS = 5
 
 
 def update(replay, optimizer, policy, env=None):
-
-    # Discount and normalize rewards
+    # Compute advantages
     _, next_state_value = policy(replay.next_states[-1])
     if USE_GAE:
         advantages = ch.rewards.gae(GAMMA,
@@ -51,35 +48,15 @@ def update(replay, optimizer, policy, env=None):
                                       bootstrap=next_state_value)
         advantages = [r.detach() - v for r, v in zip(rewards, replay.values)]
 
-    if True:
-        # Vectorized version
-        entropy = replay.entropys.mean()
-        advantages = th.cat(advantages, dim=0).view(-1, 1)
-        policy_loss = - th.mean(replay.log_probs * advantages.detach())
-        value_loss = advantages.pow(2).mean()
-    else:
-        # Compute losses
-        policy_loss = 0.0
-        value_loss = 0.0
-        entropy = 0.0
-        for info, reward, adv in zip(replay.infos, rewards, advantages):
-            entropy += info['entropy']
-            policy_loss += -info['log_prob'] * adv.item()
-            value_loss += (reward.detach() - info['value'])**2
-        entropy /= len(rewards)
-        value_loss /= len(rewards)
-        policy_loss /= len(rewards)
-
-    mean = lambda x: sum(x) / len(x)
-    print(entropy.item(), 'entropy')
-    print(policy_loss.item(), 'policy_loss')
-    print(value_loss.item(), 'value_loss')
-    print(mean(env.all_rewards[-1000:]), 'rewards')
-    import pdb; pdb.set_trace()
+    # Compute loss
+    entropy = replay.entropys.mean()
+    advantages = th.cat(advantages, dim=0).view(-1, 1)
+    policy_loss = - th.mean(replay.log_probs * advantages.detach())
+    value_loss = advantages.pow(2).mean()
+    loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
 
     # Take optimization step
     optimizer.zero_grad()
-    loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
@@ -133,24 +110,12 @@ def main(num_steps=10000000,
         num_steps, num_episodes = env.run(get_action, replay, steps=A2C_STEPS)
 
         # Update policy
-#        replay.save('replay_a2c_2.pth')
-#        replay.load('replay_a2c_2.pth')
         update(replay, optimizer, policy, env=env)
         replay.empty()
         if rank == 0:
             total_steps += num_steps
 
-    # Save results with randopt
     if rank == 0:
-        exp = ro.Experiment('dev', directory='results')
-        rewards = env.all_rewards
-        dones = env.all_dones
-        result = mean(rewards[-1000:])
-        data = {
-                'rewards': rewards,
-                'dones': dones,
-                }
-        exp.add_result(result, data)
         # Kill all MPI processes
         mpi.comm.Abort()
 
