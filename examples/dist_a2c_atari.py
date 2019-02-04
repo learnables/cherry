@@ -20,7 +20,7 @@ setting.
 """
 
 GAMMA = 0.99
-USE_GAE = True
+USE_GAE = False
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
@@ -63,7 +63,7 @@ def update(replay, optimizer, policy, env):
                                       replay.rewards,
                                       replay.dones,
                                       bootstrap=next_state_value)
-        advantages = [r.detach() - v for r, v in zip(rewards, replay.values)]
+        advantages = [(r.detach() - v).view(1) for r, v in zip(rewards, replay.values)]
 
     # Compute loss
     entropy = replay.entropys.mean()
@@ -96,14 +96,15 @@ def get_action_value(state, policy):
 
 
 def main(num_steps=10000000,
-         env='PongNoFrameskip-v4',
+         env_name='PongNoFrameskip-v4',
+#         env_name='BreakoutNoFrameskip-v4',
          seed=1234):
     th.set_num_threads(1)
     random.seed(seed + mpi.rank)
     th.manual_seed(seed + mpi.rank)
     np.random.seed(seed + mpi.rank)
 
-    env = gym.make(env)
+    env = gym.make(env_name)
     if mpi.rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
@@ -124,8 +125,25 @@ def main(num_steps=10000000,
         # Update policy
         update(replay, optimizer, policy, env=env)
         replay.empty()
+        if mpi.rank == 0:
+            percent = (A2C_STEPS * step / num_steps)
+            if percent in [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
+                th.save(policy.state_dict(), './saved_models/' + env_name + '_' + str(percent) + '.pth')
 
     if mpi.rank == 0:
+        import randopt as ro
+        from statistics import mean
+        exp = ro.Experiment(name=env_name, directory='results')
+        result = mean(env.all_rewards[-10000:])
+        data ={
+            'env': env_name,
+            'all_rewards': env.all_rewards,
+            'all_dones': env.all_dones,
+            'infos': env.values,
+        }
+        exp.add_result(result, data)
+        percent = 1.0
+        th.save(policy.state_dict(), './saved_models/' + env_name + '_' + str(percent) + '.pth')
         # Kill all MPI processes
         mpi.terminate_mpi()
         mpi.comm.Abort()
