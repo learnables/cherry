@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import ppt
 import random
 import gym
 import numpy as np
@@ -20,9 +21,6 @@ from models import NatureCNN
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
-
-TODO:
-    * for last 1000 steps, the reward count and lengths are off.
 """
 
 GAMMA = 0.99
@@ -30,55 +28,66 @@ USE_GAE = False
 TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
-LR = 1e-4
+LR = 7e-4
 GRAD_NORM = 5.0
-NUM_UPDATES = 0
 A2C_STEPS = 5
 
 
 def update(replay, optimizer, policy, env=None):
-    values = [info['value'] for info in replay.infos]
 
     # Discount and normalize rewards
+    _, next_state_value = policy(replay.next_states[-1])
     if USE_GAE:
-        _, next_state_value = policy(replay.next_states[-1])
         advantages = ch.rewards.gae(GAMMA,
                                     TAU,
                                     replay.rewards,
                                     replay.dones,
                                     replay.values,
                                     next_state_value)
-    rewards = ch.rewards.discount(GAMMA,
-                                  replay.rewards,
-                                  replay.dones,
-                                  bootstrap=values[-1])
-    if not USE_GAE:
-        advantages = [r - v for r, v in zip(rewards, values)]
+    else:
+        rewards = ch.rewards.discount(GAMMA,
+                                      replay.rewards,
+                                      replay.dones,
+                                      bootstrap=next_state_value)
+        advantages = [r.detach() - v for r, v in zip(rewards, replay.values)]
 
-    # Compute losses
-    policy_loss = 0.0
-    value_loss = 0.0
-    entropy_loss = 0.0
-    for info, reward, adv in zip(replay.infos, rewards, advantages):
-        entropy_loss += - info['entropy']
-        policy_loss += -info['log_prob'] * adv.item()
-        value_loss += 0.5 * (reward.detach() - info['value'])**2
+    if True:
+        # Vectorized version
+        entropy = replay.entropys.mean()
+        advantages = th.cat(advantages, dim=0).view(-1, 1)
+        policy_loss = - th.mean(replay.log_probs * advantages.detach())
+        value_loss = advantages.pow(2).mean()
+    else:
+        # Compute losses
+        policy_loss = 0.0
+        value_loss = 0.0
+        entropy = 0.0
+        for info, reward, adv in zip(replay.infos, rewards, advantages):
+            entropy += info['entropy']
+            policy_loss += -info['log_prob'] * adv.item()
+            value_loss += (reward.detach() - info['value'])**2
+        entropy /= len(rewards)
+        value_loss /= len(rewards)
+        policy_loss /= len(rewards)
+
+    mean = lambda x: sum(x) / len(x)
+    print(entropy.item(), 'entropy')
+    print(policy_loss.item(), 'policy_loss')
+    print(value_loss.item(), 'value_loss')
+    print(mean(env.all_rewards[-1000:]), 'rewards')
+    import pdb; pdb.set_trace()
 
     # Take optimization step
     optimizer.zero_grad()
-    loss = policy_loss + V_WEIGHT * value_loss + ENT_WEIGHT * entropy_loss
-    loss /= len(rewards)
+    loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
     loss.backward()
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
 
-    global NUM_UPDATES
-    NUM_UPDATES += 1
     if env is not None:
         env.log('policy loss', policy_loss.item())
         env.log('value loss', value_loss.item())
-        env.log('entropy', entropy_loss.item())
-        env.log('num updates', NUM_UPDATES)
+        env.log('entropy', entropy.item())
 
 
 def get_action_value(state, policy):
@@ -111,7 +120,7 @@ def main(num_steps=10000000,
     env.seed(seed + rank)
 
     policy = NatureCNN(num_outputs=env.action_size)
-    optimizer = optim.RMSprop(policy.parameters(), lr=1e-4, alpha=0.99, eps=1e-5)
+    optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
     optimizer = mpi.Distributed(policy.parameters(), optimizer)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
@@ -124,6 +133,8 @@ def main(num_steps=10000000,
         num_steps, num_episodes = env.run(get_action, replay, steps=A2C_STEPS)
 
         # Update policy
+#        replay.save('replay_a2c_2.pth')
+#        replay.load('replay_a2c_2.pth')
         update(replay, optimizer, policy, env=env)
         replay.empty()
         if rank == 0:
