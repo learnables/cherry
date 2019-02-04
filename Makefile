@@ -1,8 +1,6 @@
 
 .PHONY: all tests dist
 
-THREAD_PER_PROC=1
-
 all: dist
 
 dist:
@@ -10,7 +8,7 @@ dist:
 	       --oversubscribe \
 	       -x OMP_NUM_THREADS=1 \
 	       -x MKL_NUM_THREADS=1 \
-	       python examples/distributed_atari/main.py
+	       python examples/dist_a2c_atari.py
 
 ppo:
 	python examples/ppo_pybullet.py

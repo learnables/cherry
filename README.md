@@ -92,7 +92,8 @@ Some functionalities that we might want to implement.
 Cherry draws inspiration from many reinforcement learning implementations, including
 
 * [OpenAI Baselines](https://github.com/openai/baselines),
-* [RLLab](https://github.com/rll/rllab),
+* John Schulman's [implementations](https://github.com/joschu/modular_rl)
 * Ilya Kostrikov's [implementations](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr),
 * Shangtong Zhang's [implementations](https://github.com/ShangtongZhang/DeepRL),
+* [RLLab](https://github.com/rll/rllab),
 * [RLKit](https://github.com/vitchyr/rlkit).
