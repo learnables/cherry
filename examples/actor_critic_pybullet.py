@@ -16,12 +16,15 @@ import cherry.models as models
 import cherry.envs as envs
 from cherry.rewards import discount_rewards
 
-RECORD = True
+RECORD = False
+USE_GAE = True
 SEED = 567
 TOTAL_STEPS = 1000000
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
+ENT_WEIGHT = 0.01
+GRAD_NORM = 0.5
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -63,33 +66,40 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy):
     # GAE
-    # _, next_state_value = policy(replay.next_states[-1])
-    # advantages = ch.rewards.gae(GAMMA,
-    #                             TAU,
-    #                             replay.rewards,
-    #                             replay.dones,
-    #                             replay.values,
-    #                             next_state_value)
-    # rewards = [a + v for a, v in zip(advantages, replay.values)]
-    # rewards = ch.utils.normalize(ch.utils.totensor(rewards))[0]
-    # print(rewards[0]
-    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
-    rewards = ch.utils.normalize(th.tensor(rewards))
+    _, next_state_value = policy(replay.next_states[-1])
+    if USE_GAE:
+        advantages = ch.rewards.gae(GAMMA,
+                                    TAU,
+                                    replay.rewards,
+                                    replay.dones,
+                                    replay.values,
+                                    next_state_value)
+    else:
+        rewards = discount_rewards(GAMMA,
+                                   replay.rewards,
+                                   replay.dones,
+                                   bootstrap=next_state_value)
+        advantages = [r.detach() - v for r, v in zip(rewards, replay.values)]
 
     # Compute losses
     policy_loss = []
     value_loss = []
+    entropy_loss = []
 
-    for info, reward in zip(replay.infos, rewards):
+    for info, advantage in zip(replay.infos, advantages):
         log_prob = info['log_prob']
         value = info['value']
-        policy_loss.append(-log_prob * (reward - value.item()))
-        value_loss.append(F.mse_loss(value, reward.detach()))  # Don't perform gradient of reward
+        entropy = info['entropy']
+        policy_loss.append(-log_prob * advantage.detach())
+        value_loss.append(advantage.pow(2))
+        entropy_loss.append(entropy)
+        # value_loss.append(F.mse_loss(value, reward.detach()))  # Don't perform gradient of reward
 
     # Optimize network
     optimizer.zero_grad()
-    loss = th.stack(policy_loss).sum() + V_WEIGHT * th.stack(value_loss).sum()
+    loss = th.stack(policy_loss).mean() + V_WEIGHT * th.stack(value_loss).mean() - ENT_WEIGHT * th.stack(entropy_loss).mean()
     loss.backward()
+    th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
 
 
@@ -98,7 +108,8 @@ def get_action_value(state, policy):
     action = dist.sample()
     info = {
         'log_prob': dist.log_prob(action),
-        'value': value
+        'value': value,
+        'entropy': dist.entropy()
     }
     return action, info
 
@@ -108,7 +119,7 @@ if __name__ == '__main__':
     env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.Logger(env)
-    # env = envs.OpenAINormalize(env)
+    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
@@ -116,7 +127,7 @@ if __name__ == '__main__':
     if RECORD:
         record_env = gym.make(env_name)
         record_env = envs.Monitor(record_env, './videos/')
-        # record_env = envs.OpenAINormalize(record_env)
+        record_env = envs.OpenAINormalize(record_env)
         record_env = envs.Torch(record_env)
         record_env = envs.Runner(record_env)
         record_env.seed(SEED)
