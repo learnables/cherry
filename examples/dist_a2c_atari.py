@@ -17,6 +17,11 @@ from cherry.models import atari
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
+
+TODO:
+    * It might be a good idea to add algorithms.a2c.policy_loss and value_loss.
+      They will essentially be 1-liners, but include shape validation, which is
+      useful for debugging.
 """
 
 GAMMA = 0.99

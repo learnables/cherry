@@ -2,6 +2,10 @@
 
 import torch as th
 
+"""
+    * TODO: validate of all variables so as to explicitly fail.
+"""
+
 
 def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
     ratios = th.exp(new_log_probs - old_log_probs)
