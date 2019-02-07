@@ -4,7 +4,7 @@
 all: dist
 
 dist:
-	mpirun -np 16 \
+	~/openmpi/bin/mpirun -np 16 \
 	       --oversubscribe \
 	       -x OMP_NUM_THREADS=1 \
 	       -x MKL_NUM_THREADS=1 \
