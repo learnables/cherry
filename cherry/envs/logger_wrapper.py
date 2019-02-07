@@ -64,7 +64,7 @@ class Logger(Wrapper):
     def _steps_stats(self, update_index=False):
         rewards = self.all_rewards[-self.interval:]
         dones = self.all_dones[-self.interval:]
-        lengths, rewards = self._episodes_length_rewards(rewards, dones)
+        rewards, lengths = self._episodes_length_rewards(rewards, dones)
         stats = {
             'episode_rewards': rewards,
             'episode_lengths': lengths,

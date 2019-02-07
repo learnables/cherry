@@ -98,7 +98,7 @@ def get_action_value(state, policy):
 def main(num_steps=10000000,
          env_name='PongNoFrameskip-v4',
 #         env_name='BreakoutNoFrameskip-v4',
-         seed=1234):
+         seed=42):
     th.set_num_threads(1)
     random.seed(seed + mpi.rank)
     th.manual_seed(seed + mpi.rank)
