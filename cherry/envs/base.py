@@ -2,6 +2,8 @@
 
 import gym
 
+from cherry.utils import get_space_dimension
+
 
 class Wrapper(gym.Wrapper):
 
@@ -15,6 +17,14 @@ class Wrapper(gym.Wrapper):
         env = envs.Runner(env)
         env.log('asdf', 23)  # Uses log() method from envs.Logger.
     """
+
+    @property
+    def state_size(self):
+        return get_space_dimension(self.observation_space)
+
+    @property
+    def action_size(self):
+        return get_space_dimension(self.action_space)
 
     def __getattr__(self, attr):
         if attr in self.__dict__.keys():
