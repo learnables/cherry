@@ -1,12 +1,14 @@
 
 .PHONY: all tests dist
 
-THREAD_PER_PROC=1
-
 all: dist
 
 dist:
-	mpirun -n 8 python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
+	~/openmpi/bin/mpirun -np 16 \
+	       --oversubscribe \
+	       -x OMP_NUM_THREADS=1 \
+	       -x MKL_NUM_THREADS=1 \
+		python examples/dist_a2c_atari.py
 
 ppo:
 	python examples/ppo_pybullet.py
@@ -20,5 +22,12 @@ reinforce:
 ac:
 	python examples/actor_critic_cartpole.py
 
+grid:
+	python examples/actor_critic_gridworld.py
+
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+
+publish:
+	python setup.py sdist
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*

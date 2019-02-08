@@ -11,9 +11,12 @@ class Runner(Wrapper):
         self._needs_reset = True
         self._current_state = None
 
+    def reset(self, *args, **kwargs):
+        return self.env.reset(*args, **kwargs)
+
     def run(self,
             get_action,
-            replay,
+            replay=None,
             steps=None,
             episodes=None,
             render=False):
@@ -41,7 +44,8 @@ class Runner(Wrapper):
             if done:
                 collected_episodes += 1
                 state = self.env.reset()
-            replay.add(old_state, action, reward, state, done, info=info)
+            if replay is not None:
+                replay.add(old_state, action, reward, state, done, info=info)
             self._current_state = state
             if render:
                 self.env.render()

@@ -42,6 +42,7 @@ SOFTWARE.
 """
 
 EPS = ch.utils.EPS
+EPS = 1e-8
 
 
 def update_mean(x_mean, x, weight=0.01):

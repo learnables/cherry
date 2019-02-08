@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
+import random
 import numpy as np
 import torch as th
 import cherry as ch
@@ -8,6 +9,13 @@ import cherry as ch
 
 NUM_SAMPLES = 100
 VECTOR_SIZE = 5
+
+"""
+TODO: Tests to add:
+    * save
+    * load
+    * replay.myattr
+"""
 
 
 class TestExperienceReplay(unittest.TestCase):
@@ -94,3 +102,78 @@ class TestExperienceReplay(unittest.TestCase):
             self.assertTrue(isinstance(self.replay.dones, th.Tensor))
             self.replay.empty()
 
+    def test_slice(self):
+        # Fill replay
+        count = 0
+        for shape in [(VECTOR_SIZE, ), (1, VECTOR_SIZE)]:
+            vector = th.randn(*shape)
+            for i in range(NUM_SAMPLES):
+                count += 1
+                self.replay.add(vector,
+                                vector,
+                                i,
+                                vector,
+                                random.choice([False, True]),
+                                info={'vector': vector, 'id': count})
+
+        subsample = self.replay[0:len(self.replay)//2]
+        self.assertTrue(isinstance(subsample, ch.ExperienceReplay))
+        self.assertEqual(len(subsample), len(self.replay)//2)
+        self.assertTrue(isinstance(self.replay[0], dict))
+        subsample = self.replay[-1:]
+        self.assertEqual(len(subsample), 1)
+
+    def test_sample(self):
+        # Test empty
+        sample = self.replay.sample()
+        self.assertEqual(len(sample), 0)
+        self.assertTrue(isinstance(self.replay, ch.ExperienceReplay))
+        # Fill replay
+        count = 0
+        for shape in [(VECTOR_SIZE, ), (1, VECTOR_SIZE)]:
+            vector = th.randn(*shape)
+            for i in range(NUM_SAMPLES):
+                count += 1
+                self.replay.add(vector,
+                                vector,
+                                i,
+                                vector,
+                                random.choice([False, True]),
+                                info={'vector': vector, 'id': count})
+            for _ in range(30):
+                # Test default arguments
+                sample = self.replay.sample()
+                self.assertEqual(len(sample), 1)
+                # Test size
+                sample = self.replay.sample(size=NUM_SAMPLES//2)
+                self.assertEqual(len(sample), NUM_SAMPLES//2)
+                # Test contiguous
+                sample = self.replay.sample(size=NUM_SAMPLES//3, contiguous=True)
+                infos = sample.infos
+                for i in range(len(infos)-1):
+                    self.assertEqual(infos[i]['id'] + 1, infos[i+1]['id'])
+                # Test single episode
+                sample = self.replay.sample(size=1, episodes=True)
+                self.assertTrue(bool(sample[-1]['done'].item()))
+                for i, sars in enumerate(sample[:-1]):
+                    self.assertTrue(not sample[i].done)
+                    self.assertEqual(sample[i]['info']['id']+1,
+                                     sample[i+1]['info']['id'])
+
+                # Test multiple episodes
+                total_episodes = self.replay.dones.sum().int().item()
+                for num_episodes in [total_episodes, total_episodes//2, 1]:
+                    sample = self.replay.sample(size=num_episodes, episodes=True)
+                    num_sampled_episodes = sample.dones.sum().int().item()
+                    self.assertEqual(num_sampled_episodes, num_episodes)
+
+                # Test multiple contiguous episodes
+                total_episodes = self.replay.dones.sum().int().item()
+                for num_episodes in [total_episodes, total_episodes//2, 1]:
+                    sample = self.replay.sample(size=num_episodes, episodes=True)
+                    num_sampled_episodes = sample.dones.sum().int().item()
+                    self.assertEqual(num_sampled_episodes, num_episodes)
+                    for i, sars in enumerate(sample[:-1]):
+                        if not sample[i].done:
+                            self.assertEqual(sample[i]['info']['id']+1,
+                                             sample[i+1]['info']['id'])
