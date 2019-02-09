@@ -12,21 +12,15 @@ import cherry as ch
 import cherry.envs as envs
 import cherry.mpi as mpi
 import cherry.policies as policies
+from cherry.algorithms import a2c
 from cherry.models import atari
 
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
 setting.
-
-TODO:
-    * It might be a good idea to add algorithms.a2c.policy_loss and value_loss.
-      They will essentially be 1-liners, but include shape validation, which is
-      useful for debugging.
 """
 
 GAMMA = 0.99
-USE_GAE = True
-TAU = 0.95
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 LR = 7e-4
@@ -56,25 +50,17 @@ class NatureCNN(nn.Module):
 def update(replay, optimizer, policy, env):
     # Compute advantages
     _, next_state_value = policy(replay.next_states[-1])
-    if USE_GAE:
-        advantages = ch.rewards.gae(GAMMA,
-                                    TAU,
-                                    replay.rewards,
-                                    replay.dones,
-                                    replay.values,
-                                    next_state_value)
-    else:
-        rewards = ch.rewards.discount(GAMMA,
-                                      replay.rewards,
-                                      replay.dones,
-                                      bootstrap=next_state_value)
-        advantages = [r.detach() - v for r, v in zip(rewards, replay.values)]
+    rewards = ch.rewards.discount(GAMMA,
+                                  replay.rewards,
+                                  replay.dones,
+                                  bootstrap=next_state_value)
+    rewards = th.cat(rewards, dim=0).view(-1, 1).detach()
 
     # Compute loss
     entropy = replay.entropys.mean()
-    advantages = th.cat(advantages, dim=0).view(-1, 1)
-    policy_loss = - th.mean(replay.log_probs * advantages.detach())
-    value_loss = advantages.pow(2).mean()
+    advantages = rewards.detach() - replay.values.detach()
+    policy_loss = a2c.policy_loss(replay.log_probs, advantages)
+    value_loss = a2c.value_loss(replay.values, rewards)
     loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
 
     # Take optimization step
