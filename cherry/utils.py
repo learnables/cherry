@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-import operator
 import numpy as np
 import torch as th
+import operator
 
 from functools import reduce
 from collections import OrderedDict
