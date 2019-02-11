@@ -11,6 +11,8 @@ import numpy as np
 
 from itertools import count
 
+import pybullet_envs
+
 import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,9 +23,9 @@ import inspect
 
 import cherry as ch
 import cherry.envs as envs
-from cherry.policies import CategoricalPolicy
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
+import cherry.policies as policies
 
 SEED = 567
 GAMMA = 0.99
@@ -35,15 +37,16 @@ th.manual_seed(SEED)
 
 
 class PolicyNet(nn.Module):
-    def __init__(self):
+    def __init__(self, env):
         super(PolicyNet, self).__init__()
-        self.affine1 = nn.Linear(4, 128)
-        self.affine2 = nn.Linear(128, 2)
+        self.affine1 = nn.Linear(env.state_size, 128)
+        self.affine2 = nn.Linear(128, env.action_size)
+        self.dist = policies.ActionDistribution(env)
 
     def forward(self, x):
         x = F.relu(self.affine1(x))
         action_scores = self.affine2(x)
-        return F.softmax(action_scores, dim=1)
+        return self.dist(action_scores), 0
 
 
 class Mlp(nn.Module):
@@ -285,18 +288,27 @@ class SoftActorCritic():
 # End SoftActorCritic Class
 #
 
+def get_action_value(state, policy):
+    mass, value = policy(state)
+    action = mass.sample()
+    info = {
+        'log_prob': mass.log_prob(action).sum(-1).detach(),
+        'value': value,
+    }
+    return action, info
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
-    env = envs.Logger(env, interval=1000)
+    env = gym.make('AntBulletEnv-v0')
+    env = envs.Logger(env, interval=100)
     env = envs.Torch(env)
+    env = envs.Runner(env)
     env.seed(SEED)
 
     obs_dim = int(np.prod(env.observation_space.shape))
     action_dim = int(np.prod(env.action_space.shape))
     net_size = 300
 
-    policy = CategoricalPolicy(PolicyNet())
+    policy = PolicyNet(env)
     qnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim+action_dim, output_size=1)
     vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
     #target_vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
@@ -306,22 +318,33 @@ if __name__ == '__main__':
     qnet_optimizer = optim.Adam(qnet.parameters(), lr=1e-2)
     vnet_optimizer = optim.Adam(vnet.parameters(), lr=1e-2)
 
-    critic = SoftActorCritic(env=env, policy=policy, qf=qnet, vf=vnet, policy_optimizer=policy_optimizer,
-            qf_optimizer=qnet_optimizer, vf_optimizer=vnet_optimizer, target_vf=target_vnet)
-
     running_reward = 10.0
     replay = ch.ExperienceReplay()
 
+    get_action = lambda state: get_action_value(state, policy)
+    num_updates = 20000
+    SAC_STEPS = 1000
+    
+    for epoch in range(num_updates):
+        # We use the Runner collector, but could've written our own
+        num_samples, num_episodes = env.run(get_action,
+                                            replay,
+                                            steps=SAC_STEPS,
+                                            render=RENDER)
+
+        # Update policy
+        #update(replay, optimizer, policy, env, lr_schedule)
+
+
+        '''
     for i_episode in count(1):
         state = env.reset()
-        for t in range(10000):  # Don't infinite loop while learning
+        for t in range(1000):  # Don't infinite loop while learning
             mass = policy(state)
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done, info={
-                'log_prob': mass.log_prob(action),  # Cache log_prob for later
-            })
+            replay.add(old_state, action, reward, state, done)
             if RENDER:
                 env.render()
             if done:
@@ -337,6 +360,7 @@ if __name__ == '__main__':
         # Update policy
         critic.update(replay)
         replay.empty()
+        '''
 
 #####################################################################################################
 #   SAC To Dos
