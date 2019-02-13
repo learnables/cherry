@@ -11,3 +11,4 @@ from .clip_reward_wrapper import ClipReward
 from .timestep_wrapper import AddTimestep
 from .monitor_wrapper import Monitor
 from .openai_normalize_wrapper import OpenAINormalize
+from .state_lambda_wrapper import StateLambda
