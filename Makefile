@@ -25,6 +25,9 @@ ac:
 grid:
 	python examples/actor_critic_gridworld.py
 
+dqn:
+	python examples/dqn_atari.py
+
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
 
