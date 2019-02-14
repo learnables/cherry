@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import random
 import gym
 import numpy as np
@@ -7,6 +8,7 @@ import numpy as np
 import torch as th
 import torch.optim as optim
 import torch.nn as nn
+from torch.nn import functional as F
 
 import cherry as ch
 import cherry.envs as envs
@@ -22,11 +24,14 @@ GAMMA = 0.99
 EPSILON = 1.0
 BSZ = 32
 GRAD_NORM = 5.0
-UPDATE_FREQ = 4
-TARGET_UPDATE_FREQ = 10000
+UPDATE_FREQ = 1
+TARGET_UPDATE_FREQ = 40000
 EXPLORATION_STEPS = 50000
-REPLAY_SIZE = 1e6
+EXPLORATION_STEPS = 32
+REPLAY_SIZE = 1000000
 
+import ppt
+mean = lambda x: sum(x) / len(x)
 
 def epsilon_greedy(q_values, epsilon):
     if random.random() < epsilon:
@@ -53,9 +58,25 @@ class DQN(nn.Module):
         return q_values
 
 
-def update(replay, optimizer, dqn, env):
-    import pdb; pdb.set_trace()
-    return 0.0
+def update(replay, optimizer, dqn, target_dqn, env):
+    batch = replay.sample(BSZ)
+    target_q = target_dqn(batch.next_states).detach().max(dim=1)[0].view(-1, 1)
+    target_q = batch.rewards + GAMMA * target_q * (1.0 - batch.dones)
+    q_preds = dqn(batch.states)
+    softnorm = F.softmax(q_preds, dim=1).norm(p=2).item()
+    actions = batch.actions.view(-1).long()
+    range_tensor = th.Tensor(list(range(BSZ))).long()
+    q_preds = q_preds[range_tensor, actions]
+    loss = (target_q - q_preds).pow(2).mul(0.5).mean()
+    optimizer.zero_grad()
+    loss.backward()
+    nn.utils.clip_grad_norm_(dqn.parameters(), GRAD_NORM)
+    optimizer.step()
+    env.log('td loss', loss.item())
+    env.log('softnorm', softnorm)
+    ppt.plot(loss.item(), 'loss')
+    ppt.plot(mean(env.all_rewards[-10000:]), 'rewards')
+    ppt.plot(mean(env.values['softnorm'][-10000:]), 'softnorm')
 
 
 def main(num_steps=10000000,
@@ -75,6 +96,7 @@ def main(num_steps=10000000,
     env.seed(seed)
 
     dqn = DQN(env)
+    target_dqn = copy.deepcopy(dqn)
     optimizer = optim.RMSprop(dqn.parameters(), lr=LR, alpha=0.95,
                               eps=0.01, centered=True)
     replay = ch.ExperienceReplay()
@@ -83,20 +105,22 @@ def main(num_steps=10000000,
 
     for step in range(num_steps // UPDATE_FREQ + 1):
         # Sample some transitions
-        num_steps, num_episodes = env.run(get_action, replay, steps=UPDATE_FREQ)
+        env.run(get_action, replay, steps=UPDATE_FREQ)
 
         if step * UPDATE_FREQ < 1e6:
             # Update epsilon
             epsilon -= 9.9e-7 * UPDATE_FREQ
 
-        import pdb; pdb.set_trace()
         if step * UPDATE_FREQ > EXPLORATION_STEPS:
             # Only keep the last 1M transitions
             replay = replay[-REPLAY_SIZE:]
+
             # Update Q-function
-            update(replay, optimizer, dqn, env=env)
+            update(replay, optimizer, dqn, target_dqn, env=env)
+
+            if step % TARGET_UPDATE_FREQ == 0:
+                target_dqn.load_state_dict(dqn.state_dict())
 
 
 if __name__ == '__main__':
     main()
-
