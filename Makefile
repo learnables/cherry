@@ -1,14 +1,14 @@
 
 .PHONY: all tests dist
 
-all: dist
+all: dqn
 
 dist:
-	~/openmpi/bin/mpirun -np 16 \
-	       --oversubscribe \
-	       -x OMP_NUM_THREADS=1 \
-	       -x MKL_NUM_THREADS=1 \
-		python examples/dist_a2c_atari.py
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python -m torch.distributed.launch \
+	          --nproc_per_node=8 \
+		    examples/dist_a2c_atari.py
 
 ppo:
 	python examples/ppo_pybullet.py
