@@ -7,11 +7,12 @@ import numpy as np
 import torch as th
 import torch.optim as optim
 import torch.nn as nn
+import torch.distributed as dist
 
 import cherry as ch
 import cherry.envs as envs
-import cherry.mpi as mpi
 import cherry.policies as policies
+from cherry.optim import Distributed
 from cherry.algorithms import a2c
 from cherry.models import atari
 
@@ -69,7 +70,7 @@ def update(replay, optimizer, policy, env):
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
 
-    if mpi.rank == 0:
+    if dist.get_rank() == 0:
         env.log('policy loss', policy_loss.item())
         env.log('value loss', value_loss.item())
         env.log('entropy', entropy.item())
@@ -90,22 +91,24 @@ def main(num_steps=10000000,
          env_name='PongNoFrameskip-v4',
 #         env_name='BreakoutNoFrameskip-v4',
          seed=42):
+    dist.init_process_group('gloo')
+    rank = dist.get_rank()
     th.set_num_threads(1)
-    random.seed(seed + mpi.rank)
-    th.manual_seed(seed + mpi.rank)
-    np.random.seed(seed + mpi.rank)
+    random.seed(seed + rank)
+    th.manual_seed(seed + rank)
+    np.random.seed(seed + rank)
 
     env = gym.make(env_name)
-    if mpi.rank == 0:
+    if rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
-    env.seed(seed + mpi.rank)
+    env.seed(seed + rank)
 
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
-    optimizer = mpi.Distributed(policy.parameters(), optimizer)
+    optimizer = Distributed(policy.parameters(), optimizer)
     replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
@@ -116,17 +119,18 @@ def main(num_steps=10000000,
         # Update policy
         update(replay, optimizer, policy, env=env)
         replay.empty()
-        if mpi.rank == 0:
+        if rank == 0:
             percent = (A2C_STEPS * step / num_steps)
             if percent in [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
-                th.save(policy.state_dict(), './saved_models/' + env_name + '_' + str(percent) + '.pth')
+                th.save(policy.state_dict(),
+                        './saved_models/' + env_name + '_' + str(percent) + '.pth')
 
-    if mpi.rank == 0:
+    if rank == 0:
         import randopt as ro
         from statistics import mean
         exp = ro.Experiment(name=env_name, directory='results')
         result = mean(env.all_rewards[-10000:])
-        data ={
+        data = {
             'env': env_name,
             'all_rewards': env.all_rewards,
             'all_dones': env.all_dones,
@@ -135,11 +139,7 @@ def main(num_steps=10000000,
         exp.add_result(result, data)
         percent = 1.0
         th.save(policy.state_dict(), './saved_models/' + env_name + '_' + str(percent) + '.pth')
-        # Kill all MPI processes
-        mpi.terminate_mpi()
-        mpi.comm.Abort()
 
 
 if __name__ == '__main__':
     main()
-
