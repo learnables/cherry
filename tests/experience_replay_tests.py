@@ -177,3 +177,26 @@ class TestExperienceReplay(unittest.TestCase):
                         if not sample[i].done:
                             self.assertEqual(sample[i]['info']['id']+1,
                                              sample[i+1]['info']['id'])
+
+    def test_add(self):
+        new_replay = ch.ExperienceReplay()
+        vector = np.random.rand(VECTOR_SIZE)
+        for i in range(NUM_SAMPLES):
+            self.replay.add(vector,
+                            vector,
+                            i,
+                            vector,
+                            False,
+                            info={'vector': vector})
+            new_replay.add(vector,
+                           vector,
+                           i,
+                           vector,
+                           False,
+                           info={'vector': vector})
+        self.assertEqual(len(self.replay), len(new_replay))
+        new_replay = self.replay + new_replay
+        self.assertEqual(NUM_SAMPLES * 2, len(new_replay))
+        self.replay += new_replay
+        self.assertEqual(NUM_SAMPLES * 3, len(self.replay))
+

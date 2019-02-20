@@ -61,6 +61,19 @@ class ExperienceReplay(list):
     def __repr__(self):
         return str(self)
 
+    def __add__(self, other):
+        new_replay = ExperienceReplay()
+        for sars in self:
+            new_replay.add(**sars)
+        for sars in other:
+            new_replay.add(**sars)
+        return new_replay
+
+    def __iadd__(self, other):
+        for sars in other:
+            self.add(**sars)
+        return self
+
     def __iter__(self):
         for i in range(len(self)):
             yield self[i]
