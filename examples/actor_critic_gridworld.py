@@ -84,8 +84,8 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-#    env = gym.make('MiniGrid-Empty-6x6-v0')
-    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
+    env = gym.make('MiniGrid-Empty-6x6-v0')
+#    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
     env = envs.Logger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -94,22 +94,21 @@ if __name__ == '__main__':
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
-    replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     for episode in count(1):
         # We use the Runner collector, but could've written our own
-        num_samples, num_episodes = env.run(get_action, replay, episodes=1, render=RENDER)
+        replay = env.run(get_action, episodes=1, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy)
-        replay.empty()
         if episode > 6400:
             RENDER = True
 
         # Compute termination criterion
-        running_reward = running_reward * 0.99 + num_samples * 0.01
+        running_reward = running_reward * 0.99 + len(replay) * 0.01
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward, num_samples))
+                  'the last episode runs to {} time steps!'.format(running_reward,
+                                                                   len(replay)))
             break

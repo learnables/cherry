@@ -105,7 +105,8 @@ def main(num_steps=10000000,
 
     for step in range(num_steps // UPDATE_FREQ + 1):
         # Sample some transitions
-        env.run(get_action, replay, steps=UPDATE_FREQ)
+        ep_replay = env.run(get_action, steps=UPDATE_FREQ)
+        replay += ep_replay
 
         if step * UPDATE_FREQ < 1e6:
             # Update epsilon

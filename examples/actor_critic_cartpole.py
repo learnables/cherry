@@ -91,23 +91,22 @@ if __name__ == '__main__':
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
-    replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     for episode in count(1):
         # We use the Runner collector, but could've written our own
-        num_samples, num_episodes = env.run(get_action, replay, episodes=1)
+        replay = env.run(get_action, episodes=1)
 
         # Update policy
         update(replay, optimizer)
-        replay.empty()
 
         # Compute termination criterion
-        running_reward = running_reward * 0.99 + num_samples * 0.01
+        running_reward = running_reward * 0.99 + len(replay) * 0.01
         if episode % 10 == 0:
             # Should start with 10.41, 12.21, 14.60, then 100:71.30, 200:135.74
             print(episode, running_reward)
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward, num_samples))
+                  'the last episode runs to {} time steps!'.format(running_reward,
+                                                                   len(replay)))
             break
