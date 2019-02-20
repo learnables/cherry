@@ -139,10 +139,10 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env_name = 'CartPoleBulletEnv-v0'
+#    env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
-#    env = envs.AddTimestep(env)
+    env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
     if RECORD:
         record_env = gym.make(env_name)
-#        record_env = envs.AddTimestep(record_env)
+        record_env = envs.AddTimestep(record_env)
         record_env = envs.Monitor(record_env, './videos/')
         record_env = envs.OpenAINormalize(record_env)
         record_env = envs.Torch(record_env)
@@ -162,19 +162,14 @@ if __name__ == '__main__':
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
     lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
-    replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
-        num_samples, num_episodes = env.run(get_action,
-                                            replay,
-                                            steps=PPO_STEPS,
-                                            render=RENDER)
+        replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
-        replay.empty()
 
         if RECORD and epoch % 10 == 0:
             record_env.run(get_action, episodes=3, render=True)

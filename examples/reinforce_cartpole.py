@@ -89,7 +89,7 @@ if __name__ == '__main__':
             if done:
                 break
 
-        # Compute termination criterion
+        #  Compute termination criterion
         running_reward = running_reward * 0.99 + t * 0.01
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward is now {} and '

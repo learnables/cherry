@@ -109,16 +109,14 @@ def main(num_steps=10000000,
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
     optimizer = Distributed(policy.parameters(), optimizer)
-    replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     for step in range(num_steps // A2C_STEPS + 1):
         # Sample some transitions
-        num_steps, num_episodes = env.run(get_action, replay, steps=A2C_STEPS)
+        replay = env.run(get_action, steps=A2C_STEPS)
 
         # Update policy
         update(replay, optimizer, policy, env=env)
-        replay.empty()
         if rank == 0:
             percent = (A2C_STEPS * step / num_steps)
             if percent in [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
@@ -138,7 +136,8 @@ def main(num_steps=10000000,
         }
         exp.add_result(result, data)
         percent = 1.0
-        th.save(policy.state_dict(), './saved_models/' + env_name + '_' + str(percent) + '.pth')
+        th.save(policy.state_dict(),
+                './saved_models/' + env_name + '_' + str(percent) + '.pth')
 
 
 if __name__ == '__main__':
