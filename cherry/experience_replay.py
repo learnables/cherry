@@ -85,7 +85,7 @@ class ExperienceReplay(list):
             size = values[0].size()
             if all([isinstance(t, T) and t.size() == size for t in values]):
                 true_size = min_size(values[0])
-                return th.cat(values, dim=0).view(len(values), *true_size)
+                return th.stack(values, dim=0).view(len(values), *true_size)
         return values
 
     def __getitem__(self, key):
