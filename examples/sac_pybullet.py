@@ -17,6 +17,7 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.distributions import normal
 import copy
 
 import inspect
@@ -47,6 +48,7 @@ class PolicyNet(nn.Module):
         x = F.relu(self.affine1(x))
         action_scores = self.affine2(x)
         return self.dist(action_scores), 0
+
 
 
 class Mlp(nn.Module):
@@ -114,6 +116,75 @@ class FlattenMlp(Mlp):
         flat_inputs = th.cat(args, dim=1)
         return super().forward(flat_inputs, **kwargs)
 
+class TanhGaussianPolicy(Mlp):
+    def __init__(
+            self,
+            hidden_sizes,
+            obs_dim,
+            action_dim,
+            epsilon=1e-6,
+            std=None,
+            init_w=1e-3,
+            **kwargs
+    ):
+        super().__init__(
+            hidden_sizes,
+            input_size=obs_dim,
+            output_size=action_dim,
+            init_w=init_w,
+            **kwargs
+        )
+        self.log_std = None
+        self.std = std
+        self.epsilon = epsilon
+        if std is None:
+            last_hidden_size = obs_dim
+            if len(hidden_sizes) > 0:
+                last_hidden_size = hidden_sizes[-1]
+            self.last_fc_log_std = nn.Linear(last_hidden_size, action_dim)
+            self.last_fc_log_std.weight.data.uniform_(-init_w, init_w)
+            self.last_fc_log_std.bias.data.uniform_(-init_w, init_w)
+        else:
+            self.log_std = np.log(std)
+            assert -20 <= self.log_std <= 2 
+
+    def forward(
+            self,
+            obs,
+            reparameterize=True,
+            deterministic=False,
+            return_log_prob=False,
+    ):
+        h = obs
+        for i, fc in enumerate(self.fcs):
+            h = self.hidden_activation(fc(h))
+        mean = self.last_fc(h)
+        if self.std is None:
+            log_std = self.last_fc_log_std(h)
+            log_std = th.clamp(log_std, -20, 2) 
+            std = th.exp(log_std)
+        else:
+            std = self.std
+            log_std = self.log_std
+
+        normal_dist = normal.Normal(mean, std)
+        log_prob = None
+        entropy = None
+        mean_action_log_prob = None
+        pre_tanh_value = None
+        if deterministic:
+            action = th.tanh(mean)
+        else:
+            z = normal_dist.sample().detach()
+            action = th.tanh(z)
+
+            pre_tanh_value = th.log((1+action)/(1-action))/2
+            z = normal_dist.log_prob(pre_tanh_value) - th.log(1-action * action + self.epsilon)
+            log_prob = th.tanh(z)
+
+        return (
+            action, mean, log_prob
+        )
 
 class SoftActorCritic():
     def __init__(
@@ -180,7 +251,11 @@ class SoftActorCritic():
     def update(self, replay):
 
         batch = replay.sample(40)
-        log_pi = self.policy(batch.states).log_prob(batch.actions) 
+        actions, values, log_pi = self.policy(batch.states)
+        log_pi = log_pi.sum(-1).detach()
+        log_pi = log_pi.view(-1,1)
+        
+
 
         ''' Calculate Alpha Loss '''
         if self.use_automatic_entropy_tuning:
@@ -202,13 +277,13 @@ class SoftActorCritic():
         grad(Q(t))*(Q(t) - (r(t) + gamma*(Q'(t+1) - alpha*log_pi(t+1))))
 
         '''
+        q_pred = self.qf(batch.states, batch.actions)
+        target_v_values = self.target_vf(batch.next_states)
+        q_target = batch.rewards + (1. - batch.dones) * self.discount * target_v_values
+        qf_loss = self.qf_criterion(q_pred, q_target)
+        print(qf_loss)
+        print("\n")
 
-        qf_loss = 0
-        for transition in batch:
-            q_pred = self.qf(batch.states[transition].view(1,9), batch.actions[transition].view(1,9))
-            target_v_value = self.target_vf(batch.next_states[transition].view(1,9))
-            q_target = batch.rewards[transition] + (1 - batch.dones[transition]) * self.discount * target_v_value
-            qf_loss += self.qf_criterion(q_pred, q_target)
 
         #   For some reason the loop is not running (/iterating of batch), causing qf_loss to
         #   always be zero 
@@ -221,25 +296,20 @@ class SoftActorCritic():
         page 6 of Haarnoja's paper from December 2018, indicating that the value function approximator is
         unnecessary.
         """
-
-        '''q_new_actions = 0
-        v_pred = []
-        for transition in batch:
-            q_new_actions += self.qf(batch.next_states[transition].view(1,9), batch.actions[transition].view(1,9))
-            v_pred.append(th.tensor(self.vf(batch.states[transition])))
-
-        v_pred = th.stack(v_pred)
-            
+        
+        q_new_actions = self.qf(batch.next_states, batch.actions)
+        v_pred = self.vf(batch.states)
         v_target = q_new_actions - alpha*log_pi
-        vf_loss = self.vf_criterion(v_pred, v_target.detach())'''
+        vf_loss = self.vf_criterion(v_pred, v_target.detach())
+        print(vf_loss)
+        print("\n")
+        
 
         ''' Calculate Policy Loss '''
 
-        policy_loss = 0
-        for transition in batch:
-            policy_loss += (alpha*log_pi[transition] - q_next_step)
-
-        policy_loss /= batch.__len__()
+        policy_loss = alpha*log_pi - q_new_actions
+        policy_loss = policy_loss.mean()
+        #policy_loss /= batch.__len__()
 
         # TODO: calculate regression loss and add to policy_loss
 
@@ -250,15 +320,15 @@ class SoftActorCritic():
         qf_loss.backward()
         self.qf_optimizer.step()
 
-        '''self.vf_optimizer.zero_grad()
+        self.vf_optimizer.zero_grad()
         vf_loss.backward()
-        self.vf_optimizer.step()'''
+        self.vf_optimizer.step()
 
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
 
-        self._update_target_network()
+        #self._update_target_network()
     
     def np_to_pytorch_batch(self, np_batch):
         return {
@@ -289,17 +359,12 @@ class SoftActorCritic():
 #
 
 def get_action_value(state, policy):
-    mass, value = policy(state)
-    action = mass.sample()
-    info = {
-        'log_prob': mass.log_prob(action).sum(-1).detach(),
-        'value': value,
-    }
-    return action, info
+    action, value, log_pi = policy(state)
+    return action, value, log_pi
 
 if __name__ == '__main__':
     env = gym.make('AntBulletEnv-v0')
-    env = envs.Logger(env, interval=100)
+    #env = envs.Logger(env, interval=100)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
@@ -308,10 +373,10 @@ if __name__ == '__main__':
     action_dim = int(np.prod(env.action_space.shape))
     net_size = 300
 
-    policy = PolicyNet(env)
+    #policy = PolicyNet(env)
+    policy = TanhGaussianPolicy(hidden_sizes=[net_size, net_size], obs_dim=obs_dim, action_dim=action_dim)
     qnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim+action_dim, output_size=1)
     vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
-    #target_vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
     target_vnet = copy.deepcopy(vnet)
 
     policy_optimizer = optim.Adam(policy.parameters(), lr=1e-2)
@@ -320,13 +385,19 @@ if __name__ == '__main__':
 
     running_reward = 10.0
     replay = ch.ExperienceReplay()
+    
+    critic = SoftActorCritic(env=env, policy=policy, qf=qnet, vf=vnet, policy_optimizer=policy_optimizer,
+            qf_optimizer=qnet_optimizer, vf_optimizer=vnet_optimizer, target_vf=target_vnet)
 
     get_action = lambda state: get_action_value(state, policy)
     num_updates = 20000
     SAC_STEPS = 1000
+    RENDER=False
     
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
+        if RENDER:
+            env.render()
         num_samples, num_episodes = env.run(get_action,
                                             replay,
                                             steps=SAC_STEPS,
@@ -334,36 +405,15 @@ if __name__ == '__main__':
 
         # Update policy
         #update(replay, optimizer, policy, env, lr_schedule)
-
-
-        '''
-    for i_episode in count(1):
-        state = env.reset()
-        for t in range(1000):  # Don't infinite loop while learning
-            mass = policy(state)
-            action = mass.sample()
-            old_state = state
-            state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done)
-            if RENDER:
-                env.render()
-            if done:
-                break
-
-        # Compute termination criterion
-        running_reward = running_reward * 0.99 + t * 0.01
-        if running_reward > env.spec.reward_threshold:
-            print('Solved! Running reward is now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward, t))
-            break
-
-        # Update policy
         critic.update(replay)
-        replay.empty()
-        '''
 
 #####################################################################################################
 #   SAC To Dos
 #####################################################################################################
 # Use to target Q functions to eliminate positive bias (SACAA 6)
+'''
+    -Strip everything out from Soft Actor Critic Class
+    -Debug update function
+    -Check output against rlkit
+'''
 
