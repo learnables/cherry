@@ -48,11 +48,11 @@ def update(replay):
     policy_loss = []
 
     # Discount and normalize rewards
-    rewards = discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
     rewards = normalize(th.tensor(rewards))
 
     # Compute loss
-    for info, reward in zip(replay.list_infos, rewards):
+    for info, reward in zip(replay.infos, rewards):
         log_prob = info['log_prob']
         policy_loss.append(-log_prob * reward)
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
             if done:
                 break
 
-        # Compute termination criterion
+        #  Compute termination criterion
         running_reward = running_reward * 0.99 + t * 0.01
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward is now {} and '

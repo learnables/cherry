@@ -5,14 +5,14 @@ from setuptools import (
         find_packages,
         )
 
-VERSION = '0.0.1'
+VERSION = '0.0.4'
 
 setup(
         name='cherry-rl',
         packages=find_packages(),
         version=VERSION,
         description='PyTorch Reinforcement Learning Framework',
-        long_description=open('README.md').read(),
+        long_description='PyTorch Reinforcement Learning Framework',
         long_description_content_type='text/markdown',
         author='Seb Arnold',
         author_email='smr.arnold@gmail.com',

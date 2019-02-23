@@ -1,12 +1,14 @@
 
 .PHONY: all tests dist
 
-THREAD_PER_PROC=1
-
-all: dist
+all: dqn
 
 dist:
-	mpirun -n 8 python examples/distributed_atari/main.py main --num_steps=10000000 --env=PongNoFrameskip-v4
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python -m torch.distributed.launch \
+	          --nproc_per_node=8 \
+		    examples/dist_a2c_atari.py
 
 ppo:
 	python examples/ppo_pybullet.py
@@ -20,5 +22,15 @@ reinforce:
 ac:
 	python examples/actor_critic_cartpole.py
 
+grid:
+	python examples/actor_critic_gridworld.py
+
+dqn:
+	python examples/dqn_atari.py
+
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+
+publish:
+	python setup.py sdist
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
