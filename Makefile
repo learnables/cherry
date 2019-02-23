@@ -22,6 +22,9 @@ reinforce:
 ac:
 	python examples/actor_critic_cartpole.py
 
+sac:
+	python examples/sac_pybullet.py
+
 grid:
 	python examples/actor_critic_gridworld.py
 
