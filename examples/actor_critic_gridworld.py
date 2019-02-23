@@ -8,6 +8,7 @@ The code is an adaptation of the PyTorch reinforcement learning example.
 
 import random
 import gym
+import gym_minigrid
 import numpy as np
 
 from itertools import count
@@ -36,20 +37,21 @@ th.manual_seed(SEED)
 class ActorCriticNet(nn.Module):
     def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.affine1 = nn.Linear(env.state_size, 128)
+        self.affine1 = nn.Linear(env.state_size['image'], 128)
         self.action_head = nn.Linear(128, env.action_size)
         self.value_head = nn.Linear(128, 1)
-        self.distribution = policies.ActionDistribution(env, use_probs=True)
+        self.distribution = policies.ActionDistribution(env)
 
     def forward(self, x):
+        x = x['image'].view(-1)
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
-        action_mass = self.distribution(F.softmax(action_scores, dim=1))
+        action_mass = self.distribution(F.log_softmax(action_scores, dim=0))
         value = self.value_head(x)
         return action_mass, value
 
 
-def update(replay, optimizer):
+def update(replay, optimizer, policy):
     policy_loss = []
     value_loss = []
 
@@ -82,7 +84,8 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.make('MiniGrid-Empty-6x6-v0')
+#    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
     env = envs.Logger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -95,16 +98,15 @@ if __name__ == '__main__':
 
     for episode in count(1):
         # We use the Runner collector, but could've written our own
-        replay = env.run(get_action, episodes=1)
+        replay = env.run(get_action, episodes=1, render=RENDER)
 
         # Update policy
-        update(replay, optimizer)
+        update(replay, optimizer, policy)
+        if episode > 6400:
+            RENDER = True
 
         # Compute termination criterion
         running_reward = running_reward * 0.99 + len(replay) * 0.01
-        if episode % 10 == 0:
-            # Should start with 10.41, 12.21, 14.60, then 100:71.30, 200:135.74
-            print(episode, running_reward)
         if running_reward > env.spec.reward_threshold:
             print('Solved! Running reward now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward,
