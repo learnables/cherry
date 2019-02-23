@@ -5,6 +5,7 @@ Simple example of using cherry to solve cartpole.
 The code is an adaptation of the PyTorch reinforcement learning example.
 """
 
+import ppt
 import random
 import gym
 import numpy as np
@@ -35,6 +36,33 @@ RENDER = False
 random.seed(SEED)
 np.random.seed(SEED)
 th.manual_seed(SEED)
+
+
+"""
+Changes from Ian's version:
+    * rescaled actions
+    * updated to new replay
+    * fixed hyper-params
+    * detaching the targets and not the logpi
+    * loaded policy weights
+    * added plotting
+    * fixed update iterations
+"""
+
+
+class RescaleActions(envs.Wrapper):
+    def __init__(self, env):
+        super(RescaleActions, self).__init__(env)
+        self.env = env
+        ub = np.ones(self.env.action_space.shape)
+        self.action_space = gym.spaces.Box(-1 * ub, ub)
+
+    def step(self, action):
+        lb = self.env.action_space.low
+        ub = self.env.action_space.high
+        scaled_action = lb + (action + 1.) * 0.5 * (ub - lb)
+        scaled_action = np.clip(scaled_action, lb, ub)
+        return self.env.step(scaled_action)
 
 
 class PolicyNet(nn.Module):
@@ -72,14 +100,17 @@ class Mlp(nn.Module):
         self.output_size = output_size
         self.hidden_activation = hidden_activation
         self.output_activation = output_activation
-        hidden_init = self.fanin_init,
+        hidden_init = self.fanin_init
         self.fcs = []
         in_size = input_size
 
         for i, next_size in enumerate(hidden_sizes):
             fc = nn.Linear(in_size, next_size)
             in_size = next_size
+            # TODO: Activate the following line and fix it
+#            hidden_init(fc)
             fc.bias.data.fill_(b_init_value)
+            self.__setattr__("fc{}".format(i), fc)
             self.fcs.append(fc)
 
         self.last_fc = nn.Linear(in_size, output_size)
@@ -115,6 +146,7 @@ class FlattenMlp(Mlp):
     def forward(self, *args, **kwargs):
         flat_inputs = th.cat(args, dim=1)
         return super().forward(flat_inputs, **kwargs)
+
 
 class TanhGaussianPolicy(Mlp):
     def __init__(
@@ -207,7 +239,7 @@ class SoftActorCritic():
             discount=.99,
 
             train_policy_with_reparameterization=True,
-            soft_target_tau=1e-2,
+            soft_target_tau=0.001,
             plotter=None,
             render_eval_paths=False,
 
@@ -250,14 +282,13 @@ class SoftActorCritic():
 
     def update(self, replay, env):
 
-        batch = replay.sample(40)
+        batch = replay.sample(128)
         actions, values, log_pi = self.policy(batch.states)
-        log_pi = log_pi.sum(-1).detach()
-        log_pi = log_pi.view(-1,1)
+        log_pi = log_pi.sum(-1)
+        log_pi = log_pi.view(-1, 1)
         
-        print("Average Rewards: ") 
-        print(batch.rewards.mean())
-        print("\n")
+        env.log("Average Rewards: ", batch.rewards.mean().item())
+        ppt.plot(batch.rewards.mean().item(), 'cherry rewards')
 
 
         ''' Calculate Alpha Loss '''
@@ -267,6 +298,8 @@ class SoftActorCritic():
             alpha_loss.backward()
             self.alpha_optimizer.step()
             alpha = self.log_alpha.exp()
+            env.log('alpha Loss:', alpha_loss.item())
+            env.log('alpha: ', alpha.item())
         else:
             alpha = 1
             alpha_loss = 0
@@ -283,10 +316,8 @@ class SoftActorCritic():
         q_pred = self.qf(batch.states, batch.actions)
         target_v_values = self.target_vf(batch.next_states)
         q_target = batch.rewards + (1. - batch.dones) * self.discount * target_v_values
-        qf_loss = self.qf_criterion(q_pred, q_target)
-        print("QF Loss: ") 
-        print(qf_loss)
-        print("\n")
+        qf_loss = self.qf_criterion(q_pred, q_target.detach())
+        env.log("QF Loss: ", qf_loss.item())
 
 
         #   For some reason the loop is not running (/iterating of batch), causing qf_loss to
@@ -305,18 +336,14 @@ class SoftActorCritic():
         v_pred = self.vf(batch.states)
         v_target = q_new_actions - alpha*log_pi
         vf_loss = self.vf_criterion(v_pred, v_target.detach())
-        print("VF Loss: ") 
-        print(vf_loss)
-        print("\n")
+        env.log("VF Loss: ", vf_loss.item())
         
 
         ''' Calculate Policy Loss '''
 
         policy_loss = alpha*log_pi - q_new_actions
         policy_loss = policy_loss.mean()
-        print("Policy Loss: ") 
-        print(policy_loss)
-        print("\n\n")
+        env.log("Policy Loss: ", policy_loss.item())
         #policy_loss /= batch.__len__()
 
         # TODO: calculate regression loss and add to policy_loss
@@ -375,9 +402,15 @@ def get_action_value(state, policy):
     return action, value, log_pi
 
 if __name__ == '__main__':
+    random.seed(42)
+    np.random.seed(42)
+    th.manual_seed(42)
     #env = NormalizedBoxEnv(gym.make('AntBulletEnv-v0'))
     env = gym.make('AntBulletEnv-v0')
+    env = gym.make('HalfCheetahBulletEnv-v0')
     env = envs.Logger(env, interval=1000)
+#    env = envs.OpenAINormalize(env)
+    env = RescaleActions(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
@@ -388,13 +421,16 @@ if __name__ == '__main__':
 
     #policy = PolicyNet(env)
     policy = TanhGaussianPolicy(hidden_sizes=[net_size, net_size], obs_dim=obs_dim, action_dim=action_dim)
+#    policy.load_state_dict(th.load('policy.pth'))
     qnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim+action_dim, output_size=1)
+#    qnet.load_state_dict(th.load('qf.pth'))
     vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
+#    vnet.load_state_dict(th.load('vf.pth'))
     target_vnet = copy.deepcopy(vnet)
 
-    policy_optimizer = optim.Adam(policy.parameters(), lr=1e-2)
-    qnet_optimizer = optim.Adam(qnet.parameters(), lr=1e-2)
-    vnet_optimizer = optim.Adam(vnet.parameters(), lr=1e-2)
+    policy_optimizer = optim.Adam(policy.parameters(), lr=3e-4)
+    qnet_optimizer = optim.Adam(qnet.parameters(), lr=3e-4)
+    vnet_optimizer = optim.Adam(vnet.parameters(), lr=3e-4)
 
     running_reward = 10.0
     replay = ch.ExperienceReplay()
@@ -406,18 +442,20 @@ if __name__ == '__main__':
     num_updates = 20000
     SAC_STEPS = 1000
     
-    for epoch in range(num_updates):
+    for epoch in range(num_updates * SAC_STEPS):
         # We use the Runner collector, but could've written our own
         if RENDER:
             env.render()
-        num_samples, num_episodes = env.run(get_action,
-                                            replay,
-                                            steps=SAC_STEPS,
-                                            render=RENDER)
+        ep_replay = env.run(get_action,
+                            steps=1,
+                            render=RENDER)
 
         # Update policy
         #update(replay, optimizer, policy, env, lr_schedule)
-        critic.update(replay, env)
+        replay += ep_replay
+        replay = replay[-1000000:]
+        if len(replay) > 1000:
+            critic.update(replay, env)
 
 #####################################################################################################
 #   SAC To Dos
