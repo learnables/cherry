@@ -28,7 +28,7 @@ from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 import cherry.policies as policies
 
-SEED = 567
+SEED = 42
 GAMMA = 0.99
 RENDER = False
 
@@ -248,13 +248,16 @@ class SoftActorCritic():
         
         self.discount = discount
 
-    def update(self, replay):
+    def update(self, replay, env):
 
         batch = replay.sample(40)
         actions, values, log_pi = self.policy(batch.states)
         log_pi = log_pi.sum(-1).detach()
         log_pi = log_pi.view(-1,1)
         
+        print("Average Rewards: ") 
+        print(batch.rewards.mean())
+        print("\n")
 
 
         ''' Calculate Alpha Loss '''
@@ -281,6 +284,7 @@ class SoftActorCritic():
         target_v_values = self.target_vf(batch.next_states)
         q_target = batch.rewards + (1. - batch.dones) * self.discount * target_v_values
         qf_loss = self.qf_criterion(q_pred, q_target)
+        print("QF Loss: ") 
         print(qf_loss)
         print("\n")
 
@@ -301,6 +305,7 @@ class SoftActorCritic():
         v_pred = self.vf(batch.states)
         v_target = q_new_actions - alpha*log_pi
         vf_loss = self.vf_criterion(v_pred, v_target.detach())
+        print("VF Loss: ") 
         print(vf_loss)
         print("\n")
         
@@ -309,6 +314,9 @@ class SoftActorCritic():
 
         policy_loss = alpha*log_pi - q_new_actions
         policy_loss = policy_loss.mean()
+        print("Policy Loss: ") 
+        print(policy_loss)
+        print("\n\n")
         #policy_loss /= batch.__len__()
 
         # TODO: calculate regression loss and add to policy_loss
@@ -328,8 +336,12 @@ class SoftActorCritic():
         policy_loss.backward()
         self.policy_optimizer.step()
 
-        #self._update_target_network()
-    
+        for target_param, param in zip(self.target_vf.parameters(), self.vf.parameters()):
+           target_param.data.copy_(
+               target_param.data * (1.0 - self.soft_target_tau) + param.data * self.soft_target_tau
+           )
+
+
     def np_to_pytorch_batch(self, np_batch):
         return {
             k: _elem_or_tuple_to_variable(x)
@@ -363,8 +375,9 @@ def get_action_value(state, policy):
     return action, value, log_pi
 
 if __name__ == '__main__':
+    #env = NormalizedBoxEnv(gym.make('AntBulletEnv-v0'))
     env = gym.make('AntBulletEnv-v0')
-    #env = envs.Logger(env, interval=100)
+    env = envs.Logger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
@@ -392,7 +405,6 @@ if __name__ == '__main__':
     get_action = lambda state: get_action_value(state, policy)
     num_updates = 20000
     SAC_STEPS = 1000
-    RENDER=False
     
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
@@ -405,7 +417,7 @@ if __name__ == '__main__':
 
         # Update policy
         #update(replay, optimizer, policy, env, lr_schedule)
-        critic.update(replay)
+        critic.update(replay, env)
 
 #####################################################################################################
 #   SAC To Dos
