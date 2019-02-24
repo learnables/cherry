@@ -8,3 +8,4 @@ from . import utils
 from . import policies
 from . import mpi
 from . import optim
+from . import nn

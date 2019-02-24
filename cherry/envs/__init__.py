@@ -12,3 +12,4 @@ from .timestep_wrapper import AddTimestep
 from .monitor_wrapper import Monitor
 from .openai_normalize_wrapper import OpenAINormalize
 from .state_lambda_wrapper import StateLambda
+from .action_scaler_wrapper import ActionScaler
