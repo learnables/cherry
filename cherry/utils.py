@@ -48,6 +48,11 @@ def onehot(x, dim):
     return onehot
 
 
+def polyak_average(source, target, alpha):
+    for s, t in zip(source.parameters(), target.parameters()):
+        s.data.mul_(1.0 - alpha).add_(alpha, t.data)
+
+
 def flatten_state(space, state):
     if isinstance(space, Box):
         return np.asarray(state).flatten()

@@ -3,8 +3,6 @@
 import torch as th
 from torch.distributions import Distribution, Normal
 
-from cherry.utils import EPS
-
 
 class TanhNormal(Distribution):
 
