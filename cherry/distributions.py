@@ -22,12 +22,26 @@ class TanhNormal(Distribution):
 
     def log_prob(self, value):
         pre_tanh_value = (th.log1p(value) - th.log1p(-value)).mul(0.5)
-        offset = th.log1p(-value**2)
+        offset = th.log1p(-value**2 + 1e-6)
         return self.normal.log_prob(pre_tanh_value) - offset
 
     def sample(self):
         z = self.normal.sample().detach()
         return th.tanh(z)
+
+    def sample_and_log_prob(self):
+        z = self.normal.sample().detach()
+        value = th.tanh(z)
+        offset = th.log1p(-value**2 + 1e-6)
+        log_prob = self.normal.log_prob(z) - offset
+        return value, log_prob
+
+    def rsample_and_log_prob(self):
+        z = self.normal.rsample()
+        value = th.tanh(z)
+        offset = th.log1p(-value**2 + 1e-6)
+        log_prob = self.normal.log_prob(z) - offset
+        return value, log_prob
 
     def rsample(self):
         z = self.normal.rsample()
