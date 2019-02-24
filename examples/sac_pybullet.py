@@ -47,6 +47,9 @@ Changes from Ian's version:
     * loaded policy weights
     * added plotting
     * fixed update iterations
+
+TODO: 
+    * Fix policy init
 """
 
 
@@ -207,15 +210,19 @@ class TanhGaussianPolicy(Mlp):
         if deterministic:
             action = th.tanh(mean)
         else:
-            z = normal_dist.sample().detach()
+            z = normal_dist.rsample()
+            z.requires_grad_()
             action = th.tanh(z)
 
-            pre_tanh_value = th.log((1+action)/(1-action))/2
-            z = normal_dist.log_prob(pre_tanh_value) - th.log(1-action * action + self.epsilon)
-            log_prob = th.tanh(z)
+#            pre_tanh_value = th.log((1+action) / (1-action)) / 2.0
+            pre_tanh_value = z
+
+            log_prob = normal_dist.log_prob(pre_tanh_value) - th.log(1-action * action + self.epsilon)
 
         return (
-            action, mean, log_prob
+            action, mean, std.log(), log_prob, entropy, std,
+            None, pre_tanh_value
+
         )
 
 class SoftActorCritic():
@@ -283,12 +290,16 @@ class SoftActorCritic():
     def update(self, replay, env):
 
         batch = replay.sample(128)
-        actions, values, log_pi = self.policy(batch.states)
-        log_pi = log_pi.sum(-1)
-        log_pi = log_pi.view(-1, 1)
+
+        q_pred = self.qf(batch.states, batch.actions.detach())
+        v_pred = self.vf(batch.states)
+
+        actions, policy_mean, policy_log_std, log_pi, entropy, std, _, pre_tanh_value = self.policy(batch.states)
+        log_pi = log_pi.sum(dim=1, keepdim=True)
         
         env.log("Average Rewards: ", batch.rewards.mean().item())
-        ppt.plot(batch.rewards.mean().item(), 'cherry rewards')
+        ppt.plot(replay.rewards[-1000:].mean().item(), 'cherry true rewards')
+#        ppt.plot(batch.rewards.mean().item(), 'cherry rewards')
 
 
         ''' Calculate Alpha Loss '''
@@ -313,7 +324,6 @@ class SoftActorCritic():
         grad(Q(t))*(Q(t) - (r(t) + gamma*(Q'(t+1) - alpha*log_pi(t+1))))
 
         '''
-        q_pred = self.qf(batch.states, batch.actions)
         target_v_values = self.target_vf(batch.next_states)
         q_target = batch.rewards + (1. - batch.dones) * self.discount * target_v_values
         qf_loss = self.qf_criterion(q_pred, q_target.detach())
@@ -332,17 +342,27 @@ class SoftActorCritic():
         unnecessary.
         """
         
-        q_new_actions = self.qf(batch.next_states, batch.actions)
-        v_pred = self.vf(batch.states)
+        q_new_actions = self.qf(batch.states, actions)
         v_target = q_new_actions - alpha*log_pi
         vf_loss = self.vf_criterion(v_pred, v_target.detach())
         env.log("VF Loss: ", vf_loss.item())
         
 
         ''' Calculate Policy Loss '''
+        if True:  # Reparam
+            policy_loss = alpha*log_pi - q_new_actions
+            policy_loss = policy_loss.mean()
+        else:
+            log_policy_target = q_new_actions - v_pred
+            policy_loss = (
+                log_pi * (alpha*log_pi - log_policy_target).detach()
+            ).mean()
 
-        policy_loss = alpha*log_pi - q_new_actions
-        policy_loss = policy_loss.mean()
+        mean_reg_loss = self.policy_mean_reg_weight * (policy_mean**2).mean()
+        std_reg_loss = self.policy_std_reg_weight * (policy_log_std**2).mean()
+        policy_reg_loss = mean_reg_loss + std_reg_loss
+        policy_loss += policy_reg_loss
+
         env.log("Policy Loss: ", policy_loss.item())
         #policy_loss /= batch.__len__()
 
@@ -398,8 +418,8 @@ class SoftActorCritic():
 #
 
 def get_action_value(state, policy):
-    action, value, log_pi = policy(state)
-    return action, value, log_pi
+    action = policy(state)[0]
+    return action
 
 if __name__ == '__main__':
     random.seed(42)
@@ -421,11 +441,11 @@ if __name__ == '__main__':
 
     #policy = PolicyNet(env)
     policy = TanhGaussianPolicy(hidden_sizes=[net_size, net_size], obs_dim=obs_dim, action_dim=action_dim)
-#    policy.load_state_dict(th.load('policy.pth'))
+    policy.load_state_dict(th.load('policy.pth'))
     qnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim+action_dim, output_size=1)
-#    qnet.load_state_dict(th.load('qf.pth'))
+    qnet.load_state_dict(th.load('qf.pth'))
     vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
-#    vnet.load_state_dict(th.load('vf.pth'))
+    vnet.load_state_dict(th.load('vf.pth'))
     target_vnet = copy.deepcopy(vnet)
 
     policy_optimizer = optim.Adam(policy.parameters(), lr=3e-4)
@@ -436,7 +456,7 @@ if __name__ == '__main__':
     replay = ch.ExperienceReplay()
     
     critic = SoftActorCritic(env=env, policy=policy, qf=qnet, vf=vnet, policy_optimizer=policy_optimizer,
-            qf_optimizer=qnet_optimizer, vf_optimizer=vnet_optimizer, target_vf=target_vnet)
+            qf_optimizer=qnet_optimizer, vf_optimizer=vnet_optimizer, target_vf=target_vnet, policy_lr=3e-4)
 
     get_action = lambda state: get_action_value(state, policy)
     num_updates = 20000
