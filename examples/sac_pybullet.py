@@ -38,21 +38,6 @@ np.random.seed(SEED)
 th.manual_seed(SEED)
 
 
-"""
-Changes from Ian's version:
-    * rescaled actions
-    * updated to new replay
-    * fixed hyper-params
-    * detaching the targets and not the logpi
-    * loaded policy weights
-    * added plotting
-    * fixed update iterations
-
-TODO: 
-    * Fix policy init
-"""
-
-
 class RescaleActions(envs.Wrapper):
     def __init__(self, env):
         super(RescaleActions, self).__init__(env)
@@ -111,7 +96,7 @@ class Mlp(nn.Module):
             fc = nn.Linear(in_size, next_size)
             in_size = next_size
             # TODO: Activate the following line and fix it
-#            hidden_init(fc)
+            hidden_init(fc.weight)
             fc.bias.data.fill_(b_init_value)
             self.__setattr__("fc{}".format(i), fc)
             self.fcs.append(fc)
@@ -213,10 +198,7 @@ class TanhGaussianPolicy(Mlp):
             z = normal_dist.rsample()
             z.requires_grad_()
             action = th.tanh(z)
-
-#            pre_tanh_value = th.log((1+action) / (1-action)) / 2.0
             pre_tanh_value = z
-
             log_prob = normal_dist.log_prob(pre_tanh_value) - th.log(1-action * action + self.epsilon)
 
         return (
@@ -224,6 +206,7 @@ class TanhGaussianPolicy(Mlp):
             None, pre_tanh_value
 
         )
+
 
 class SoftActorCritic():
     def __init__(
@@ -364,10 +347,6 @@ class SoftActorCritic():
         policy_loss += policy_reg_loss
 
         env.log("Policy Loss: ", policy_loss.item())
-        #policy_loss /= batch.__len__()
-
-        # TODO: calculate regression loss and add to policy_loss
-
 
         ''' Update Networks '''
 
@@ -441,11 +420,11 @@ if __name__ == '__main__':
 
     #policy = PolicyNet(env)
     policy = TanhGaussianPolicy(hidden_sizes=[net_size, net_size], obs_dim=obs_dim, action_dim=action_dim)
-    policy.load_state_dict(th.load('policy.pth'))
+#    policy.load_state_dict(th.load('policy.pth'))
     qnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim+action_dim, output_size=1)
-    qnet.load_state_dict(th.load('qf.pth'))
+#    qnet.load_state_dict(th.load('qf.pth'))
     vnet = FlattenMlp(hidden_sizes=[net_size, net_size], input_size=obs_dim, output_size=1)
-    vnet.load_state_dict(th.load('vf.pth'))
+#    vnet.load_state_dict(th.load('vf.pth'))
     target_vnet = copy.deepcopy(vnet)
 
     policy_optimizer = optim.Adam(policy.parameters(), lr=3e-4)
