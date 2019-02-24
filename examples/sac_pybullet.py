@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 """
-A re-implementation of RLkit's SoftActorCritic.
+An implementation of SoftActorCritic.
+
+TODO:
+    * Decide whether to keep rsample_and_log_prob() or change
+      to a 3.0*Tanh before inputing to TanhNormal().
+      (The latter might actually work.)
 """
 
 import ppt
