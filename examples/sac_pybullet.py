@@ -114,8 +114,6 @@ def update(replay,
 
     # Entropy weight loss
     if USE_AUTOMATIC_ENTROPY_TUNING:
-#        alpha_loss = -(log_alpha * (log_probs + target_entropy).detach())
-#        alpha_loss = alpha_loss.mean()
         alpha_loss = sac.entropy_weight_loss(log_alpha,
                                              log_probs,
                                              target_entropy)
