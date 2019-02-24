@@ -105,10 +105,10 @@ def update(replay,
 
     batch = replay.sample(BSZ)
     density = policy(batch.states)
-    actions = density.rsample()
-    log_probs = density.log_prob(actions).sum(dim=1, keepdim=True)
-    # NOTE: The following two lines are specific to the TanhNormal policy.
-    #       For other policies, it should be the output of the policy net.
+    # NOTE: The following lines are specific to the TanhNormal policy.
+    #       Other policies should constrain the output of the policy net.
+    actions, log_probs = density.rsample_and_log_prob()
+    log_probs = log_probs.sum(dim=1, keepdim=True)
     policy_mean = density.normal.mean
     policy_log_std = density.normal.stddev.log()
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     th.manual_seed(SEED)
     env = gym.make('HalfCheetahBulletEnv-v0')
     env = envs.Logger(env, interval=1000)
-    env = envs.ActionScaler(env)
+    env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
