@@ -19,6 +19,7 @@ import torch.optim as optim
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
+from cherry.algorithms import sac
 
 SEED = 42
 RENDER = False
@@ -113,8 +114,11 @@ def update(replay,
 
     # Entropy weight loss
     if USE_AUTOMATIC_ENTROPY_TUNING:
-        alpha_loss = -(log_alpha * (log_probs + target_entropy).detach())
-        alpha_loss = alpha_loss.mean()
+#        alpha_loss = -(log_alpha * (log_probs + target_entropy).detach())
+#        alpha_loss = alpha_loss.mean()
+        alpha_loss = sac.entropy_weight_loss(log_alpha,
+                                             log_probs,
+                                             target_entropy)
         alpha_opt.zero_grad()
         alpha_loss.backward()
         alpha_opt.step()
@@ -124,19 +128,17 @@ def update(replay,
         alpha_loss = th.zeros(1)
 
     # QF loss
-    q_pred = qf(batch.states, batch.actions.detach())
-    target_v_values = target_vf(batch.next_states)
-    q_target = batch.rewards + (1.0 - batch.dones) * GAMMA * target_v_values
-    qf_loss = F.mse_loss(q_pred, q_target.detach())
+    q_old_pred = qf(batch.states, batch.actions.detach())
+    v_next = target_vf(batch.next_states)
+    qf_loss = sac.q_loss(q_old_pred, v_next, batch.rewards, batch.dones, GAMMA)
 
     # VF loss
     v_pred = vf(batch.states)
-    q_new_actions = qf(batch.states, actions)
-    v_target = q_new_actions - alpha * log_probs
-    vf_loss = F.mse_loss(v_pred, v_target.detach())
+    q_values = qf(batch.states, actions)
+    vf_loss = sac.v_loss(v_pred, log_probs, q_values, alpha)
 
     # Policy loss
-    policy_loss = (alpha * log_probs - q_new_actions).mean()
+    policy_loss = sac.policy_loss(log_probs, q_values, alpha)
     mean_reg_loss = MEAN_REG_WEIGHT * policy_mean.pow(2).mean()
     std_reg_loss = STD_REG_WEIGHT * policy_log_std.pow(2).mean()
     policy_reg_loss = mean_reg_loss + std_reg_loss
@@ -164,8 +166,9 @@ def update(replay,
     policy_loss.backward()
     policy_opt.step()
 
-    for target_p, p in zip(target_vf.parameters(), vf.parameters()):
-        target_p.data.mul_(1.0 - VF_TARGET_TAU).add_(VF_TARGET_TAU, p.data)
+    ch.utils.polyak_average(source=target_vf,
+                            target=vf,
+                            alpha=VF_TARGET_TAU)
 
 
 if __name__ == '__main__':

@@ -2,3 +2,4 @@
 
 from . import ppo
 from . import a2c
+from . import sac
