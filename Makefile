@@ -1,7 +1,7 @@
 
 .PHONY: all tests dist
 
-all: dqn
+all: sac
 
 dist:
 	OMP_NUM_THREADS=1 \
@@ -23,6 +23,8 @@ ac:
 	python examples/actor_critic_cartpole.py
 
 sac:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
 	python examples/sac_pybullet.py
 
 grid:
