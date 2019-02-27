@@ -74,20 +74,13 @@ The documentation will be written as we begin to converge the core concepts of c
 
 Some functionalities that we might want to implement.
 
-* normalize / serialize / parallelize environments,
-* compute advantages / policy gradients / rewards,
-* print and log training / debugging stats,
-* distributed / async training,
-* fix: what is up with the non-determinism ?
-* sample batches from replay,
-* function to sample experience,
-* handle recurrent policies,
-* functions for GAE, discounted and bootstrapped rewards,
-* unified support for continuous and discrete environments,
-* one high-performance implementation of A2C on Breakout and Ant-v1. (or pybullet equivalent)
+* parallelize environments and a way to handle it with `ExperienceReplay`,
+* `VisdomLogger` as a dashboard to debug an implementation,
+* example with reccurent net,
+* minimal but complete documentation,
+* a few extensive tutorials (Getting started with distributed A2C, Advanced usage (which?) with PPO, and another on debugging your algorithms).
 
-
-# Acknowledgements
+### Acknowledgements
 
 Cherry draws inspiration from many reinforcement learning implementations, including
 
