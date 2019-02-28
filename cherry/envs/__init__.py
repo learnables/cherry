@@ -13,3 +13,4 @@ from .monitor_wrapper import Monitor
 from .openai_normalize_wrapper import OpenAINormalize
 from .state_lambda_wrapper import StateLambda
 from .action_space_scaler_wrapper import ActionSpaceScaler
+from .visdom_logger_wrapper import VisdomLogger
