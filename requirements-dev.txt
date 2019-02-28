@@ -1,3 +1,4 @@
+twine
 mkdocs==1.0.4
 mkdocs-pydoc==0.1.0.dev0
 mkdocs-bootswatch==1.0
