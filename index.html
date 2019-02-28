@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>Cherry</title>
+        <link href="css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/docco.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href=".">Cherry</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href=".">Home</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorials <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="source/tutorials/distributed_a2c.md">Distributed Policy Gradients with A2C</a>
+</li>
+                                    
+<li >
+    <a href="source/tutorials/continuous_ppo.md">Continuous Control with PPO</a>
+</li>
+                                    
+<li >
+    <a href="source/tutorials/continuous_ppo.md">Debugging Reinforcement Learning</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="docs/cherry/">cherry</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.algorithms/">cherry.algorithms</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.envs/">cherry.envs</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.optim/">cherry.optim</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.rewards/">cherry.rewards</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.distributions/">cherry.distributions</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.utils/">cherry.utils</a>
+</li>
+                                    
+<li >
+    <a href="docs/cherry.experience-replay/">cherry.ExperienceReplay</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="disabled">
+                                <a rel="next" >
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="docs/cherry/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#installation">Installation</a></li>
+        <li class="main "><a href="#development-guidelines">Development Guidelines</a></li>
+        <li class="main "><a href="#usage">Usage</a></li>
+        <li class="main "><a href="#documentation">Documentation</a></li>
+        <li class="main "><a href="#todo">TODO</a></li>
+            <li><a href="#acknowledgements">Acknowledgements</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p align="center"><img src="./docs/assets/img/cherry_full.png" height="150px" /></p>
+
+<hr />
+<p>Cherry is reinforcement learning framework for researchers built on top of PyTorch.</p>
+<p>Unlike other reinforcement learning implementations, cherry doesn't try to provide a single interface to existing algorithms.
+Instead, it provides you with common tools to write your own algorithms.
+Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
+So if you don't like a specific tool, you can still use parts of cherry without headaches.</p>
+<h2 id="installation">Installation</h2>
+<p>For now, cherry is still in development.</p>
+<ol>
+<li>Clone the repo: <code>git clone https://github.com/seba-1511/cherry</code></li>
+<li><code>cd cherry</code></li>
+<li><code>pip install -e .</code></li>
+</ol>
+<p>Upon our first public release, you'll be able to</p>
+<pre><code>pip install cherry-rl
+</code></pre>
+
+<h2 id="development-guidelines">Development Guidelines</h2>
+<ul>
+<li>The <code>master</code> branch is always working, considered stable.</li>
+<li>The <code>dev</code> branch should always work and is ahead of <code>master</code>, considered cutting edge.</li>
+<li>To implement a new functionality: branch <code>dev</code> into <code>your_name/functionality_name</code>, implement your functionality, then pull request to <code>dev</code>. It will be periodically merged into <code>master</code>.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>The following snippet demonstrates some of the tools offered by cherry.</p>
+<pre><code class="python">import cherry as ch
+
+# Wrapping environments
+env = ch.envs.Logger(env, interval=1000)  # Prints rollouts statistics
+env = ch.envs.Normalized(env, normalize_state=True, normalize_reward=False)  
+env = ch.envs.Torch(env)  # Converts actions/states to tensors
+
+# Storing and retrieving experience
+replay = ch.ExperienceReplay()
+replay.add(old_state, action, reward, state, done, info = {
+        'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
+        'value': value
+})
+replay.actions  # Tensor of all stored actions
+replay.states  # Tensor of all stored states
+replay.empty()  # Removes all stored experience
+
+# Discounting and normalizing rewards
+rewards = ch.rewards.discount_rewards(GAMMA, replay.rewards, replay.dones)
+rewards = ch.utils.normalize(th.tensor(rewards))
+
+# Sampling rollouts per episode or samples
+num_samples, num_episodes = ch.rollouts.collect(env,
+                                                get_action,
+                                                replay,
+                                                num_episodes=10,
+                                                # alternatively: num_samples=1000,
+)
+</code></pre>
+
+<p>Concrete examples are available in the <a href="./examples/">examples/</a> folder.</p>
+<h2 id="documentation">Documentation</h2>
+<p>The documentation will be written as we begin to converge the core concepts of cherry.</p>
+<h2 id="todo">TODO</h2>
+<p>Some functionalities that we might want to implement.</p>
+<ul>
+<li>parallelize environments and a way to handle it with <code>ExperienceReplay</code>,</li>
+<li><code>VisdomLogger</code> as a dashboard to debug an implementation,</li>
+<li>example with reccurent net,</li>
+<li>minimal but complete documentation,</li>
+<li>a few extensive tutorials (Getting started with distributed A2C, Advanced usage (which?) with PPO, and another on debugging your algorithms).</li>
+</ul>
+<h3 id="acknowledgements">Acknowledgements</h3>
+<p>Cherry draws inspiration from many reinforcement learning implementations, including</p>
+<ul>
+<li><a href="https://github.com/openai/baselines">OpenAI Baselines</a>,</li>
+<li>John Schulman's <a href="https://github.com/joschu/modular_rl">implementations</a></li>
+<li>Ilya Kostrikov's <a href="https://github.com/ikostrikov/pytorch-a2c-ppo-acktr">implementations</a>,</li>
+<li>Shangtong Zhang's <a href="https://github.com/ShangtongZhang/DeepRL">implementations</a>,</li>
+<li><a href="https://github.com/rll/rllab">RLLab</a>,</li>
+<li><a href="https://github.com/vitchyr/rlkit">RLKit</a>.</li>
+</ul></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-02-28 02:03:01
+-->
