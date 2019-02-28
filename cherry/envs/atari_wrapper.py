@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import cv2
 
 from gym.spaces import Box
 
 from .base import Wrapper
 
-cv2.ocl.setUseOpenCL(False)
+try:
+    import cv2
+    cv2.ocl.setUseOpenCL(False)
+except:
+    cv2 = None
 
 """
 Inspired from OpenAI's baselines:

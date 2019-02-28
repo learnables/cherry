@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
+import gym
+import numpy as np
+from gym import spaces
+from collections import deque
+
 from .base import Wrapper
 
-import numpy as np
-from collections import deque
-import gym
-from gym import spaces
-import cv2
-cv2.ocl.setUseOpenCL(False)
+try:
+    import cv2
+    cv2.ocl.setUseOpenCL(False)
+except:
+    cv2 = None
 
 """
 Inspired from OpenAI's baselines:
