@@ -42,6 +42,8 @@ tests:
 
 docs:
 	cd docs && pydocmd build && pydocmd serve
+docs-deploy:
+	cd docs && pydocmd gh-deploy
 
 publish:
 	python setup.py sdist
