@@ -68,11 +68,22 @@ code {
 }
 
 pre code {
-    background: transparent;
+    background: none !important;
     border: none;
 }
 
-div[role=main] a, ul.bs-sidenav li a, a:hover body, a:hover, a code {
+div[role=main] a,
+ul.bs-sidenav li a,
+a:hover body,
+a:hover,a
+a:active body,
+a:active,a
+a:visited body,
+a:visited,a
+footer a,
+footer a:active,
+footer a:visited,
+a code {
     color: #ee4c2c !important;
 }
 

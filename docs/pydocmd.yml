@@ -5,9 +5,26 @@ site_name: "Cherry"
 # is a tree of Python member names (modules, classes, etc.) that should be
 # documented. Higher indentation leads to smaller header size.
 generate:
-- docs/experience-replay.md:
-  - cherry.ExperienceReplay++:
-      - cherry.ExperienceReplay.add
+    - docs/cherry.experience-replay.md:
+        - cherry.ExperienceReplay
+    - docs/cherry.md:
+        - cherry
+    - docs/cherry.algorithms.md:
+        - cherry.algorithms.a2c+
+        - cherry.algorithms.ppo+
+        - cherry.algorithms.sac+
+    - docs/cherry.envs.md:
+        - cherry.envs.Logger++
+        - cherry.envs.Runner++
+        - cherry.envs.OpenAINormalize++
+    - docs/cherry.optim.md:
+        - cherry.optim++
+    - docs/cherry.rewards.md:
+        - cherry.rewards++
+    - docs/cherry.distributions.md:
+        - cherry.distributions++
+    - docs/cherry.utils.md:
+        - cherry.utils++
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -16,24 +33,32 @@ generate:
 pages:
 - Home: index.md << ../README.md
 - Tutorials:
-    - Distributed Policy Gradients with A2C: docs/experience-replay.md
-    - Continuous Control with PPO: docs/experience-replay.md
-    - Debugging Reinforcement Learning: docs/experience-replay.md
+    - Distributed Policy Gradients with A2C: source/tutorials/distributed_a2c.md
+    - Continuous Control with PPO: source/tutorials/continuous_ppo.md
+    - Debugging Reinforcement Learning: source/tutorials/continuous_ppo.md
 - Documentation:
-    - ExperienceReplay: docs/experience-replay.md
+    - cherry: docs/cherry.md
+    - cherry.algorithms: docs/cherry.algorithms.md
+    - cherry.envs: docs/cherry.envs.md
+    - cherry.optim: docs/cherry.optim.md
+    - cherry.rewards: docs/cherry.rewards.md
+    - cherry.distributions: docs/cherry.distributions.md
+    - cherry.utils: docs/cherry.utils.md
+    - cherry.ExperienceReplay: docs/cherry.experience-replay.md
 
 # These options all show off their default values. You don't have to add
 # them to your configuration if you're fine with the default.
-docs_dir: assets
+docs_dir: source
 gens_dir: _build/pydocmd     # This will end up as the MkDocs 'docs_dir'
 site_dir: _build/site
-theme:    
+theme:
+    logo: 'docs/assets/img/cherry.png'
     name: flatly
     custom_dir: 'cherry_theme/'
 loader:   pydocmd.loader.PythonLoader
 preprocessor: pydocmd.preprocessor.Preprocessor
 highlightjs: true
-hljs_style: 'solarized_light' 
+hljs_style: solarized_light
 
 # Whether to output headers as markdown or HTML.  Used to workaround
 # https://github.com/NiklasRosenstein/pydoc-markdown/issues/11.  The default is
@@ -49,4 +74,3 @@ headers: html
 # directory here.
 additional_search_paths:
 - ..
-- ./assets
