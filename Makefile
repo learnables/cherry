@@ -9,6 +9,10 @@ dist:
 	python -m torch.distributed.launch \
 	          --nproc_per_node=8 \
 		    examples/dist_a2c_atari.py
+bug:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python examples/debug_atari.py
 
 ppo:
 	python examples/ppo_pybullet.py
