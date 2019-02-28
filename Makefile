@@ -42,6 +42,7 @@ tests:
 
 docs:
 	cd docs && pydocmd build && pydocmd serve
+
 docs-deploy:
 	cd docs && pydocmd gh-deploy
 
