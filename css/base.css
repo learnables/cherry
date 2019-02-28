@@ -87,6 +87,15 @@ a code {
     color: #ee4c2c !important;
 }
 
+div.navbar-header {
+    background-image: url("https://seba-1511.github.io/cherry/img/apple-touch-icon-57x57.png");
+    background-repeat: no-repeat, repeat-x;
+    padding-left: 42px;
+    background-position-x: left;
+    background-position-y: bottom 10px;
+    background-size: 40px 40px;
+}
+
 kbd {
     padding: 2px 4px;
     font-size: 90%;

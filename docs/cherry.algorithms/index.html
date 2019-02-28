@@ -129,18 +129,58 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#cherryalgorithmsa2c">cherry.algorithms.a2c</a></li>
+            <li><a href="#policy_loss">policy_loss</a></li>
+            <li><a href="#value_loss">value_loss</a></li>
+        <li class="main "><a href="#cherryalgorithmsppo">cherry.algorithms.ppo</a></li>
+            <li><a href="#policy_loss_1">policy_loss</a></li>
+            <li><a href="#value_loss_1">value_loss</a></li>
+        <li class="main "><a href="#cherryalgorithmssac">cherry.algorithms.sac</a></li>
+            <li><a href="#policy_loss_2">policy_loss</a></li>
+            <li><a href="#q_loss">q_loss</a></li>
+            <li><a href="#v_loss">v_loss</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="cherry.algorithms.a2c">cherry.algorithms.a2c</h1>
+<h1 id="cherryalgorithmsa2c">cherry.algorithms.a2c</h1>
+<h2 id="policy_loss">policy_loss</h2>
+<pre><code class="python">policy_loss(log_probs, advantages)
+</code></pre>
 
-<h1 id="cherry.algorithms.ppo">cherry.algorithms.ppo</h1>
+<p>Advantage Actor-Critic policy loss.</p>
+<h2 id="value_loss">value_loss</h2>
+<pre><code class="python">value_loss(values, rewards)
+</code></pre>
 
-<h1 id="cherry.algorithms.sac">cherry.algorithms.sac</h1>
+<p>Advantage Actor-Critic value loss.</p>
+<h1 id="cherryalgorithmsppo">cherry.algorithms.ppo</h1>
+<h2 id="policy_loss_1">policy_loss</h2>
+<pre><code class="python">policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1)
+</code></pre>
 
-<h2 id="cherry.algorithms.sac.policy_loss">policy_loss</h2>
+<p>Clipped policy loss.</p>
+<p>Arguments:</p>
+<ul>
+<li>new_log_probs: (tensor)</li>
+<li>old_log_probs: (tensor)</li>
+<li>advantages: (tensor)</li>
+<li>clip: (tensor)</li>
+</ul>
+<h2 id="value_loss_1">value_loss</h2>
+<pre><code class="python">value_loss(new_values, old_values, rewards, clip=0.1)
+</code></pre>
 
+<p>Clipped value loss.</p>
+<p>Arguments:</p>
+<ul>
+<li>new_values: (tensor)</li>
+<li>old_values: (tensor)</li>
+<li>rewards: (tensor)</li>
+<li>clip: (tensor)</li>
+</ul>
+<h1 id="cherryalgorithmssac">cherry.algorithms.sac</h1>
+<h2 id="policy_loss_2">policy_loss</h2>
 <pre><code class="python">policy_loss(log_probs, q_actions, alpha=1.0)
 </code></pre>
 
@@ -151,8 +191,7 @@
 <li>q_actions: the Q-values for those same actions.</li>
 <li>alpha: the weight of the policy entropy.</li>
 </ul>
-<h2 id="cherry.algorithms.sac.q_loss">q_loss</h2>
-
+<h2 id="q_loss">q_loss</h2>
 <pre><code class="python">q_loss(q_old_pred, v_next, rewards, dones, gamma)
 </code></pre>
 
@@ -164,8 +203,7 @@
 <li>dones: which states were terminal.</li>
 <li>gamma: discount factor.</li>
 </ul>
-<h2 id="cherry.algorithms.sac.v_loss">v_loss</h2>
-
+<h2 id="v_loss">v_loss</h2>
 <pre><code class="python">v_loss(v_pred, log_probs, q_values, alpha=1.0)
 </code></pre>
 

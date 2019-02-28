@@ -129,23 +129,30 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#logger">Logger</a></li>
+        <li class="main "><a href="#runner">Runner</a></li>
+            <li><a href="#run">run</a></li>
+        <li class="main "><a href="#openainormalize">OpenAINormalize</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="cherry.envs.Logger">Logger</h1>
-
+<h1 id="logger">Logger</h1>
 <pre><code class="python">Logger(self, env, interval=1000, episode_interval=10)
 </code></pre>
 
 <p>Tracks and prints some common statistics about the environment.</p>
-<h1 id="cherry.envs.Runner">Runner</h1>
-
+<h1 id="runner">Runner</h1>
 <pre><code class="python">Runner(self, env)
 </code></pre>
 
-<h1 id="cherry.envs.OpenAINormalize">OpenAINormalize</h1>
+<p>Runner wrapper.</p>
+<h2 id="run">run</h2>
+<pre><code class="python">Runner.run(self, get_action, steps=None, episodes=None, render=False)
+</code></pre>
 
+<p>Runner wrapper's run method.</p>
+<h1 id="openainormalize">OpenAINormalize</h1>
 <pre><code class="python">OpenAINormalize(self, env, state=True, ret=True, clipob=10.0, cliprew=10.0, gamma=0.99, eps=1e-08)
 </code></pre></div>
         </div>
