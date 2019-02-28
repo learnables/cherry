@@ -9,7 +9,7 @@ Instead, it provides you with common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
 So if you don't like a specific tool, you can still use parts of cherry without headaches.
 
-# Installation
+## Installation
 
 For now, cherry is still in development.
 
@@ -23,13 +23,13 @@ Upon our first public release, you'll be able to
 pip install cherry-rl
 ```
 
-# Development Guidelines
+## Development Guidelines
 
 * The `master` branch is always working, considered stable.
 * The `dev` branch should always work and is ahead of `master`, considered cutting edge.
 * To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
 
-# Usage
+## Usage
 
 The following snippet demonstrates some of the tools offered by cherry.
 
@@ -66,11 +66,11 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 Concrete examples are available in the [examples/](./examples/) folder.
 
-# Documentation
+## Documentation
 
 The documentation will be written as we begin to converge the core concepts of cherry.
 
-# TODO
+## TODO
 
 Some functionalities that we might want to implement.
 

@@ -7,10 +7,11 @@ from torch.nn import functional as F
 def policy_loss(log_probs, q_actions, alpha=1.0):
     """
     Arguments:
-        log_probs: the log density of the actions from the current policy on
-                   some states.
-        q_actions: the Q-values for those same actions.
-        alpha: the weight of the policy entropy.
+
+    * log_probs: the log density of the actions from the current policy on
+               some states.
+    * q_actions: the Q-values for those same actions.
+    * alpha: the weight of the policy entropy.
     """
     msg = 'log_probs and q_actions must have equal size.'
     assert log_probs.size() == q_actions.size(), msg
@@ -20,11 +21,12 @@ def policy_loss(log_probs, q_actions, alpha=1.0):
 def q_loss(q_old_pred, v_next, rewards, dones, gamma):
     """
     Arguments:
-        q_old_pred: Q values on an existing transition.
-        v_next: V values for the resulting state.
-        rewards: observed rewards during the transition.
-        dones: which states were terminal.
-        gamma: discount factor.
+
+    * q_old_pred: Q values on an existing transition.
+    * v_next: V values for the resulting state.
+    * rewards: observed rewards during the transition.
+    * dones: which states were terminal.
+    * gamma: discount factor.
     """
     msg = 'v_next, rewards, and dones must have equal size.'
     assert rewards.size() == dones.size() == v_next.size(), msg
@@ -35,11 +37,12 @@ def q_loss(q_old_pred, v_next, rewards, dones, gamma):
 def v_loss(v_pred, log_probs, q_values, alpha=1.0):
     """
     Arguments:
-        v_pred: the V values of states from a batch.
-        log_probs: the log density of actions from the current policy on
-                   those states.
-        q_values: the Q values of the those actions on those states.
-        alpha: the weight of the policy entropy.
+
+    * v_pred: the V values of states from a batch.
+    * log_probs: the log density of actions from the current policy on
+               those states.
+    * q_values: the Q values of the those actions on those states.
+    * alpha: the weight of the policy entropy.
     """
     msg = 'v_pred, q_values, and log_probs must have equal size.'
     assert v_pred.size() == q_values.size() == log_probs.size(), msg
