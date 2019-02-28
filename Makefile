@@ -1,5 +1,5 @@
 
-.PHONY: all tests dist
+.PHONY: all tests dist docs
 
 all: sac
 
@@ -35,6 +35,9 @@ dqn:
 
 tests:
 	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+
+docs:
+	cd docs && pydocmd build && pydocmd serve
 
 publish:
 	python setup.py sdist
