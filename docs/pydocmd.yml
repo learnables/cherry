@@ -1,0 +1,52 @@
+site_name: "Cherry"
+
+# This tells pydocmd which pages to generate from which Python modules,
+# functions and classes. At the first level is the page name, below that
+# is a tree of Python member names (modules, classes, etc.) that should be
+# documented. Higher indentation leads to smaller header size.
+generate:
+- docs/experience-replay.md:
+  - cherry.ExperienceReplay++:
+      - cherry.ExperienceReplay.add
+
+# MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
+# that allows you to use an external Markdown file (eg. your project's README)
+# in the documentation. The path must be relative to current working directory.
+# This configuration is not mandatory if you have your own mkdocs.yml config file.
+pages:
+- Home: index.md << ../README.md
+- Tutorials:
+    - Distributed Policy Gradients with A2C: docs/experience-replay.md
+    - Continuous Control with PPO: docs/experience-replay.md
+    - Debugging Reinforcement Learning: docs/experience-replay.md
+- Documentation:
+    - ExperienceReplay: docs/experience-replay.md
+
+# These options all show off their default values. You don't have to add
+# them to your configuration if you're fine with the default.
+docs_dir: assets
+gens_dir: _build/pydocmd     # This will end up as the MkDocs 'docs_dir'
+site_dir: _build/site
+theme:    
+    name: flatly
+    custom_dir: 'cherry_theme/'
+loader:   pydocmd.loader.PythonLoader
+preprocessor: pydocmd.preprocessor.Preprocessor
+highlightjs: true
+hljs_style: 'solarized_light' 
+
+# Whether to output headers as markdown or HTML.  Used to workaround
+# https://github.com/NiklasRosenstein/pydoc-markdown/issues/11.  The default is
+# to generate HTML with unique and meaningful id tags, which can't be done with
+# markdown.
+#
+# Note: if using the simple generator mode, this will default to 'markdown'
+# instead of 'html'.
+headers: html
+
+# Additional search path for your Python module. If you use Pydocmd from a
+# subdirectory of your project (eg. docs/), you may want to add the parent
+# directory here.
+additional_search_paths:
+- ..
+- ./assets

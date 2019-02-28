@@ -1,0 +1,12 @@
+docs_dir: _build/pydocmd
+pages:
+- {Home: index.md}
+- Tutorials:
+  - {Distributed Policy Gradients with A2C: docs/experience-replay.md}
+  - {Continuous Control with PPO: docs/experience-replay.md}
+  - {Debugging Reinforcement Learning: docs/experience-replay.md}
+- Documentation:
+  - {ExperienceReplay: docs/experience-replay.md}
+site_dir: _build/site
+site_name: Cherry
+theme: {custom_dir: cherry_theme/, name: flatly}
