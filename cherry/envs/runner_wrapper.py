@@ -6,6 +6,10 @@ from .base import Wrapper
 
 class Runner(Wrapper):
 
+    """
+    Runner wrapper.
+    """
+
     def __init__(self, env):
         super(Runner, self).__init__(env)
         self.env = env
@@ -20,6 +24,9 @@ class Runner(Wrapper):
             steps=None,
             episodes=None,
             render=False):
+        """
+        Runner wrapper's run method.
+        """
 
         if steps is None:
             steps = float('inf')

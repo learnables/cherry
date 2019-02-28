@@ -5,26 +5,26 @@ site_name: "Cherry"
 # is a tree of Python member names (modules, classes, etc.) that should be
 # documented. Higher indentation leads to smaller header size.
 generate:
-    - docs/cherry.experience-replay.md:
-        - cherry.ExperienceReplay
-    - docs/cherry.md:
-        - cherry
-    - docs/cherry.algorithms.md:
-        - cherry.algorithms.a2c+
-        - cherry.algorithms.ppo+
-        - cherry.algorithms.sac+
-    - docs/cherry.envs.md:
-        - cherry.envs.Logger++
-        - cherry.envs.Runner++
-        - cherry.envs.OpenAINormalize++
-    - docs/cherry.optim.md:
-        - cherry.optim++
-    - docs/cherry.rewards.md:
-        - cherry.rewards++
-    - docs/cherry.distributions.md:
-        - cherry.distributions++
-    - docs/cherry.utils.md:
-        - cherry.utils++
+- docs/cherry.experience-replay.md:
+    - cherry.ExperienceReplay
+- docs/cherry.md:
+    - cherry
+- docs/cherry.algorithms.md:
+    - cherry.algorithms.a2c++
+    - cherry.algorithms.ppo++
+    - cherry.algorithms.sac++
+- docs/cherry.envs.md:
+    - cherry.envs.Logger++
+    - cherry.envs.Runner++
+    - cherry.envs.OpenAINormalize++
+- docs/cherry.optim.md:
+    - cherry.optim++
+- docs/cherry.rewards.md:
+    - cherry.rewards++
+- docs/cherry.distributions.md:
+    - cherry.distributions++
+- docs/cherry.utils.md:
+    - cherry.utils++
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -67,7 +67,7 @@ hljs_style: solarized_light
 #
 # Note: if using the simple generator mode, this will default to 'markdown'
 # instead of 'html'.
-headers: html
+headers: markdown
 
 # Additional search path for your Python module. If you use Pydocmd from a
 # subdirectory of your project (eg. docs/), you may want to add the parent
