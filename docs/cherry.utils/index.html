@@ -54,25 +54,25 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../../source/tutorials/distributed_a2c.md">Distributed Policy Gradients with A2C</a>
+    <a href="../../tutorials/getting_started/">Getting Started with Cherry</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Continuous Control with PPO</a>
+    <a href="../../tutorials/distributed_a2c/">Distributed Policy Gradients with A2C</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Debugging Reinforcement Learning</a>
+    <a href="../../tutorials/continuous_ppo/">Continuous Control with PPO</a>
+</li>
+                                    
+<li >
+    <a href="../../tutorials/continuous_ppo/">Debugging Reinforcement Learning</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li >
-    <a href="../cherry/">cherry</a>
-</li>
                                     
 <li >
     <a href="../cherry.algorithms/">cherry.algorithms</a>
@@ -130,11 +130,30 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryutils">cherry.utils</a></li>
+            <li><a href="#normalize">normalize</a></li>
+            <li><a href="#polyak_average">polyak_average</a></li>
+            <li><a href="#flatten_state">flatten_state</a></li>
+            <li><a href="#get_space_dimension">get_space_dimension</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="cherryutils">cherry.utils</h1></div>
+<h1 id="cherryutils">cherry.utils</h1>
+<h2 id="normalize">normalize</h2>
+<pre><code class="python">normalize(tensor, epsilon=2.220446049250313e-16)
+</code></pre>
+
+<h2 id="polyak_average">polyak_average</h2>
+<pre><code class="python">polyak_average(source, target, alpha)
+</code></pre>
+
+<h2 id="flatten_state">flatten_state</h2>
+<pre><code class="python">flatten_state(space, state)
+</code></pre>
+
+<h2 id="get_space_dimension">get_space_dimension</h2>
+<pre><code class="python">get_space_dimension(space)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

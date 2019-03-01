@@ -54,25 +54,25 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../../source/tutorials/distributed_a2c.md">Distributed Policy Gradients with A2C</a>
+    <a href="../../tutorials/getting_started/">Getting Started with Cherry</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Continuous Control with PPO</a>
+    <a href="../../tutorials/distributed_a2c/">Distributed Policy Gradients with A2C</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Debugging Reinforcement Learning</a>
+    <a href="../../tutorials/continuous_ppo/">Continuous Control with PPO</a>
+</li>
+                                    
+<li >
+    <a href="../../tutorials/continuous_ppo/">Debugging Reinforcement Learning</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li >
-    <a href="../cherry/">cherry</a>
-</li>
                                     
 <li >
     <a href="../cherry.algorithms/">cherry.algorithms</a>
@@ -129,19 +129,39 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#logger">Logger</a></li>
+        <li class="main active"><a href="#wrapper">Wrapper</a></li>
         <li class="main "><a href="#runner">Runner</a></li>
             <li><a href="#run">run</a></li>
+        <li class="main "><a href="#logger">Logger</a></li>
+        <li class="main "><a href="#torch">Torch</a></li>
+        <li class="main "><a href="#normalized">Normalized</a></li>
+        <li class="main "><a href="#atari">Atari</a></li>
+            <li><a href="#step">step</a></li>
+        <li class="main "><a href="#openaiatari">OpenAIAtari</a></li>
+        <li class="main "><a href="#clipreward">ClipReward</a></li>
+            <li><a href="#reward">reward</a></li>
+        <li class="main "><a href="#addtimestep">AddTimestep</a></li>
+        <li class="main "><a href="#monitor">Monitor</a></li>
         <li class="main "><a href="#openainormalize">OpenAINormalize</a></li>
+        <li class="main "><a href="#statelambda">StateLambda</a></li>
+        <li class="main "><a href="#actionspacescaler">ActionSpaceScaler</a></li>
+        <li class="main "><a href="#visdomlogger">VisdomLogger</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="logger">Logger</h1>
-<pre><code class="python">Logger(self, env, interval=1000, episode_interval=10)
+<h1 id="wrapper">Wrapper</h1>
+<pre><code class="python">Wrapper(self, env)
 </code></pre>
 
-<p>Tracks and prints some common statistics about the environment.</p>
+<p>This class allows to chain Environment Wrappers while still being able to
+access the properties of wrapped wrappers.</p>
+<p>Example:</p>
+<pre><code>env = gym.make('MyEnv-v0')
+env = envs.Logger(env)
+env = envs.Runner(env)
+env.log('asdf', 23)  # Uses log() method from envs.Logger.
+</code></pre>
 <h1 id="runner">Runner</h1>
 <pre><code class="python">Runner(self, env)
 </code></pre>
@@ -152,9 +172,92 @@
 </code></pre>
 
 <p>Runner wrapper's run method.</p>
+<h1 id="logger">Logger</h1>
+<pre><code class="python">Logger(self, env, interval=1000, episode_interval=10)
+</code></pre>
+
+<p>Tracks and prints some common statistics about the environment.</p>
+<h1 id="torch">Torch</h1>
+<pre><code class="python">Torch(self, env)
+</code></pre>
+
+<p>This wrapper converts
+    * actions from Tensors to numpy,
+    * states from lists/numpy to Tensors.</p>
+<p>Example:
+    action = Categorical(Tensor([1, 2, 3])).sample()
+    env.step(action)</p>
+<h1 id="normalized">Normalized</h1>
+<pre><code class="python">Normalized(self, env, scale_reward=1.0, normalize_state=True, normalize_reward=False, state_alpha=0.001, reward_alpha=0.001)
+</code></pre>
+
+<p>Normalizing wrapper for actions, states, and rewards.</p>
+<h1 id="atari">Atari</h1>
+<pre><code class="python">Atari(self, env, grayscale=True, skip=4, stack=4, warp=84)
+</code></pre>
+
+<p>Process Atari frames similarly to what DeepMind does.</p>
+<ul>
+<li>Skip 3 out of 4 frames,</li>
+<li>Stack the last 4 frames,</li>
+<li>Warp state to a 84x84 image (optionally grayscale).</li>
+</ul>
+<p>Note: The reward clipping is available in cherry.envs.ClipRewards.</p>
+<h2 id="step">step</h2>
+<pre><code class="python">Atari.step(self, *args, **kwargs)
+</code></pre>
+
+<p>Sum rewards, max over observations.</p>
+<h1 id="openaiatari">OpenAIAtari</h1>
+<pre><code class="python">OpenAIAtari(self, env)
+</code></pre>
+
+<h1 id="clipreward">ClipReward</h1>
+<pre><code class="python">ClipReward(self, env)
+</code></pre>
+
+<h2 id="reward">reward</h2>
+<pre><code class="python">ClipReward.reward(self, reward)
+</code></pre>
+
+<p>Bin reward to {+1, 0, -1} by its sign.</p>
+<h1 id="addtimestep">AddTimestep</h1>
+<pre><code class="python">AddTimestep(self, env=None)
+</code></pre>
+
+<p>Adds a timestep information to the state input.</p>
+<p>Modified from Ilya Kostrikov's implementation:</p>
+<p>https://github.com/ikostrikov/pytorch-a2c-ppo-acktr/</p>
+<h1 id="monitor">Monitor</h1>
+<pre><code class="python">Monitor(self, env, directory, *args, **kwargs)
+</code></pre>
+
+<p>Sugar coating on top of Gym's Monitor.</p>
 <h1 id="openainormalize">OpenAINormalize</h1>
 <pre><code class="python">OpenAINormalize(self, env, state=True, ret=True, clipob=10.0, cliprew=10.0, gamma=0.99, eps=1e-08)
-</code></pre></div>
+</code></pre>
+
+<h1 id="statelambda">StateLambda</h1>
+<pre><code class="python">StateLambda(self, env, fn)
+</code></pre>
+
+<h1 id="actionspacescaler">ActionSpaceScaler</h1>
+<pre><code class="python">ActionSpaceScaler(self, env, clip=1.0)
+</code></pre>
+
+<p>Scales the action space to be in the range (-clip, clip).</p>
+<p>Adapted from Vitchyr Pong's RLkit:
+https://github.com/vitchyr/rlkit/blob/master/rlkit/envs/wrappers.py#L41</p>
+<h1 id="visdomlogger">VisdomLogger</h1>
+<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=100, name=None)
+</code></pre>
+
+<p>Enables logging and debug values to Visdom.</p>
+<p>Arguments</p>
+<ul>
+<li>env: The environment to wrap.</li>
+<li>interval: (int) Update frequency for episodes.</li>
+</ul></div>
         </div>
 
         <footer class="col-md-12">

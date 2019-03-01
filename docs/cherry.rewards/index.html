@@ -54,25 +54,25 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../../source/tutorials/distributed_a2c.md">Distributed Policy Gradients with A2C</a>
+    <a href="../../tutorials/getting_started/">Getting Started with Cherry</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Continuous Control with PPO</a>
+    <a href="../../tutorials/distributed_a2c/">Distributed Policy Gradients with A2C</a>
 </li>
                                     
 <li >
-    <a href="../../source/tutorials/continuous_ppo.md">Debugging Reinforcement Learning</a>
+    <a href="../../tutorials/continuous_ppo/">Continuous Control with PPO</a>
+</li>
+                                    
+<li >
+    <a href="../../tutorials/continuous_ppo/">Debugging Reinforcement Learning</a>
 </li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    
-<li >
-    <a href="../cherry/">cherry</a>
-</li>
                                     
 <li >
     <a href="../cherry.algorithms/">cherry.algorithms</a>
@@ -130,11 +130,30 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryrewards">cherry.rewards</a></li>
+            <li><a href="#discount_rewards">discount_rewards</a></li>
+            <li><a href="#discount_rewards_1">discount_rewards</a></li>
+            <li><a href="#generalized_advantage_estimate">generalized_advantage_estimate</a></li>
+            <li><a href="#generalized_advantage_estimate_1">generalized_advantage_estimate</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="cherryrewards">cherry.rewards</h1></div>
+<h1 id="cherryrewards">cherry.rewards</h1>
+<h2 id="discount_rewards">discount_rewards</h2>
+<pre><code class="python">discount_rewards(gamma, rewards, dones, bootstrap=0.0)
+</code></pre>
+
+<h2 id="discount_rewards_1">discount_rewards</h2>
+<pre><code class="python">discount_rewards(gamma, rewards, dones, bootstrap=0.0)
+</code></pre>
+
+<h2 id="generalized_advantage_estimate">generalized_advantage_estimate</h2>
+<pre><code class="python">generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value)
+</code></pre>
+
+<h2 id="generalized_advantage_estimate_1">generalized_advantage_estimate</h2>
+<pre><code class="python">generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
