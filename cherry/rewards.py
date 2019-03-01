@@ -2,6 +2,8 @@
 
 
 def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
+    """
+    """
     R = bootstrap
     discounted = []
     length = len(rewards)
@@ -14,6 +16,8 @@ def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
 
 
 def generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value):
+    """
+    """
     msg = 'GAE needs as many rewards, values and dones.'
     assert len(values) == len(rewards) == len(dones), msg
     advantages = []

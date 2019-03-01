@@ -8,6 +8,24 @@ from cherry.utils import totensor, min_size
 
 
 class Transition(dict):
+    
+    """
+    **Description** 
+
+    Represents a (s, a, r, s', d) tuple.
+
+    **Arguments**
+
+    None
+
+    **Example** 
+
+    ~~~python
+    for transition in replay:
+        print(transition.state)
+    ~~~
+    """
+
     def __init__(self, **kwargs):
         for k in kwargs:
             setattr(self, k, kwargs[k])
@@ -26,6 +44,45 @@ class Transition(dict):
 
 
 class ExperienceReplay(list):
+
+    """
+    **Description** 
+
+    Experience replay buffer to store, retrieve, and sample past transitions.
+
+    **Arguments** 
+
+    * states=None
+    * actions=None
+    * rewards=None
+    * next_states=None
+    * dones=None
+    * infos=None
+
+    **Example** 
+    ~~~python
+    replay = ch.ExperienceReplay()  # Instanciate a new replay
+    replay.add(state,  # Add experience to the replay
+               action,
+               reward,
+               next_state,
+               done,
+               info={
+                    'density': action_density,
+                    'log_prob': action_density.log_prob(action),
+               })
+
+    replay.state  # th.Tensor of states
+    replay.actions  # th.Tensor of actions
+    replay.densitys  # list of action_density
+    replay.log_probs  # th.Tensor of log_probabilities
+
+    new_replay = replay[-10:]  # Last 10 transitions in new_replay
+
+    #Sample some previous experience
+    batch = replay.sample(32, contiguous=True)
+    ~~~
+    """
 
     def __init__(self,
                  states=None,
