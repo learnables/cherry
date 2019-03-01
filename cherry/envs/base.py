@@ -12,6 +12,7 @@ class Wrapper(gym.Wrapper):
     access the properties of wrapped wrappers.
 
     Example:
+
         env = gym.make('MyEnv-v0')
         env = envs.Logger(env)
         env = envs.Runner(env)

@@ -6,6 +6,10 @@ from torch.optim.optimizer import Optimizer, required
 
 class Distributed(Optimizer):
 
+    """
+    Synchronizes optimizers across distributed replicas.
+    """
+
     def __init__(self, params=required, opt=required):
         self.world_size = dist.get_world_size()
         self.rank = dist.get_rank()

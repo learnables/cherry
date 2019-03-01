@@ -13,6 +13,11 @@ from gym.spaces import Box, Discrete, Dict
 
 EPS = sys.float_info.epsilon
 
+"""
+TODO: Some of these functions are better moved elsewhere.
+      (e.g. envs.get_space_dimension)
+"""
+
 
 def totensor(array):
     if isinstance(array, (int, float)):
@@ -37,6 +42,8 @@ def min_size(tensor):
 
 
 def normalize(tensor, epsilon=EPS):
+    """
+    """
     if tensor.numel() <= 1:
         return tensor
     return (tensor - tensor.mean()) / (tensor.std() + epsilon)
@@ -49,11 +56,15 @@ def onehot(x, dim):
 
 
 def polyak_average(source, target, alpha):
+    """
+    """
     for s, t in zip(source.parameters(), target.parameters()):
         s.data.mul_(1.0 - alpha).add_(alpha, t.data)
 
 
 def flatten_state(space, state):
+    """
+    """
     if isinstance(space, Box):
         return np.asarray(state).flatten()
     if isinstance(space, Discrete):
@@ -62,6 +73,8 @@ def flatten_state(space, state):
 
 
 def get_space_dimension(space):
+    """
+    """
     msg = 'Space type not supported.'
     assert isinstance(space, (Box, Discrete, Dict)), msg
     if isinstance(space, Discrete):

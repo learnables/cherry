@@ -6,17 +6,27 @@ site_name: "Cherry"
 # documented. Higher indentation leads to smaller header size.
 generate:
 - docs/cherry.experience-replay.md:
-    - cherry.ExperienceReplay
-- docs/cherry.md:
-    - cherry
+    - cherry.Transition++
+    - cherry.ExperienceReplay++
 - docs/cherry.algorithms.md:
     - cherry.algorithms.a2c++
     - cherry.algorithms.ppo++
     - cherry.algorithms.sac++
 - docs/cherry.envs.md:
-    - cherry.envs.Logger++
-    - cherry.envs.Runner++
-    - cherry.envs.OpenAINormalize++
+    - cherry.envs.base.Wrapper++
+    - cherry.envs.runner_wrapper.Runner++
+    - cherry.envs.logger_wrapper.Logger++
+    - cherry.envs.torch_wrapper.Torch++
+    - cherry.envs.normalized_wrapper.Normalized++
+    - cherry.envs.atari_wrapper.Atari++
+    - cherry.envs.openai_atari_wrapper.OpenAIAtari++
+    - cherry.envs.clip_reward_wrapper.ClipReward++
+    - cherry.envs.timestep_wrapper.AddTimestep++
+    - cherry.envs.monitor_wrapper.Monitor++
+    - cherry.envs.openai_normalize_wrapper.OpenAINormalize++
+    - cherry.envs.state_lambda_wrapper.StateLambda++
+    - cherry.envs.action_space_scaler_wrapper.ActionSpaceScaler++
+    - cherry.envs.visdom_logger_wrapper.VisdomLogger++
 - docs/cherry.optim.md:
     - cherry.optim++
 - docs/cherry.rewards.md:
@@ -33,11 +43,11 @@ generate:
 pages:
 - Home: index.md << ../README.md
 - Tutorials:
-    - Distributed Policy Gradients with A2C: source/tutorials/distributed_a2c.md
-    - Continuous Control with PPO: source/tutorials/continuous_ppo.md
-    - Debugging Reinforcement Learning: source/tutorials/continuous_ppo.md
+    - Getting Started with Cherry: tutorials/getting_started.md
+    - Distributed Policy Gradients with A2C: tutorials/distributed_a2c.md
+    - Continuous Control with PPO: tutorials/continuous_ppo.md
+    - Debugging Reinforcement Learning: tutorials/continuous_ppo.md
 - Documentation:
-    - cherry: docs/cherry.md
     - cherry.algorithms: docs/cherry.algorithms.md
     - cherry.envs: docs/cherry.envs.md
     - cherry.optim: docs/cherry.optim.md
