@@ -50,14 +50,29 @@ class ExperienceReplay(list):
 
     Experience replay buffer to store, retrieve, and sample past transitions.
 
+    `ExperienceReplay` behaves like a list of transitions, .
+    It also support accessing specific properties, such as states, actions,
+    rewards, next_states, and informations.
+    The first four are returned as tensors, while `infos` is returned as
+    a list of dicts.
+    The properties of infos can be accessed directly by appending an `s` to their
+    dictionary key -- see Examples below.
+    In this case, if the values of the infos are tensors, they will be returned as
+    a concatenated Tensor.
+    Otherwise, they default to a list of values.
+
     **Arguments** 
 
-    * states=None
-    * actions=None
-    * rewards=None
-    * next_states=None
-    * dones=None
-    * infos=None
+    * **states** (Tensor, *optional*, default=None) - Tensor of states.
+    * **actions** (Tensor, *optional*, default=None) - Tensor of actions.
+    * **rewards** (Tensor, *optional*, default=None) - Tensor of rewards.
+    * **next_states** (Tensor, *optional*, default=None) - Tensor of next_states.
+    * **dones** (Tensor, *optional*, default=None) - Tensor of dones.
+    * **infos** (list, *optional*, default=None) - List of infos.
+
+    **References**
+
+    1. Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.
 
     **Example** 
     ~~~python
@@ -72,10 +87,10 @@ class ExperienceReplay(list):
                     'log_prob': action_density.log_prob(action),
                })
 
-    replay.state  # th.Tensor of states
-    replay.actions  # th.Tensor of actions
+    replay.state  # Tensor of states
+    replay.actions  # Tensor of actions
     replay.densitys  # list of action_density
-    replay.log_probs  # th.Tensor of log_probabilities
+    replay.log_probs  # Tensor of log_probabilities
 
     new_replay = replay[-10:]  # Last 10 transitions in new_replay
 
@@ -196,6 +211,9 @@ class ExperienceReplay(list):
         storage = th.load(path)
         self.storage = storage
 
+    def append(self, *args, **kwargs):
+        self.add(*args, **kwargs)
+
     def add(self, state, action, reward, next_state, done, info=None):
         self.storage['states'].append(totensor(state))
         self.storage['actions'].append(totensor(action))
@@ -222,13 +240,15 @@ class ExperienceReplay(list):
         """
         Samples from the Experience replay.
 
-        Arguments:
-            size: the number of samples.
-            contiguous: whether to sample contiguous transitions.
-            episodes: sample full episodes, instead of transitions.
+        **Arguments**
 
-        Return:
-            ExperienceReplay()
+        * **size** (int, *optional*, default=1) - The number of samples.
+        * **contiguous** (bool, *optional*, default=False) - Whether to sample contiguous transitions.
+        * **episodes** (bool, *optional*, default=False) - Sample full episodes, instead of transitions.
+
+        **Return**
+        
+        * `ExperienceReplay()` containing the sampled transitions.
         """
         if len(self) < 1 or size < 1:
             return ExperienceReplay()
