@@ -169,9 +169,9 @@ def update(replay,
     policy_loss.backward()
     policy_opt.step()
 
-    ch.utils.polyak_average(source=target_vf,
-                            target=vf,
-                            alpha=VF_TARGET_TAU)
+    ch.models.polyak_average(source=target_vf,
+                             target=vf,
+                             alpha=VF_TARGET_TAU)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ import cherry as ch
 from gym.spaces import Box
 
 from .base import Wrapper
+from .utils import flatten_state
 
 """
 Adapted from RLLab by Liyu Chen:
@@ -81,7 +82,7 @@ class Normalized(Wrapper):
         self._reward_var = 1.0
 
     def _update_state_estimate(self, state):
-        flat_state = ch.utils.flatten_state(self.env.observation_space, state)
+        flat_state = flatten_state(self.env.observation_space, state)
         self._state_mean = update_mean(self._state_mean,
                                        flat_state,
                                        self._state_alpha)

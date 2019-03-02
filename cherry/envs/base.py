@@ -2,7 +2,7 @@
 
 import gym
 
-from cherry.utils import get_space_dimension
+from .utils import get_space_dimension
 
 
 class Wrapper(gym.Wrapper):
