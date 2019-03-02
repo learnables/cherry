@@ -141,19 +141,16 @@
         <li class="main "><a href="#runner">Runner</a></li>
             <li><a href="#run">run</a></li>
         <li class="main "><a href="#logger">Logger</a></li>
+        <li class="main "><a href="#visdomlogger">VisdomLogger</a></li>
         <li class="main "><a href="#torch">Torch</a></li>
-        <li class="main "><a href="#normalized">Normalized</a></li>
-        <li class="main "><a href="#atari">Atari</a></li>
-            <li><a href="#step">step</a></li>
-        <li class="main "><a href="#openaiatari">OpenAIAtari</a></li>
+        <li class="main "><a href="#normalizer">Normalizer</a></li>
         <li class="main "><a href="#clipreward">ClipReward</a></li>
             <li><a href="#reward">reward</a></li>
-        <li class="main "><a href="#addtimestep">AddTimestep</a></li>
         <li class="main "><a href="#monitor">Monitor</a></li>
-        <li class="main "><a href="#openainormalize">OpenAINormalize</a></li>
+        <li class="main "><a href="#openaiatari">OpenAIAtari</a></li>
+        <li class="main "><a href="#addtimestep">AddTimestep</a></li>
         <li class="main "><a href="#statelambda">StateLambda</a></li>
         <li class="main "><a href="#actionspacescaler">ActionSpaceScaler</a></li>
-        <li class="main "><a href="#visdomlogger">VisdomLogger</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -185,6 +182,16 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 </code></pre>
 
 <p>Tracks and prints some common statistics about the environment.</p>
+<h1 id="visdomlogger">VisdomLogger</h1>
+<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=100, name=None)
+</code></pre>
+
+<p>Enables logging and debug values to Visdom.</p>
+<p>Arguments</p>
+<ul>
+<li>env: The environment to wrap.</li>
+<li>interval: (int) Update frequency for episodes.</li>
+</ul>
 <h1 id="torch">Torch</h1>
 <pre><code class="python">Torch(self, env)
 </code></pre>
@@ -195,29 +202,35 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 <p>Example:
     action = Categorical(Tensor([1, 2, 3])).sample()
     env.step(action)</p>
-<h1 id="normalized">Normalized</h1>
-<pre><code class="python">Normalized(self, env, scale_reward=1.0, normalize_state=True, normalize_reward=False, state_alpha=0.001, reward_alpha=0.001)
+<h1 id="normalizer">Normalizer</h1>
+<pre><code class="python">Normalizer(self, env, states=True, rewards=True, clip_states=10.0, clip_rewards=10.0, gamma=0.99, eps=1e-08)
 </code></pre>
 
-<p>Normalizing wrapper for actions, states, and rewards.</p>
-<h1 id="atari">Atari</h1>
-<pre><code class="python">Atari(self, env, grayscale=True, skip=4, stack=4, warp=84)
-</code></pre>
-
-<p>Process Atari frames similarly to what DeepMind does.</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/normalizer_wrapper.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Normalizes the states and rewards with a running average.</p>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>Skip 3 out of 4 frames,</li>
-<li>Stack the last 4 frames,</li>
-<li>Warp state to a 84x84 image (optionally grayscale).</li>
+<li><strong>env</strong> (Environment) - Environment to normalize.</li>
+<li><strong>states</strong> (bool, <em>optional</em>, default=True) - Whether to normalize the
+   states.</li>
+<li><strong>rewards</strong> (bool, <em>optional</em>, default=True) - Whether to normalize the
+   rewards.</li>
+<li><strong>clip_states</strong> (bool, <em>optional</em>, default=10.0) - Clip each state
+   dimension between [-clip_states, clip_states].</li>
+<li><strong>clip_rewards</strong> (float, <em>optional</em>, default=10.0) - Clip rewards
+   between [-clip_rewards, clip_rewards].</li>
+<li><strong>gamma</strong> (float, <em>optional</em>, default=0.99) - Discount factor for
+   rewards running averages.</li>
+<li><strong>eps</strong> (float, <em>optional</em>, default=1e-8) - Numerical stability.</li>
 </ul>
-<p>Note: The reward clipping is available in cherry.envs.ClipRewards.</p>
-<h2 id="step">step</h2>
-<pre><code class="python">Atari.step(self, *args, **kwargs)
-</code></pre>
-
-<p>Sum rewards, max over observations.</p>
-<h1 id="openaiatari">OpenAIAtari</h1>
-<pre><code class="python">OpenAIAtari(self, env)
+<p><strong>Credit</strong></p>
+<p>Adapted from OpenAI's baselines implementation.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python">env = gym.make('CartPole-v0')
+env = cherry.envs.Normalizer(env,
+                             states=True,
+                             rewards=False)
 </code></pre>
 
 <h1 id="clipreward">ClipReward</h1>
@@ -229,6 +242,15 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 </code></pre>
 
 <p>Bin reward to {+1, 0, -1} by its sign.</p>
+<h1 id="monitor">Monitor</h1>
+<pre><code class="python">Monitor(self, env, directory, *args, **kwargs)
+</code></pre>
+
+<p>Sugar coating on top of Gym's Monitor.</p>
+<h1 id="openaiatari">OpenAIAtari</h1>
+<pre><code class="python">OpenAIAtari(self, env)
+</code></pre>
+
 <h1 id="addtimestep">AddTimestep</h1>
 <pre><code class="python">AddTimestep(self, env=None)
 </code></pre>
@@ -236,15 +258,6 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 <p>Adds a timestep information to the state input.</p>
 <p>Modified from Ilya Kostrikov's implementation:</p>
 <p>https://github.com/ikostrikov/pytorch-a2c-ppo-acktr/</p>
-<h1 id="monitor">Monitor</h1>
-<pre><code class="python">Monitor(self, env, directory, *args, **kwargs)
-</code></pre>
-
-<p>Sugar coating on top of Gym's Monitor.</p>
-<h1 id="openainormalize">OpenAINormalize</h1>
-<pre><code class="python">OpenAINormalize(self, env, state=True, ret=True, clipob=10.0, cliprew=10.0, gamma=0.99, eps=1e-08)
-</code></pre>
-
 <h1 id="statelambda">StateLambda</h1>
 <pre><code class="python">StateLambda(self, env, fn)
 </code></pre>
@@ -255,17 +268,7 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 
 <p>Scales the action space to be in the range (-clip, clip).</p>
 <p>Adapted from Vitchyr Pong's RLkit:
-https://github.com/vitchyr/rlkit/blob/master/rlkit/envs/wrappers.py#L41</p>
-<h1 id="visdomlogger">VisdomLogger</h1>
-<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=100, name=None)
-</code></pre>
-
-<p>Enables logging and debug values to Visdom.</p>
-<p>Arguments</p>
-<ul>
-<li>env: The environment to wrap.</li>
-<li>interval: (int) Update frequency for episodes.</li>
-</ul></div>
+https://github.com/vitchyr/rlkit/blob/master/rlkit/envs/wrappers.py#L41</p></div>
         </div>
 
         <footer class="col-md-12">
