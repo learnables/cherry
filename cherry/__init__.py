@@ -8,3 +8,4 @@ from . import utils
 from . import policies
 from . import optim
 from . import nn
+from . import models

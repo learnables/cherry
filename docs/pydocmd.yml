@@ -35,6 +35,10 @@ generate:
     - cherry.distributions++
 - docs/cherry.utils.md:
     - cherry.utils++
+- docs/cherry.nn.md:
+    - cherry.nn++
+- docs/cherry.nn.init.md:
+    - cherry.nn.init++
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -48,28 +52,30 @@ pages:
     - Continuous Control with PPO: tutorials/continuous_ppo.md
     - Debugging Reinforcement Learning: tutorials/continuous_ppo.md
 - Documentation:
-    - cherry.algorithms: docs/cherry.algorithms.md
+    - cherry.ExperienceReplay: docs/cherry.experience-replay.md
     - cherry.envs: docs/cherry.envs.md
-    - cherry.optim: docs/cherry.optim.md
+    - cherry.algorithms: docs/cherry.algorithms.md
     - cherry.rewards: docs/cherry.rewards.md
+    - cherry.optim: docs/cherry.optim.md
+    - cherry.nn: docs/cherry.nn.md
+    - cherry.nn.init: docs/cherry.nn.init.md
     - cherry.distributions: docs/cherry.distributions.md
     - cherry.utils: docs/cherry.utils.md
-    - cherry.ExperienceReplay: docs/cherry.experience-replay.md
 
 # These options all show off their default values. You don't have to add
 # them to your configuration if you're fine with the default.
 docs_dir: source
 gens_dir: _build/pydocmd     # This will end up as the MkDocs 'docs_dir'
 site_dir: _build/site
+site_url: https://seba-1511.github.io/cherry/
+site_author: Seb Arnold
+google_analytics: ['UA-68693545-3', 'seba-1511.github.com']
 theme:
-    logo: 'docs/assets/img/cherry.png'
-    name: flatly
+    name: mkdocs
     custom_dir: 'cherry_theme/'
-loader:   pydocmd.loader.PythonLoader
+    highlightjs: true
+loader: pydocmd.loader.PythonLoader
 preprocessor: pydocmd.preprocessor.Preprocessor
-highlightjs: true
-hljs_style: solarized_light
-
 # Whether to output headers as markdown or HTML.  Used to workaround
 # https://github.com/NiklasRosenstein/pydoc-markdown/issues/11.  The default is
 # to generate HTML with unique and meaningful id tags, which can't be done with

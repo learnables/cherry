@@ -2,3 +2,4 @@
 
 from . import atari
 from . import control
+from . import tabular

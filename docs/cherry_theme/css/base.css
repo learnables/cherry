@@ -96,6 +96,12 @@ div.navbar-header {
     background-size: 40px 40px;
 }
 
+a:visited .navbar-brand,
+a:active .navbar-brand,
+a.navbar-brand {
+    color: white !important;
+}
+
 kbd {
     padding: 2px 4px;
     font-size: 90%;

@@ -1,4 +1,4 @@
 # Config options for 'flatly' theme
 
 extends: mkdocs
-hljs_style: solarized_light
+highlightjs: true
