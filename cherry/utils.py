@@ -45,3 +45,14 @@ def onehot(x, dim):
     onehot = np.zeros(1, dim)
     onehot[x] = 1.0
     return onehot
+
+
+class _ImportRaiser(object):
+
+    def __init__(self, name, command):
+        self.name = name
+        self.command = command
+
+    def __getattr__(self, *args, **kwargs):
+        msg = self.name + ' required. Try: ' + self.command
+        raise ImportError(msg)

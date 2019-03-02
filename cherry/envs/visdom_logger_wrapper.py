@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import gym
+import cherry as ch
 
 from .base import Wrapper
 
 try:
     import visdom
 except ImportError:
-    visdom = None
+    visdom = ch.utils._ImportRaiser('Visdom', 'pip install visdom')
 
 
 class VisdomLogger(Wrapper):
@@ -18,7 +18,7 @@ class VisdomLogger(Wrapper):
 
     Arguments
 
-    * env: The environment to wrap. 
+    * env: The environment to wrap.
     * interval: (int) Update frequency for episodes.
 
 
@@ -31,7 +31,7 @@ class VisdomLogger(Wrapper):
                  name=None
                  ):
         """
-        
+
         """
         super(VisdomLogger, self).__init__(env)
         self.interval = interval

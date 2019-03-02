@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import gym
 import numpy as np
+import cherry as ch
+import gym
 from gym import spaces
 from collections import deque
 
@@ -10,8 +11,8 @@ from .base import Wrapper
 try:
     import cv2
     cv2.ocl.setUseOpenCL(False)
-except:
-    cv2 = None
+except ImportError:
+    cv2 = ch.utils._ImportRaiser('OpenCV2', 'pip install opencv-python')
 
 """
 Inspired from OpenAI's baselines:
