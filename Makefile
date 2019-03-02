@@ -38,7 +38,7 @@ dqn:
 	python examples/dqn_atari.py
 
 tests:
-	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+	python -W ignore::DeprecationWarning -m unittest discover -s 'tests' -p '*_tests.py' -v
 
 docs:
 	cd docs && pydocmd build && pydocmd serve
