@@ -12,7 +12,7 @@
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/docco.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -74,8 +74,8 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li >
-    <a href="../cherry.algorithms/">cherry.algorithms</a>
+<li class="active">
+    <a href="./">cherry.ExperienceReplay</a>
 </li>
                                     
 <li >
@@ -83,11 +83,23 @@
 </li>
                                     
 <li >
-    <a href="../cherry.optim/">cherry.optim</a>
+    <a href="../cherry.algorithms/">cherry.algorithms</a>
 </li>
                                     
 <li >
     <a href="../cherry.rewards/">cherry.rewards</a>
+</li>
+                                    
+<li >
+    <a href="../cherry.optim/">cherry.optim</a>
+</li>
+                                    
+<li >
+    <a href="../cherry.nn/">cherry.nn</a>
+</li>
+                                    
+<li >
+    <a href="../cherry.nn.init/">cherry.nn.init</a>
 </li>
                                     
 <li >
@@ -96,10 +108,6 @@
                                     
 <li >
     <a href="../cherry.utils/">cherry.utils</a>
-</li>
-                                    
-<li class="active">
-    <a href="./">cherry.ExperienceReplay</a>
 </li>
                                 </ul>
                             </li>
@@ -112,12 +120,12 @@
                             </a>
                         </li>
                             <li >
-                                <a rel="next" href="../cherry.utils/">
+                                <a rel="next" href="../../tutorials/continuous_ppo/">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li class="disabled">
-                                <a rel="prev" >
+                            <li >
+                                <a rel="prev" href="../cherry.envs/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -153,17 +161,32 @@
 <pre><code class="python">ExperienceReplay(self, states=None, actions=None, rewards=None, next_states=None, dones=None, infos=None)
 </code></pre>
 
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>Experience replay buffer to store, retrieve, and sample past transitions.</p>
+<p><code>ExperienceReplay</code> behaves like a list of transitions, .
+It also support accessing specific properties, such as states, actions,
+rewards, next_states, and informations.
+The first four are returned as tensors, while <code>infos</code> is returned as
+a list of dicts.
+The properties of infos can be accessed directly by appending an <code>s</code> to their
+dictionary key -- see Examples below.
+In this case, if the values of the infos are tensors, they will be returned as
+a concatenated Tensor.
+Otherwise, they default to a list of values.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>states=None</li>
-<li>actions=None</li>
-<li>rewards=None</li>
-<li>next_states=None</li>
-<li>dones=None</li>
-<li>infos=None</li>
+<li><strong>states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of states.</li>
+<li><strong>actions</strong> (Tensor, <em>optional</em>, default=None) - Tensor of actions.</li>
+<li><strong>rewards</strong> (Tensor, <em>optional</em>, default=None) - Tensor of rewards.</li>
+<li><strong>next_states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of next_states.</li>
+<li><strong>dones</strong> (Tensor, <em>optional</em>, default=None) - Tensor of dones.</li>
+<li><strong>infos</strong> (list, <em>optional</em>, default=None) - List of infos.</li>
 </ul>
+<p><strong>References</strong></p>
+<ol>
+<li>Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.</li>
+</ol>
 <p><strong>Example</strong></p>
 <pre><code class="python">replay = ch.ExperienceReplay()  # Instanciate a new replay
 replay.add(state,  # Add experience to the replay
@@ -176,10 +199,10 @@ replay.add(state,  # Add experience to the replay
                 'log_prob': action_density.log_prob(action),
            })
 
-replay.state  # th.Tensor of states
-replay.actions  # th.Tensor of actions
+replay.state  # Tensor of states
+replay.actions  # Tensor of actions
 replay.densitys  # list of action_density
-replay.log_probs  # th.Tensor of log_probabilities
+replay.log_probs  # Tensor of log_probabilities
 
 new_replay = replay[-10:]  # Last 10 transitions in new_replay
 
@@ -192,12 +215,16 @@ batch = replay.sample(32, contiguous=True)
 </code></pre>
 
 <p>Samples from the Experience replay.</p>
-<p>Arguments:
-    size: the number of samples.
-    contiguous: whether to sample contiguous transitions.
-    episodes: sample full episodes, instead of transitions.</p>
-<p>Return:
-    ExperienceReplay()</p></div>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>size</strong> (int, <em>optional</em>, default=1) - The number of samples.</li>
+<li><strong>contiguous</strong> (bool, <em>optional</em>, default=False) - Whether to sample contiguous transitions.</li>
+<li><strong>episodes</strong> (bool, <em>optional</em>, default=False) - Sample full episodes, instead of transitions.</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li><code>ExperienceReplay()</code> containing the sampled transitions.</li>
+</ul></div>
         </div>
 
         <footer class="col-md-12">
