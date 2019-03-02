@@ -1,7 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
-def one_side_exponential_smoothing(x_before, y_before, decay_steps):
+def one_side_exponential_smoothing(x_before, y_before, decay_steps=1.):
     """
     This is the one side (regular) exponential moving average, which 
     evenly resamples points based on x-aixs and averages y values with weighting factor
@@ -22,8 +21,12 @@ def one_side_exponential_smoothing(x_before, y_before, decay_steps):
     y_count: array      - decay values for each steps. 
 
     """
-    assert len(x_before) == len(y_before), 'length of x_before and y_before is not equal !'
     
+    if x_before is None:
+        x_before = np.arange(len(y_before))
+
+    assert len(x_before) == len(y_before), 'length of x_before and y_before is not equal !'
+    assert all(x_before[i] <= x_before[i+1] for i in range(len(x_before)-1)),' x_before needs to be sorted in accending order'
     # Resampling
     size = len(x_before)
     x_after = np.linspace(x_before[0],x_before[-1],size)
@@ -57,7 +60,7 @@ def one_side_exponential_smoothing(x_before, y_before, decay_steps):
     return x_after, y_after, y_count
 
 
-def exponential_smoothing(x_before, y_before, decay_steps):
+def exponential_smoothing(x_before, y_before, decay_steps=1.):
     """
     This is the two side exponential moving average, which 
     performs regular exponential moving average twice from different sides 
@@ -78,6 +81,7 @@ def exponential_smoothing(x_before, y_before, decay_steps):
     y_count: array      - decay values for each points. 
 
     """
+
     x_after1, y_after1, y_count1 = one_side_exponential_smoothing(x_before, y_before, decay_steps)
     x_after2, y_after2, y_count2 = one_side_exponential_smoothing(-x_before[::-1],y_before[::-1],decay_steps)
 
@@ -89,16 +93,8 @@ def exponential_smoothing(x_before, y_before, decay_steps):
     return x_after1, y_after, y_count1+y_count2
 
 
-def test_exponential_smoothing():
-    size = 70
-    x_before = np.cumsum(np.random.rand(size) * 10 / size)
-    y_before = np.cos(x_before)
-    y_before = y_before + 0.1 * np.random.randn(size)
-    x_smooth, y_smooth, _ = exponential_smoothing(x_before, y_before, decay_steps=3)
-    plt.plot(x_before, y_before, label='orig', marker='x')
-    plt.plot(x_smooth, y_smooth, label='exponential_smoothing', marker='x')
-    plt.legend()
-    plt.show()
+    
 
 
+smooth = exponential_smoothing
 
