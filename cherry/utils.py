@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 import numpy as np
 import torch as th
 
-# TODO: Change to 1e-8, but make sure that it doesn't break the Cartpole stats
-EPS = sys.float_info.epsilon
+EPS = 1e-8
 
 
 def totensor(array):
