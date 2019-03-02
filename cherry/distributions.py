@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import torch as th
-import cherry as ch
 import torch.nn as nn
+import cherry as ch
+
 from torch.distributions import Categorical, Normal, Distribution
 
 from gym.spaces import Discrete
@@ -42,7 +43,7 @@ class ActionDistribution(nn.Module):
         super(ActionDistribution, self).__init__()
         self.env = env
         if logstd is None:
-            action_size = ch.utils.get_space_dimension(env.action_space)
+            action_size = ch.envs.get_space_dimension(env.action_space)
             logstd = nn.Parameter(th.zeros(action_size))
         if isinstance(logstd, (float, int)):
             logstd = nn.Parameter(th.Tensor([logstd]))

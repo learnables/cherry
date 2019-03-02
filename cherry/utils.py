@@ -3,20 +3,9 @@
 import sys
 import numpy as np
 import torch as th
-import operator
 
-from functools import reduce
-from collections import OrderedDict
-
-from gym.spaces import Box, Discrete, Dict
-
-
+# TODO: Change to 1e-8, but make sure that it doesn't break the Cartpole stats
 EPS = sys.float_info.epsilon
-
-"""
-TODO: Some of these functions are better moved elsewhere.
-      (e.g. envs.get_space_dimension)
-"""
 
 
 def totensor(array):
@@ -33,6 +22,10 @@ def totensor(array):
 
 
 def min_size(tensor):
+    """
+    Returns the minimium viewable size of a tensor.
+    e.g. (1, 1, 3, 4) -> (3, 4)
+    """
     true_size = tensor.size()
     if len(true_size) < 1:
         return (1, )
@@ -43,6 +36,7 @@ def min_size(tensor):
 
 def normalize(tensor, epsilon=EPS):
     """
+    Normalizes a tensor to zero mean and unit std.
     """
     if tensor.numel() <= 1:
         return tensor
@@ -53,36 +47,3 @@ def onehot(x, dim):
     onehot = np.zeros(1, dim)
     onehot[x] = 1.0
     return onehot
-
-
-def polyak_average(source, target, alpha):
-    """
-    """
-    for s, t in zip(source.parameters(), target.parameters()):
-        s.data.mul_(1.0 - alpha).add_(alpha, t.data)
-
-
-def flatten_state(space, state):
-    """
-    """
-    if isinstance(space, Box):
-        return np.asarray(state).flatten()
-    if isinstance(space, Discrete):
-        return onehot(state, space.n)
-    raise('The space was not recognized.')
-
-
-def get_space_dimension(space):
-    """
-    """
-    msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete, Dict)), msg
-    if isinstance(space, Discrete):
-        return space.n
-    if isinstance(space, Box):
-        return reduce(operator.mul, space.shape, 1)
-    if isinstance(space, Dict):
-        dimensions = {
-            k[0]: get_space_dimension(k[1]) for k in space.spaces.items()
-        }
-        return OrderedDict(dimensions)
