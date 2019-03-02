@@ -46,7 +46,9 @@ class Transition(dict):
 class ExperienceReplay(list):
 
     """
-    **Description** 
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py)
+
+    **Description**
 
     Experience replay buffer to store, retrieve, and sample past transitions.
 
