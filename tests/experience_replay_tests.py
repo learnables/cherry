@@ -5,6 +5,8 @@ import random
 import numpy as np
 import torch as th
 import cherry as ch
+import os
+import copy
 
 
 NUM_SAMPLES = 100
@@ -200,3 +202,84 @@ class TestExperienceReplay(unittest.TestCase):
         self.replay += new_replay
         self.assertEqual(NUM_SAMPLES * 3, len(self.replay))
 
+    def test_save_and_load(self):
+        old_replay = self.replay
+        vector = np.random.rand(VECTOR_SIZE)
+        for i in range(NUM_SAMPLES):
+            old_replay.add(vector,
+                            vector,
+                            i,
+                            vector,
+                            False,
+                            info={'vector': vector})
+        # save the old file
+        old_replay.save('testing_temp_file.pt')
+
+        # load the saved file to a new file
+        new_replay = ch.ExperienceReplay()
+        new_replay.load('testing_temp_file.pt')
+
+        # check size
+        self.assertEqual(len(old_replay.storage['states']), len(new_replay.storage['states']))
+        self.assertEqual(len(old_replay.storage['actions']), len(new_replay.storage['actions']))
+        self.assertEqual(len(old_replay.storage['rewards']), len(new_replay.storage['rewards']))
+        self.assertEqual(len(old_replay.storage['next_states']), len(new_replay.storage['next_states']))
+        self.assertEqual(len(old_replay.storage['dones']), len(new_replay.storage['dones']))
+        self.assertEqual(len(old_replay.storage['infos']), len(new_replay.storage['infos']))
+
+        # check content
+        for a, b in zip(old_replay, new_replay):
+            self.assertLessEqual((a['state'] - b['state']).norm(p=2), 1e-8)
+            self.assertLessEqual((a['action'] - b['action']).norm(p=2), 1e-8)
+            self.assertLessEqual((a['reward'] - b['reward']).norm(p=2), 1e-8)
+            self.assertLessEqual((a['next_state'] - b['next_state']).norm(p=2), 1e-8)
+            self.assertLessEqual((a['done'] - b['done']).norm(p=2), 1e-8)
+            self.assertEqual(a['info']['vector'].all(), b['info']['vector'].all())
+
+        print (type(old_replay.log_probs))
+        os.remove('testing_temp_file.pt')
+
+
+    def test_replay_myattr(self):
+        standard_replay = self.replay
+        vector = np.random.rand(VECTOR_SIZE)
+
+        # a random tensor to be stuffed in
+        test_tensor = th.randn(3, 3, dtype=th.double)
+
+        # initialization, stuff just tensors in
+        # and the results type should still be tensor
+        for i in range(NUM_SAMPLES):
+            standard_replay.add(vector,
+                            vector,
+                            i,
+                            vector,
+                            False,
+                            info={'test': test_tensor})
+        self.assertTrue(isinstance(standard_replay.tests, th.Tensor))
+
+        # stuff in an int, the result type should be a list
+        put_int_replay = standard_replay[:]
+        put_int_replay.add(vector,
+                        vector,
+                        i,
+                        vector,
+                        False,
+                        info={'test': 1000})
+        # print (put_int_replay.tests)
+        self.assertTrue(isinstance(put_int_replay.tests, list))
+
+        # stuff in a float, the result type should be a list
+        put_float_replay = standard_replay[:]
+        put_float_replay.add(vector,
+                        vector,
+                        i,
+                        vector,
+                        False,
+                        info={'test': float(9.8981)})
+        # print (put_float_replay.tests)
+        self.assertTrue(isinstance(put_float_replay.tests, list))
+
+
+if __name__ == '__main__':
+    unittest.main()
