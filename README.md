@@ -1,4 +1,4 @@
-<p align="center"><img src="./docs/assets/img/cherry_full.png" height="150px" /></p>
+<p align="center"><img src="https://seba-1511.github.io/cherry/assets/img/cherry_full.png" height="150px" /></p>
 
 --------------------------------------------------------------------------------
 
@@ -9,7 +9,16 @@ Instead, it provides you with common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
 So if you don't like a specific tool, you can still use parts of cherry without headaches.
 
-# Installation
+**Features**
+
+* Pythonic and modular interface *à la* Pytorch,
+* Support for tabular (!) and function approximation algorithms,
+* Various OpenAI Gym environment wrappers,
+* Helper functions for popular algorithms (e.g. A2C, DDPG, TRPO, PPO, SAC),
+* Logging, visualization, and debugging tools,
+* Painless and efficient distributed training on CPUs and GPUs.
+
+## Installation
 
 For now, cherry is still in development.
 
@@ -23,13 +32,13 @@ Upon our first public release, you'll be able to
 pip install cherry-rl
 ```
 
-# Development Guidelines
+## Development Guidelines
 
 * The `master` branch is always working, considered stable.
 * The `dev` branch should always work and is ahead of `master`, considered cutting edge.
 * To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
 
-# Usage
+## Usage
 
 The following snippet demonstrates some of the tools offered by cherry.
 
@@ -47,12 +56,12 @@ replay.add(old_state, action, reward, state, done, info = {
         'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
         'value': value
 })
-replay.list_actions  # List of all stored actions
+replay.actions  # Tensor of all stored actions
 replay.states  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
 
 # Discounting and normalizing rewards
-rewards = ch.rewards.discount_rewards(GAMMA, replay.list_rewards, replay.list_dones)
+rewards = ch.rewards.discount_rewards(GAMMA, replay.rewards, replay.dones)
 rewards = ch.utils.normalize(th.tensor(rewards))
 
 # Sampling rollouts per episode or samples
@@ -66,33 +75,27 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 Concrete examples are available in the [examples/](./examples/) folder.
 
-# Documentation
+## Documentation
 
 The documentation will be written as we begin to converge the core concepts of cherry.
 
-# TODO
+## TODO
 
 Some functionalities that we might want to implement.
 
-* normalize / serialize / parallelize environments,
-* compute advantages / policy gradients / rewards,
-* print and log training / debugging stats,
-* distributed / async training,
-* fix: what is up with the non-determinism ?
-* sample batches from replay,
-* function to sample experience,
-* handle recurrent policies,
-* functions for GAE, discounted and bootstrapped rewards,
-* unified support for continuous and discrete environments,
-* one high-performance implementation of A2C on Breakout and Ant-v1. (or pybullet equivalent)
+* parallelize environments and a way to handle it with `ExperienceReplay`,
+* `VisdomLogger` as a dashboard to debug an implementation,
+* example with reccurent net,
+* minimal but complete documentation,
+* a few extensive tutorials (Getting started with distributed A2C, Advanced usage (which?) with PPO, and another on debugging your algorithms).
 
-
-# Acknowledgements
+### Acknowledgements
 
 Cherry draws inspiration from many reinforcement learning implementations, including
 
 * [OpenAI Baselines](https://github.com/openai/baselines),
-* [RLLab](https://github.com/rll/rllab),
+* John Schulman's [implementations](https://github.com/joschu/modular_rl)
 * Ilya Kostrikov's [implementations](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr),
 * Shangtong Zhang's [implementations](https://github.com/ShangtongZhang/DeepRL),
+* [RLLab](https://github.com/rll/rllab),
 * [RLKit](https://github.com/vitchyr/rlkit).

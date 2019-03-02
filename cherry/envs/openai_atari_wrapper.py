@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
 
+import gym
+import numpy as np
+from gym import spaces
+from collections import deque
+
 from .base import Wrapper
 
-import numpy as np
-from collections import deque
-import gym
-from gym import spaces
-import cv2
-cv2.ocl.setUseOpenCL(False)
+try:
+    import cv2
+    cv2.ocl.setUseOpenCL(False)
+except:
+    cv2 = None
 
 """
 Inspired from OpenAI's baselines:
 
 https://github.com/openai/baselines/blob/master/baselines/common/atari_wrappers.py
 
-and from Shangtong Zhang's DeepRL:
+and from Ilya Kostrikov's implementation:
 
-https://github.com/ShangtongZhang/DeepR/
-
-#######################################################################
-# Copyright (C) 2017 Shangtong Zhang(zhangshangtong.cpp@gmail.com)    #
-# Permission given to modify the code as long as you keep this        #
-# declaration at the top                                              #
-#######################################################################
+https://github.com/ikostrikov/pytorch_a2c_ppo_acktr/
 
 The MIT License
 
@@ -169,7 +167,7 @@ class MaxAndSkipEnv(Wrapper):
         return self.env.reset(**kwargs)
 
 
-class ClipRewardEnv(gym.RewardWrapper):
+class ClipRewardEnv(Wrapper, gym.RewardWrapper):
     def __init__(self, env):
         gym.RewardWrapper.__init__(self, env)
 
@@ -207,12 +205,17 @@ class FrameStack_(Wrapper):
         self.k = k
         self.frames = deque([], maxlen=k)
         shp = env.observation_space.shape
-        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0], shp[1], shp[2] * k), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=255, shape=(shp[0] * k, shp[1], shp[2]), dtype=np.uint8)
 
     def reset(self):
         ob = self.env.reset()
-        for _ in range(self.k):
-            self.frames.append(ob)
+        for _ in range(self.k-1):
+            self.frames.append(ob*0.0)
+        self.frames.append(ob)
+        # The above is similar to ikostrikov's implementation
+        # Below initializes everything with the same initial frame
+        # for _ in range(self.k):
+        #     self.frames.append(ob)
         return self._get_ob()
 
     def step(self, action):
@@ -316,10 +319,10 @@ class OpenAIAtari(Wrapper):
         env = MaxAndSkipEnv(env, skip=4)
         env = wrap_deepmind(env,
                             episode_life=True,
-                            clip_rewards=False,
+                            clip_rewards=True,
                             frame_stack=False,
                             scale=False,
-        )
+                            )
         obs_shape = env.observation_space.shape
         if len(obs_shape) == 3:
             env = TransposeImage(env)
