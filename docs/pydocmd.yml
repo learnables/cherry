@@ -13,6 +13,7 @@ generate:
     - cherry.algorithms.ppo++
     - cherry.algorithms.sac++
 - docs/cherry.envs.md:
+    - cherry.envs.utils++
     - cherry.envs.base.Wrapper++
     - cherry.envs.runner_wrapper.Runner++
     - cherry.envs.logger_wrapper.Logger++
