@@ -8,6 +8,24 @@ from cherry.utils import totensor, min_size
 
 
 class Transition(dict):
+    
+    """
+    **Description** 
+
+    Represents a (s, a, r, s', d) tuple.
+
+    **Arguments**
+
+    None
+
+    **Example** 
+
+    ~~~python
+    for transition in replay:
+        print(transition.state)
+    ~~~
+    """
+
     def __init__(self, **kwargs):
         for k in kwargs:
             setattr(self, k, kwargs[k])
@@ -26,6 +44,62 @@ class Transition(dict):
 
 
 class ExperienceReplay(list):
+
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py)
+
+    **Description**
+
+    Experience replay buffer to store, retrieve, and sample past transitions.
+
+    `ExperienceReplay` behaves like a list of transitions, .
+    It also support accessing specific properties, such as states, actions,
+    rewards, next_states, and informations.
+    The first four are returned as tensors, while `infos` is returned as
+    a list of dicts.
+    The properties of infos can be accessed directly by appending an `s` to their
+    dictionary key -- see Examples below.
+    In this case, if the values of the infos are tensors, they will be returned as
+    a concatenated Tensor.
+    Otherwise, they default to a list of values.
+
+    **Arguments** 
+
+    * **states** (Tensor, *optional*, default=None) - Tensor of states.
+    * **actions** (Tensor, *optional*, default=None) - Tensor of actions.
+    * **rewards** (Tensor, *optional*, default=None) - Tensor of rewards.
+    * **next_states** (Tensor, *optional*, default=None) - Tensor of next_states.
+    * **dones** (Tensor, *optional*, default=None) - Tensor of dones.
+    * **infos** (list, *optional*, default=None) - List of infos.
+
+    **References**
+
+    1. Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.
+
+    **Example** 
+    ~~~python
+    replay = ch.ExperienceReplay()  # Instanciate a new replay
+    replay.add(state,  # Add experience to the replay
+               action,
+               reward,
+               next_state,
+               done,
+               info={
+                    'density': action_density,
+                    'log_prob': action_density.log_prob(action),
+               })
+
+    replay.state  # Tensor of states
+    replay.actions  # Tensor of actions
+    replay.densitys  # list of action_density
+    replay.log_probs  # Tensor of log_probabilities
+
+    new_replay = replay[-10:]  # Last 10 transitions in new_replay
+
+    #Sample some previous experience
+    batch = replay.sample(32, contiguous=True)
+    ~~~
+    """
 
     def __init__(self,
                  states=None,
@@ -85,7 +159,7 @@ class ExperienceReplay(list):
             size = values[0].size()
             if all([isinstance(t, T) and t.size() == size for t in values]):
                 true_size = min_size(values[0])
-                return th.cat(values, dim=0).view(len(values), *true_size)
+                return th.stack(values, dim=0).view(len(values), *true_size)
         return values
 
     def __getitem__(self, key):
@@ -139,6 +213,9 @@ class ExperienceReplay(list):
         storage = th.load(path)
         self.storage = storage
 
+    def append(self, *args, **kwargs):
+        self.add(*args, **kwargs)
+
     def add(self, state, action, reward, next_state, done, info=None):
         self.storage['states'].append(totensor(state))
         self.storage['actions'].append(totensor(action))
@@ -165,13 +242,15 @@ class ExperienceReplay(list):
         """
         Samples from the Experience replay.
 
-        Arguments:
-            size: the number of samples.
-            contiguous: whether to sample contiguous transitions.
-            episodes: sample full episodes, instead of transitions.
+        **Arguments**
 
-        Return:
-            ExperienceReplay()
+        * **size** (int, *optional*, default=1) - The number of samples.
+        * **contiguous** (bool, *optional*, default=False) - Whether to sample contiguous transitions.
+        * **episodes** (bool, *optional*, default=False) - Sample full episodes, instead of transitions.
+
+        **Return**
+        
+        * `ExperienceReplay()` containing the sampled transitions.
         """
         if len(self) < 1 or size < 1:
             return ExperienceReplay()

@@ -17,11 +17,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-import cherry as ch
 import cherry.envs as envs
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
-import cherry.policies as policies
+import cherry.distributions as distributions
 
 SEED = 567
 GAMMA = 0.99
@@ -39,7 +38,8 @@ class ActorCriticNet(nn.Module):
         self.affine1 = nn.Linear(env.state_size, 128)
         self.action_head = nn.Linear(128, env.action_size)
         self.value_head = nn.Linear(128, 1)
-        self.distribution = policies.ActionDistribution(env, use_probs=True)
+        self.distribution = distributions.ActionDistribution(env,
+                                                             use_probs=True)
 
     def forward(self, x):
         x = F.relu(self.affine1(x))

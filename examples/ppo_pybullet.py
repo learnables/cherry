@@ -17,13 +17,13 @@ import torch.nn as nn
 import torch.optim as optim
 
 import cherry as ch
-import cherry.policies as policies
+import cherry.distributions as dist
 import cherry.models as models
 import cherry.envs as envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = False
+RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -52,9 +52,9 @@ class ActorCriticNet(nn.Module):
                                           layer_sizes=[64, 64])
         self.critic = models.control.ControlMLP(env.state_size, 1)
 
-        self.action_dist = policies.ActionDistribution(env,
-                                                       use_probs=False,
-                                                       reparam=False)
+        self.action_dist = dist.ActionDistribution(env,
+                                                   use_probs=False,
+                                                   reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -64,7 +64,6 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    # GAE
     _, next_state_value = policy(replay.next_states[-1])
     advantages = ch.rewards.gae(GAMMA,
                                 TAU,
@@ -139,24 +138,18 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-#    env_name = 'CartPoleBulletEnv-v0'
+    # env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
-    env = envs.OpenAINormalize(env)
+    env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
     if RECORD:
-        record_env = gym.make(env_name)
-        record_env = envs.AddTimestep(record_env)
-        record_env = envs.Monitor(record_env, './videos/')
-        record_env = envs.OpenAINormalize(record_env)
-        record_env = envs.Torch(record_env)
-        record_env = envs.Runner(record_env)
-        record_env.seed(SEED)
+        record_env = envs.Monitor(env, './videos/')
 
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)

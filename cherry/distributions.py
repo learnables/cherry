@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 import torch as th
-import cherry as ch
 import torch.nn as nn
-from torch import Tensor as T
-from torch.distributions import Categorical, MultivariateNormal, Normal
+import cherry as ch
+
+from torch.distributions import Categorical, Normal, Distribution
 
 from gym.spaces import Discrete
 
 
 class Reparameterization(object):
+
+    """
+    Reparameterized distribution.
+    """
 
     def __init__(self, density):
         self.density = density
@@ -33,18 +37,16 @@ class ActionDistribution(nn.Module):
     """
     A helper module to automatically choose the proper policy distribution,
     based on the environment action_space.
-
-    Note: No softmax required after the linear layer of a module.
     """
 
     def __init__(self, env, logstd=None, use_probs=False, reparam=False):
         super(ActionDistribution, self).__init__()
         self.env = env
         if logstd is None:
-            action_size = ch.utils.get_space_dimension(env.action_space)
+            action_size = ch.envs.get_space_dimension(env.action_space)
             logstd = nn.Parameter(th.zeros(action_size))
         if isinstance(logstd, (float, int)):
-            logstd = nn.Parameter(T([logstd]))
+            logstd = nn.Parameter(th.Tensor([logstd]))
         self.logstd = logstd
         self.use_probs = use_probs
         self.reparam = reparam
@@ -62,28 +64,47 @@ class ActionDistribution(nn.Module):
             return density
 
 
-class CategoricalPolicy(nn.Module):
+class TanhNormal(Distribution):
 
-    def __init__(self, mass):
-        super(CategoricalPolicy, self).__init__()
-        self.mass = mass
+    """
+    Adapted from Vitchyr Pong's RLkit:
+    https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py
+    """
 
-    def forward(self, x):
-        return Categorical(self.mass(x))
+    def __init__(self, normal_mean, normal_std):
+        self.normal_mean = normal_mean
+        self.normal_std = normal_std
+        self.normal = Normal(normal_mean, normal_std)
 
+    def sample_n(self, n):
+        z = self.normal.sample_n(n)
+        return th.tanh(z)
 
-class DiagonalizedGaussianPolicy(nn.Module):
+    def log_prob(self, value):
+        pre_tanh_value = (th.log1p(value) - th.log1p(-value)).mul(0.5)
+        offset = th.log1p(-value**2 + 1e-6)
+        return self.normal.log_prob(pre_tanh_value) - offset
 
-    def __init__(self, loc, cov=None):
-        super(DiagonalizedGaussianPolicy, self).__init__()
-        self.loc = loc
-        if cov is None:
-            cov = 1.0
-        if isinstance(cov, float):
-            cov = lambda x: cov
-        self.cov = cov
+    def sample(self):
+        z = self.normal.sample().detach()
+        return th.tanh(z)
 
-    def forward(self, x):
-        loc = self.loc(x)
-        cov = self.cov(x)
-        return MultivariateNormal(loc, cov)
+    def sample_and_log_prob(self):
+        z = self.normal.sample().detach()
+        value = th.tanh(z)
+        offset = th.log1p(-value**2 + 1e-6)
+        log_prob = self.normal.log_prob(z) - offset
+        return value, log_prob
+
+    def rsample_and_log_prob(self):
+        z = self.normal.rsample()
+        value = th.tanh(z)
+        offset = th.log1p(-value**2 + 1e-6)
+        log_prob = self.normal.log_prob(z) - offset
+        return value, log_prob
+
+    def rsample(self):
+        z = self.normal.rsample()
+        z.requires_grad_()
+        return th.tanh(z)
+
