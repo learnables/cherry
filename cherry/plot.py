@@ -60,7 +60,7 @@ def one_side_exponential_smoothing(x_before, y_before, decay_steps=1.):
     return x_after, y_after, y_count
 
 
-def exponential_smoothing(x_before, y_before, decay_steps=1.):
+def exponential_smoothing(x_before, y_before, decay_steps=1.0):
     """
     This is the two side exponential moving average, which 
     performs regular exponential moving average twice from different sides 
@@ -91,9 +91,6 @@ def exponential_smoothing(x_before, y_before, decay_steps=1.):
     y_after = (y_after1*y_count1+y_after2*y_count2)/(y_count1+y_count2)
 
     return x_after1, y_after, y_count1+y_count2
-
-
-    
 
 
 smooth = exponential_smoothing
