@@ -35,6 +35,8 @@ generate:
     - cherry.distributions++
 - docs/cherry.utils.md:
     - cherry.utils++
+- docs/cherry.models.md:
+    - cherry.models++
 - docs/cherry.nn.md:
     - cherry.nn++
 - docs/cherry.nn.init.md:

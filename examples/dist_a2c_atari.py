@@ -11,7 +11,7 @@ import torch.distributed as dist
 
 import cherry as ch
 import cherry.envs as envs
-import cherry.policies as policies
+import cherry.distributions as distributions
 from cherry.optim import Distributed
 from cherry.algorithms import a2c
 from cherry.models import atari
@@ -37,7 +37,7 @@ class NatureCNN(nn.Module):
         self.features = atari.NatureFeatures(self.input_size, hidden_size)
         self.critic = atari.NatureCritic(hidden_size)
         self.actor = atari.NatureActor(hidden_size, env.action_size)
-        self.action_dist = policies.ActionDistribution(env, use_probs=False)
+        self.action_dist = distributions.ActionDistribution(env, use_probs=False)
 
     def forward(self, x):
         x = x.view(-1, self.input_size, 84, 84).mul(1 / 255.0)

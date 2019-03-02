@@ -17,7 +17,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 import cherry as ch
-import cherry.policies as policies
+import cherry.distributions as dist
 import cherry.models as models
 import cherry.envs as envs
 from cherry.algorithms import ppo
@@ -52,9 +52,9 @@ class ActorCriticNet(nn.Module):
                                           layer_sizes=[64, 64])
         self.critic = models.control.ControlMLP(env.state_size, 1)
 
-        self.action_dist = policies.ActionDistribution(env,
-                                                       use_probs=False,
-                                                       reparam=False)
+        self.action_dist = dist.ActionDistribution(env,
+                                                   use_probs=False,
+                                                   reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
