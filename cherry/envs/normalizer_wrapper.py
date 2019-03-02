@@ -53,7 +53,12 @@ class RunningMeanStd(object):
                                                 batch_count)
 
 
-def update_mean_var_count_from_moments(mean, var, count, batch_mean, batch_var, batch_count):
+def update_mean_var_count_from_moments(mean,
+                                       var,
+                                       count,
+                                       batch_mean,
+                                       batch_var,
+                                       batch_count):
     delta = batch_mean - mean
     tot_count = count + batch_count
 
@@ -67,18 +72,61 @@ def update_mean_var_count_from_moments(mean, var, count, batch_mean, batch_var, 
     return new_mean, new_var, new_count
 
 
-class OpenAINormalize(Wrapper):
+class Normalizer(Wrapper):
 
-    def __init__(self, env, state=True, ret=True, clipob=10.0, cliprew=10.0, gamma=0.99, eps=1e-8):
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/envs/normalizer_wrapper.py)
+
+    **Description**
+
+    Normalizes the states and rewards with a running average.
+
+    **Arguments**
+
+     * **env** (Environment) - Environment to normalize.
+     * **states** (bool, *optional*, default=True) - Whether to normalize the
+       states.
+     * **rewards** (bool, *optional*, default=True) - Whether to normalize the
+       rewards.
+     * **clip_states** (bool, *optional*, default=10.0) - Clip each state
+       dimension between [-clip_states, clip_states].
+     * **clip_rewards** (float, *optional*, default=10.0) - Clip rewards
+       between [-clip_rewards, clip_rewards].
+     * **gamma** (float, *optional*, default=0.99) - Discount factor for
+       rewards running averages.
+     * **eps** (float, *optional*, default=1e-8) - Numerical stability.
+
+    **Credit**
+
+    Adapted from OpenAI's baselines implementation.
+
+    **Example**
+    ~~~python
+    env = gym.make('CartPole-v0')
+    env = cherry.envs.Normalizer(env,
+                                 states=True,
+                                 rewards=False)
+    ~~~
+    """
+
+    def __init__(self,
+                 env,
+                 states=True,
+                 rewards=True,
+                 clip_states=10.0,
+                 clip_rewards=10.0,
+                 gamma=0.99,
+                 eps=1e-8):
         Wrapper.__init__(self, env)
         self.env = env
         self.eps = eps
         self.gamma = gamma
-        self.clipob = clipob
-        self.cliprew = cliprew
+        self.clipob = clip_states
+        self.cliprew = clip_rewards
         self.ret = np.zeros(1)
-        self.state_rms = RunningMeanStd(shape=self.observation_space.shape) if state else None
-        self.ret_rms = RunningMeanStd(shape=()) if ret else None
+        if states:
+            self.state_rms = RunningMeanStd(shape=self.observation_space.shape)
+        self.ret_rms = RunningMeanStd(shape=()) if rewards else None
 
     def _obfilt(self, state):
         if self.state_rms:

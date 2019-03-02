@@ -143,7 +143,7 @@ if __name__ == '__main__':
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
-    env = envs.OpenAINormalize(env)
+    env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)

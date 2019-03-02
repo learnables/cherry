@@ -16,17 +16,15 @@ generate:
     - cherry.envs.base.Wrapper++
     - cherry.envs.runner_wrapper.Runner++
     - cherry.envs.logger_wrapper.Logger++
+    - cherry.envs.visdom_logger_wrapper.VisdomLogger++
     - cherry.envs.torch_wrapper.Torch++
-    - cherry.envs.normalized_wrapper.Normalized++
-    - cherry.envs.atari_wrapper.Atari++
-    - cherry.envs.openai_atari_wrapper.OpenAIAtari++
+    - cherry.envs.normalizer_wrapper.Normalizer++
     - cherry.envs.clip_reward_wrapper.ClipReward++
-    - cherry.envs.timestep_wrapper.AddTimestep++
     - cherry.envs.monitor_wrapper.Monitor++
-    - cherry.envs.openai_normalize_wrapper.OpenAINormalize++
+    - cherry.envs.openai_atari_wrapper.OpenAIAtari++
+    - cherry.envs.timestep_wrapper.AddTimestep++
     - cherry.envs.state_lambda_wrapper.StateLambda++
     - cherry.envs.action_space_scaler_wrapper.ActionSpaceScaler++
-    - cherry.envs.visdom_logger_wrapper.VisdomLogger++
 - docs/cherry.optim.md:
     - cherry.optim++
 - docs/cherry.rewards.md:
@@ -57,6 +55,7 @@ pages:
     - cherry.ExperienceReplay: docs/cherry.experience-replay.md
     - cherry.envs: docs/cherry.envs.md
     - cherry.algorithms: docs/cherry.algorithms.md
+    - cherry.models: docs/cherry.models.md
     - cherry.rewards: docs/cherry.rewards.md
     - cherry.optim: docs/cherry.optim.md
     - cherry.nn: docs/cherry.nn.md
