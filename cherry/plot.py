@@ -13,8 +13,8 @@ def one_side_exponential_smoothing(x_before, y_before, decay_steps=1.):
 
     **Arguments**
 
-    * **x_before** (numpy array,**) - x values. Required to be in accending order.
-    * **y_before** (numpy array,*mandatory*) - y values. Required to have same size of x_before.
+    * **x_before** (numpy array) - x values. Required to be in accending order.
+    * **y_before** (numpy array) - y values. Required to have same size of x_before.
     * **decay_steps** (float,*optional*,default=1.) - the number of previous steps trusted. Used to calculate the decay factor.
 
     **Return**
@@ -85,8 +85,8 @@ def exponential_smoothing(x_before, y_before=None, decay_steps=1.0):
 
     **Arguments**
 
-    * **x_before** (numpy array,*mandatory*) - x values. Required to be in accending order.
-    * **y_before** (numpy array,*mandatory*) - y values. Required to have same size of x_before.
+    * **x_before** (numpy array) - x values. Required to be in accending order.
+    * **y_before** (numpy array) - y values. Required to have same size of x_before.
     * **decay_steps** (float,*optional*,default=1.) - the number of previous steps trusted. Used to calculate the decay factor.
 
     **Return**
