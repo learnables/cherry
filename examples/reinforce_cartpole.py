@@ -16,10 +16,10 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
-from cherry.policies import CategoricalPolicy
 from cherry.rewards import discount_rewards
 from cherry.utils import normalize
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     env = envs.Torch(env)
     env.seed(SEED)
 
-    policy = CategoricalPolicy(PolicyNet())
+    policy = PolicyNet()
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
     running_reward = 10.0
     replay = ch.ExperienceReplay()
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     for i_episode in count(1):
         state = env.reset()
         for t in range(10000):  # Don't infinite loop while learning
-            mass = policy(state)
+            mass = Categorical(policy(state)) 
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
