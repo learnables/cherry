@@ -2,23 +2,34 @@ import numpy as np
 
 def one_side_exponential_smoothing(x_before, y_before, decay_steps=1.):
     """
-    This is the one side (regular) exponential moving average, which 
-    evenly resamples points based on x-aixs and averages y values with weighting factor
-    decreasing exponentially.
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
 
-    Arguments:
-    x_before: array     - x values. Required to be in accending order.
-    
-    y_before: array     - y values. Required to have same size of x_before.
-    
-    decay_steps: float  - the number of previous steps trusted. Used to calculate the decay factor.
+    **Decription**
 
-    Return:
-    x_after: array      - x values after resampling.
-    
-    y_after: array      - y values after smoothing.
-    
-    y_count: array      - decay values for each steps. 
+    One side (regular) exponential moving average for smoothing a curve
+
+    It evenly resamples points baesd on x-aixs and then averages y values with 
+    weighting factor decreasing exponentially.   
+
+    **Arguments**
+
+    * **x_before** (numpy array,**) - x values. Required to be in accending order.
+    * **y_before** (numpy array,*mandatory*) - y values. Required to have same size of x_before.
+    * **decay_steps** (float,*optional*,default=1.) - the number of previous steps trusted. Used to calculate the decay factor.
+
+    **Return**
+
+    * **x_after** (numpy array) - x values after resampling.
+    * **y_after** (numpy array) - y values after smoothing.
+    * **y_count** (numpy array) - decay values at each steps. 
+
+    **Credit**
+
+    We adapt the idea from openai's plotting function
+
+    **Example**
+    ~~~python
+    x_smoothed, y_smoothed, y_counts = one_side_exponential_smoothing(x_original,y_original,decay_steps = 1.)
 
     """
     
@@ -60,28 +71,56 @@ def one_side_exponential_smoothing(x_before, y_before, decay_steps=1.):
     return x_after, y_after, y_count
 
 
-def exponential_smoothing(x_before, y_before, decay_steps=1.0):
+def exponential_smoothing(x_before, y_before=None, decay_steps=1.0):
     """
-    This is the two side exponential moving average, which 
-    performs regular exponential moving average twice from different sides 
-    and then combines results together.
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
 
-    Arguments:
-    x_before: array     - x values. Required to be in accending order.
-    
-    y_before: array     - y values. Required to have same shape of x_before.
-    
-    decay_steps: float  - the number of previous steps trusted. Used to calculate the decay factor.
+    **Decription**
 
-    Return:
-    x_after: array      - x values after resampling.
-    
-    y_after: array      - y values after smoothing.
-    
-    y_count: array      - decay values for each points. 
+    Two side exponential moving average for smoothing a curve
+
+    It performs regular exponential moving average twice from two different sides 
+    and then combines the results together.
+    It performs better than one side exponential smoothing.
+
+    **Arguments**
+
+    * **x_before** (numpy array,*mandatory*) - x values. Required to be in accending order.
+    * **y_before** (numpy array,*mandatory*) - y values. Required to have same size of x_before.
+    * **decay_steps** (float,*optional*,default=1.) - the number of previous steps trusted. Used to calculate the decay factor.
+
+    **Return**
+
+    * **x_after** (numpy array) - x values after resampling.
+    * **y_after** (numpy array) - y values after smoothing.
+    * **y_count** (numpy array) - decay values at each steps. 
+
+    **Credit**
+
+    We adapt the idea from openai's plotting function
+
+    **Example**
+    ~~~python
+    x_smoothed, y_smoothed, _ = exponential_smoothing(x_original,y_original,decay_steps = 3.)
 
     """
 
+    if y_before is None:
+        y_before = x_before
+        x_before = np.arange(0,len(y_before))
+
+    if isinstance(y_before,list):
+        y_before = np.array(y_before)
+    elif isinstance(y_before,th.Tensor):
+        y_before = y_before.numpy()
+
+    if isinstance(x_before,list):
+        x_before = np.array(x_before)
+    elif isinstance(x_before,th.Tensor):
+        x_before = x_before.numpy()
+
+    assert x_before.shape == y_before.shape
+    assert len(x_before.shape) == 1
     x_after1, y_after1, y_count1 = one_side_exponential_smoothing(x_before, y_before, decay_steps)
     x_after2, y_after2, y_count2 = one_side_exponential_smoothing(-x_before[::-1],y_before[::-1],decay_steps)
 
