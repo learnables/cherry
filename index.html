@@ -58,15 +58,15 @@
 </li>
                                     
 <li >
-    <a href="tutorials/distributed_a2c/">Distributed Policy Gradients with A2C</a>
+    <a href="tutorials/distributed_ppo/">Distributed Training with PPO</a>
 </li>
                                     
 <li >
-    <a href="tutorials/continuous_ppo/">Continuous Control with PPO</a>
+    <a href="tutorials/recurrent_a2c/">Recurrent Policy Gradients with A2C</a>
 </li>
                                     
 <li >
-    <a href="tutorials/continuous_ppo/">Debugging Reinforcement Learning</a>
+    <a href="tutorials/debugging_rl/">Debugging Reinforcement Learning</a>
 </li>
                                 </ul>
                             </li>
@@ -155,6 +155,15 @@
 Instead, it provides you with common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
 So if you don't like a specific tool, you can still use parts of cherry without headaches.</p>
+<p><strong>Features</strong></p>
+<ul>
+<li>Pythonic and modular interface <em>à la</em> Pytorch,</li>
+<li>Support for tabular (!) and function approximation algorithms,</li>
+<li>Various OpenAI Gym environment wrappers,</li>
+<li>Helper functions for popular algorithms (e.g. A2C, DDPG, TRPO, PPO, SAC),</li>
+<li>Logging, visualization, and debugging tools,</li>
+<li>Painless and efficient distributed training on CPUs and GPUs.</li>
+</ul>
 <h2 id="installation">Installation</h2>
 <p>For now, cherry is still in development.</p>
 <ol>
@@ -308,5 +317,5 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-03-02 10:03:02
+Build Date UTC : 2019-03-02 10:31:43
 -->
