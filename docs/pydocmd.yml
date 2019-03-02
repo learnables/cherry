@@ -50,9 +50,9 @@ pages:
 - Home: index.md << ../README.md
 - Tutorials:
     - Getting Started with Cherry: tutorials/getting_started.md
-    - Distributed Policy Gradients with A2C: tutorials/distributed_a2c.md
-    - Continuous Control with PPO: tutorials/continuous_ppo.md
-    - Debugging Reinforcement Learning: tutorials/continuous_ppo.md
+    - Distributed Training with PPO: tutorials/distributed_ppo.md
+    - Recurrent Policy Gradients with A2C: tutorials/recurrent_a2c.md
+    - Debugging Reinforcement Learning: tutorials/debugging_rl.md
 - Documentation:
     - cherry.ExperienceReplay: docs/cherry.experience-replay.md
     - cherry.envs: docs/cherry.envs.md

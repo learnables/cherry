@@ -9,6 +9,15 @@ Instead, it provides you with common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
 So if you don't like a specific tool, you can still use parts of cherry without headaches.
 
+**Features**
+
+* Pythonic and modular interface *à la* Pytorch,
+* Support for tabular (!) and function approximation algorithms,
+* Various OpenAI Gym environment wrappers,
+* Helper functions for popular algorithms (e.g. A2C, DDPG, TRPO, PPO, SAC),
+* Logging, visualization, and debugging tools,
+* Painless and efficient distributed training on CPUs and GPUs.
+
 ## Installation
 
 For now, cherry is still in development.
