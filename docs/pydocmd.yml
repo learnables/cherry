@@ -64,7 +64,7 @@ pages:
     - cherry.nn: docs/cherry.nn.md
     - cherry.nn.init: docs/cherry.nn.init.md
     - cherry.distributions: docs/cherry.distributions.md
-    - cherry.plot: docs/cherry.utils.md
+    - cherry.plot: docs/cherry.plot.md
     - cherry.utils: docs/cherry.utils.md
 
 # These options all show off their default values. You don't have to add
