@@ -8,9 +8,9 @@ from cherry.utils import totensor, min_size
 
 
 class Transition(dict):
-    
+
     """
-    **Description** 
+    **Description**
 
     Represents a (s, a, r, s', d) tuple.
 
@@ -174,12 +174,12 @@ class ExperienceReplay(list):
         }
         if isinstance(key, slice):
             return ExperienceReplay(
-                states=content['state'][key],
-                actions=content['action'][key],
-                rewards=content['reward'][key],
-                next_states=content['next_state'][key],
-                dones=content['done'][key],
-                infos=content['info'][key],
+                states=content['state'],
+                actions=content['action'],
+                rewards=content['reward'],
+                next_states=content['next_state'],
+                dones=content['done'],
+                infos=content['info'],
             )
         return Transition(**content)
 

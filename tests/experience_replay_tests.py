@@ -6,18 +6,14 @@ import numpy as np
 import torch as th
 import cherry as ch
 import os
-import copy
 
 
 NUM_SAMPLES = 100
 VECTOR_SIZE = 5
 
-"""
-TODO: Tests to add:
-    * save
-    * load
-    * replay.myattr
-"""
+
+def close(a, b):
+    return (a-b).norm(p=2) <= 1e-8
 
 
 class TestExperienceReplay(unittest.TestCase):
@@ -207,11 +203,11 @@ class TestExperienceReplay(unittest.TestCase):
         vector = np.random.rand(VECTOR_SIZE)
         for i in range(NUM_SAMPLES):
             old_replay.add(vector,
-                            vector,
-                            i,
-                            vector,
-                            False,
-                            info={'vector': vector})
+                           vector,
+                           i,
+                           vector,
+                           False,
+                           info={'vector': vector})
         # save the old file
         old_replay.save('testing_temp_file.pt')
 
@@ -220,25 +216,30 @@ class TestExperienceReplay(unittest.TestCase):
         new_replay.load('testing_temp_file.pt')
 
         # check size
-        self.assertEqual(len(old_replay.storage['states']), len(new_replay.storage['states']))
-        self.assertEqual(len(old_replay.storage['actions']), len(new_replay.storage['actions']))
-        self.assertEqual(len(old_replay.storage['rewards']), len(new_replay.storage['rewards']))
-        self.assertEqual(len(old_replay.storage['next_states']), len(new_replay.storage['next_states']))
-        self.assertEqual(len(old_replay.storage['dones']), len(new_replay.storage['dones']))
-        self.assertEqual(len(old_replay.storage['infos']), len(new_replay.storage['infos']))
+        self.assertEqual(len(old_replay.storage['states']),
+                         len(new_replay.storage['states']))
+        self.assertEqual(len(old_replay.storage['actions']),
+                         len(new_replay.storage['actions']))
+        self.assertEqual(len(old_replay.storage['rewards']),
+                         len(new_replay.storage['rewards']))
+        self.assertEqual(len(old_replay.storage['next_states']),
+                         len(new_replay.storage['next_states']))
+        self.assertEqual(len(old_replay.storage['dones']),
+                         len(new_replay.storage['dones']))
+        self.assertEqual(len(old_replay.storage['infos']),
+                         len(new_replay.storage['infos']))
 
         # check content
         for a, b in zip(old_replay, new_replay):
-            self.assertLessEqual((a['state'] - b['state']).norm(p=2), 1e-8)
-            self.assertLessEqual((a['action'] - b['action']).norm(p=2), 1e-8)
-            self.assertLessEqual((a['reward'] - b['reward']).norm(p=2), 1e-8)
-            self.assertLessEqual((a['next_state'] - b['next_state']).norm(p=2), 1e-8)
-            self.assertLessEqual((a['done'] - b['done']).norm(p=2), 1e-8)
-            self.assertEqual(a['info']['vector'].all(), b['info']['vector'].all())
+            self.assertTrue(close(a['state'], b['state']))
+            self.assertTrue(close(a['action'], b['action']))
+            self.assertTrue(close(a['reward'], b['reward']))
+            self.assertTrue(close(a['next_state'], b['next_state']))
+            self.assertTrue(close(a['done'], b['done']))
+            self.assertEqual(a['info']['vector'].all(),
+                             b['info']['vector'].all())
 
-        print (type(old_replay.log_probs))
         os.remove('testing_temp_file.pt')
-
 
     def test_replay_myattr(self):
         standard_replay = self.replay
@@ -251,34 +252,50 @@ class TestExperienceReplay(unittest.TestCase):
         # and the results type should still be tensor
         for i in range(NUM_SAMPLES):
             standard_replay.add(vector,
-                            vector,
-                            i,
-                            vector,
-                            False,
-                            info={'test': test_tensor})
+                                vector,
+                                i,
+                                vector,
+                                False,
+                                info={'test': test_tensor})
         self.assertTrue(isinstance(standard_replay.tests, th.Tensor))
 
         # stuff in an int, the result type should be a list
         put_int_replay = standard_replay[:]
         put_int_replay.add(vector,
-                        vector,
-                        i,
-                        vector,
-                        False,
-                        info={'test': 1000})
-        # print (put_int_replay.tests)
+                           vector,
+                           i,
+                           vector,
+                           False,
+                           info={'test': 1000})
         self.assertTrue(isinstance(put_int_replay.tests, list))
 
         # stuff in a float, the result type should be a list
         put_float_replay = standard_replay[:]
         put_float_replay.add(vector,
-                        vector,
-                        i,
-                        vector,
-                        False,
-                        info={'test': float(9.8981)})
-        # print (put_float_replay.tests)
+                             vector,
+                             i,
+                             vector,
+                             False,
+                             info={'test': float(9.8981)})
         self.assertTrue(isinstance(put_float_replay.tests, list))
+
+    def test_slices(self):
+        for i in range(NUM_SAMPLES):
+            self.replay.add(th.randn(VECTOR_SIZE),
+                            th.randn(VECTOR_SIZE),
+                            i,
+                            th.randn(VECTOR_SIZE),
+                            False,
+                            info={'vector': th.randn(VECTOR_SIZE)})
+
+        sliced = self.replay[0:-3]
+        self.assertEqual(len(sliced), len(self.replay) - 3)
+        for sars, sars_ in zip(self.replay, sliced):
+            self.assertTrue(close(sars.state, sars_.state))
+            self.assertTrue(close(sars.action, sars_.action))
+            self.assertTrue(close(sars.reward, sars_.reward))
+            self.assertTrue(close(sars.next_state, sars_.next_state))
+            self.assertTrue(close(sars.info['vector'], sars_.info['vector']))
 
 
 if __name__ == '__main__':
