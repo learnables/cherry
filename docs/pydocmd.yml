@@ -1,4 +1,4 @@
-site_name: "Cherry"
+site_name: "cherry"
 
 # This tells pydocmd which pages to generate from which Python modules,
 # functions and classes. At the first level is the page name, below that
