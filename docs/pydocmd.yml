@@ -32,14 +32,16 @@ generate:
     - cherry.rewards++
 - docs/cherry.distributions.md:
     - cherry.distributions++
-- docs/cherry.utils.md:
-    - cherry.utils++
 - docs/cherry.models.md:
     - cherry.models++
 - docs/cherry.nn.md:
     - cherry.nn++
 - docs/cherry.nn.init.md:
     - cherry.nn.init++
+- docs/cherry.utils.md:
+    - cherry.utils++
+- docs/cherry.plot.md:
+    - cherry.plot.exponential_smoothing
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -62,6 +64,7 @@ pages:
     - cherry.nn: docs/cherry.nn.md
     - cherry.nn.init: docs/cherry.nn.init.md
     - cherry.distributions: docs/cherry.distributions.md
+    - cherry.plot: docs/cherry.plot.md
     - cherry.utils: docs/cherry.utils.md
 
 # These options all show off their default values. You don't have to add
