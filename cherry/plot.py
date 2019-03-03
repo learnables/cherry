@@ -4,7 +4,7 @@ import torch as th
 import numpy as np
 
 
-def _one_sided_smoothing(x_before, y_before, decay_steps=1.0):
+def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
 
@@ -19,7 +19,7 @@ def _one_sided_smoothing(x_before, y_before, decay_steps=1.0):
 
     * **x_before** (ndarray) - x values. Required to be in accending order.
     * **y_before** (ndarray) - y values. Required to have same size as x_before.
-    * **decay_steps** (float, *optional*, default=1.0) - the number of previous
+    * **smoothing_temperature** (float, *optional*, default=1.0) - the number of previous
       steps trusted. Used to calculate the decay factor.
 
     **Return**
@@ -37,7 +37,7 @@ def _one_sided_smoothing(x_before, y_before, decay_steps=1.0):
     from cherry.plot import _one_sided_smoothing as osmooth
     x_smoothed, y_smoothed, y_counts = osmooth(x_original,
                                                y_original,
-                                               decay_steps=1.0)
+                                               smoothing_temperature=1.0)
     ~~~
     """
 
@@ -56,10 +56,10 @@ def _one_sided_smoothing(x_before, y_before, decay_steps=1.0):
     y_count = np.zeros(size, dtype=float)
 
     # Weighting factor for data of previous steps
-    alpha = np.exp(-1./decay_steps)
+    alpha = np.exp(-1./smoothing_temperature)
     x_before_length = x_before[-1] - x_before[0]
     x_before_index = 0
-    decay_period = x_before_length/(size-1)*decay_steps
+    decay_period = x_before_length/(size-1)*smoothing_temperature
 
     for i in range(len(x_after)):
         # Compute current EMA value based on the value of previous time step
@@ -84,7 +84,7 @@ def _one_sided_smoothing(x_before, y_before, decay_steps=1.0):
     return x_after, y_after, y_count
 
 
-def exponential_smoothing(x, y=None, decay_steps=1.0):
+def exponential_smoothing(x, y=None, smoothing_temperature=1.0):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
 
@@ -100,25 +100,25 @@ def exponential_smoothing(x, y=None, decay_steps=1.0):
 
     * **x** (ndarray/tensor/list) - x values, in accending order.
     * **y** (ndarray/tensor/list) - y values.
-    * **decay_steps** (float,*optional*,default=1.) - the number of previous
-      steps trusted. Used to calculate the decay factor.
+    * **smoothing_temperature** (float, *optional*, default=1.0) - The higher,
+      the smoother.
 
     **Return**
 
-    * **x_after** (ndarray) - x values after resampling.
-    * **y_after** (ndarray) - y values after smoothing.
-    * **y_count** (ndarray) - decay values at each steps.
+    * ndarray - x values after resampling.
+    * ndarray - y values after smoothing.
+    * ndarray - decay values at each steps.
 
     **Credit**
 
-    We adapt the idea from openai's plotting function
+    Adapted from OpenAI's baselines implementation.
 
     **Example**
     ~~~python
     from cherry.plot import exponential_smoothing
     x_smoothed, y_smoothed, _ = exponential_smoothing(x_original,
                                                       y_original,
-                                                      decay_steps = 3.)
+                                                      smoothing_temperature=3.)
     """
 
     if y is None:
@@ -139,10 +139,10 @@ def exponential_smoothing(x, y=None, decay_steps=1.0):
     assert len(x.shape) == 1
     x_after1, y_after1, y_count1 = _one_sided_smoothing(x,
                                                         y,
-                                                        decay_steps)
+                                                        smoothing_temperature)
     x_after2, y_after2, y_count2 = _one_sided_smoothing(-x[::-1],
                                                         y[::-1],
-                                                        decay_steps)
+                                                        smoothing_temperature)
 
     y_after2 = y_after2[::-1]
     y_count2 = y_count2[::-1]
