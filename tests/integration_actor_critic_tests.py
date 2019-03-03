@@ -11,7 +11,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import cherry.envs as envs
-from cherry.rewards import discount_rewards
+from cherry.rewards import discount
 from cherry.utils import normalize
 import cherry.distributions as distributions
 
@@ -93,8 +93,8 @@ class ActorCriticNet(nn.Module):
 def update(replay, optimizer):
     policy_loss = []
     value_loss = []
-    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
-    rewards = normalize(th.tensor(rewards))
+    rewards = discount(GAMMA, replay.rewards, replay.dones)
+    rewards = normalize(rewards)
     for info, reward in zip(replay.infos, rewards):
         log_prob = info['log_prob']
         value = info['value']

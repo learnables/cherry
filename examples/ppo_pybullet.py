@@ -65,14 +65,14 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay.next_states[-1])
-    advantages = ch.rewards.gae(GAMMA,
-                                TAU,
-                                replay.rewards,
-                                replay.dones,
-                                replay.values,
-                                next_state_value)
+    advantages = ch.rewards.generalized_advantage(GAMMA,
+                                                  TAU,
+                                                  replay.rewards,
+                                                  replay.dones,
+                                                  replay.values,
+                                                  next_state_value)
 
-    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5).view(-1, 1)
+    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
     rewards = [a + v for a, v in zip(advantages, replay.values)]
 
     replay.update(lambda i, sars: {
