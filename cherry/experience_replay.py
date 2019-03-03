@@ -18,7 +18,7 @@ class Transition(dict):
 
     None
 
-    **Example** 
+    **Example**
 
     ~~~python
     for transition in replay:
@@ -63,7 +63,7 @@ class ExperienceReplay(list):
     a concatenated Tensor.
     Otherwise, they default to a list of values.
 
-    **Arguments** 
+    **Arguments**
 
     * **states** (Tensor, *optional*, default=None) - Tensor of states.
     * **actions** (Tensor, *optional*, default=None) - Tensor of actions.
@@ -76,7 +76,8 @@ class ExperienceReplay(list):
 
     1. Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.
 
-    **Example** 
+    **Example**
+
     ~~~python
     replay = ch.ExperienceReplay()  # Instanciate a new replay
     replay.add(state,  # Add experience to the replay
