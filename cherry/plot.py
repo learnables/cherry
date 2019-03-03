@@ -84,7 +84,7 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
     return x_after, y_after, y_count
 
 
-def exponential_smoothing(x, y=None, smoothing_temperature=1.0):
+def exponential_smoothing(x, y=None, temperature=1.0):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
 
@@ -100,25 +100,26 @@ def exponential_smoothing(x, y=None, smoothing_temperature=1.0):
 
     * **x** (ndarray/tensor/list) - x values, in accending order.
     * **y** (ndarray/tensor/list) - y values.
-    * **smoothing_temperature** (float, *optional*, default=1.0) - The higher,
+    * **temperature** (float, *optional*, default=1.0) - The higher,
       the smoother.
 
     **Return**
 
     * ndarray - x values after resampling.
     * ndarray - y values after smoothing.
-    * ndarray - decay values at each steps.
 
     **Credit**
 
     Adapted from OpenAI's baselines implementation.
 
     **Example**
+
     ~~~python
     from cherry.plot import exponential_smoothing
     x_smoothed, y_smoothed, _ = exponential_smoothing(x_original,
                                                       y_original,
-                                                      smoothing_temperature=3.)
+                                                      temperature=3.)
+    ~~~
     """
 
     if y is None:
@@ -139,17 +140,17 @@ def exponential_smoothing(x, y=None, smoothing_temperature=1.0):
     assert len(x.shape) == 1
     x_after1, y_after1, y_count1 = _one_sided_smoothing(x,
                                                         y,
-                                                        smoothing_temperature)
+                                                        temperature)
     x_after2, y_after2, y_count2 = _one_sided_smoothing(-x[::-1],
                                                         y[::-1],
-                                                        smoothing_temperature)
+                                                        temperature)
 
     y_after2 = y_after2[::-1]
     y_count2 = y_count2[::-1]
 
     y_after = y_after1 * y_count1 + y_after2 * y_count2
     y_after /= (y_count1 + y_count2)
-    return x_after1, y_after, y_count1 + y_count2
+    return x_after1, y_after
 
 
 smooth = exponential_smoothing

@@ -2024,7 +2024,7 @@ class TestPlot(unittest.TestCase):
         for i in range(5):
             xs = np.array(orig_data)[i,:,0]
             ys = np.array(orig_data)[i,:,1]
-            x_after, y_after,_ = plot.smooth(xs,ys,decay_steps=3)
+            x_after, y_after = plot.smooth(xs, ys, temperature=3)
             self.assertListEqual(x_after.tolist(), smooth_data[i,:,0].tolist())
             self.assertListEqual(y_after.tolist(), smooth_data[i,:,1].tolist())
             
