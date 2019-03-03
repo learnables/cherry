@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import torch as th
-
-
 """
 Helper functions for A2C.
 """
+
+import torch as th
 
 
 def policy_loss(log_probs, advantages):
