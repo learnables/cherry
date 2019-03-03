@@ -133,12 +133,16 @@ def update(replay,
     # QF loss
     q_old_pred = qf(batch.states, batch.actions.detach())
     v_next = target_vf(batch.next_states)
-    qf_loss = sac.q_loss(q_old_pred, v_next, batch.rewards, batch.dones, GAMMA)
+    qf_loss = sac.action_value_loss(q_old_pred,
+                                    v_next,
+                                    batch.rewards,
+                                    batch.dones,
+                                    GAMMA)
 
     # VF loss
     v_pred = vf(batch.states)
     q_values = qf(batch.states, actions)
-    vf_loss = sac.v_loss(v_pred, log_probs, q_values, alpha)
+    vf_loss = sac.state_value_loss(v_pred, log_probs, q_values, alpha)
 
     # Policy loss
     policy_loss = sac.policy_loss(log_probs, q_values, alpha)

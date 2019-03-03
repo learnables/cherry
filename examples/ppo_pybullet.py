@@ -101,7 +101,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
                                           batch.log_probs,
                                           batch.advantages,
                                           clip=PPO_CLIP)
-            value_loss = ppo.value_loss(values,
+            value_loss = ppo.state_value_loss(values,
                                         batch.values.detach(),
                                         batch.rewards,
                                         clip=PPO_CLIP)
