@@ -61,7 +61,7 @@ def update(replay, optimizer, policy, env):
     entropy = replay.entropys.mean()
     advantages = rewards.detach() - replay.values.detach()
     policy_loss = a2c.policy_loss(replay.log_probs, advantages)
-    value_loss = a2c.value_loss(replay.values, rewards)
+    value_loss = a2c.state_value_loss(replay.values, rewards)
     loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
 
     # Take optimization step
