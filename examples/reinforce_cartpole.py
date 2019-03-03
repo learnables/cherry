@@ -81,7 +81,7 @@ if __name__ == '__main__':
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done, info={
+            replay.append(old_state, action, reward, state, done, info={
                 'log_prob': mass.log_prob(action),  # Cache log_prob for later
             })
             if RENDER:

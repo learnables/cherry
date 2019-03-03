@@ -97,6 +97,10 @@ def generalized_advantage(gamma,
     * **next_value** (tensor) - Value of the state obtained after the
       transition from the state used to compute the last value in `values`.
 
+    **Returns**
+
+    * tensor - Tensor of advantages.
+
     **Example**
     ~~~python
     mass, next_value = policy(replay.next_states[-1])
