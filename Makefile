@@ -38,7 +38,7 @@ dqn:
 	python examples/dqn_atari.py
 
 dev:
-	pip install --progess-bar off torch gym
+	pip install --progress-bar off torch gym >> log_install.txt
 	python setup.py develop
 
 tests:

@@ -52,7 +52,7 @@ class Runner(Wrapper):
             if done:
                 collected_episodes += 1
                 state = self.env.reset()
-            replay.add(old_state, action, reward, state, done, info=info)
+            replay.append(old_state, action, reward, state, done, info=info)
             self._current_state = state
             if render:
                 self.env.render()

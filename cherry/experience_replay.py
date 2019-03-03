@@ -16,7 +16,13 @@ class Transition(dict):
 
     **Arguments**
 
-    None
+    * **state** (tensor) - Originating state.
+    * **action** (tensor) - Executed action.
+    * **reward** (tensor) - Observed reward.
+    * **next_state** (tensor) - Resulting state.
+    * **done** (tensor) - Is `next_state` a terminal (absorbing) state ?
+    * **info** (dict, *optional*, default=None) - Additional information on
+      the transition.
 
     **Example**
 
@@ -26,11 +32,21 @@ class Transition(dict):
     ~~~
     """
 
-    def __init__(self, **kwargs):
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
-            self[k] = kwargs[k]
-        self.__attributes = kwargs.keys()
+    def __init__(self, state, action, reward, next_state, done, info=None):
+        self.__attributes = ['state',
+                             'action',
+                             'reward',
+                             'next_state',
+                             'done',
+                             'info']
+        self['state'] = state
+        self['action'] = action
+        self['reward'] = reward
+        self['next_state'] = next_state
+        self['done'] = done
+        self['info'] = info
+        for attr in self.__attributes:
+            setattr(self, attr, self[attr])
 
     def __str__(self):
         name = 'Transition('
@@ -57,10 +73,10 @@ class ExperienceReplay(list):
     rewards, next_states, and informations.
     The first four are returned as tensors, while `infos` is returned as
     a list of dicts.
-    The properties of infos can be accessed directly by appending an `s` to their
-    dictionary key -- see Examples below.
-    In this case, if the values of the infos are tensors, they will be returned as
-    a concatenated Tensor.
+    The properties of infos can be accessed directly by appending an `s` to
+    their dictionary key -- see Examples below.
+    In this case, if the values of the infos are tensors, they will be returned
+    as a concatenated Tensor.
     Otherwise, they default to a list of values.
 
     **Arguments**
@@ -68,7 +84,8 @@ class ExperienceReplay(list):
     * **states** (Tensor, *optional*, default=None) - Tensor of states.
     * **actions** (Tensor, *optional*, default=None) - Tensor of actions.
     * **rewards** (Tensor, *optional*, default=None) - Tensor of rewards.
-    * **next_states** (Tensor, *optional*, default=None) - Tensor of next_states.
+    * **next_states** (Tensor, *optional*, default=None) - Tensor of
+      next_states.
     * **dones** (Tensor, *optional*, default=None) - Tensor of dones.
     * **infos** (list, *optional*, default=None) - List of infos.
 
@@ -80,15 +97,15 @@ class ExperienceReplay(list):
 
     ~~~python
     replay = ch.ExperienceReplay()  # Instanciate a new replay
-    replay.add(state,  # Add experience to the replay
-               action,
-               reward,
-               next_state,
-               done,
-               info={
-                    'density': action_density,
-                    'log_prob': action_density.log_prob(action),
-               })
+    replay.append(state,  # Add experience to the replay
+                  action,
+                  reward,
+                  next_state,
+                  done,
+                  info={
+                       'density': action_density,
+                       'log_prob': action_density.log_prob(action),
+                  })
 
     replay.state  # Tensor of states
     replay.actions  # Tensor of actions
@@ -139,14 +156,14 @@ class ExperienceReplay(list):
     def __add__(self, other):
         new_replay = ExperienceReplay()
         for sars in self:
-            new_replay.add(**sars)
+            new_replay.append(**sars)
         for sars in other:
-            new_replay.add(**sars)
+            new_replay.append(**sars)
         return new_replay
 
     def __iadd__(self, other):
         for sars in other:
-            self.add(**sars)
+            self.append(**sars)
         return self
 
     def __iter__(self):
@@ -208,16 +225,65 @@ class ExperienceReplay(list):
         return self.storage['infos']
 
     def save(self, path):
+        """
+        **Description**
+
+        Serializes and saves the ExperienceReplay into the given path.
+
+        **Arguments**
+
+        * **path** (str) - File path.
+
+        **Example**
+        ~~~python
+        replay.save('my_replay_file.pt')
+        ~~~
+        """
         th.save(self.storage, path)
 
     def load(self, path):
+        """
+        **Description**
+
+        Loads data from a serialized ExperienceReplay.
+
+        **Arguments**
+
+        * **path** (str) - File path of serialized ExperienceReplay.
+
+        **Example**
+        ~~~python
+        replay.load('my_replay_file.pt')
+        ~~~
+        """
         storage = th.load(path)
         self.storage = storage
 
-    def append(self, *args, **kwargs):
-        self.add(*args, **kwargs)
+    def append(self, state, action, reward, next_state, done, info=None):
+        """
+        **Description**
 
-    def add(self, state, action, reward, next_state, done, info=None):
+        Appends new data to the list ExperienceReplay.
+
+        **Arguments**
+
+        * **state** (tensor/ndarray/list) - Originating state.
+        * **action** (tensor/ndarray/list) - Executed action.
+        * **reward** (tensor/ndarray/list) - Observed reward.
+        * **next_state** (tensor/ndarray/list) - Resulting state.
+        * **done** (tensor/bool) - Is `next_state` a terminal (absorbing)
+          state ?
+        * **info** (dict, *optional*, default=None) - Additional information on
+          the transition.
+
+        **Example**
+        ~~~python
+        replay.append(state, action, reward, next_state, done, info={
+            'density': density,
+            'log_prob': density.log_prob(action),
+        })
+        ~~~
+        """
         self.storage['states'].append(totensor(state))
         self.storage['actions'].append(totensor(action))
         self.storage['rewards'].append(totensor(reward))
@@ -225,7 +291,41 @@ class ExperienceReplay(list):
         self.storage['dones'].append(totensor(done))
         self.storage['infos'].append(info)
 
+    def add(self, *args, **kwargs):
+        """
+        **Description**
+
+        (Deprecated) Alias for .append()
+        """
+        self.append(*args, **kwargs)
+
     def update(self, fn):
+        """
+        **Description**
+
+        Updates all samples in the replay according to `fn`.
+
+        `fn` should take two arguments and returns a dict of updated values.
+        The first one corresponds to the index of the transition to be updated.
+        The second is the transition itself.
+
+        Note: You should return the updated values, not modify the values
+              in-place on the transition.
+
+        **Arguments**
+
+        * **fn** (function) - Update function.
+
+        **Example**
+        ~~~python
+        replay.update(lambda i, sars: {
+            'reward': rewards[i].detach(),
+            'info': {
+                'advantage': advantages[i].detach()
+            },
+        })
+        ~~~
+        """
         infos = self.storage['infos']
         attributes = ['state', 'action', 'reward', 'next_state', 'done']
         for i, sars in enumerate(self):
@@ -246,12 +346,15 @@ class ExperienceReplay(list):
         **Arguments**
 
         * **size** (int, *optional*, default=1) - The number of samples.
-        * **contiguous** (bool, *optional*, default=False) - Whether to sample contiguous transitions.
-        * **episodes** (bool, *optional*, default=False) - Sample full episodes, instead of transitions.
+        * **contiguous** (bool, *optional*, default=False) - Whether to sample
+          contiguous transitions.
+        * **episodes** (bool, *optional*, default=False) - Sample full
+          episodes, instead of transitions.
 
         **Return**
-        
-        * `ExperienceReplay()` containing the sampled transitions.
+
+        * ExperienceReplay - New ExperienceReplay containing the sampled
+          transitions.
         """
         if len(self) < 1 or size < 1:
             return ExperienceReplay()
@@ -302,8 +405,18 @@ class ExperienceReplay(list):
         sample = ExperienceReplay()
         for idx in indices:
             transition = self[idx]
-            sample.add(**transition)
+            sample.append(**transition)
         return sample
 
     def empty(self):
+        """
+        **Description**
+
+        Removes all data from an ExperienceReplay.
+
+        **Example**
+        ~~~python
+        replay.empty()
+        ~~~
+        """
         self = self.__init__()
