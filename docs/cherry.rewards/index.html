@@ -146,30 +146,107 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryrewards">cherry.rewards</a></li>
-            <li><a href="#discount_rewards">discount_rewards</a></li>
-            <li><a href="#discount_rewards_1">discount_rewards</a></li>
-            <li><a href="#generalized_advantage_estimate">generalized_advantage_estimate</a></li>
-            <li><a href="#generalized_advantage_estimate_1">generalized_advantage_estimate</a></li>
+            <li><a href="#discount">discount</a></li>
+            <li><a href="#generalized_advantage">generalized_advantage</a></li>
+            <li><a href="#temporal_difference">temporal_difference</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
 <h1 id="cherryrewards">cherry.rewards</h1>
-<p>TODO: For both, assume torch tensors and vectorize.</p>
-<h2 id="discount_rewards">discount_rewards</h2>
-<pre><code class="python">discount_rewards(gamma, rewards, dones, bootstrap=0.0)
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/rewards.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Utilities to manipulate rewards, such as discounting or advantage computation.</p>
+<h2 id="discount">discount</h2>
+<pre><code class="python">discount(gamma, rewards, dones, bootstrap=0.0)
 </code></pre>
 
-<h2 id="discount_rewards_1">discount_rewards</h2>
-<pre><code class="python">discount_rewards(gamma, rewards, dones, bootstrap=0.0)
+<p><strong>Description</strong></p>
+<p>Discounts rewards at an rate of gamma.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
+<li><strong>rewards</strong> (tensor) - Tensor of rewards.</li>
+<li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
+  Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
+<li><strong>bootstrap</strong> (float, <em>optional</em>, default=0.0) - Bootstrap the last
+  reward with this value.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>tensor - Tensor of discounted rewards.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">rewards = th.ones(23, 1) * 8
+dones = th.zeros_like(rewards)
+dones[-1] += 1.0
+discounted = ch.rewards.discount(0.99,
+                                 rewards,
+                                 dones,
+                                 bootstrap=1.0)
 </code></pre>
 
-<h2 id="generalized_advantage_estimate">generalized_advantage_estimate</h2>
-<pre><code class="python">generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value)
+<h2 id="generalized_advantage">generalized_advantage</h2>
+<pre><code class="python">generalized_advantage(gamma, tau, rewards, dones, values, next_value)
 </code></pre>
 
-<h2 id="generalized_advantage_estimate_1">generalized_advantage_estimate</h2>
-<pre><code class="python">generalized_advantage_estimate(gamma, tau, rewards, dones, values, next_value)
+<p><strong>Description</strong></p>
+<p>Computes the generalized advantage estimator. (GAE)</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Schulman et al. 2015. “High-Dimensional Continuous Control Using Generalized Advantage Estimation”</li>
+<li>https://github.com/joschu/modular_rl/blob/master/modular_rl/core.py#L49</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
+<li><strong>tau</strong> (float) - Bias-variance trade-off.</li>
+<li><strong>rewards</strong> (tensor) - Tensor of rewards.</li>
+<li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
+  Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
+<li><strong>values</strong> (tensor) - Values for the states producing the rewards.</li>
+<li><strong>next_value</strong> (tensor) - Value of the state obtained after the
+  transition from the state used to compute the last value in <code>values</code>.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">mass, next_value = policy(replay.next_states[-1])
+advantages = generalized_advantage(0.99,
+                                   0.95,
+                                   replay.)
+</code></pre>
+
+<h2 id="temporal_difference">temporal_difference</h2>
+<pre><code class="python">temporal_difference(gamma, rewards, dones, values, next_value)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Returns the temporal difference residual.</p>
+<p><strong>Reference</strong></p>
+<ol>
+<li>Sutton, Richard S. 1988. “Learning to Predict by the Methods of Temporal Differences.” Machine Learning 3 (1): 9–44.</li>
+<li>Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
+<li><strong>rewards</strong> (tensor) - Tensor of rewards.</li>
+<li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
+  Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
+<li><strong>values</strong> (tensor) - Values for the states producing the rewards.</li>
+<li><strong>next_value</strong> (tensor) - Value of the state obtained after the
+  transition from the state used to compute the last value in <code>values</code>.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">value = vf(state)
+td_errors = temporal_difference(0.99,
+                                replay.rewards,
+                                replay.dones,
+                                replay.values,
+                                next_value)
 </code></pre></div>
         </div>
 
