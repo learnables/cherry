@@ -4,12 +4,12 @@ import numpy as np
 import torch as th
 import cherry as ch
 from cherry.rewards import discount_rewards
-from cherry.utils import normalize
 import copy
 
 GAMMA = 0.5
 NUM_SAMPLES = 10
 VECTOR_SIZE = 5
+
 
 class TestRewards(unittest.TestCase):
     def setUp(self):
@@ -31,7 +31,14 @@ class TestRewards(unittest.TestCase):
                                       self.replay.rewards,
                                       self.replay.dones,
                                       bootstrap=0)
-        print(discounted)
+        overlap = self.replay[2:] + self.replay[:3]
+        overlap_discounted = discount_rewards(GAMMA,
+                                              overlap.rewards,
+                                              overlap.dones,
+                                              bootstrap=discounted[3])
+        print(overlap.rewards)
+        print(overlap.dones)
+        print(overlap_discounted)
 
 #    def test_discount_rewards(self):
 #        standard_replay = self.replay
