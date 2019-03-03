@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 
+"""
+TODO: For both, assume torch tensors and vectorize.
+"""
+
+
 def discount_rewards(gamma, rewards, dones, bootstrap=0.0):
     """
     """

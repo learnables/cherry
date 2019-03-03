@@ -23,7 +23,7 @@ import cherry.envs as envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = True
+RECORD = False
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -72,8 +72,8 @@ def update(replay, optimizer, policy, env, lr_schedule):
                                 replay.values,
                                 next_state_value)
 
-    rewards = [a + v for a, v in zip(advantages, replay.values)]
     advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5).view(-1, 1)
+    rewards = [a + v for a, v in zip(advantages, replay.values)]
 
     replay.update(lambda i, sars: {
         'reward': rewards[i].detach(),
@@ -89,33 +89,32 @@ def update(replay, optimizer, policy, env, lr_schedule):
     mean = lambda a: sum(a) / len(a)
 
     # Perform some optimization steps
-    for step in range(PPO_EPOCHS):
-        for mb in range(PPO_NUM_BATCHES):
-            batch = replay.sample(PPO_BSZ)
-            masses, values = policy(batch.states)
+    for step in range(PPO_EPOCHS * PPO_NUM_BATCHES):
+        batch = replay.sample(PPO_BSZ)
+        masses, values = policy(batch.states)
 
-            # Compute losses
-            new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
-            entropy = masses.entropy().sum(-1).mean()
-            policy_loss = ppo.policy_loss(new_log_probs,
-                                          batch.log_probs,
-                                          batch.advantages,
+        # Compute losses
+        new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
+        entropy = masses.entropy().sum(-1).mean()
+        policy_loss = ppo.policy_loss(new_log_probs,
+                                      batch.log_probs,
+                                      batch.advantages,
+                                      clip=PPO_CLIP)
+        value_loss = ppo.state_value_loss(values,
+                                          batch.values.detach(),
+                                          batch.rewards,
                                           clip=PPO_CLIP)
-            value_loss = ppo.value_loss(values,
-                                        batch.values.detach(),
-                                        batch.rewards,
-                                        clip=PPO_CLIP)
-            loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+        loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 
-            # Take optimization step
-            optimizer.zero_grad()
-            loss.backward()
-            th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
-            optimizer.step()
+        # Take optimization step
+        optimizer.zero_grad()
+        loss.backward()
+        th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
+        optimizer.step()
 
-            policy_losses.append(policy_loss)
-            entropies.append(entropy)
-            value_losses.append(value_loss)
+        policy_losses.append(policy_loss)
+        entropies.append(entropy)
+        value_losses.append(value_loss)
 
     # Log metrics
     env.log('policy loss', mean(policy_losses).item())
@@ -148,9 +147,6 @@ if __name__ == '__main__':
     env = envs.Runner(env)
     env.seed(SEED)
 
-    if RECORD:
-        record_env = envs.Monitor(env, './videos/')
-
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
@@ -165,4 +161,5 @@ if __name__ == '__main__':
         update(replay, optimizer, policy, env, lr_schedule)
 
         if RECORD and epoch % 10 == 0:
+            record_env = envs.Monitor(env, './videos/')
             record_env.run(get_action, episodes=3, render=True)
