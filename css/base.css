@@ -60,13 +60,6 @@ ul.nav .main {
     }
 }
 
-code {
-    padding: 1px 3px;
-    background: #ecf0f1;
-    border: solid 1px #ccc;
-    color: #7b8a8b;
-}
-
 pre code {
     background: none !important;
     border: none;
@@ -83,7 +76,8 @@ a:visited,a
 footer a,
 footer a:active,
 footer a:visited,
-a code {
+a code,
+code:not(.hljs) {
     color: #ee4c2c !important;
 }
 
@@ -199,6 +193,8 @@ footer {
 /* By default it's not affixed in mobile views, so undo that */
 .bs-sidebar.affix {
     position: static;
+    max-height: 100%;
+    overflow-y: scroll;
 }
 
 .bs-sidebar.well {

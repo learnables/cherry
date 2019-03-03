@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>cherry.algorithms - Cherry</title>
+        <title>cherry.algorithms - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -39,7 +39,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="../..">Cherry</a>
+                    <a class="navbar-brand" href="../..">cherry</a>
                 </div>
 
                 <!-- Expanded navigation -->
@@ -111,6 +111,10 @@
 </li>
                                     
 <li >
+    <a href="../cherry.plot/">cherry.plot</a>
+</li>
+                                    
+<li >
     <a href="../cherry.utils/">cherry.utils</a>
 </li>
                                 </ul>
@@ -143,14 +147,14 @@
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryalgorithmsa2c">cherry.algorithms.a2c</a></li>
             <li><a href="#policy_loss">policy_loss</a></li>
-            <li><a href="#value_loss">value_loss</a></li>
+            <li><a href="#state_value_loss">state_value_loss</a></li>
         <li class="main "><a href="#cherryalgorithmsppo">cherry.algorithms.ppo</a></li>
             <li><a href="#policy_loss_1">policy_loss</a></li>
-            <li><a href="#value_loss_1">value_loss</a></li>
+            <li><a href="#state_value_loss_1">state_value_loss</a></li>
         <li class="main "><a href="#cherryalgorithmssac">cherry.algorithms.sac</a></li>
             <li><a href="#policy_loss_2">policy_loss</a></li>
-            <li><a href="#q_loss">q_loss</a></li>
-            <li><a href="#v_loss">v_loss</a></li>
+            <li><a href="#action_value_loss">action_value_loss</a></li>
+            <li><a href="#state_value_loss_2">state_value_loss</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -160,9 +164,20 @@
 <pre><code class="python">policy_loss(log_probs, advantages)
 </code></pre>
 
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
 <p>Advantage Actor-Critic policy loss.</p>
-<h2 id="value_loss">value_loss</h2>
-<pre><code class="python">value_loss(values, rewards)
+<p><strong>References</strong></p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<p><strong>Example</strong></p>
+<pre><code class="python">advantages = replay.advantages
+log_probs = replay.log_probs
+loss = a2c.policy_loss(log_probs, advantages)
+</code></pre>
+
+<h2 id="state_value_loss">state_value_loss</h2>
+<pre><code class="python">state_value_loss(values, rewards)
 </code></pre>
 
 <p>Advantage Actor-Critic value loss.</p>
@@ -179,8 +194,8 @@
 <li>advantages: (tensor)</li>
 <li>clip: (tensor)</li>
 </ul>
-<h2 id="value_loss_1">value_loss</h2>
-<pre><code class="python">value_loss(new_values, old_values, rewards, clip=0.1)
+<h2 id="state_value_loss_1">state_value_loss</h2>
+<pre><code class="python">state_value_loss(new_values, old_values, rewards, clip=0.1)
 </code></pre>
 
 <p>Clipped value loss.</p>
@@ -203,8 +218,8 @@
 <li>q_actions: the Q-values for those same actions.</li>
 <li>alpha: the weight of the policy entropy.</li>
 </ul>
-<h2 id="q_loss">q_loss</h2>
-<pre><code class="python">q_loss(q_old_pred, v_next, rewards, dones, gamma)
+<h2 id="action_value_loss">action_value_loss</h2>
+<pre><code class="python">action_value_loss(q_old_pred, v_next, rewards, dones, gamma)
 </code></pre>
 
 <p>Arguments:</p>
@@ -215,8 +230,8 @@
 <li>dones: which states were terminal.</li>
 <li>gamma: discount factor.</li>
 </ul>
-<h2 id="v_loss">v_loss</h2>
-<pre><code class="python">v_loss(v_pred, log_probs, q_values, alpha=1.0)
+<h2 id="state_value_loss_2">state_value_loss</h2>
+<pre><code class="python">state_value_loss(v_pred, log_probs, q_values, alpha=1.0)
 </code></pre>
 
 <p>Arguments:</p>

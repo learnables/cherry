@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>cherry.ExperienceReplay - cherry</title>
+        <title>cherry.plot - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -74,8 +74,8 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
-<li class="active">
-    <a href="./">cherry.ExperienceReplay</a>
+<li >
+    <a href="../cherry.experience-replay/">cherry.ExperienceReplay</a>
 </li>
                                     
 <li >
@@ -110,8 +110,8 @@
     <a href="../cherry.distributions/">cherry.distributions</a>
 </li>
                                     
-<li >
-    <a href="../cherry.plot/">cherry.plot</a>
+<li class="active">
+    <a href="./">cherry.plot</a>
 </li>
                                     
 <li >
@@ -128,12 +128,12 @@
                             </a>
                         </li>
                             <li >
-                                <a rel="next" href="../../tutorials/debugging_rl/">
+                                <a rel="next" href="../cherry.distributions/">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li >
-                                <a rel="prev" href="../cherry.envs/">
+                                <a rel="prev" href="../cherry.utils/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -145,94 +145,41 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#transition">Transition</a></li>
-        <li class="main "><a href="#experiencereplay">ExperienceReplay</a></li>
-            <li><a href="#sample">sample</a></li>
+        <li class="main active"><a href="#exponential_smoothing">exponential_smoothing</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="transition">Transition</h1>
-<pre><code class="python">Transition(self, **kwargs)
+<h1 id="exponential_smoothing">exponential_smoothing</h1>
+<pre><code class="python">exponential_smoothing(x, y=None, temperature=1.0)
 </code></pre>
 
-<p><strong>Description</strong></p>
-<p>Represents a (s, a, r, s', d) tuple.</p>
-<p><strong>Arguments</strong></p>
-<p>None</p>
-<p><strong>Example</strong></p>
-<pre><code class="python">for transition in replay:
-    print(transition.state)
-</code></pre>
-
-<h1 id="experiencereplay">ExperienceReplay</h1>
-<pre><code class="python">ExperienceReplay(self, states=None, actions=None, rewards=None, next_states=None, dones=None, infos=None)
-</code></pre>
-
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py">[Source]</a></p>
-<p><strong>Description</strong></p>
-<p>Experience replay buffer to store, retrieve, and sample past transitions.</p>
-<p><code>ExperienceReplay</code> behaves like a list of transitions, .
-It also support accessing specific properties, such as states, actions,
-rewards, next_states, and informations.
-The first four are returned as tensors, while <code>infos</code> is returned as
-a list of dicts.
-The properties of infos can be accessed directly by appending an <code>s</code> to their
-dictionary key -- see Examples below.
-In this case, if the values of the infos are tensors, they will be returned as
-a concatenated Tensor.
-Otherwise, they default to a list of values.</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/plot.py">[Source]</a></p>
+<p><strong>Decription</strong></p>
+<p>Two side exponential moving average for smoothing a curve</p>
+<p>It performs regular exponential moving average twice from two different
+sides and then combines the results together.
+It performs better than one side exponential smoothing.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of states.</li>
-<li><strong>actions</strong> (Tensor, <em>optional</em>, default=None) - Tensor of actions.</li>
-<li><strong>rewards</strong> (Tensor, <em>optional</em>, default=None) - Tensor of rewards.</li>
-<li><strong>next_states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of next_states.</li>
-<li><strong>dones</strong> (Tensor, <em>optional</em>, default=None) - Tensor of dones.</li>
-<li><strong>infos</strong> (list, <em>optional</em>, default=None) - List of infos.</li>
-</ul>
-<p><strong>References</strong></p>
-<ol>
-<li>Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.</li>
-</ol>
-<p><strong>Example</strong></p>
-<pre><code class="python">replay = ch.ExperienceReplay()  # Instanciate a new replay
-replay.add(state,  # Add experience to the replay
-           action,
-           reward,
-           next_state,
-           done,
-           info={
-                'density': action_density,
-                'log_prob': action_density.log_prob(action),
-           })
-
-replay.state  # Tensor of states
-replay.actions  # Tensor of actions
-replay.densitys  # list of action_density
-replay.log_probs  # Tensor of log_probabilities
-
-new_replay = replay[-10:]  # Last 10 transitions in new_replay
-
-#Sample some previous experience
-batch = replay.sample(32, contiguous=True)
-</code></pre>
-
-<h2 id="sample">sample</h2>
-<pre><code class="python">ExperienceReplay.sample(self, size=1, contiguous=False, episodes=False)
-</code></pre>
-
-<p>Samples from the Experience replay.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>size</strong> (int, <em>optional</em>, default=1) - The number of samples.</li>
-<li><strong>contiguous</strong> (bool, <em>optional</em>, default=False) - Whether to sample contiguous transitions.</li>
-<li><strong>episodes</strong> (bool, <em>optional</em>, default=False) - Sample full episodes, instead of transitions.</li>
+<li><strong>x</strong> (ndarray/tensor/list) - x values, in accending order.</li>
+<li><strong>y</strong> (ndarray/tensor/list) - y values.</li>
+<li><strong>temperature</strong> (float, <em>optional</em>, default=1.0) - The higher,
+  the smoother.</li>
 </ul>
 <p><strong>Return</strong></p>
 <ul>
-<li><code>ExperienceReplay()</code> containing the sampled transitions.</li>
-</ul></div>
+<li>ndarray - x values after resampling.</li>
+<li>ndarray - y values after smoothing.</li>
+</ul>
+<p><strong>Credit</strong></p>
+<p>Adapted from OpenAI's baselines implementation.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python">from cherry.plot import exponential_smoothing
+x_smoothed, y_smoothed, _ = exponential_smoothing(x_original,
+                                                  y_original,
+                                                  temperature=3.)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">
