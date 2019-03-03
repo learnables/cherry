@@ -6,7 +6,7 @@ from .runner_wrapper import Runner
 from .logger_wrapper import Logger
 from .torch_wrapper import Torch
 from .openai_atari_wrapper import OpenAIAtari
-from .clip_reward_wrapper import ClipReward
+from .reward_clipper_wrapper import RewardClipper
 from .timestep_wrapper import AddTimestep
 from .monitor_wrapper import Monitor
 from .normalizer_wrapper import Normalizer

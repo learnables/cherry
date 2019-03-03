@@ -20,7 +20,7 @@ generate:
     - cherry.envs.visdom_logger_wrapper.VisdomLogger++
     - cherry.envs.torch_wrapper.Torch++
     - cherry.envs.normalizer_wrapper.Normalizer++
-    - cherry.envs.clip_reward_wrapper.ClipReward++
+    - cherry.envs.reward_clipper_wrapper.RewardClipper++
     - cherry.envs.monitor_wrapper.Monitor++
     - cherry.envs.openai_atari_wrapper.OpenAIAtari++
     - cherry.envs.timestep_wrapper.AddTimestep++

@@ -34,7 +34,8 @@ THE SOFTWARE.
 """
 
 
-class ClipReward(Wrapper, gym.RewardWrapper):
+class RewardClipper(Wrapper, gym.RewardWrapper):
+
     def __init__(self, env):
         super(Wrapper, self).__init__(env)
         gym.RewardWrapper.__init__(self, env)
