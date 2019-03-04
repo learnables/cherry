@@ -23,7 +23,7 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
     return - th.min(obj, obj_clip).mean()
 
 
-def value_loss(new_values, old_values, rewards, clip=0.1):
+def state_value_loss(new_values, old_values, rewards, clip=0.1):
     """
     Clipped value loss.
 

@@ -20,7 +20,7 @@ from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
-from cherry.rewards import discount_rewards
+from cherry.rewards import discount
 from cherry.utils import normalize
 
 SEED = 567
@@ -48,8 +48,8 @@ def update(replay):
     policy_loss = []
 
     # Discount and normalize rewards
-    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
-    rewards = normalize(th.tensor(rewards))
+    rewards = discount(GAMMA, replay.rewards, replay.dones)
+    rewards = normalize(rewards)
 
     # Compute loss
     for info, reward in zip(replay.infos, rewards):
@@ -81,7 +81,7 @@ if __name__ == '__main__':
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
-            replay.add(old_state, action, reward, state, done, info={
+            replay.append(old_state, action, reward, state, done, info={
                 'log_prob': mass.log_prob(action),  # Cache log_prob for later
             })
             if RENDER:

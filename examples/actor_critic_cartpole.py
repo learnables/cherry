@@ -18,7 +18,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import cherry.envs as envs
-from cherry.rewards import discount_rewards
+from cherry.rewards import discount
 from cherry.utils import normalize
 import cherry.distributions as distributions
 
@@ -54,8 +54,8 @@ def update(replay, optimizer):
     value_loss = []
 
     # Discount and normalize rewards
-    rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
-    rewards = normalize(th.tensor(rewards))
+    rewards = discount(GAMMA, replay.rewards, replay.dones)
+    rewards = normalize(rewards)
 
     # Compute losses
     for info, reward in zip(replay.infos, rewards):

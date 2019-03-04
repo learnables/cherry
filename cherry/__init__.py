@@ -9,3 +9,4 @@ from . import optim
 from . import nn
 from . import models
 from . import distributions
+from . import plot
