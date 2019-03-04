@@ -158,7 +158,8 @@ def update(replay,
     env.log("VF Loss: ", vf_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
     env.log("Average Rewards: ", batch.rewards.mean().item())
-    ppt.plot(replay.rewards[-1000:].mean().item(), 'cherry true rewards')
+    if random.random() < 0.05:
+        ppt.plot(replay.rewards[-1000:].mean().item(), 'cherry true rewards')
 
     # Update
     qf_opt.zero_grad()

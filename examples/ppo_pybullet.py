@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-TODO:
-    * Add enjoy mode
-    * Add command line argument parsing
-    * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
-"""
+import ppt
 
 import random
 import gym
@@ -23,7 +18,7 @@ import cherry.envs as envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = False
+RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -120,6 +115,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy loss', mean(policy_losses).item())
     env.log('policy entropy', mean(entropies).item())
     env.log('value loss', mean(value_losses).item())
+    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO results')
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -138,7 +134,8 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     # env_name = 'CartPoleBulletEnv-v0'
-    env_name = 'AntBulletEnv-v0'
+    env_name = 'HalfCheetahBulletEnv-v0'
+#    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
@@ -162,4 +159,16 @@ if __name__ == '__main__':
 
         if RECORD and epoch % 10 == 0:
             record_env = envs.Monitor(env, './videos/')
-            record_env.run(get_action, episodes=3, render=True)
+            record_env.run(get_action, episodes=3, render=False)
+
+    result = mean(env.all_rewards[-10000:])
+    data = {
+        'result': result,
+        'env': env_name,
+        'all_rewards': env.all_rewards,
+        'all_dones': env.all_dones,
+        'infos': env.values,
+    }
+    th.save(data, './regression_test/' + env_name + '.pickle')
+    th.save(policy.state_dict(),
+            './regression_test/' + env_name + '.pth')
