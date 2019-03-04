@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+import ppt
+
 import random
+import argparse
 import gym
 import numpy as np
 
@@ -12,9 +15,12 @@ import torch.distributed as dist
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
+
 from cherry.optim import Distributed
 from cherry.algorithms import a2c
 from cherry.models import atari
+
+from statistics import mean
 
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
@@ -55,7 +61,7 @@ def update(replay, optimizer, policy, env):
                                   replay.rewards,
                                   replay.dones,
                                   bootstrap=next_state_value)
-    rewards = th.cat(rewards, dim=0).view(-1, 1).detach()
+    rewards = rewards.detach()
 
     # Compute loss
     entropy = replay.entropys.mean()
@@ -87,11 +93,20 @@ def get_action_value(state, policy):
     return action, info
 
 
-def main(num_steps=10000000,
-         env_name='PongNoFrameskip-v4',
-#         env_name='BreakoutNoFrameskip-v4',
+def main(num_steps=5000000,
+#         env_name='PongNoFrameskip-v4',
+         env_name='BreakoutNoFrameskip-v4',
          seed=42):
-    dist.init_process_group('gloo')
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--local_rank", type=int)
+    args = parser.parse_args()
+    dist.init_process_group('gloo',
+   			    init_method='file:///home/seba-1511/.dist_init',
+			    rank=args.local_rank,
+			    world_size=16)
+
     rank = dist.get_rank()
     th.set_num_threads(1)
     random.seed(seed + rank)
@@ -117,27 +132,21 @@ def main(num_steps=10000000,
 
         # Update policy
         update(replay, optimizer, policy, env=env)
-        if rank == 0:
-            percent = (A2C_STEPS * step / num_steps)
-            if percent in [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
-                th.save(policy.state_dict(),
-                        './saved_models/' + env_name + '_' + str(percent) + '.pth')
+        if step % 500 == 0 and rank == 0:
+            ppt.plot(mean(env.all_rewards[-10000:]), env_name)
 
     if rank == 0:
-        import randopt as ro
-        from statistics import mean
-        exp = ro.Experiment(name=env_name, directory='results')
         result = mean(env.all_rewards[-10000:])
         data = {
+            'result': result,
             'env': env_name,
             'all_rewards': env.all_rewards,
             'all_dones': env.all_dones,
             'infos': env.values,
         }
-        exp.add_result(result, data)
-        percent = 1.0
+        th.save(data, './regression_test/' + env_name + '.pickle')
         th.save(policy.state_dict(),
-                './saved_models/' + env_name + '_' + str(percent) + '.pth')
+                './regression_test/' + env_name + '.pth')
 
 
 if __name__ == '__main__':
