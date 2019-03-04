@@ -42,8 +42,18 @@ def normalize(tensor, epsilon=EPS):
 
 
 def onehot(x, dim):
-    onehot = np.zeros(1, dim)
-    onehot[x] = 1.0
+    """
+    Creates a new onehot encoded tensor.
+    """
+    size = 1
+    if isinstance(x, np.ndarray):
+        size = x.shape[0]
+        x = th.from_numpy(x).long()
+    if isinstance(x, th.Tensor):
+        size = x.size(0)
+        x = x.long()
+    onehot = th.zeros(size, dim)
+    onehot[:, x] = 1.0
     return onehot
 
 
