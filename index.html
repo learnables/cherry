@@ -200,9 +200,9 @@ env = ch.envs.Torch(env)  # Converts actions/states to tensors
 
 # Storing and retrieving experience
 replay = ch.ExperienceReplay()
-replay.add(old_state, action, reward, state, done, info = {
-        'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
-        'value': value
+replay.append(old_state, action, reward, state, done, info = {
+    'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
+    'value': value
 })
 replay.actions  # Tensor of all stored actions
 replay.states  # Tensor of all stored states
@@ -325,5 +325,5 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-03-03 22:25:20
+Build Date UTC : 2019-03-04 00:03:12
 -->

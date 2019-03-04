@@ -212,6 +212,10 @@ discounted = ch.rewards.discount(0.99,
 <li><strong>next_value</strong> (tensor) - Value of the state obtained after the
   transition from the state used to compute the last value in <code>values</code>.</li>
 </ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>tensor - Tensor of advantages.</li>
+</ul>
 <p><strong>Example</strong></p>
 <pre><code class="python">mass, next_value = policy(replay.next_states[-1])
 advantages = generalized_advantage(0.99,
