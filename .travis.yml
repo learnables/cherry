@@ -12,6 +12,6 @@ python:
     - "3.7-dev"
     - "nightly"
 
-install: pip install --progress-bar --user -r requirements.txt
+install: pip install --progress-bar off --user -r requirements.txt
 
 script: make dev && make tests
