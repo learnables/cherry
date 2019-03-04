@@ -18,7 +18,7 @@ def policy_loss(log_probs, q_actions, alpha=1.0):
     return th.mean(alpha * log_probs - q_actions)
 
 
-def q_loss(q_old_pred, v_next, rewards, dones, gamma):
+def action_value_loss(q_old_pred, v_next, rewards, dones, gamma):
     """
     Arguments:
 
@@ -34,7 +34,7 @@ def q_loss(q_old_pred, v_next, rewards, dones, gamma):
     return F.mse_loss(q_old_pred, q_target.detach())
 
 
-def v_loss(v_pred, log_probs, q_values, alpha=1.0):
+def state_value_loss(v_pred, log_probs, q_values, alpha=1.0):
     """
     Arguments:
 

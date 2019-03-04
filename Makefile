@@ -37,6 +37,10 @@ grid:
 dqn:
 	python examples/dqn_atari.py
 
+dev:
+	pip install --progress-bar off torch gym >> log_install.txt
+	python setup.py develop
+
 tests:
 	python -W ignore::DeprecationWarning -m unittest discover -s 'tests' -p '*_tests.py' -v
 

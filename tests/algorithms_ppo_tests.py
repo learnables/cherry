@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import random
 import unittest
 import torch as th
 
@@ -71,8 +70,8 @@ class TestPPOAlgorithms(unittest.TestCase):
                                          old_values,
                                          rewards,
                                          clip=clip)
-                    loss = ppo.value_loss(new_values.view(*shape),
-                                          old_values.view(*shape),
-                                          rewards.view(*shape),
-                                          clip=clip)
+                    loss = ppo.state_value_loss(new_values.view(*shape),
+                                                old_values.view(*shape),
+                                                rewards.view(*shape),
+                                                clip=clip)
                     self.assertAlmostEqual(loss.item(), ref.item())
