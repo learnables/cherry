@@ -14,6 +14,9 @@ bug:
 	MKL_NUM_THREADS=1 \
 	python examples/debug_atari.py
 
+tabular:
+	python examples/q_learning_tabular.py
+
 ppo:
 	python examples/ppo_pybullet.py
 

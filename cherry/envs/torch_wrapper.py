@@ -25,7 +25,7 @@ class Torch(Wrapper):
 
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
-            state = np.array([state])
+            state = th.Tensor([state])
         if isinstance(state, dict):
             state = {k: self._convert_state(state[k]) for k in state}
             return state

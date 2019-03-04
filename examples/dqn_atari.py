@@ -17,6 +17,8 @@ from cherry.models import atari
 """
 This is a demonstration of how to use cherry to train an agent with Deep
 Q-Learning.
+
+WARNING: This implementation does not work just yet.
 """
 
 LR = 0.00025

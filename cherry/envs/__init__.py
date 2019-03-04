@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .utils import flatten_state, get_space_dimension
+from .utils import get_space_dimension
 from .base import Wrapper
 from .runner_wrapper import Runner
 from .logger_wrapper import Logger
