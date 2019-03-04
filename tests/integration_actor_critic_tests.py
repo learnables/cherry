@@ -138,7 +138,7 @@ class TestActorCritic(unittest.TestCase):
             update(replay, optimizer)
             running_reward = running_reward * 0.99 + len(replay) * 0.01
             if (episode+1) % 10 == 0:
-                self.assertEqual(GROUND_TRUTHS[episode // 10], running_reward)
+                self.assertTrue((GROUND_TRUTHS[episode // 10] - running_reward)**2 <= 1e-5)
 
 
 if __name__ == '__main__':
