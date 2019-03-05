@@ -135,7 +135,7 @@ def get_action_value(state, policy):
 if __name__ == '__main__':
     # env_name = 'CartPoleBulletEnv-v0'
     env_name = 'HalfCheetahBulletEnv-v0'
-#    env_name = 'AntBulletEnv-v0'
+    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
@@ -161,6 +161,7 @@ if __name__ == '__main__':
             record_env = envs.Monitor(env, './videos/')
             record_env.run(get_action, episodes=3, render=False)
 
+    mean = lambda x: sum(x) / len(x)
     result = mean(env.all_rewards[-10000:])
     data = {
         'result': result,
