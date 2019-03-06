@@ -32,4 +32,3 @@ class Wrapper(gym.Wrapper):
             return getattr(self, attr)
         else:
             return getattr(self.env, attr)
-
