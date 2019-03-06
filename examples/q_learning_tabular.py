@@ -18,6 +18,7 @@ class Agent(nn.Module):
         self.env = env
         self.qf = ActionValueFunction(env.state_size,
                                       env.action_size)
+        self.qf.values.data.mul_(0.0)
         self.e_greedy = EpsilonGreedy(0.51)
 
     def forward(self, x):
@@ -49,9 +50,11 @@ if __name__ == '__main__':
                                      dim=env.state_size)
         next_q = agent.qf(next_state).max().detach()
         td_error = transition.reward + discount * next_q - curr_q
+        curr_q.data.add_(-0.01, td_error)
 
-        optimizer.zero_grad()
-        loss = td_error.pow(2).mul(0.5)
-        loss.backward()
-        optimizer.step()
+#        optimizer.zero_grad()
+#        loss = td_error.pow(2).mul(0.5)
+#        loss.backward()
+#        optimizer.step()
         agent.e_greedy.epsilon = epsilon / t
+        print(agent.qf.values.norm(p=2).item())

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
+# See: https://github.com/openai/roboschool/issues/15
+from OpenGL import GLU
 import ppt
 
 import random
 import gym
 import numpy as np
 import pybullet_envs
+import pybulletgym
+import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -134,7 +138,8 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     # env_name = 'CartPoleBulletEnv-v0'
-    env_name = 'HalfCheetahBulletEnv-v0'
+    env_name = 'AntPyBulletEnv-v0'
+    env_name = 'RoboschoolAnt-v1'
 #    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
@@ -151,16 +156,17 @@ if __name__ == '__main__':
     get_action = lambda state: get_action_value(state, policy)
 
     for epoch in range(num_updates):
+        if RECORD and epoch % 10 == 0:
+            record_env = envs.Monitor(env.env, './videos/', video_callable=lambda x: True, force=True)
+            record_env = envs.Runner(record_env)
+            record_env.run(get_action, episodes=3, render=False)
         # We use the Runner collector, but could've written our own
         replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
 
-        if RECORD and epoch % 10 == 0:
-            record_env = envs.Monitor(env, './videos/')
-            record_env.run(get_action, episodes=3, render=False)
-
+    mean = lambda x: sum(x) / len(x)
     result = mean(env.all_rewards[-10000:])
     data = {
         'result': result,
