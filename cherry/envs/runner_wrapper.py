@@ -21,6 +21,10 @@ class Runner(Wrapper):
         self._needs_reset = False
         return self._current_state
 
+    def step(self, action, *args, **kwargs):
+        # TODO: Implement it to be compatible with .run()
+        raise NotImplementedError('Runner does not currently support step.')
+
     def run(self,
             get_action,
             steps=None,
