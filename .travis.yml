@@ -6,12 +6,9 @@ os:
 python:
     - 3.5
     - "3.5-dev"
-    - 3.6
     - "3.6-dev"
-    - 3.7
     - "3.7-dev"
-    - "nightly"
 
-install: pip install --progress-bar off -r requirements.txt
+install: pip install -U pip && pip install --progress-bar off -r requirements.txt
 
 script: make tests
