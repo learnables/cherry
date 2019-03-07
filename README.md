@@ -2,6 +2,8 @@
 
 --------------------------------------------------------------------------------
 
+[![Build Status](https://travis-ci.com/seba-1511/cherry.svg?token=wS9Ya4UiannE2WzTjpHV&branch=master)](https://travis-ci.com/seba-1511/cherry)
+
 Cherry is reinforcement learning framework for researchers built on top of PyTorch.
 
 Unlike other reinforcement learning implementations, cherry doesn't try to provide a single interface to existing algorithms.
@@ -11,12 +13,13 @@ So if you don't like a specific tool, you can still use parts of cherry without 
 
 **Features**
 
-* Pythonic and modular interface *à la* Pytorch,
-* Support for tabular (!) and function approximation algorithms,
-* Various OpenAI Gym environment wrappers,
-* Helper functions for popular algorithms (e.g. A2C, DDPG, TRPO, PPO, SAC),
-* Logging, visualization, and debugging tools,
+* Pythonic and modular interface *à la* Pytorch.
+* Support for tabular (!) and function approximation algorithms.
+* Various OpenAI Gym environment wrappers.
+* Helper functions for popular algorithms. (e.g. A2C, DDPG, TRPO, PPO, SAC)
+* Logging, visualization, and debugging tools.
 * Painless and efficient distributed training on CPUs and GPUs.
+* Unit, integration, and regression tested, continuously integrated.
 
 ## Installation
 
@@ -87,7 +90,7 @@ Some functionalities that we might want to implement.
 * `VisdomLogger` as a dashboard to debug an implementation,
 * example with reccurent net,
 * minimal but complete documentation,
-* a few extensive tutorials (Getting started with distributed A2C, Advanced usage (which?) with PPO, and another on debugging your algorithms).
+* GPU implementations.
 
 ### Acknowledgements
 
@@ -97,5 +100,6 @@ Cherry draws inspiration from many reinforcement learning implementations, inclu
 * John Schulman's [implementations](https://github.com/joschu/modular_rl)
 * Ilya Kostrikov's [implementations](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr),
 * Shangtong Zhang's [implementations](https://github.com/ShangtongZhang/DeepRL),
-* [RLLab](https://github.com/rll/rllab),
-* [RLKit](https://github.com/vitchyr/rlkit).
+* Dave Abel's [implementations](https://github.com/david-abel/simple_rl/),
+* Vitchyr Pong's [implementations](https://github.com/vitchyr/rlkit),
+* [RLLab](https://github.com/rll/rllab).
