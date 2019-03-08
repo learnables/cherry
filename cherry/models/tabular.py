@@ -23,7 +23,7 @@ class StateValueFunction(nn.Module):
 
     def __init__(self, state_size, init=None):
         super(StateValueFunction, self).__init__()
-        self.values = nn.Parameter(th.randn((state_size, 1)))
+        self.values = nn.Parameter(th.zeros((state_size, 1)))
         self.state_size = state_size
         if init is not None:
             init(self.values)
@@ -52,7 +52,7 @@ class ActionValueFunction(nn.Module):
 
     def __init__(self, state_size, action_size, init=None):
         super(ActionValueFunction, self).__init__()
-        self.values = nn.Parameter(th.randn((state_size, action_size),
+        self.values = nn.Parameter(th.zeros((state_size, action_size),
                                             requires_grad=True))
         self.state_size = state_size
         self.action_size = action_size
