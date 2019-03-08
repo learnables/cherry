@@ -33,7 +33,10 @@ generate:
 - docs/cherry.distributions.md:
     - cherry.distributions++
 - docs/cherry.models.md:
-    - cherry.models++
+    - cherry.models.utils++
+    - cherry.models.tabular++
+    - cherry.models.atari++
+    - cherry.models.control++
 - docs/cherry.nn.md:
     - cherry.nn++
 - docs/cherry.nn.init.md:
