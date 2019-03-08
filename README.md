@@ -2,7 +2,7 @@
 
 --------------------------------------------------------------------------------
 
-[![Build Status](https://travis-ci.com/seba-1511/cherry.svg?token=wS9Ya4UiannE2WzTjpHV&branch=master)](https://travis-ci.com/seba-1511/cherry)
+[![Test Status](https://travis-ci.com/seba-1511/cherry.svg?token=wS9Ya4UiannE2WzTjpHV&branch=master)](https://travis-ci.com/seba-1511/cherry)
 
 Cherry is reinforcement learning framework for researchers built on top of PyTorch.
 
