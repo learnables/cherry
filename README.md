@@ -4,7 +4,7 @@
 
 [![Test Status](https://travis-ci.com/seba-1511/cherry.svg?token=wS9Ya4UiannE2WzTjpHV&branch=master)](https://travis-ci.com/seba-1511/cherry)
 
-Cherry is reinforcement learning framework for researchers built on top of PyTorch.
+Cherry is a reinforcement learning framework for researchers built on top of PyTorch.
 
 Unlike other reinforcement learning implementations, cherry doesn't try to provide a single interface to existing algorithms.
 Instead, it provides you with common tools to write your own algorithms.
