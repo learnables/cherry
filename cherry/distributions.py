@@ -30,6 +30,7 @@ class EpsilonGreedy(nn.Module):
         ret = bests * b + (1 - b) * sampled
         return ret
 
+
 class Reparameterization(object):
 
     """
