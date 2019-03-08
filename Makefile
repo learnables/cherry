@@ -15,7 +15,8 @@ bug:
 	python examples/debug_atari.py
 
 tabular:
-	python examples/q_learning_tabular.py
+	python examples/tabular/sarsa.py
+#	python examples/tabular/q_learning.py
 
 ppo:
 	python examples/ppo_pybullet.py
