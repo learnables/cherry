@@ -44,6 +44,7 @@ generate:
 - docs/cherry.utils.md:
     - cherry.utils++
 - docs/cherry.plot.md:
+    - cherry.plot.ci95
     - cherry.plot.exponential_smoothing
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
