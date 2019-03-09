@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from .experience_replay import ExperienceReplay, Transition
+from ._version import __version__
 
+from .experience_replay import ExperienceReplay, Transition
 from . import rewards
 from . import envs
 from . import utils
