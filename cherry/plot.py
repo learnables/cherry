@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import math
 import torch as th
 import numpy as np
+from statistics import mean, stdev
 
 
 def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
@@ -155,3 +157,44 @@ def exponential_smoothing(x, y=None, temperature=1.0):
 
 smooth = exponential_smoothing
 
+
+def isiterable(value):
+    return isinstance(value, (list, tuple, set))
+
+
+def ci95(values):
+    """
+    **Description**
+
+    Computes the 95% confidence interval around the given values.
+
+    **Arguments**
+
+    * **values** (list) - List of values for which to compute the
+      95% confidence interval.
+
+    **Returns**
+
+    * **(float, float)** The lower and upper bounds of the confidence interval.
+
+    **Example**
+    ~~~python
+    from statistics import mean
+    smoothed = []
+    for replay in replays:
+        rewards = replay.rewards.view(-1).tolist()
+        x, y_smoothed = ch.plot.smooth(rewards)
+        smoothed.append(y_smoothed)
+    means = [mean(r) for r in zip(*smoothed)]
+    confidences = [ch.plot.ci95(r) for r in zip(*smoothed)]
+    lower_bound = [conf[0] for conf in confidences]
+    upper_bound = [conf[1] for conf in confidences]
+    ~~~
+    """
+    mu = mean(values)
+    sigma = stdev(values, xbar=mu)
+    N = len(values)
+    bound = 2.0 * sigma / math.sqrt(N)
+    lower = mu - bound
+    upper = mu + bound
+    return lower, upper

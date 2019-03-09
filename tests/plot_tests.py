@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
+
 import unittest
+import math
 import random
 import numpy as np
 import cherry.plot as plot
+
+from statistics import mean, stdev
 
 
 orig_dat = np.array([
@@ -2015,19 +2020,44 @@ class TestPlot(unittest.TestCase):
 
     def test_smooth(self):
         # load data
-        orig_data = np.split(orig_dat,5)
+        orig_data = np.split(orig_dat, 5)
         orig_data = np.array(orig_data)
-        smooth_data = np.split(smooth_dat,5)
+        smooth_data = np.split(smooth_dat, 5)
         smooth_data = np.array(smooth_data)
 
         # test 5 different data sets
         for i in range(5):
-            xs = np.array(orig_data)[i,:,0]
-            ys = np.array(orig_data)[i,:,1]
+            xs = np.array(orig_data)[i, :, 0]
+            ys = np.array(orig_data)[i, :, 1]
             x_after, y_after = plot.smooth(xs, ys, temperature=3)
-            self.assertTrue(sum((x_after - smooth_data[i,:,0])**2) <= 1e-5)
-            self.assertTrue(sum((y_after - smooth_data[i,:,1])**2) <= 1e-5)
-            
+            self.assertTrue(sum((x_after - smooth_data[i, :, 0])**2) <= 1e-5)
+            self.assertTrue(sum((y_after - smooth_data[i, :, 1])**2) <= 1e-5)
+
+    def test_ci95(self):
+        for length in [2, 3, 5, 10, 100, 1000]:
+            numbers = [random.random() for _ in range(length)]
+            ci = plot.ci95(numbers)
+            mu = mean(numbers)
+            std = stdev(numbers, xbar=mu)
+            lower = mu - 2.0 * std / math.sqrt(length)
+            upper = mu + 2.0 * std / math.sqrt(length)
+            self.assertTrue(ci[0] - lower <= 1e-6)
+            self.assertTrue(ci[1] - upper <= 1e-6)
+
+            # Test the documentation example
+            smoothed = []
+            for replay in range(10):
+                rewards = [random.random() for _ in range(100)]
+                x, y_smoothed = plot.smooth(rewards)
+                smoothed.append(y_smoothed)
+            means = [mean(r) for r in zip(*smoothed)]
+            confidences = [plot.ci95(r) for r in zip(*smoothed)]
+            lower_bounds = [conf[0] for conf in confidences]
+            upper_bounds = [conf[1] for conf in confidences]
+            for lb, ub, m in zip(lower_bounds, upper_bounds, means):
+                self.assertTrue(lb <= m)
+                self.assertTrue(ub >= m)
+
 
 if __name__ == "__main__":
     unittest.main()
