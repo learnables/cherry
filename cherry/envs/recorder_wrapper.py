@@ -32,7 +32,7 @@ class VideoRecorder(object):
         base_path (Optional[str]): Alternatively, path to the video file without extension, which will be added.
         metadata (Optional[dict]): Contents to save to the metadata file.
         enabled (bool): Whether to actually record video, or just no-op (for convenience)
-        format: format of the output video, choose between 'gif' and 'mp4'
+        format: Format of the output video, choose between 'gif' and 'mp4'
     """
 
     def __init__(self, env, format='gif', path=None, metadata=None, enabled=True, base_path=None):
@@ -88,8 +88,6 @@ class VideoRecorder(object):
         # Dump metadata
         self.metadata = metadata or {}
         self.metadata['content_type'] = 'video/vnd.openai.ansivid' if self.ansi_mode else 'video/mp4'
-        self.metadata_path = '{}.meta.json'.format(path_base)
-        self.write_metadata()
 
         logger.info('Starting new video recorder writing to %s', self.path)
         self.empty = True
@@ -113,7 +111,7 @@ class VideoRecorder(object):
             else:
                 # Indicates a bug in the environment: don't want to raise
                 # an error here.
-                logger.warn('Env returned None on render(). Disabling further rendering for video recorder by marking as disabled: path=%s metadata_path=%s', self.path, self.metadata_path)
+                logger.warn('Env returned None on render(). Disabling further rendering for video recorder by marking as disabled: path=%s', self.path)
                 self.broken = True
         else:
             self.last_frame = frame
@@ -141,7 +139,7 @@ class VideoRecorder(object):
 
         # If broken, get rid of the output file, otherwise we'd leak it.
         if self.broken:
-            logger.info('Cleaning up paths for broken video recorder: path=%s metadata_path=%s', self.path, self.metadata_path)
+            logger.info('Cleaning up paths for broken video recorder: path=%s', self.path)
 
             # Might have crashed before even starting the output file, don't try to remove in that case.
             if os.path.exists(self.path):
@@ -150,13 +148,6 @@ class VideoRecorder(object):
             if self.metadata is None:
                 self.metadata = {}
             self.metadata['broken'] = True
-
-        self.write_metadata()
-
-    def write_metadata(self):
-        pass
-        # with open(self.metadata_path, 'w') as f:
-        #     json.dump(self.metadata, f)
 
     def _encode_ansi_frame(self, frame):
         if not self.encoder:
@@ -319,8 +310,45 @@ class ImageEncoder(object):
             logger.error("VideoRecorder encoder exited with status {}".format(ret))
 
 class Recorder(Wrapper):
-    def __init__(self, env, directory, format="gif", video_callable=None, force=False, resume=False,
-                 write_upon_reset=False, uid=None, mode=None):
+    '''
+
+    **Description**
+    
+    Create training videos for arbitrary environment.
+
+    **Arguments**
+    
+    * **env** (gym Environment or gym Environment wrapped in any Cherry wrappers, *required*) - Training environment.
+    * **directory** (string, *required*) - Relative path to where videos will be saved.
+    * **format** (choose in ['gif', 'mp4'], *optional*, default=None) - Format of the output videos. If it's text environment, the format will be json.
+    * **video_callable** (Method, *optional*, default=None) - A method that decides whether to generate a video given an episode id. If set to None, it generates a video for every episode.
+    * **force** (bool, *optional*, default=False): Clear out existing training data from this directory (by deleting every file prefixed with "openaigym.").
+    * **uid** (string, *optional*, defulat=None): A unique id used as part of the suffix for the file. By default, uses os.getpid().
+    * **mode** (choose in ['evaluation', 'training'], *optional*, default=None): Whether this is an evaluation or training episode.
+    
+    **References**
+
+    1. openai/gym
+    
+    **Example**
+
+    ~~~python
+    import gym
+    import cherry.envs as envs
+
+    env = gym.make("[gym_environment_name]")
+    env = envs.Recorder(record_env, './videos/')
+    env = envs.Logger(env, interval)
+    env = envs.Torch(env)
+    env = envs.Runner(env)
+    
+    # During training
+    env.run(get_action, episodes=3, render=True) # get_action is a function that generates an action from the policy when given a state.
+    
+
+    '''
+    def __init__(self, env, directory, format="gif", video_callable=None, force=False,
+                 uid=None, mode=None):
         super(Recorder, self).__init__(env)
 
         env_name = env.spec.id
@@ -330,15 +358,13 @@ class Recorder(Wrapper):
         directory = os.path.join(directory, date)
 
         self.format = format
-        self.videos = []
         self.video_recorder = None
         self.enabled = False
         self.episode_id = 0
         self._monitor_id = None
         self.env_semantics_autoreset = env.metadata.get('semantics.autoreset')
         self.output_files = []
-        self._start(directory, video_callable, force, resume,
-                            write_upon_reset, uid, mode)
+        self._start(directory, video_callable, force, uid, mode)
 
     def step(self, action):
         observation, reward, done, info = self.env.step(action)
@@ -357,15 +383,13 @@ class Recorder(Wrapper):
         self._set_mode(mode)
 
 
-    def _start(self, directory, video_callable=None, force=False, resume=False,
-              write_upon_reset=False, uid=None, mode=None):
-        """Start monitoring.
+    def _start(self, directory, video_callable=None, force=False,
+               uid=None, mode=None):
+        """Start recording.
         Args:
             directory (str): A per-training run directory where to record stats.
             video_callable (Optional[function, False]): function that takes in the index of the episode and outputs a boolean, indicating whether we should record a video on this episode. The default (for video_callable is None) is to take perfect cubes, capped at 1000. False disables video recording.
             force (bool): Clear out existing training data from this directory (by deleting every file prefixed with "openaigym.").
-            resume (bool): Retain the training data already in this directory, which will be merged with our new data
-            write_upon_reset (bool): Write the manifest file on each reset. (This is currently a JSON file, so writing it is somewhat expensive.)
             uid (Optional[str]): A unique id used as part of the suffix for the file. By default, uses os.getpid().
             mode (['evaluation', 'training']): Whether this is an evaluation or training episode.
         """
@@ -383,7 +407,7 @@ class Recorder(Wrapper):
                 os.makedirs(directory)
 
         if video_callable is None:
-            video_callable = capped_cubic_video_schedule
+            video_callable = gen_video_every_episode;
         elif video_callable == False:
             video_callable = disable_videos
         elif not callable(video_callable):
@@ -393,11 +417,6 @@ class Recorder(Wrapper):
         # Check on whether we need to clear anything
         if force:
             clear_recorder_files(directory)
-        elif not resume:
-            training_manifests = detect_training_manifests(directory)
-            if len(training_manifests) > 0:
-                raise error.Error('''Trying to write to monitor directory {} with existing monitor files: {}.
- You should use a unique directory for each training run, or use 'force=True' to automatically clear previous monitor files.'''.format(directory, ', '.join(training_manifests[:5])))
 
         self._monitor_id = recorder_closer.register(self)
 
@@ -409,44 +428,20 @@ class Recorder(Wrapper):
         self.file_infix = '{}.{}'.format(self._monitor_id, uid if uid else os.getpid())
 
         if not os.path.exists(directory): os.mkdir(directory)
-        self.write_upon_reset = write_upon_reset
 
         if mode is not None:
             self._set_mode(mode)
 
-    def _flush(self, force=False):
-        """Flush all relevant monitor information to disk."""
-        if not self.write_upon_reset and not force:
-            return
-
-        # Give it a very distiguished name, since we need to pick it
-        # up from the filesystem later.
-        path = os.path.join(self.directory, '{}.manifest.{}.manifest.json'.format(self.file_prefix, self.file_infix))
-        logger.debug('Writing training manifest file to %s', path)
-        with atomic_write.atomic_write(path) as f:
-            # We need to write relative paths here since people may
-            # move the training_dir around. It would be cleaner to
-            # already have the basenames rather than basename'ing
-            # manually, but this works for now.
-            json.dump({
-                'videos': [(os.path.basename(v), os.path.basename(m))
-                           for v, m in self.videos],
-                'env_info': self._env_info(),
-            }, f, default=json_encode_np)
 
     def close(self):
         """Flush all monitor data to disk and close any open rending windows."""
         super(Recorder, self).close()
 
-        # _monitor will not be set if super(Monitor, self).__init__ raises, this check prevents a confusing error message
-        if not hasattr(self, '_monitor'):
-            return
 
         if not self.enabled:
             return
         if self.video_recorder is not None:
             self._close_video_recorder()
-        self._flush(force=True)
 
         # Stop tracking this for autoclose
         recorder_closer.unregister(self._monitor_id)
@@ -470,7 +465,7 @@ class Recorder(Wrapper):
             # For envs with BlockingReset wrapping VNCEnv, this observation will be the first one of the new episode
             self.reset_video_recorder()
             self.episode_id += 1
-            self._flush()
+
         # Record video
         self.video_recorder.capture_frame()
 
@@ -485,7 +480,6 @@ class Recorder(Wrapper):
         # Bump *after* all reset activity has finished
         self.episode_id += 1
 
-        self._flush()
 
     def reset_video_recorder(self):
         # Close any existing video recorder
@@ -508,44 +502,25 @@ class Recorder(Wrapper):
 
     def _close_video_recorder(self):
         self.video_recorder.close()
-        if self.video_recorder.functional:
-            self.videos.append((self.video_recorder.path, self.video_recorder.metadata_path))
 
     def _video_enabled(self):
         return self.video_callable(self.episode_id)
-
-    def _env_info(self):
-        env_info = {
-            'gym_version': version.VERSION,
-        }
-        if self.env.spec:
-            env_info['env_id'] = self.env.spec.id
-        return env_info
 
     def __del__(self):
         # Make sure we've closed up shop when garbage collecting
         self.close()
 
-def capped_cubic_video_schedule(episode_id):
+def gen_video_every_episode(episode_id):
     return True
-    # if episode_id < 1000:
-    #     return int(round(episode_id ** (1. / 3))) ** 3 == episode_id
-    # else:
-    #     return episode_id % 1000 == 0
-
-def detect_training_manifests(training_dir, files=None):
-    if files is None:
-        files = os.listdir(training_dir)
-    return [os.path.join(training_dir, f) for f in files if f.startswith(MANIFEST_PREFIX + '.')]
 
 recorder_closer = closer.Closer()
 
 def clear_recorder_files(training_dir):
-    files = detect_monitor_files(training_dir)
+    files = detect_recorder_files(training_dir)
     if len(files) == 0:
         return
 
-    logger.info('Clearing %d monitor files from previous run (because force=True was provided)', len(files))
+    logger.info('Clearing %d recorder files from previous run (because force=True was provided)', len(files))
     for file in files:
         os.unlink(file)
 
