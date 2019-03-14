@@ -91,7 +91,6 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
         self.metadata = metadata or {}
         self.metadata['content_type'] = 'video/vnd.openai.ansivid' if self.ansi_mode else 'video/'+self.format
         self.metadata_path = '{}.meta.json'.format(path_base)
-        self.write_metadata()
 
         self.empty = True
 
