@@ -126,9 +126,9 @@ class TestActorCritic(unittest.TestCase):
         th.manual_seed(SEED)
 
         env = gym.make('CartPole-v0')
+        env.seed(SEED)
         env = envs.Torch(env)
         env = envs.Runner(env)
-        env.seed(SEED)
 
         policy = ActorCriticNet(env)
         optimizer = optim.Adam(policy.parameters(), lr=1e-2)
@@ -144,7 +144,7 @@ class TestActorCritic(unittest.TestCase):
                 best_running = running_reward
             if (episode+1) % 10 == 0:
                 pass
-#                self.assertTrue((GROUND_TRUTHS[episode // 10] - running_reward)**2 <= 1e-1)
+#                self.assertTrue((GROUND_TRUTHS[episode // 10] - running_reward)**2 <= 1e-3)
         self.assertTrue(best_running >= 150.0)
 
 
