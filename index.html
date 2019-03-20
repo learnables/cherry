@@ -146,7 +146,8 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#installation">Installation</a></li>
-        <li class="main "><a href="#development-guidelines">Development Guidelines</a></li>
+            <li><a href="#requirements">Requirements</a></li>
+            <li><a href="#development-guidelines">Development Guidelines</a></li>
         <li class="main "><a href="#usage">Usage</a></li>
         <li class="main "><a href="#documentation">Documentation</a></li>
         <li class="main "><a href="#todo">TODO</a></li>
@@ -160,10 +161,10 @@
 <hr />
 <p><a href="https://travis-ci.com/seba-1511/cherry"><img alt="Test Status" src="https://travis-ci.com/seba-1511/cherry.svg?token=wS9Ya4UiannE2WzTjpHV&amp;branch=master" /></a></p>
 <p>Cherry is a reinforcement learning framework for researchers built on top of PyTorch.</p>
-<p>Unlike other reinforcement learning implementations, cherry doesn't try to provide a single interface to existing algorithms.
-Instead, it provides you with common tools to write your own algorithms.
+<p>Unlike other reinforcement learning implementations, cherry doesn't implement a single monolithic  interface to existing algorithms.
+Instead, it provides you with low-level, common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
-So if you don't like a specific tool, you can still use parts of cherry without headaches.</p>
+So if you don't like a specific tool, you don’t need to use it.</p>
 <p><strong>Features</strong></p>
 <ul>
 <li>Pythonic and modular interface <em>à la</em> Pytorch.</li>
@@ -175,17 +176,23 @@ So if you don't like a specific tool, you can still use parts of cherry without 
 <li>Unit, integration, and regression tested, continuously integrated.</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<p>For now, cherry is still in development.</p>
+<p><strong>Note</strong> Cherry is considered in alpha release. Some stuff might break in the future.</p>
+<p>For the latest release of cherry, run the following command in your favorite shell.</p>
+<pre><code>pip install cherry-rl
+</code></pre>
+
+<p>For the cutting edge version, you can run the following commands.</p>
 <ol>
 <li>Clone the repo: <code>git clone https://github.com/seba-1511/cherry</code></li>
 <li><code>cd cherry</code></li>
 <li><code>pip install -e .</code></li>
 </ol>
-<p>Upon our first public release, you'll be able to</p>
-<pre><code>pip install cherry-rl
-</code></pre>
-
-<h2 id="development-guidelines">Development Guidelines</h2>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li><code>torch</code> &gt;= 1.0.0</li>
+<li><code>gym</code> &gt;= 0.15</li>
+</ul>
+<h3 id="development-guidelines">Development Guidelines</h3>
 <ul>
 <li>The <code>master</code> branch is always working, considered stable.</li>
 <li>The <code>dev</code> branch should always work and is ahead of <code>master</code>, considered cutting edge.</li>
@@ -225,7 +232,7 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 <p>Concrete examples are available in the <a href="./examples/">examples/</a> folder.</p>
 <h2 id="documentation">Documentation</h2>
-<p>The documentation will be written as we begin to converge the core concepts of cherry.</p>
+<p>Documentation and tutorials are available on cherry’s website: <a href="http://seba-1511.github.io/cherry">http://seba-1511.github.io/cherry</a>.</p>
 <h2 id="todo">TODO</h2>
 <p>Some functionalities that we might want to implement.</p>
 <ul>
@@ -328,5 +335,5 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-03-20 02:40:02
+Build Date UTC : 2019-03-20 02:43:09
 -->
