@@ -1,0 +1,4 @@
+twine
+mkdocs==1.0.4
+mkdocs-bootswatch==1.0
+pydoc-markdown==2.0.5

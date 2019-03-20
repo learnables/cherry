@@ -1,14 +1,22 @@
 
-.PHONY: all tests dist
+.PHONY: all tests dist docs
 
-all: dist
+all: sac
 
 dist:
-	~/openmpi/bin/mpirun -np 16 \
-	       --oversubscribe \
-	       -x OMP_NUM_THREADS=1 \
-	       -x MKL_NUM_THREADS=1 \
-		python examples/dist_a2c_atari.py
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python -m torch.distributed.launch \
+	          --nproc_per_node=16 \
+		    examples/dist_a2c_atari.py
+bug:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python examples/debug_atari.py
+
+tabular:
+	python examples/tabular/sarsa.py
+#	python examples/tabular/q_learning.py
 
 ppo:
 	python examples/ppo_pybullet.py
@@ -22,11 +30,29 @@ reinforce:
 ac:
 	python examples/actor_critic_cartpole.py
 
+sac:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python examples/sac_pybullet.py
+
 grid:
 	python examples/actor_critic_gridworld.py
 
+dqn:
+	python examples/dqn_atari.py
+
+dev:
+	pip install --progress-bar off torch gym >> log_install.txt
+	python setup.py develop
+
 tests:
-	python -m unittest discover -s 'tests' -p '*_tests.py' -v
+	python -W ignore::DeprecationWarning -m unittest discover -s 'tests' -p '*_tests.py' -v
+
+docs:
+	cd docs && pydocmd build && pydocmd serve
+
+docs-deploy:
+	cd docs && pydocmd gh-deploy
 
 publish:
 	python setup.py sdist

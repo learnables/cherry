@@ -1,29 +1,28 @@
 #!/usr/bin/env python3
 
-"""
-TODO:
-    * Add enjoy mode
-    * Add command line argument parsing
-    * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
-"""
+# See: https://github.com/openai/roboschool/issues/15
+from OpenGL import GLU
+import ppt
 
 import random
 import gym
 import numpy as np
 import pybullet_envs
+import pybulletgym
+import roboschool
 
 import torch as th
 import torch.nn as nn
 import torch.optim as optim
 
 import cherry as ch
-import cherry.policies as policies
+import cherry.distributions as dist
 import cherry.models as models
 import cherry.envs as envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = False
+RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -52,9 +51,9 @@ class ActorCriticNet(nn.Module):
                                           layer_sizes=[64, 64])
         self.critic = models.control.ControlMLP(env.state_size, 1)
 
-        self.action_dist = policies.ActionDistribution(env,
-                                                       use_probs=False,
-                                                       reparam=False)
+        self.action_dist = dist.ActionDistribution(env,
+                                                   use_probs=False,
+                                                   reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -64,17 +63,16 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    # GAE
     _, next_state_value = policy(replay.next_states[-1])
-    advantages = ch.rewards.gae(GAMMA,
-                                TAU,
-                                replay.rewards,
-                                replay.dones,
-                                replay.values,
-                                next_state_value)
+    advantages = ch.rewards.generalized_advantage(GAMMA,
+                                                  TAU,
+                                                  replay.rewards,
+                                                  replay.dones,
+                                                  replay.values,
+                                                  next_state_value)
 
+    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
     rewards = [a + v for a, v in zip(advantages, replay.values)]
-    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5).view(-1, 1)
 
     replay.update(lambda i, sars: {
         'reward': rewards[i].detach(),
@@ -90,38 +88,38 @@ def update(replay, optimizer, policy, env, lr_schedule):
     mean = lambda a: sum(a) / len(a)
 
     # Perform some optimization steps
-    for step in range(PPO_EPOCHS):
-        for mb in range(PPO_NUM_BATCHES):
-            batch = replay.sample(PPO_BSZ)
-            masses, values = policy(batch.states)
+    for step in range(PPO_EPOCHS * PPO_NUM_BATCHES):
+        batch = replay.sample(PPO_BSZ)
+        masses, values = policy(batch.states)
 
-            # Compute losses
-            new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
-            entropy = masses.entropy().sum(-1).mean()
-            policy_loss = ppo.policy_loss(new_log_probs,
-                                          batch.log_probs,
-                                          batch.advantages,
+        # Compute losses
+        new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
+        entropy = masses.entropy().sum(-1).mean()
+        policy_loss = ppo.policy_loss(new_log_probs,
+                                      batch.log_probs,
+                                      batch.advantages,
+                                      clip=PPO_CLIP)
+        value_loss = ppo.state_value_loss(values,
+                                          batch.values.detach(),
+                                          batch.rewards,
                                           clip=PPO_CLIP)
-            value_loss = ppo.value_loss(values,
-                                        batch.values.detach(),
-                                        batch.rewards,
-                                        clip=PPO_CLIP)
-            loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+        loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 
-            # Take optimization step
-            optimizer.zero_grad()
-            loss.backward()
-            th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
-            optimizer.step()
+        # Take optimization step
+        optimizer.zero_grad()
+        loss.backward()
+        th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
+        optimizer.step()
 
-            policy_losses.append(policy_loss)
-            entropies.append(entropy)
-            value_losses.append(value_loss)
+        policy_losses.append(policy_loss)
+        entropies.append(entropy)
+        value_losses.append(value_loss)
 
     # Log metrics
     env.log('policy loss', mean(policy_losses).item())
     env.log('policy entropy', mean(entropies).item())
     env.log('value loss', mean(value_losses).item())
+    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO results')
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -139,42 +137,44 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env_name = 'CartPoleBulletEnv-v0'
-    env_name = 'AntBulletEnv-v0'
+    # env_name = 'CartPoleBulletEnv-v0'
+    env_name = 'AntPyBulletEnv-v0'
+    env_name = 'RoboschoolAnt-v1'
+#    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
-#    env = envs.AddTimestep(env)
+    env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
-    env = envs.OpenAINormalize(env)
+    env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
-
-    if RECORD:
-        record_env = gym.make(env_name)
-#        record_env = envs.AddTimestep(record_env)
-        record_env = envs.Monitor(record_env, './videos/')
-        record_env = envs.OpenAINormalize(record_env)
-        record_env = envs.Torch(record_env)
-        record_env = envs.Runner(record_env)
-        record_env.seed(SEED)
 
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
     lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
-    replay = ch.ExperienceReplay()
     get_action = lambda state: get_action_value(state, policy)
 
     for epoch in range(num_updates):
+        if RECORD and epoch % 10 == 0:
+            record_env = envs.Monitor(env.env, './videos/', video_callable=lambda x: True, force=True)
+            record_env = envs.Runner(record_env)
+            record_env.run(get_action, episodes=3, render=False)
         # We use the Runner collector, but could've written our own
-        num_samples, num_episodes = env.run(get_action,
-                                            replay,
-                                            steps=PPO_STEPS,
-                                            render=RENDER)
+        replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
-        replay.empty()
 
-        if RECORD and epoch % 10 == 0:
-            record_env.run(get_action, episodes=3, render=True)
+    mean = lambda x: sum(x) / len(x)
+    result = mean(env.all_rewards[-10000:])
+    data = {
+        'result': result,
+        'env': env_name,
+        'all_rewards': env.all_rewards,
+        'all_dones': env.all_dones,
+        'infos': env.values,
+    }
+    th.save(data, './regression_test/' + env_name + '.pickle')
+    th.save(policy.state_dict(),
+            './regression_test/' + env_name + '.pth')

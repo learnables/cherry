@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 import numpy as np
 import torch as th
-import operator
 
-from functools import reduce
-from collections import OrderedDict
-
-from gym.spaces import Box, Discrete, Dict
-
-
-EPS = sys.float_info.epsilon
+EPS = 1e-8
 
 
 def totensor(array):
@@ -28,6 +20,10 @@ def totensor(array):
 
 
 def min_size(tensor):
+    """
+    Returns the minimium viewable size of a tensor.
+    e.g. (1, 1, 3, 4) -> (3, 4)
+    """
     true_size = tensor.size()
     if len(true_size) < 1:
         return (1, )
@@ -37,34 +33,36 @@ def min_size(tensor):
 
 
 def normalize(tensor, epsilon=EPS):
+    """
+    Normalizes a tensor to zero mean and unit std.
+    """
     if tensor.numel() <= 1:
         return tensor
     return (tensor - tensor.mean()) / (tensor.std() + epsilon)
 
 
 def onehot(x, dim):
-    onehot = np.zeros(1, dim)
-    onehot[x] = 1.0
+    """
+    Creates a new onehot encoded tensor.
+    """
+    size = 1
+    if isinstance(x, np.ndarray):
+        size = x.shape[0]
+        x = th.from_numpy(x).long()
+    if isinstance(x, th.Tensor):
+        size = x.size(0)
+        x = x.long()
+    onehot = th.zeros(size, dim)
+    onehot[:, x] = 1.0
     return onehot
 
 
-def flatten_state(space, state):
-    if isinstance(space, Box):
-        return np.asarray(state).flatten()
-    if isinstance(space, Discrete):
-        return onehot(state, space.n)
-    raise('The space was not recognized.')
+class _ImportRaiser(object):
 
+    def __init__(self, name, command):
+        self.name = name
+        self.command = command
 
-def get_space_dimension(space):
-    msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete, Dict)), msg
-    if isinstance(space, Discrete):
-        return space.n
-    if isinstance(space, Box):
-        return reduce(operator.mul, space.shape, 1)
-    if isinstance(space, Dict):
-        dimensions = {
-            k[0]: get_space_dimension(k[1]) for k in space.spaces.items()
-        }
-        return OrderedDict(dimensions)
+    def __getattr__(self, *args, **kwargs):
+        msg = self.name + ' required. Try: ' + self.command
+        raise ImportError(msg)
