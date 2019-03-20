@@ -21,6 +21,11 @@ tabular:
 ppo:
 	python examples/ppo_pybullet.py
 
+ppoa:
+	OMP_NUM_THREADS=4 \
+	MKL_NUM_THREADS=4 \
+	python examples/ppo_atari.py
+
 acp:
 	python examples/actor_critic_pendulum.py
 
