@@ -151,6 +151,8 @@
         <li class="main "><a href="#runner">Runner</a></li>
             <li><a href="#run">run</a></li>
         <li class="main "><a href="#logger">Logger</a></li>
+        <li class="main "><a href="#recorder">Recorder</a></li>
+            <li><a href="#close">close</a></li>
         <li class="main "><a href="#visdomlogger">VisdomLogger</a></li>
         <li class="main "><a href="#torch">Torch</a></li>
         <li class="main "><a href="#normalizer">Normalizer</a></li>
@@ -198,6 +200,39 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 </code></pre>
 
 <p>Tracks and prints some common statistics about the environment.</p>
+<h1 id="recorder">Recorder</h1>
+<pre><code class="python">Recorder(self, env, directory='./videos/', format='gif', suffix=None)
+</code></pre>
+
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Wrapper to record episodes from a rollout.
+Supports GIF and MP4 encoding.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>env</strong> (Environment) - Environment to record.</li>
+<li><strong>directory</strong> (str, <em>optional</em>, default='./videos/') - Relative path to
+  where videos will be saved.</li>
+<li><strong>format</strong> (str, <em>optional</em>, default='gif') - Format of the videos.
+  Choose in ['gif', 'mp4'], defaults to gif.
+  If it's text environment, the format will be json.</li>
+<li><strong>suffix</strong> (str, <em>optional</em>, default=None): A unique id used as part of
+  the suffix for the file. By default, uses os.getpid().</li>
+</ul>
+<p><strong>Credit</strong></p>
+<p>Adapted from OpenAI Gym's Monitor wrapper.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python">env = gym.make('CartPole-v0')
+env = envs.Recorder(record_env, './videos/', format='gif')
+env = envs.Runner(env)
+env.run(get_action, episodes=3, render=True)
+</code></pre>
+
+<h2 id="close">close</h2>
+<pre><code class="python">Recorder.close(self)
+</code></pre>
+
+<p>Flush all monitor data to disk and close any open rending windows</p>
 <h1 id="visdomlogger">VisdomLogger</h1>
 <pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=100, name=None)
 </code></pre>
