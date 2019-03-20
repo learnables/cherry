@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import ppt
 import random
 import gym
 import numpy as np
@@ -18,18 +19,18 @@ RENDER = False
 RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
-LR = 3e-4
+LR = 2.5e-4
 GAMMA = 0.99
 TAU = 0.95
 V_WEIGHT = 0.5
-ENT_WEIGHT = 0.0
+ENT_WEIGHT = 0.01
 GRAD_NORM = 0.5
 LINEAR_SCHEDULE = True
-PPO_CLIP = 0.2
+PPO_CLIP = 0.1
 PPO_EPOCHS = 10
-PPO_BSZ = 64
-PPO_NUM_BATCHES = 32
-PPO_STEPS = 2048
+PPO_BSZ = 256
+PPO_NUM_BATCHES = 4
+PPO_STEPS = 1024
 
 
 class NatureCNN(nn.Module):
@@ -109,6 +110,7 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy loss', mean(policy_losses).item())
     env.log('policy entropy', mean(entropies).item())
     env.log('value loss', mean(value_losses).item())
+    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO ATARI')
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -131,6 +133,7 @@ if __name__ == '__main__':
     th.manual_seed(SEED)
 
     env_name = 'PongNoFrameskip-v4'
+    env_name = 'BreakoutNoFrameskip-v4'
     env = gym.make(env_name)
     env = envs.OpenAIAtari(env)
     env = envs.Logger(env, interval=PPO_STEPS)
