@@ -1,21 +1,33 @@
-import gym
-from gym import error, version
-from gym.wrappers.monitoring import video_recorder as GymVideoRecorder
-import os, json, numpy as np, six
-from gym.utils import atomic_write, closer
-from gym.utils.json_utils import json_encode_np
-from cherry.envs.base import Wrapper
+#!/usr/bin/env python3
+
+import os
+import six
 import time
-from datetime import datetime
-from six import StringIO
 import subprocess
 import tempfile
-import os.path
-import distutils.spawn, distutils.version
+
+from gym import error
+from gym.utils import closer
+from gym.wrappers.monitoring import video_recorder as GymVideoRecorder
+from datetime import datetime
+
+from .base import Wrapper
+
 
 FILE_PREFIX = 'openaigym'
+
+"""
+
+TODO:
+    * Remove force
+    * remove uuid
+    * remove video_callable
+"""
+
+
 def touch(path):
     open(path, 'a').close()
+
 
 class VideoRecorder(GymVideoRecorder.VideoRecorder):
     """VideoRecorder renders a nice movie of a rollout, frame by frame. It
@@ -57,7 +69,7 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
                 return
 
         if path is not None and base_path is not None:
-            raise error.Error("You can pass at most one of `path` or `base_path`.")
+            raise error.Error('You can pass at most one of `path` or `base_path`.')
 
         self.last_frame = None
         self.env = env
@@ -77,7 +89,7 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
 
         if actual_ext != required_ext:
             hint = " HINT: The environment is text-only, therefore we're recording its text output in a structured JSON format." if self.ansi_mode else ''
-            raise error.Error("Invalid path given: {} -- must have file extension {}.{}".format(self.path, required_ext, hint))
+            raise error.Error('Invalid path given: {} -- must have file extension {}.{}'.format(self.path, required_ext, hint))
         # Touch the file in any case, so we know it's present. (This
         # corrects for platform platform differences. Using ffmpeg on
         # OS X, the file is precreated, but not on Linux.
@@ -110,73 +122,90 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
         else:
             self.empty = False
 
+
 class ImageEncoderWithGif(GymVideoRecorder.ImageEncoder):
     def __init__(self, output_path, frame_shape, frames_per_sec, format):
         self.format = format
-        super(ImageEncoderWithGif, self).__init__(output_path, frame_shape, frames_per_sec)
+        super(ImageEncoderWithGif, self).__init__(output_path,
+                                                  frame_shape,
+                                                  frames_per_sec)
 
     def start(self):
         self.cmdline = (self.backend,
-                     '-nostats',
-                     '-loglevel', 'error', # suppress warnings
-                     '-y',
-                     '-r', '%d' % self.frames_per_sec,
+                        '-nostats',
+                        '-loglevel', 'error',  # suppress warnings
+                        '-y',
+                        '-r', '%d' % self.frames_per_sec,
 
-                     # input
-                     '-f', 'rawvideo',
-                     '-s:v', '{}x{}'.format(*self.wh),
-                     '-pix_fmt',('rgb32' if self.includes_alpha else 'rgb24'),
-                     '-i', '-', # this used to be /dev/stdin, which is not Windows-friendly
+                        # input
+                        '-f', 'rawvideo',
+                        '-s:v', '{}x{}'.format(*self.wh),
+                        '-pix_fmt', ('rgb32' if self.includes_alpha else 'rgb24'),
+                        '-i', '-',
 
-                     # output
-                     '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2')
-        if self.format == "mp4":
+                        # output
+                        '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2')
+
+        if self.format == 'mp4':
             self.cmdline += ('-vcodec', 'libx264')
         self.cmdline += ('-pix_fmt', 'yuv420p', self.output_path)
 
-        if hasattr(os,'setsid'): #setsid not present on Windows
-            self.proc = subprocess.Popen(self.cmdline, stdin=subprocess.PIPE, preexec_fn=os.setsid)
+        if hasattr(os,'setsid'):  # setsid not present on Windows
+            self.proc = subprocess.Popen(self.cmdline,
+                                         stdin=subprocess.PIPE,
+                                         preexec_fn=os.setsid)
         else:
             self.proc = subprocess.Popen(self.cmdline, stdin=subprocess.PIPE)
+
 
 class Recorder(Wrapper):
     '''
 
+    [[Source]]()
+
     **Description**
-    
-    Create training videos for arbitrary environment.
+
+    Wrapper to record episodes from a rollout.
+    Supports GIF and MP4 encoding.
 
     **Arguments**
-    
-    * **env** (gym Environment or gym Environment wrapped in any Cherry wrappers, *required*) - Training environment.
-    * **directory** (string, *required*) - Relative path to where videos will be saved.
-    * **format** (choose in ['gif', 'mp4'], *optional*, default=None) - Format of the output videos. If it's text environment, the format will be json.
-    * **video_callable** (Method, *optional*, default=None) - A method that decides whether to generate a video given an episode id. If set to None, it generates a video for every episode.
-    * **force** (bool, *optional*, default=False): Clear out existing training data from this directory (by deleting every file prefixed with "openaigym.").
-    * **uid** (string, *optional*, defulat=None): A unique id used as part of the suffix for the file. By default, uses os.getpid().
-    
-    **References**
 
-    1. openai/gym
-    
+    * **env** (Environment) - Environment to record.
+    * **directory** (str, *optional*, default='./videos/') - Relative path to
+      where videos will be saved.
+    * **format** (str, *optional*, default=None) - Format of the output videos.
+      Choose in ['gif', 'mp4'], defaults to gif.
+      If it's text environment, the format will be json.
+    * **video_callable** (fn, *optional*, default=None) - A function that
+      decides whether to generate a video given an episode id.
+      If set to None, it generates a video for every episode.
+    * **force** (bool, *optional*, default=False) - Clear out existing training
+      data from this directory.
+      (by deleting every file prefixed with 'openaigym'.)
+    * **uid** (str, *optional*, defulat=None): A unique id used as part of the
+      suffix for the file. By default, uses os.getpid().
+
+    **Credit**
+
+    Adapted from OpenAI Gym's Monitor wrapper.
+
     **Example**
 
     ~~~python
-    import gym
-    import cherry.envs as envs
-
-    env = gym.make("[gym_environment_name]")
-    env = envs.Recorder(record_env, './videos/', format='gif') # format will be gif if it's not set. Choose between gif and mp4
-    env = envs.Logger(env, interval)
-    env = envs.Torch(env)
+    env = gym.make('CartPole-v0')
+    env = envs.Recorder(record_env, './videos/', format='gif')
     env = envs.Runner(env)
-    
-    # During training
-    env.run(get_action, episodes=3, render=True) # get_action is a function that generates an action from the policy when given a state.
-    
-
+    env.run(get_action, episodes=3, render=True)
+    ~~~
     '''
-    def __init__(self, env, directory, format="gif", video_callable=None, force=False, uid=None):
+
+    def __init__(self,
+                 env,
+                 directory='./videos/',
+                 format='gif',
+                 video_callable=None,
+                 force=False,
+                 uid=None):
         super(Recorder, self).__init__(env)
 
         env_name = env.spec.id
@@ -212,7 +241,7 @@ class Recorder(Wrapper):
         Args:
             directory (str): A per-training run directory where to record stats.
             video_callable (Optional[function, False]): function that takes in the index of the episode and outputs a boolean, indicating whether we should record a video on this episode. The default (for video_callable is None) is to take perfect cubes, capped at 1000. False disables video recording.
-            force (bool): Clear out existing training data from this directory (by deleting every file prefixed with "openaigym.").
+            force (bool): Clear out existing training data from this directory (by deleting every file prefixed with 'openaigym.').
             uid (Optional[str]): A unique id used as part of the suffix for the file. By default, uses os.getpid().
         """
         if self.env.spec is None:
@@ -228,8 +257,6 @@ class Recorder(Wrapper):
 
         if video_callable is None:
             video_callable = gen_video_every_episode;
-        elif video_callable == False:
-            video_callable = disable_videos
         elif not callable(video_callable):
             raise error.Error('You must provide a function, None, or False for video_callable, not {}: {}'.format(type(video_callable), video_callable))
         self.video_callable = video_callable
