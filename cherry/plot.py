@@ -70,7 +70,7 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
 
     **Credit**
 
-    We adapt the idea from openai's plotting function
+    Adapted from OpenAI's baselines implementation.
 
     **Example**
     ~~~python
