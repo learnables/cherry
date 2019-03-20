@@ -17,6 +17,7 @@ generate:
     - cherry.envs.base.Wrapper++
     - cherry.envs.runner_wrapper.Runner++
     - cherry.envs.logger_wrapper.Logger++
+    - cherry.envs.recorder_wrapper.Recorder++
     - cherry.envs.visdom_logger_wrapper.VisdomLogger++
     - cherry.envs.torch_wrapper.Torch++
     - cherry.envs.normalizer_wrapper.Normalizer++
