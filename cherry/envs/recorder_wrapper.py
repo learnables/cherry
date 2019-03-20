@@ -175,7 +175,7 @@ class Recorder(Wrapper):
     * **env** (Environment) - Environment to record.
     * **directory** (str, *optional*, default='./videos/') - Relative path to
       where videos will be saved.
-    * **format** (str, *optional*, default=None) - Format of the output videos.
+    * **format** (str, *optional*, default='gif') - Format of the videos.
       Choose in ['gif', 'mp4'], defaults to gif.
       If it's text environment, the format will be json.
     * **suffix** (str, *optional*, default=None): A unique id used as part of
