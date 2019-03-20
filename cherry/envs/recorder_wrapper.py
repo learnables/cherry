@@ -14,17 +14,6 @@ from datetime import datetime
 from .base import Wrapper
 
 
-FILE_PREFIX = 'openaigym'
-
-"""
-
-TODO:
-    * Remove force
-    * remove uuid
-    * remove video_callable
-"""
-
-
 def touch(path):
     open(path, 'a').close()
 
@@ -40,19 +29,28 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
 
     Args:
         env (Env): Environment to take video of.
-        path (Optional[str]): Path to the video file; will be randomly chosen if omitted.
-        base_path (Optional[str]): Alternatively, path to the video file without extension, which will be added.
+        path (Optional[str]): Path to the video file;
+        will be randomly chosen if omitted.
+        base_path (Optional[str]): Alternatively, path to the video file
+        without extension, which will be added.
         metadata (Optional[dict]): Contents to save to the metadata file.
-        enabled (bool): Whether to actually record video, or just no-op (for convenience)
-        format: Format of the output video, choose between 'gif' and 'mp4'
+        enabled (bool): Whether to actually record video, or just no-op
+        (for convenience)
+        format: Format of the output video, choose between 'gif' and 'mp4'.
     """
 
-    def __init__(self, env, format='gif', path=None, metadata=None, enabled=True, base_path=None):
+    def __init__(self,
+                 env,
+                 format='gif',
+                 path=None,
+                 metadata=None,
+                 enabled=True,
+                 base_path=None):
+
         """Overrides original constructor to add support for generating gifs."""
         self.format = format
 
         modes = env.metadata.get('render.modes', [])
-        self._async = env.metadata.get('semantics.async')
         self.enabled = enabled
 
         # Don't bother setting anything else if not enabled
@@ -69,12 +67,12 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
                 return
 
         if path is not None and base_path is not None:
-            raise error.Error('You can pass at most one of `path` or `base_path`.')
+            raise error.Error('You can pass one of `path` or `base_path`.')
 
         self.last_frame = None
         self.env = env
 
-        required_ext = '.json' if self.ansi_mode else '.'+format
+        required_ext = '.json' if self.ansi_mode else '.' + format
         if path is None:
             if base_path is not None:
                 # Base path given, append ext
@@ -96,12 +94,12 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
         touch(path)
 
         self.frames_per_sec = env.metadata.get('video.frames_per_second', 30)
-        self.encoder = None # lazily start the process
+        self.encoder = None  # lazily start the process
         self.broken = False
 
         # Dump metadata
         self.metadata = metadata or {}
-        self.metadata['content_type'] = 'video/vnd.openai.ansivid' if self.ansi_mode else 'video/'+self.format
+        self.metadata['content_type'] = 'video/vnd.openai.ansivid' if self.ansi_mode else 'video/' + self.format
         self.metadata_path = '{}.meta.json'.format(path_base)
 
         self.empty = True
@@ -112,7 +110,10 @@ class VideoRecorder(GymVideoRecorder.VideoRecorder):
 
     def _encode_image_frame(self, frame):
         if not self.encoder:
-            self.encoder = ImageEncoderWithGif(self.path, frame.shape, self.frames_per_sec,self.format)
+            self.encoder = ImageEncoderWithGif(self.path,
+                                               frame.shape,
+                                               self.frames_per_sec,
+                                               self.format)
             self.metadata['encoder_version'] = self.encoder.version_info
 
         try:
@@ -131,6 +132,7 @@ class ImageEncoderWithGif(GymVideoRecorder.ImageEncoder):
                                                   frames_per_sec)
 
     def start(self):
+        rgb = 'rgb32' if self.includes_alpha else 'rgb24'
         self.cmdline = (self.backend,
                         '-nostats',
                         '-loglevel', 'error',  # suppress warnings
@@ -140,7 +142,7 @@ class ImageEncoderWithGif(GymVideoRecorder.ImageEncoder):
                         # input
                         '-f', 'rawvideo',
                         '-s:v', '{}x{}'.format(*self.wh),
-                        '-pix_fmt', ('rgb32' if self.includes_alpha else 'rgb24'),
+                        '-pix_fmt', rgb,
                         '-i', '-',
 
                         # output
@@ -150,7 +152,7 @@ class ImageEncoderWithGif(GymVideoRecorder.ImageEncoder):
             self.cmdline += ('-vcodec', 'libx264')
         self.cmdline += ('-pix_fmt', 'yuv420p', self.output_path)
 
-        if hasattr(os,'setsid'):  # setsid not present on Windows
+        if hasattr(os, 'setsid'):  # setsid not present on Windows
             self.proc = subprocess.Popen(self.cmdline,
                                          stdin=subprocess.PIPE,
                                          preexec_fn=os.setsid)
@@ -176,14 +178,8 @@ class Recorder(Wrapper):
     * **format** (str, *optional*, default=None) - Format of the output videos.
       Choose in ['gif', 'mp4'], defaults to gif.
       If it's text environment, the format will be json.
-    * **video_callable** (fn, *optional*, default=None) - A function that
-      decides whether to generate a video given an episode id.
-      If set to None, it generates a video for every episode.
-    * **force** (bool, *optional*, default=False) - Clear out existing training
-      data from this directory.
-      (by deleting every file prefixed with 'openaigym'.)
-    * **uid** (str, *optional*, defulat=None): A unique id used as part of the
-      suffix for the file. By default, uses os.getpid().
+    * **suffix** (str, *optional*, default=None): A unique id used as part of
+      the suffix for the file. By default, uses os.getpid().
 
     **Credit**
 
@@ -203,14 +199,12 @@ class Recorder(Wrapper):
                  env,
                  directory='./videos/',
                  format='gif',
-                 video_callable=None,
-                 force=False,
-                 uid=None):
+                 suffix=None):
         super(Recorder, self).__init__(env)
 
         env_name = env.spec.id
         ts = time.time()
-        date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S.%f')
+        date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')
         directory = os.path.join(directory, env_name)
         directory = os.path.join(directory, date)
 
@@ -221,7 +215,7 @@ class Recorder(Wrapper):
         self._monitor_id = None
         self.env_semantics_autoreset = env.metadata.get('semantics.autoreset')
         self.output_files = []
-        self._start(directory, video_callable, force, uid)
+        self._start(directory, suffix)
 
     def step(self, action):
         observation, reward, done, info = self.env.step(action)
@@ -235,49 +229,30 @@ class Recorder(Wrapper):
 
         return observation
 
-    def _start(self, directory, video_callable=None, force=False,
-               uid=None, mode=None):
+    def _start(self, directory, suffix=None, mode=None):
         """Start recording.
         Args:
-            directory (str): A per-training run directory where to record stats.
-            video_callable (Optional[function, False]): function that takes in the index of the episode and outputs a boolean, indicating whether we should record a video on this episode. The default (for video_callable is None) is to take perfect cubes, capped at 1000. False disables video recording.
-            force (bool): Clear out existing training data from this directory (by deleting every file prefixed with 'openaigym.').
-            uid (Optional[str]): A unique id used as part of the suffix for the file. By default, uses os.getpid().
+            directory (str): A per-training run directory where to record
+                             stats.
+            suffix (Optional[str]): A unique id used as part of the suffix for
+                                    the file. By default, uses os.getpid().
         """
-        if self.env.spec is None:
-            env_id = '(unknown)'
-        else:
-            env_id = self.env.spec.id
-
         if not os.path.exists(directory):
             if six.PY3:
                 os.makedirs(directory, exist_ok=True)
             else:
                 os.makedirs(directory)
 
-        if video_callable is None:
-            video_callable = gen_video_every_episode;
-        elif not callable(video_callable):
-            raise error.Error('You must provide a function, None, or False for video_callable, not {}: {}'.format(type(video_callable), video_callable))
-        self.video_callable = video_callable
-
-        # Check on whether we need to clear anything
-        if force:
-            clear_recorder_files(directory)
-
         self._monitor_id = recorder_closer.register(self)
 
         self.enabled = True
         self.directory = os.path.abspath(directory)
-        # We use the 'openai-gym' prefix to determine if a file is
-        # ours
-        self.file_prefix = FILE_PREFIX
-        self.file_infix = '{}.{}'.format(self._monitor_id, uid if uid else os.getpid())
 
-        if not os.path.exists(directory): os.mkdir(directory)
+        if not os.path.exists(directory):
+            os.mkdir(directory)
 
     def close(self):
-        """Flush all monitor data to disk and close any open rending windows."""
+        """Flush all monitor data to disk and close any open rending windows"""
         super(Recorder, self).close()
 
         if not self.enabled:
@@ -290,10 +265,12 @@ class Recorder(Wrapper):
         self.enabled = False
 
     def _after_step(self, observation, reward, done, info):
-        if not self.enabled: return done
+        if not self.enabled:
+            return done
 
         if done and self.env_semantics_autoreset:
-            # For envs with BlockingReset wrapping VNCEnv, this observation will be the first one of the new episode
+            # For envs with BlockingReset wrapping VNCEnv,
+            # this observation will be the first one of the new episode
             self.reset_video_recorder()
             self.episode_id += 1
 
@@ -302,7 +279,8 @@ class Recorder(Wrapper):
         return done
 
     def _after_reset(self, observation):
-        if not self.enabled: return
+        if not self.enabled:
+            return
 
         self.reset_video_recorder()
 
@@ -317,22 +295,21 @@ class Recorder(Wrapper):
         # Start recording the next video.
         #
         # TODO: calculate a more correct 'episode_id' upon merge
+        rec_name = 'cherry.recording.ep{:06}'.format(self.episode_id)
+        base_path = os.path.join(self.directory, rec_name)
 
         self.video_recorder = VideoRecorder(
             env=self.env,
-            base_path=os.path.join(self.directory, '{}.video.{}.video{:06}'.format(self.file_prefix, self.file_infix, self.episode_id)),
+            base_path=base_path,
             metadata={'episode_id': self.episode_id},
-            enabled=self._video_enabled(),
-            format = self.format
+            enabled=True,
+            format=self.format,
         )
         self.output_files.append(os.path.relpath(self.video_recorder.path))
         self.video_recorder.capture_frame()
 
     def _close_video_recorder(self):
         self.video_recorder.close()
-
-    def _video_enabled(self):
-        return self.video_callable(self.episode_id)
 
     def __del__(self):
         # Make sure we've closed up shop when garbage collecting
@@ -341,18 +318,5 @@ class Recorder(Wrapper):
     def get_video_paths(self):
         return self.output_files
 
-def gen_video_every_episode(episode_id):
-    return True
 
 recorder_closer = closer.Closer()
-
-def clear_recorder_files(training_dir):
-    files = detect_recorder_files(training_dir)
-    if len(files) == 0:
-        return
-
-    for file in files:
-        os.unlink(file)
-
-def detect_recorder_files(training_dir):
-    return [os.path.join(training_dir, f) for f in os.listdir(training_dir) if f.startswith(FILE_PREFIX + '.')]
