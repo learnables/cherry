@@ -6,10 +6,10 @@
 
 Cherry is a reinforcement learning framework for researchers built on top of PyTorch.
 
-Unlike other reinforcement learning implementations, cherry doesn't try to provide a single interface to existing algorithms.
-Instead, it provides you with common tools to write your own algorithms.
+Unlike other reinforcement learning implementations, cherry doesn't implement a single monolithic  interface to existing algorithms.
+Instead, it provides you with low-level, common tools to write your own algorithms.
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
-So if you don't like a specific tool, you can still use parts of cherry without headaches.
+So if you don't like a specific tool, you don’t need to use it.
 
 **Features**
 
@@ -23,19 +23,26 @@ So if you don't like a specific tool, you can still use parts of cherry without 
 
 ## Installation
 
-For now, cherry is still in development.
+**Note** Cherry is considered in alpha release. Some stuff might break in the future.
 
-1. Clone the repo: `git clone https://github.com/seba-1511/cherry`
-2. `cd cherry`
-3. `pip install -e .`
-
-Upon our first public release, you'll be able to
+For the latest release of cherry, run the following command in your favorite shell.
 
 ```
 pip install cherry-rl
 ```
 
-## Development Guidelines
+For the cutting edge version, you can run the following commands.
+
+1. Clone the repo: `git clone https://github.com/seba-1511/cherry`
+2. `cd cherry`
+3. `pip install -e .`
+
+### Requirements
+
+* `torch` >= 1.0.0
+*  `gym` >= 0.15
+
+### Development Guidelines
 
 * The `master` branch is always working, considered stable.
 * The `dev` branch should always work and is ahead of `master`, considered cutting edge.
@@ -80,7 +87,7 @@ Concrete examples are available in the [examples/](./examples/) folder.
 
 ## Documentation
 
-The documentation will be written as we begin to converge the core concepts of cherry.
+Documentation and tutorials are available on cherry’s website: [http://seba-1511.github.io/cherry](http://seba-1511.github.io/cherry).
 
 ## TODO
 
