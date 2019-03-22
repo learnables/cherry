@@ -153,10 +153,48 @@
 
 <h1 id="cherryoptim">cherry.optim</h1>
 <h2 id="distributed">Distributed</h2>
-<pre><code class="python">Distributed(self, params=&lt;required parameter&gt;, opt=&lt;required parameter&gt;)
+<pre><code class="python">Distributed(self, params=&lt;required parameter&gt;, opt=&lt;required parameter&gt;, sync=None)
 </code></pre>
 
-<p>Synchronizes optimizers across distributed replicas.</p></div>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/optim.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Synchronizes the gradients of a model across replicas.</p>
+<p>At every step, <code>Distributed</code> averages the gradient across all replicas
+before calling the wrapped optimizer.
+The <code>sync</code> parameters determines how frequently the parameters are
+synchronized between replicas, to minimize numerical divergences.
+This is done by calling the <code>sync_parameters()</code> method.
+If <code>sync is None</code>, this never happens except upon initialization of the
+class.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>params</strong> (iterable) - Iterable of parameters.</li>
+<li><strong>opt</strong> (Optimizer) - The optimizer to wrap and synchronize.</li>
+<li><strong>sync</strong> (int, <em>optional</em>, default=None) - Parameter
+  synchronization frequency.</li>
+</ul>
+<p><strong>References</strong></p>
+<ol>
+<li>Zinkevich et al. 2010. “Parallelized Stochastic Gradient Descent.”</li>
+</ol>
+<p><strong>Example</strong></p>
+<pre><code class="python">opt = optim.Adam(model.parameters())
+opt = Distributed(model.parameters(), opt, sync=1)
+
+opt.step()
+opt.sync_parameters()
+</code></pre>
+
+<h3 id="sync_parameters">sync_parameters</h3>
+<pre><code class="python">Distributed.sync_parameters(self, root=0)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Broadcasts all parameters of root to all other replicas.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>root</strong> (int, <em>optional</em>, default=0) - Rank of root replica.</li>
+</ul></div>
         </div>
 
         <footer class="col-md-12">
