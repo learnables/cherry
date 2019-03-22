@@ -222,12 +222,9 @@ rewards = ch.rewards.discount(GAMMA, replay.rewards, replay.dones)
 rewards = ch.utils.normalize(rewards)
 
 # Sampling rollouts per episode or samples
-num_samples, num_episodes = ch.rollouts.collect(env,
-                                                get_action,
-                                                replay,
-                                                num_episodes=10,
-                                                # alternatively: num_samples=1000,
-)
+env = envs.Runner(env)
+replay = env.run(get_action, steps=100)  # alternatively: episodes=10
+
 </code></pre>
 
 <p>Concrete examples are available in the <a href="./examples/">examples/</a> folder.</p>
@@ -335,5 +332,5 @@ num_samples, num_episodes = ch.rollouts.collect(env,
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-03-22 02:49:00
+Build Date UTC : 2019-03-22 03:10:42
 -->
