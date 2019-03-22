@@ -77,7 +77,7 @@ pages:
 docs_dir: source
 gens_dir: _build/pydocmd     # This will end up as the MkDocs 'docs_dir'
 site_dir: _build/site
-site_url: https://seba-1511.github.io/cherry/
+site_url: http://cherry-rl.net
 site_author: Seb Arnold
 google_analytics: ['UA-68693545-3', 'seba-1511.github.com']
 theme:
