@@ -40,6 +40,12 @@ sac:
 	MKL_NUM_THREADS=1 \
 	python examples/sac_pybullet.py
 
+saca:
+	OMP_NUM_THREADS=4 \
+	MKL_NUM_THREADS=4 \
+	python examples/sac_atari.py
+
+
 grid:
 	python examples/actor_critic_gridworld.py
 
