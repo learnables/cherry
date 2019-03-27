@@ -146,6 +146,7 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherrydistributions">cherry.distributions</a></li>
+            <li><a href="#epsilongreedy">EpsilonGreedy</a></li>
             <li><a href="#reparameterization">Reparameterization</a></li>
             <li><a href="#actiondistribution">ActionDistribution</a></li>
             <li><a href="#tanhnormal">TanhNormal</a></li>
@@ -154,23 +155,52 @@
                 <div class="col-md-9" role="main">
 
 <h1 id="cherrydistributions">cherry.distributions</h1>
+<h2 id="epsilongreedy">EpsilonGreedy</h2>
+<pre><code class="python">EpsilonGreedy(self, epsilon=0.05, learnable=False)
+</code></pre>
+
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Epsilon greedy action selection.</p>
+<p><strong>References</strong></p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<p><strong>Example</strong></p>
 <h2 id="reparameterization">Reparameterization</h2>
 <pre><code class="python">Reparameterization(self, density)
 </code></pre>
 
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
 <p>Reparameterized distribution.</p>
+<p><strong>References</strong></p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<p><strong>Example</strong></p>
 <h2 id="actiondistribution">ActionDistribution</h2>
 <pre><code class="python">ActionDistribution(self, env, logstd=None, use_probs=False, reparam=False)
 </code></pre>
 
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
 <p>A helper module to automatically choose the proper policy distribution,
 based on the environment action_space.</p>
+<p><strong>References</strong></p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<p><strong>Example</strong></p>
 <h2 id="tanhnormal">TanhNormal</h2>
 <pre><code class="python">TanhNormal(self, normal_mean, normal_std)
 </code></pre>
 
+<p><a href="">[Source]</a></p>
+<p><strong>Description</strong></p>
 <p>Adapted from Vitchyr Pong's RLkit:
-https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py</p></div>
+https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py</p>
+<p><strong>References</strong></p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<p><strong>Example</strong></p></div>
         </div>
 
         <footer class="col-md-12">
