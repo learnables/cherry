@@ -39,7 +39,7 @@ generate:
     - cherry.models.atari++
     - cherry.models.control++
 - docs/cherry.nn.md:
-    - cherry.nn++
+    - cherry.nn.ControlLinear
 - docs/cherry.nn.init.md:
     - cherry.nn.init++
 - docs/cherry.utils.md:
