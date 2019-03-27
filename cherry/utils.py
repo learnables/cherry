@@ -21,8 +21,21 @@ def totensor(array):
 
 def min_size(tensor):
     """
+    [[Source]]()
+
+    **Description**
+
     Returns the minimium viewable size of a tensor.
     e.g. (1, 1, 3, 4) -> (3, 4)
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
     true_size = tensor.size()
     if len(true_size) < 1:
@@ -34,7 +47,20 @@ def min_size(tensor):
 
 def normalize(tensor, epsilon=EPS):
     """
+    [[Source]]()
+
+    **Description**
+
     Normalizes a tensor to zero mean and unit std.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
     if tensor.numel() <= 1:
         return tensor
@@ -43,7 +69,20 @@ def normalize(tensor, epsilon=EPS):
 
 def onehot(x, dim):
     """
+    [[Source]]()
+
+    **Description**
+
     Creates a new onehot encoded tensor.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
     size = 1
     if isinstance(x, np.ndarray):
