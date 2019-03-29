@@ -19,6 +19,8 @@ tabular:
 #	python examples/tabular/q_learning.py
 
 ppo:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
 	python examples/ppo_pybullet.py
 
 ppoa:
