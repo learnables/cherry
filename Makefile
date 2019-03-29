@@ -33,6 +33,8 @@ reinforce:
 	python examples/reinforce_cartpole.py
 
 ac:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
 	python examples/actor_critic_cartpole.py
 
 sac:
@@ -51,6 +53,8 @@ dev:
 	python setup.py develop
 
 tests:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
 	python -W ignore::DeprecationWarning -m unittest discover -s 'tests' -p '*_tests.py' -v
 
 docs:
