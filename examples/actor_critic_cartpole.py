@@ -50,12 +50,17 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer):
-    policy_loss = []
-    value_loss = []
 
+    # Logging
+    policy_loss = []
+    entropies = []
+    value_loss = []
+    mean = lambda a: sum(a) / len(a)
+    
     # Discount and normalize rewards
     rewards = discount_rewards(GAMMA, replay.rewards, replay.dones)
     rewards = normalize(th.tensor(rewards))
+
 
     # Compute losses
     for info, reward in zip(replay.infos, rewards):
@@ -71,6 +76,12 @@ def update(replay, optimizer):
     optimizer.step()
 
 
+    # Log metrics
+    env.log('policy loss', mean(policy_loss).item())
+    #env.log('policy entropy', mean(entropies).item())
+    env.log('value loss', mean(value_loss).item())
+
+
 def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
@@ -83,10 +94,21 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    env = envs.Logger(env, interval=1000)
+    #env = envs.Logger(env, interval=1000)
+    #env = envs.Torch(env)
+    #env = envs.Runner(env)
+    #env.seed(SEED)
+
+
+    env = envs.AddTimestep(env)
+    env = envs.VisdomLogger(env)
+    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
+
+    #if RECORD:
+    #    record_env = envs.Monitor(env, './videos/')
 
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)

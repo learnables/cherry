@@ -123,8 +123,17 @@ class VisdomLogger(Wrapper):
 
     # reads the list of actions that are indexed according to time step, then plot them and empty the action list
     def make_ribbon_plot(self):
+        # check if it is continuous or discrete
         # get the number of ribbons (i.e. actions), and number of time steps
-        num_actions = len(self.ep_actions[0])
+        discrete = False
+        num_actions = None
+        print("####### self.ep_actions[0] is of type: ",type(self.ep_actions[0]))
+        if type(self.ep_actions[0]) != np.ndarray:
+            discrete = True
+            num_actions = int(np.max(self.ep_actions))
+            print("----discrete")
+        else:
+            num_actions = len(self.ep_actions[0])
         num_steps = len(self.ep_actions)
        
         print("num actions: ", num_actions)
@@ -145,22 +154,24 @@ class VisdomLogger(Wrapper):
 
             z_buff = 0
 
-            print("for action ", i)
+            #print("for action ", i)
             for j, step_action in enumerate(self.ep_actions):
                 x_in[j] = [i*2, i*2 + 1]
                 y_in[j] = [j, j]
-                z_buff = 0.01 * float(step_action[i]) + 0.99 * z_buff
+                if discrete:
+                    if step_action == i:
+                        z_buff = 1
+                    else:
+                        z_buff = 0
+                else:
+                    z_buff = 0.005 * float(step_action[i]) + 0.995 * z_buff
+
                 z_in[j] = [z_buff, z_buff]
-            
-            #ribon_dict[x] = x
-            #ribon_dict[y] = y
-            #ribon_dict[z] = z
-            #ribon_dict[type] = 'surface'
-            #ribon_dict[name]= str(i +1) +  "th ribbon"
+                print("----z_buff: ", z_buff)
 
             trace = dict(x=x_in, y=y_in, z=z_in, type='surface', name='')
             ribons.append(trace)
-            #print("x: ", x_in[:10], "\ny: ", y_in[:10], "\nz: ", z_in[:10])
+            print("x: ", x_in[:10], "\ny: ", y_in[:10], "\nz: ", z_in[:10])
             x_t = x_in
             y_t = y_in
             z_t = z_in
@@ -194,6 +205,7 @@ class VisdomLogger(Wrapper):
         self.new_ep_actions.append(action)
         self.new_ep_states.append(state)
 
+        #print("## the action taken was: ", action)
 
         interval = self.interval > 0 and self.num_steps % self.interval == 0
         self._update(interval=interval)

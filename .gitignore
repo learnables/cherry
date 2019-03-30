@@ -114,3 +114,6 @@ results/*
 /spinningup
 =======
 videos/*
+
+# ignore .idea 
+*.idea
