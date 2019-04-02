@@ -109,6 +109,6 @@ Cherry draws inspiration from many reinforcement learning implementations, inclu
 * [RLLab](https://github.com/rll/rllab).
 
 
-# Why Cherry ?
+### Why 'cherry' ?
 
-Because everyone knows it's the sweetest part of [the cake](https://cdn-images-1.medium.com/max/2560/1*bvMhd_xpVxfJYoKXYp5hug.png).
+Because everyone knows it's the sweetest part of [the cake](https://twitter.com/ylecun/status/1097532314614034433).
