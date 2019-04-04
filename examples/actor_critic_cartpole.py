@@ -100,9 +100,7 @@ if __name__ == '__main__':
     #env.seed(SEED)
 
 
-    env = envs.AddTimestep(env)
     env = envs.VisdomLogger(env)
-    env = envs.OpenAINormalize(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
