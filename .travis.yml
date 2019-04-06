@@ -3,8 +3,14 @@ language: python
 os:
     - linux
 
+matrix:
+    allow_failures:
+        - os: osx
+
 python:
     - 3.5
+    - 3.6
+    - 3.7
     - "3.5-dev"
     - "3.6-dev"
     - "3.7-dev"
