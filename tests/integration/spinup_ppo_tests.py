@@ -184,6 +184,12 @@ def train_cherry():
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
+    env = gym.make('Pendulum-v0')
+    env.seed(SEED)
+    env = envs.Torch(env)
+    env = envs.Runner(env)
+    replay = ch.ExperienceReplay()
+
     agent = ActorCritic(HIDDEN_SIZE)
     actor_optimiser = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
     critic_optimiser = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
@@ -196,12 +202,6 @@ def train_cherry():
                     'log_prob': log_prob,
                     'value': value,
             }
-
-    env = gym.make('Pendulum-v0')
-    env.seed(SEED)
-    env = envs.Torch(env)
-    env = envs.Runner(env)
-    replay = ch.ExperienceReplay()
 
     result = {
         'rewards': [],
@@ -282,15 +282,15 @@ class TestSpinningUpPPO(unittest.TestCase):
 
         # Check rewards
         for rc, rs in zip(cherry['rewards'], spinup['rewards']):
-            self.assertTrue(abs(rc - rs) <= 1e-2)
+            self.assertTrue(abs(rc - rs) <= 1e-5)
 
         # Check policy loss
         for pc, ps in zip(cherry['policy_losses'], spinup['policy_losses']):
-            self.assertEqual(pc, ps)
+            self.assertTrue(abs(pc - ps) <= 1e-5)
 
         # Check value loss
         for vc, vs in zip(cherry['value_losses'], spinup['value_losses']):
-            self.assertEqual(vc, vs)
+            self.assertTrue(abs(vc - vs) <= 1e-5)
 
         # Check weights
         for wc, ws in zip(cherry['weights'], spinup['weights']):
