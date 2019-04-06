@@ -263,15 +263,15 @@ class TestSpinningUpVPG(unittest.TestCase):
 
         # Check rewards
         for rc, rs in zip(cherry['rewards'], spinup['rewards']):
-            self.assertTrue(abs(rc - rs) <= 1e-2)
+            self.assertTrue(abs(rc - rs) <= 1e-5)
 
         # Check policy loss
         for pc, ps in zip(cherry['policy_losses'], spinup['policy_losses']):
-            self.assertEqual(pc, ps)
+            self.assertTrue(abs(pc - ps) <= 1e-5)
 
         # Check value loss
         for vc, vs in zip(cherry['value_losses'], spinup['value_losses']):
-            self.assertEqual(vc, vs)
+            self.assertTrue(abs(vc - vs) <= 1e-5)
 
         # Check weights
         for wc, ws in zip(cherry['weights'], spinup['weights']):
