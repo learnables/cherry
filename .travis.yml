@@ -2,10 +2,7 @@ language: python
 
 os:
     - linux
-
-matrix:
-    allow_failures:
-        - os: osx
+    - osx
 
 python:
     - 3.5
