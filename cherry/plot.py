@@ -130,11 +130,11 @@ def exponential_smoothing(x, y=None, temperature=1.0):
 
     **Decription**
 
-    Two side exponential moving average for smoothing a curve
+    Two-sided exponential moving average for smoothing a curve.
+    Alised to `smooth`.
 
     It performs regular exponential moving average twice from two different
     sides and then combines the results together.
-    It performs better than one side exponential smoothing.
 
     **Arguments**
 

@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
 """
-An implementation of SoftActorCritic.
-
-TODO:
-    * Decide whether to keep rsample_and_log_prob() or change
-      to a 3.0*Tanh before inputing to TanhNormal().
-      (The latter might actually work.)
+An implementation of Soft Actor-Critic.
 """
 
 from OpenGL import GLU
@@ -38,7 +33,7 @@ REPLAY_SIZE = 1000000
 ALL_LR = 3e-4
 MEAN_REG_WEIGHT = 1e-3
 STD_REG_WEIGHT = 1e-3
-VF_TARGET_TAU = 0.001
+VF_TARGET_TAU = 0.99
 USE_AUTOMATIC_ENTROPY_TUNING = True
 TARGET_ENTROPY = -6
 

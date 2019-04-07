@@ -6,6 +6,22 @@ import torch.nn as nn
 
 
 def pong_control_(module, bias=0.1):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Control initialization from Vitchyr Pong's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
     weight = module.weight
     size = weight.size()
     if len(size) == 2:
@@ -21,6 +37,22 @@ def pong_control_(module, bias=0.1):
 
 
 def kostrikov_control_(module, gain=None):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Control initialization from Ilya Kostrikov's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
     with th.no_grad():
         if gain is None:
             gain = np.sqrt(2.0)
@@ -30,6 +62,22 @@ def kostrikov_control_(module, gain=None):
 
 
 def atari_init_(module, gain=None):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Atari initialization from Ilya Kostrikov's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
     if gain is None:
         gain = nn.init.calculate_gain('relu')
     nn.init.orthogonal_(module.weight.data, gain=gain)

@@ -14,6 +14,23 @@ from gym.spaces import Discrete
 
 class EpsilonGreedy(nn.Module):
 
+    """
+    [[Source]]()
+
+    **Description**
+
+    Epsilon greedy action selection.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
+
     def __init__(self, epsilon=0.05, learnable=False):
         super(EpsilonGreedy, self).__init__()
         msg = 'epsilon is not in a valid range'
@@ -34,7 +51,20 @@ class EpsilonGreedy(nn.Module):
 class Reparameterization(object):
 
     """
+    [[Source]]()
+
+    **Description**
+
     Reparameterized distribution.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
 
     def __init__(self, density):
@@ -57,8 +87,21 @@ class Reparameterization(object):
 
 class ActionDistribution(nn.Module):
     """
+    [[Source]]()
+
+    **Description**
+
     A helper module to automatically choose the proper policy distribution,
     based on the environment action_space.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
 
     def __init__(self, env, logstd=None, use_probs=False, reparam=False):
@@ -89,8 +132,21 @@ class ActionDistribution(nn.Module):
 class TanhNormal(Distribution):
 
     """
+    [[Source]]()
+
+    **Description**
+
     Adapted from Vitchyr Pong's RLkit:
     https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
     """
 
     def __init__(self, normal_mean, normal_std):

@@ -138,7 +138,8 @@ def get_action_value(state, policy):
 if __name__ == '__main__':
     # env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
-    env_name = 'RoboschoolAnt-v1'
+    env_name = 'MinitaurTrottingEnv-v0'
+#    env_name = 'RoboschoolAnt-v1'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
@@ -147,6 +148,7 @@ if __name__ == '__main__':
     env = envs.Runner(env)
     env.seed(SEED)
 
+    th.set_num_threads(1)
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
