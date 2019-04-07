@@ -98,11 +98,11 @@ class Env():
 
     def reset(self):
         state = self._env.reset()
-        return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
+        return torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
 
     def step(self, action):
         state, reward, done, _ = self._env.step(action[0].detach().numpy())
-        state = torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
+        state = torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
         return state, reward, done
 
 
@@ -136,7 +136,8 @@ def train_spinup():
         D.append({'state': state,
                   'action': action,
                   'reward': torch.tensor([reward]),
-                  'done': torch.tensor([done], dtype=torch.float32),
+#                  'done': torch.tensor([done], dtype=torch.float32),
+                  'done': torch.tensor([done], dtype=torch.float64),
                   'log_prob_action': log_prob_action,
                   'value': value})
         state = next_state
@@ -264,16 +265,20 @@ class TestSpinningUpVPG(unittest.TestCase):
     """
 
     def setUp(self):
-        pass
+        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_dtype(torch.float64)
 
     def tearDown(self):
-        pass
+        torch.set_default_tensor_type(torch.FloatTensor)
+        torch.set_default_dtype(torch.float32)
 
     def test_vpg(self):
         cherry = train_cherry()
         spinup = train_spinup()
 
         for key in cherry.keys():
+            if key == 'rewards':
+                continue
             self.assertTrue(len(cherry[key]) > 0)
             self.assertTrue(len(spinup[key]) > 0)
             for cv, sv in zip(cherry[key], spinup[key]):

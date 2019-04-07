@@ -98,11 +98,11 @@ class Env():
 
     def reset(self):
         state = self._env.reset()
-        return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
+        return torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
 
     def step(self, action):
         state, reward, done, _ = self._env.step(action[0].detach().numpy())
-        state = torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
+        state = torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
         return state, reward, done
 
 
@@ -133,7 +133,14 @@ def train_spinup():
         log_prob_action = policy.log_prob(action)
         next_state, reward, done = env.step(action)
         total_reward += reward
-        D.append({'state': state, 'action': action, 'reward': torch.tensor([reward]), 'done': torch.tensor([done], dtype=torch.float32), 'log_prob_action': log_prob_action, 'old_log_prob_action': log_prob_action.detach(), 'value': value})
+        D.append({'state': state,
+                  'action': action,
+                  'reward': torch.tensor([reward]),
+#                  'done': torch.tensor([done], dtype=torch.float32),
+                  'done': torch.tensor([done], dtype=torch.float64),
+                  'log_prob_action': log_prob_action,
+                  'old_log_prob_action': log_prob_action.detach(),
+                  'value': value})
         state = next_state
         result['rewards'].append(reward)
         if done:
@@ -169,8 +176,6 @@ def train_spinup():
                     policy_loss.backward()
                     actor_optimiser.step()
                     result['policy_losses'].append(policy_loss.item())
-#                    print('Step', step)
-#                    print('ploss', policy_loss.item())
 
                     # Fit value function by regression on mean-squared error
                     value_loss = (trajectories['value'] - trajectories['reward_to_go']).pow(2).mean()
@@ -178,8 +183,6 @@ def train_spinup():
                     value_loss.backward()
                     critic_optimiser.step()
                     result['value_losses'].append(value_loss.item())
-#                    print('vloss', value_loss.item())
-#                    print('')
     result['weights'] = list(agent.parameters())
     return result
 
@@ -252,8 +255,6 @@ def train_cherry():
                 policy_loss.backward()
                 actor_optimiser.step()
                 result['policy_losses'].append(policy_loss.item())
-#                print('Step', step)
-#                print('ploss', policy_loss.item())
 
                 # Fit value function by regression on mean-squared error
                 value_loss = ch.algorithms.a2c.state_value_loss(new_values, returns)
@@ -261,8 +262,6 @@ def train_cherry():
                 value_loss.backward()
                 critic_optimiser.step()
                 result['value_losses'].append(value_loss.item())
-#                print('vloss', value_loss.item())
-#                print('')
             replay.empty()
 
     result['weights'] = list(agent.parameters())
@@ -276,10 +275,12 @@ def close(a, b):
 class TestSpinningUpPPO(unittest.TestCase):
 
     def setUp(self):
-        pass
+        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_dtype(torch.float64)
 
     def tearDown(self):
-        pass
+        torch.set_default_tensor_type(torch.FloatTensor)
+        torch.set_default_dtype(torch.float32)
 
     def test_ppo(self):
         cherry = train_cherry()
