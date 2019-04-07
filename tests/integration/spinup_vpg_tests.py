@@ -251,6 +251,13 @@ def close(a, b):
 
 class TestSpinningUpVPG(unittest.TestCase):
 
+    """
+    TODO: Despite seeding, and that both methods do exactly the same thing,
+          on some Python versions the tests fail on Travis.
+          Unclear to me why.
+          This problem affects all spinning up integration tests.
+    """
+
     def setUp(self):
         pass
 
@@ -258,8 +265,7 @@ class TestSpinningUpVPG(unittest.TestCase):
         pass
 
     def test_vpg(self):
-#        cherry = train_cherry()
-        cherry = train_spinup()
+        cherry = train_cherry()
         spinup = train_spinup()
 
         # Check rewards
