@@ -7,7 +7,7 @@ def polyak_average(source, target, alpha):
 
     **Description**
 
-    Shifts the parameters of a model towards those of another one.
+    Shifts the parameters of source towards those of target.
 
     Note: the parameter `alpha` indicates how much to shift in the direction of `target`.
     (i.e. the old parameters are kept at a rate of 1 - `alpha`.)
