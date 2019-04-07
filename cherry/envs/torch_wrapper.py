@@ -2,6 +2,7 @@
 
 import numpy as np
 import torch as th
+import cherry as ch
 
 from gym.spaces import Discrete
 
@@ -30,7 +31,7 @@ class Torch(Wrapper):
             state = {k: self._convert_state(state[k]) for k in state}
             return state
         if isinstance(state, np.ndarray):
-            return th.from_numpy(state).float().unsqueeze(0)
+            return ch.utils.totensor(state)
         return state
 
     def step(self, action):

@@ -6,6 +6,14 @@ from torch import Tensor as T
 
 from cherry.utils import totensor, min_size
 
+"""
+TODO: Fixed-size experience replay.
+TODO: Use tensors for storage, automatically grow them as needed.
+TODO: replay.myattr doesn't recompute a new tensor.
+TODO: replay.to(device)
+TODO: replay.astype(dtype) + init dtype
+"""
+
 
 class Transition(dict):
 

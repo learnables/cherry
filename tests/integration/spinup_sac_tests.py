@@ -17,7 +17,7 @@ from torch.distributions import Normal, Distribution
 import cherry as ch
 from cherry import envs
 
-TOL = 1e-4
+TOL = 1e-6
 
 ACTION_DISCRETISATION = 5
 ACTION_NOISE = 0.1
@@ -60,6 +60,7 @@ def update_target_network(network, target_network, polyak_factor):
     for param, target_param in zip(network.parameters(), target_network.parameters()):
         target_param.data = polyak_factor * target_param.data + (1 - polyak_factor) * param.data
 
+
 class TanhNormal(Distribution):
     def __init__(self, loc, scale):
         super().__init__()
@@ -84,7 +85,7 @@ class TanhNormal(Distribution):
 class SoftActor(nn.Module):
     def __init__(self, hidden_size):
         super().__init__()
-        self.log_std_min, self.log_std_max = -20, 2  # Constrain range of standard deviations to prevent very deterministic/stochastic policies
+        self.log_std_min, self.log_std_max = -20, 2
         layers = [nn.Linear(3, hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 2)]
         self.policy = nn.Sequential(*layers)
 
@@ -99,7 +100,7 @@ class Critic(nn.Module):
                 self.state_action = state_action
                 layers = [nn.Linear(3 + (1 if state_action else 0), hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 1)]
                 if layer_norm:
-                        layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  # Insert layer normalisation between fully-connected layers and nonlinearities
+                        layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]
                 self.value = nn.Sequential(*layers)
 
         def forward(self, state, action=None):
@@ -111,17 +112,18 @@ class Critic(nn.Module):
 
 
 class Env():
-        def __init__(self):
-                self._env = gym.make('Pendulum-v0')
-                self._env.seed(SEED)
+    def __init__(self):
+        self._env = gym.make('Pendulum-v0')
+        self._env.seed(SEED)
 
-        def reset(self):
-                state = self._env.reset()
-                return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
-        
-        def step(self, action):
-                state, reward, done, _ = self._env.step(action[0].detach().numpy())
-                return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0), reward, done
+    def reset(self):
+        state = self._env.reset()
+        return torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
+
+    def step(self, action):
+        state, reward, done, _ = self._env.step(action[0].detach().numpy())
+        state = torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
+        return state, reward, done
 
 
 def train_spinup():
@@ -165,11 +167,12 @@ def train_spinup():
                       'action': action,
                       'reward': torch.tensor([reward]),
                       'next_state': next_state,
-                      'done': torch.tensor([done], dtype=torch.float32)})
+                      'done': torch.tensor([done], dtype=torch.float64)})
             state = next_state
             if done:
                 state = env.reset()
-            result['rewards'].append(reward)
+#            result['rewards'].append(reward)
+            result['rewards'].append(D[-1]['reward'].item())
 
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             batch = random.sample(D, BATCH_SIZE)
@@ -185,7 +188,6 @@ def train_spinup():
             critics_optimiser.zero_grad()
             value_loss.backward()
             critics_optimiser.step()
-#            print('qloss', value_loss.item())
             result['qlosses'].append(value_loss.item())
 
             # Update V-function by one step of gradient descent
@@ -193,7 +195,6 @@ def train_spinup():
             value_critic_optimiser.zero_grad()
             value_loss.backward()
             value_critic_optimiser.step()
-#            print('vloss', value_loss.item())
             result['vlosses'].append(value_loss.item())
 
             # Update policy by one step of gradient ascent
@@ -201,7 +202,6 @@ def train_spinup():
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()
-#            print('ploss', policy_loss.item())
             result['plosses'].append(policy_loss.item())
 
             # Update target value network
@@ -295,7 +295,6 @@ def train_cherry():
             critics_optimiser.zero_grad()
             qloss.backward()
             critics_optimiser.step()
-#            print('qloss', qloss.item())
             result['qlosses'].append(qloss.item())
 
             # Update V-function by one step of gradient descent
@@ -307,7 +306,6 @@ def train_cherry():
             value_critic_optimiser.zero_grad()
             vloss.backward()
             value_critic_optimiser.step()
-#            print('vloss', vloss.item())
             result['vlosses'].append(vloss.item())
 
             # Update policy by one step of gradient ascent
@@ -318,7 +316,6 @@ def train_cherry():
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()
-#            print('ploss', policy_loss.item())
             result['plosses'].append(policy_loss.item())
 
             # Update target value network
@@ -340,10 +337,12 @@ def close(a, b):
 class TestSpinningUpSAC(unittest.TestCase):
 
     def setUp(self):
-        pass
+        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_dtype(torch.float64)
 
     def tearDown(self):
-        pass
+        torch.set_default_tensor_type(torch.FloatTensor)
+        torch.set_default_dtype(torch.float32)
 
     def test_sac(self):
         cherry = train_cherry()

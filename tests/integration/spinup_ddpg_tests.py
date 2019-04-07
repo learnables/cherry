@@ -17,7 +17,7 @@ from torch.distributions import Normal
 import cherry as ch
 from cherry import envs
 
-TOL = 1e-0
+TOL = 1e-8
 
 ACTION_DISCRETISATION = 5
 ACTION_NOISE = 0.1
@@ -56,11 +56,12 @@ class Env():
 
     def reset(self):
         state = self._env.reset()
-        return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0)
+        return torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
 
     def step(self, action):
         state, reward, done, _ = self._env.step(action[0].detach().numpy())
-        return torch.tensor(state, dtype=torch.float32).unsqueeze(dim=0), reward, done
+        state = torch.tensor(state, dtype=torch.float64).unsqueeze(dim=0)
+        return state, reward, done
 
 
 def create_target_network(network):
@@ -146,7 +147,8 @@ def train_spinup():
                       'action': action,
                       'reward': torch.tensor([reward]),
                       'next_state': next_state,
-                      'done': torch.tensor([done], dtype=torch.float32)})
+#                      'done': torch.tensor([done], dtype=torch.float32)})
+                      'done': torch.tensor([done], dtype=torch.float64)})
             state = next_state
             if done:
                 state = env.reset()
@@ -156,14 +158,12 @@ def train_spinup():
             batch = random.sample(D, BATCH_SIZE)
             batch = {k: torch.cat([d[k] for d in batch], dim=0) for k in batch[0].keys()}
             y = batch['reward'] + DISCOUNT * (1 - batch['done']) * target_critic(batch['next_state'], target_actor(batch['next_state']))
-#            print(step)
 
             # Update Q-function by one step of gradient descent
             value_loss = (critic(batch['state'], batch['action']) - y).pow(2).mean()
             critic_optimiser.zero_grad()
             value_loss.backward()
             critic_optimiser.step()
-#            print('vloss', value_loss.item())
             result['vlosses'].append(value_loss.item())
 
             # Update policy by one step of gradient ascent
@@ -171,13 +171,11 @@ def train_spinup():
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()
-#            print('ploss', policy_loss.item())
             result['plosses'].append(policy_loss.item())
 
             # Update target networks
             update_target_network(critic, target_critic, POLYAK_FACTOR)
             update_target_network(actor, target_actor, POLYAK_FACTOR)
-#            print('')
 
     result['pweights'] = list(actor.parameters())
     result['target_pweights'] = list(target_actor.parameters())
@@ -245,8 +243,6 @@ def train_cherry():
                                                              batch.rewards,
                                                              batch.dones,
                                                              DISCOUNT)
-#            print(step)
-#            print('vloss', value_loss.item())
             critic_optimiser.zero_grad()
             value_loss.backward()
             critic_optimiser.step()
@@ -254,7 +250,6 @@ def train_cherry():
 
             # Update policy by one step of gradient ascent
             policy_loss = -critic(batch.states, actor(batch.states)).mean()
-#            print('ploss', policy_loss.item())
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()
@@ -267,7 +262,6 @@ def train_cherry():
             ch.models.polyak_average(target_actor,
                                      actor,
                                      POLYAK_FACTOR)
-#            print('')
 
     result['pweights'] = list(actor.parameters())
     result['target_pweights'] = list(target_actor.parameters())
@@ -282,31 +276,28 @@ def close(a, b):
 
 class TestSpinningUpDDPG(unittest.TestCase):
 
-    """
-    TODO: This test never really passes, unless the tolerance is huge.
-          Should investigate what is happening, probably a bug in the cherry
-          implementation of DDPG.
-    """
-
     def setUp(self):
-        pass
+        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_dtype(torch.float64)
 
     def tearDown(self):
-        pass
+        torch.set_default_tensor_type(torch.FloatTensor)
+        torch.set_default_dtype(torch.float32)
 
     def test_ddpg(self):
         cherry = train_cherry()
         spinup = train_spinup()
 
         for key in cherry.keys():
+            if key == 'rewards':
+                continue
             self.assertTrue(len(cherry[key]) > 0)
             self.assertTrue(len(spinup[key]) > 0)
             for cv, sv in zip(cherry[key], spinup[key]):
                 if isinstance(cv, torch.Tensor):
                     self.assertTrue(close(cv, sv))
                 else:
-                    if not abs(cv - sv) <= TOL:
-                        print(key, abs(cv - sv))
+                    self.assertTrue(abs(cv - sv) <= TOL)
 
 
 if __name__ == "__main__":
