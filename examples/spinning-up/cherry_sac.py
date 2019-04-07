@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
+
 import gym
 import copy
 import numpy as np
-from collections import deque
 import random
 import torch
 from torch import optim
@@ -45,17 +46,12 @@ np.random.seed(SEED)
 torch.manual_seed(SEED)
 
 
-
 def create_target_network(network):
     target_network = copy.deepcopy(network)
     for param in target_network.parameters():
         param.requires_grad = False
     return target_network
 
-
-def update_target_network(network, target_network, polyak_factor):
-    for param, target_param in zip(network.parameters(), target_network.parameters()):
-        target_param.data = polyak_factor * target_param.data + (1 - polyak_factor) * param.data
 
 class TanhNormal(Distribution):
     def __init__(self, loc, scale):
@@ -68,10 +64,9 @@ class TanhNormal(Distribution):
     def rsample(self):
         return torch.tanh(self.normal.rsample())
 
-    # Calculates log probability of value using the change-of-variables technique (uses log1p = log(1 + x) for extra numerical stability)
     def log_prob(self, value):
-        inv_value = (torch.log1p(value) - torch.log1p(-value)) / 2  # artanh(y)
-        return self.normal.log_prob(inv_value) - torch.log1p(-value.pow(2) + 1e-6)  # log p(f^-1(y)) + log |det(J(f^-1(y)))|
+        inv_value = (torch.log1p(value) - torch.log1p(-value)) / 2.0
+        return self.normal.log_prob(inv_value) - torch.log1p(-value.pow(2) + 1e-6)
 
     @property
     def mean(self):
@@ -81,22 +76,38 @@ class TanhNormal(Distribution):
 class SoftActor(nn.Module):
     def __init__(self, hidden_size):
         super().__init__()
-        self.log_std_min, self.log_std_max = -20, 2  # Constrain range of standard deviations to prevent very deterministic/stochastic policies
-        layers = [nn.Linear(3, hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 2)]
+        self.log_std_min, self.log_std_max = -20, 2
+        layers = [nn.Linear(3, hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, 2)]
         self.policy = nn.Sequential(*layers)
 
     def forward(self, state):
         policy_mean, policy_log_std = self.policy(state).chunk(2, dim=1)
-        policy_log_std = torch.clamp(policy_log_std, min=self.log_std_min, max=self.log_std_max)
+        policy_log_std = torch.clamp(policy_log_std,
+                                     min=self.log_std_min,
+                                     max=self.log_std_max)
         policy = TanhNormal(policy_mean, policy_log_std.exp())
         return policy
+
+
 class Critic(nn.Module):
         def __init__(self, hidden_size, state_action=False, layer_norm=False):
                 super().__init__()
                 self.state_action = state_action
-                layers = [nn.Linear(3 + (1 if state_action else 0), hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 1)]
+                layers = [nn.Linear(3 + (1 if state_action else 0), hidden_size),
+                          nn.Tanh(),
+                          nn.Linear(hidden_size, hidden_size),
+                          nn.Tanh(),
+                          nn.Linear(hidden_size, 1)]
                 if layer_norm:
-                        layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  # Insert layer normalisation between fully-connected layers and nonlinearities
+                        layers = (layers[:1]
+                                  + [nn.LayerNorm(hidden_size)]
+                                  + layers[1:3]
+                                  + [nn.LayerNorm(hidden_size)]
+                                  + layers[3:])
                 self.value = nn.Sequential(*layers)
 
         def forward(self, state, action=None):
@@ -107,99 +118,101 @@ class Critic(nn.Module):
                 return value.squeeze(dim=1)
 
 
-env = gym.make('Pendulum-v0')
-env.seed(SEED)
-env = envs.Torch(env)
-env = envs.Runner(env)
-replay = ch.ExperienceReplay()
-
-actor = SoftActor(HIDDEN_SIZE)
-critic_1 = Critic(HIDDEN_SIZE, state_action=True)
-critic_2 = Critic(HIDDEN_SIZE, state_action=True)
-value_critic = Critic(HIDDEN_SIZE)
-target_value_critic = create_target_network(value_critic)
-actor_optimiser = optim.Adam(actor.parameters(), lr=LEARNING_RATE)
-critics_optimiser = optim.Adam(list(critic_1.parameters()) + list(critic_2.parameters()), lr=LEARNING_RATE)
-value_critic_optimiser = optim.Adam(value_critic.parameters(), lr=LEARNING_RATE)
-D = deque(maxlen=REPLAY_SIZE)
-
-
 def get_random_action(state):
     return torch.tensor([[2 * random.random() - 1]])
 
 
-def get_action(state):
-    return actor(state).sample()
+def main():
+    env = gym.make('Pendulum-v0')
+    env.seed(SEED)
+    env = envs.Torch(env)
+    env = envs.Logger(env)
+    env = envs.Runner(env)
+    replay = ch.ExperienceReplay()
 
+    actor = SoftActor(HIDDEN_SIZE)
+    critic_1 = Critic(HIDDEN_SIZE, state_action=True)
+    critic_2 = Critic(HIDDEN_SIZE, state_action=True)
+    value_critic = Critic(HIDDEN_SIZE)
+    target_value_critic = create_target_network(value_critic)
+    actor_optimiser = optim.Adam(actor.parameters(), lr=LEARNING_RATE)
+    critics_optimiser = optim.Adam((list(critic_1.parameters())
+                                    + list(critic_2.parameters())),
+                                   lr=LEARNING_RATE)
+    value_critic_optimiser = optim.Adam(value_critic.parameters(),
+                                        lr=LEARNING_RATE)
+    get_action = lambda state: actor(state).sample()
 
-for step in range(1, MAX_STEPS + 1):
-    with torch.no_grad():
-        if step < UPDATE_START:
-            # To improve exploration take actions sampled from a uniform random distribution over actions at the start of training
-            replay += env.run(get_random_action, steps=1)
-        else:
-            # Observe state s and select action a ~ μ(a|s)
-            replay += env.run(get_action, steps=1)
-    replay = replay[-REPLAY_SIZE:]
+    for step in range(1, MAX_STEPS + 1):
+        with torch.no_grad():
+            if step < UPDATE_START:
+                replay += env.run(get_random_action, steps=1)
+            else:
+                replay += env.run(get_action, steps=1)
+        replay = replay[-REPLAY_SIZE:]
 
-    if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
-        # Randomly sample a batch of transitions B = {(s, a, r, s', d)} from D
-        sample = random.sample(replay, BATCH_SIZE)
-        batch = ch.ExperienceReplay()
-        for sars in sample:
-            batch.append(**sars)
+        if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
+            sample = random.sample(replay, BATCH_SIZE)
+            batch = ch.ExperienceReplay()
+            for sars in sample:
+                batch.append(**sars)
 
-        # Pre-compute some quantities
-        masses = actor(batch.states)
-        actions = masses.rsample()
-        log_probs = masses.log_prob(actions)
-        q_values = torch.min(critic_1(batch.states, actions.detach()),
-                             critic_2(batch.states, actions.detach())).view(-1, 1)
+            # Pre-compute some quantities
+            masses = actor(batch.states)
+            actions = masses.rsample()
+            log_probs = masses.log_prob(actions)
+            q_values = torch.min(critic_1(batch.states, actions.detach()),
+                                 critic_2(batch.states, actions.detach())
+                                 ).view(-1, 1)
 
-        # Compute Q losses
-        v_next = target_value_critic(batch.next_states).view(-1, 1)
-        q_old_pred1 = critic_1(batch.states, batch.actions.detach()).view(-1, 1)
-        q_old_pred2 = critic_2(batch.states, batch.actions.detach()).view(-1, 1)
-        qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
-                                                     v_next,
-                                                     batch.rewards,
-                                                     batch.dones,
-                                                     DISCOUNT)
-        qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
-                                                     v_next,
-                                                     batch.rewards,
-                                                     batch.dones,
-                                                     DISCOUNT)
+            # Compute Q losses
+            v_next = target_value_critic(batch.next_states).view(-1, 1)
+            q_old_pred1 = critic_1(batch.states,
+                                   batch.actions.detach()
+                                   ).view(-1, 1)
+            q_old_pred2 = critic_2(batch.states,
+                                   batch.actions.detach()
+                                   ).view(-1, 1)
+            qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
+                                                         v_next,
+                                                         batch.rewards,
+                                                         batch.dones,
+                                                         DISCOUNT)
+            qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
+                                                         v_next,
+                                                         batch.rewards,
+                                                         batch.dones,
+                                                         DISCOUNT)
 
-        # Update Q-functions by one step of gradient descent
-        qloss = qloss1 + qloss2
-        critics_optimiser.zero_grad()
-        qloss.backward()
-        critics_optimiser.step()
-        print('qloss', qloss.item())
+            # Update Q-functions by one step of gradient descent
+            qloss = qloss1 + qloss2
+            critics_optimiser.zero_grad()
+            qloss.backward()
+            critics_optimiser.step()
 
-        # Update V-function by one step of gradient descent
-        v_pred = value_critic(batch.states).view(-1, 1)
-        vloss = ch.algorithms.sac.state_value_loss(v_pred,
-                                                   log_probs,
-                                                   q_values,
-                                                   alpha=ENTROPY_WEIGHT)
-        value_critic_optimiser.zero_grad()
-        vloss.backward()
-        value_critic_optimiser.step()
-        print('vloss', vloss.item())
+            # Update V-function by one step of gradient descent
+            v_pred = value_critic(batch.states).view(-1, 1)
+            vloss = ch.algorithms.sac.state_value_loss(v_pred,
+                                                       log_probs,
+                                                       q_values,
+                                                       alpha=ENTROPY_WEIGHT)
+            value_critic_optimiser.zero_grad()
+            vloss.backward()
+            value_critic_optimiser.step()
 
-        # Update policy by one step of gradient ascent
-        q_actions = critic_1(batch.states, actions).view(-1, 1)
-        policy_loss = ch.algorithms.sac.policy_loss(log_probs,
-                                                    q_actions,
-                                                    alpha=ENTROPY_WEIGHT)
-        actor_optimiser.zero_grad()
-        policy_loss.backward()
-        actor_optimiser.step()
-        print('ploss', policy_loss.item())
+            # Update policy by one step of gradient ascent
+            q_actions = critic_1(batch.states, actions).view(-1, 1)
+            policy_loss = ch.algorithms.sac.policy_loss(log_probs,
+                                                        q_actions,
+                                                        alpha=ENTROPY_WEIGHT)
+            actor_optimiser.zero_grad()
+            policy_loss.backward()
+            actor_optimiser.step()
 
-        # Update target value network
-        ch.models.polyak_average(target_value_critic,
-                                 value_critic,
-                                 POLYAK_FACTOR)
+            # Update target value network
+            ch.models.polyak_average(target_value_critic,
+                                     value_critic,
+                                     POLYAK_FACTOR)
+
+if __name__ == '__main__':
+    main()

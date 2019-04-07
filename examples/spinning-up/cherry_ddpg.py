@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 
 import copy
-from collections import deque
 import random
 import numpy as np
 import gym
@@ -11,33 +11,16 @@ from torch import nn
 import cherry as ch
 from cherry import envs
 
-ACTION_DISCRETISATION = 5
 ACTION_NOISE = 0.1
-BACKTRACK_COEFF = 0.8
-BACKTRACK_ITERS = 10
-CONJUGATE_GRADIENT_ITERS = 10
-DAMPING_COEFF = 0.1
 DISCOUNT = 0.99
-EPSILON = 0.05
-ENTROPY_WEIGHT = 0.2
 HIDDEN_SIZE = 32
-KL_LIMIT = 0.05
 LEARNING_RATE = 0.001
 MAX_STEPS = 100000
-ON_POLICY_BATCH_SIZE = 2048
 BATCH_SIZE = 128
-POLICY_DELAY = 2
-POLYAK_FACTOR = 0.995
-PPO_CLIP_RATIO = 0.2
-PPO_EPOCHS = 20
 REPLAY_SIZE = 100000
-TARGET_ACTION_NOISE = 0.2
-TARGET_ACTION_NOISE_CLIP = 0.5
-TARGET_UPDATE_INTERVAL = 2500
-TRACE_DECAY = 0.97
 UPDATE_INTERVAL = 1
 UPDATE_START = 10000
-TEST_INTERVAL = 1000
+POLYAK_FACTOR = 0.995
 SEED = 42
 
 random.seed(SEED)
@@ -52,17 +35,20 @@ def create_target_network(network):
     return target_network
 
 
-def update_target_network(network, target_network, polyak_factor):
-    for param, target_param in zip(network.parameters(), target_network.parameters()):
-        target_param.data = polyak_factor * target_param.data + (1 - polyak_factor) * param.data
-
-
 class Actor(nn.Module):
     def __init__(self, hidden_size, stochastic=True, layer_norm=False):
         super().__init__()
-        layers = [nn.Linear(3, hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 1)]
+        layers = [nn.Linear(3, hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, 1)]
         if layer_norm:
-            layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  # Insert layer normalisation between fully-connected layers and nonlinearities
+            layers = (layers[:1]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[1:3]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[3:])
         self.policy = nn.Sequential(*layers)
         if stochastic:
             self.policy_log_std = nn.Parameter(torch.tensor([[0.]]))
@@ -76,9 +62,17 @@ class Critic(nn.Module):
     def __init__(self, hidden_size, state_action=False, layer_norm=False):
         super().__init__()
         self.state_action = state_action
-        layers = [nn.Linear(3 + (1 if state_action else 0), hidden_size), nn.Tanh(), nn.Linear(hidden_size, hidden_size), nn.Tanh(), nn.Linear(hidden_size, 1)]
+        layers = [nn.Linear(3 + (1 if state_action else 0), hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, hidden_size),
+                  nn.Tanh(),
+                  nn.Linear(hidden_size, 1)]
         if layer_norm:
-            layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  # Insert layer normalisation between fully-connected layers and nonlinearities
+            layers = (layers[:1]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[1:3]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[3:])
         self.value = nn.Sequential(*layers)
 
     def forward(self, state, action=None):
@@ -93,63 +87,63 @@ def get_random_action(state):
     return torch.tensor([[2 * random.random() - 1]])
 
 
-def get_action(state):
-    action = actor(state) + ACTION_NOISE * torch.randn(1, 1)
-    return torch.clamp(action, min=-1, max=1)
+def main():
+    env = gym.make('Pendulum-v0')
+    env.seed(SEED)
+    env = envs.Torch(env)
+    env = envs.Logger(env)
+    env = envs.Runner(env)
 
+    actor = Actor(HIDDEN_SIZE, stochastic=False, layer_norm=True)
+    critic = Critic(HIDDEN_SIZE, state_action=True, layer_norm=True)
+    target_actor = create_target_network(actor)
+    target_critic = create_target_network(critic)
+    actor_optimiser = optim.Adam(actor.parameters(), lr=LEARNING_RATE)
+    critic_optimiser = optim.Adam(critic.parameters(), lr=LEARNING_RATE)
+    replay = ch.ExperienceReplay()
 
-env = gym.make('Pendulum-v0')
-env.seed(SEED)
-env = envs.Torch(env)
-env = envs.Runner(env)
+    get_action = lambda s: (actor(s) + ACTION_NOISE * torch.randn(1, 1)).clamp(-1, 1)
 
-actor = Actor(HIDDEN_SIZE, stochastic=False, layer_norm=True)
-critic = Critic(HIDDEN_SIZE, state_action=True, layer_norm=True)
-target_actor = create_target_network(actor)
-target_critic = create_target_network(critic)
-actor_optimiser = optim.Adam(actor.parameters(), lr=LEARNING_RATE)
-critic_optimiser = optim.Adam(critic.parameters(), lr=LEARNING_RATE)
-replay = ch.ExperienceReplay()
+    for step in range(1, MAX_STEPS + 1):
+        with torch.no_grad():
+            if step < UPDATE_START:
+                replay += env.run(get_random_action, steps=1)
+            else:
+                replay += env.run(get_action, steps=1)
 
+        replay = replay[-REPLAY_SIZE:]
+        if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
+            sample = random.sample(replay, BATCH_SIZE)
+            batch = ch.ExperienceReplay()
+            for sars in sample:
+                batch.append(**sars)
 
-for step in range(1, MAX_STEPS + 1):
-    with torch.no_grad():
-        if step < UPDATE_START:
-            replay += env.run(get_random_action, steps=1)
-        else:
-            replay += env.run(get_action, steps=1)
+            next_values = target_critic(batch.next_states,
+                                        target_actor(batch.next_states)
+                                        ).view(-1, 1)
+            values = critic(batch.states, batch.actions).view(-1, 1)
+            value_loss = ch.algorithms.ddpg.state_value_loss(values,
+                                                             next_values,
+                                                             batch.rewards,
+                                                             batch.dones,
+                                                             DISCOUNT)
+            critic_optimiser.zero_grad()
+            value_loss.backward()
+            critic_optimiser.step()
 
-    if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
-        sample = random.sample(replay, BATCH_SIZE)
-        batch = ch.ExperienceReplay()
-        for sars in sample:
-            batch.append(**sars)
+            # Update policy by one step of gradient ascent
+            policy_loss = -critic(batch.states, actor(batch.states)).mean()
+            actor_optimiser.zero_grad()
+            policy_loss.backward()
+            actor_optimiser.step()
 
-        next_values = target_critic(batch.next_states, target_actor(batch.next_states)).view(-1, 1)
-        values = critic(batch.states, batch.actions).view(-1, 1)
-        value_loss = ch.algorithms.ddpg.state_value_loss(values,
-                                                         next_values,
-                                                         batch.rewards,
-                                                         batch.dones,
-                                                         DISCOUNT)
-        print(step)
-        print('vloss', value_loss.item())
-        critic_optimiser.zero_grad()
-        value_loss.backward()
-        critic_optimiser.step()
+            # Update target networks
+            ch.models.polyak_average(target_critic,
+                                     critic,
+                                     POLYAK_FACTOR)
+            ch.models.polyak_average(target_actor,
+                                     actor,
+                                     POLYAK_FACTOR)
 
-        # Update policy by one step of gradient ascent
-        policy_loss = -critic(batch.states, actor(batch.states)).mean()
-        print('ploss', policy_loss.item())
-        actor_optimiser.zero_grad()
-        policy_loss.backward()
-        actor_optimiser.step()
-
-        # Update target networks
-        ch.models.polyak_average(target_critic,
-                                 critic,
-                                 POLYAK_FACTOR)
-        ch.models.polyak_average(target_actor,
-                                 actor,
-                                 POLYAK_FACTOR)
-        print('')
+if __name__ == '__main__':
+    main()
