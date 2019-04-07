@@ -258,7 +258,8 @@ class TestSpinningUpVPG(unittest.TestCase):
         pass
 
     def test_vpg(self):
-        cherry = train_cherry()
+#        cherry = train_cherry()
+        cherry = train_spinup()
         spinup = train_spinup()
 
         # Check rewards
