@@ -12,34 +12,17 @@ from torch.distributions import Normal
 import cherry as ch
 from cherry import envs
 
-
-ACTION_DISCRETISATION = 5
-ACTION_NOISE = 0.1
-BACKTRACK_COEFF = 0.8
-BACKTRACK_ITERS = 10
-CONJUGATE_GRADIENT_ITERS = 10
-DAMPING_COEFF = 0.1
 DISCOUNT = 0.99
 EPSILON = 0.05
-ENTROPY_WEIGHT = 0.2
 HIDDEN_SIZE = 32
-KL_LIMIT = 0.05
 LEARNING_RATE = 0.001
-MAX_STEPS = 100000
+MAX_STEPS = 500
 BATCH_SIZE = 2048
-POLICY_DELAY = 2
-POLYAK_FACTOR = 0.995
+TRACE_DECAY = 0.97
+SEED = 42
 PPO_CLIP_RATIO = 0.2
 PPO_EPOCHS = 20
 REPLAY_SIZE = 100000
-TARGET_ACTION_NOISE = 0.2
-TARGET_ACTION_NOISE_CLIP = 0.5
-TARGET_UPDATE_INTERVAL = 2500
-TRACE_DECAY = 0.97
-UPDATE_INTERVAL = 1
-UPDATE_START = 10000
-TEST_INTERVAL = 1000
-SEED = 42
 
 random.seed(SEED)
 np.random.seed(SEED)
@@ -55,8 +38,11 @@ class Actor(nn.Module):
                   nn.Tanh(),
                   nn.Linear(hidden_size, 1)]
         if layer_norm:
-            # Insert layer normalisation between fully-connected layers and nonlinearities
-            layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  
+            layers = (layers[:1]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[1:3]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[3:])
         self.policy = nn.Sequential(*layers)
         if stochastic:
             self.policy_log_std = nn.Parameter(torch.tensor([[0.]]))
@@ -76,8 +62,11 @@ class Critic(nn.Module):
                   nn.Tanh(),
                   nn.Linear(hidden_size, 1)]
         if layer_norm:
-            # Insert layer normalisation between fully-connected layers and nonlinearities
-            layers = layers[:1] + [nn.LayerNorm(hidden_size)] + layers[1:3] + [nn.LayerNorm(hidden_size)] + layers[3:]  
+            layers = (layers[:1]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[1:3]
+                      + [nn.LayerNorm(hidden_size)]
+                      + layers[3:])
         self.value = nn.Sequential(*layers)
 
     def forward(self, state, action=None):
@@ -95,75 +84,74 @@ class ActorCritic(nn.Module):
         self.critic = Critic(hidden_size)
 
     def forward(self, state):
-        policy = Normal(self.actor(state),
-                        self.actor.policy_log_std.exp())
+        policy = Normal(self.actor(state), self.actor.policy_log_std.exp())
         value = self.critic(state)
-        return policy, value.view(-1, 1)
-
-
-def get_action(state):
-        mass, value = agent(state)
-        action = mass.sample()
-        log_prob = mass.log_prob(action)
+        action = policy.sample()
+        log_prob = policy.log_prob(action)
         return action, {
+                'mass': policy,
                 'log_prob': log_prob,
                 'value': value,
         }
 
 
-agent = ActorCritic(HIDDEN_SIZE)
-actor_optimiser = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
-critic_optimiser = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
-replay = ch.ExperienceReplay()
+def main():
+    agent = ActorCritic(HIDDEN_SIZE)
+    actor_optimiser = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
+    critic_optimiser = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
+    replay = ch.ExperienceReplay()
 
-env = gym.make('Pendulum-v0')
-env.seed(SEED)
-env = envs.Torch(env)
-env = envs.Runner(env)
-replay = ch.ExperienceReplay()
+    env = gym.make('Pendulum-v0')
+    env.seed(SEED)
+    env = envs.Torch(env)
+    env = envs.Logger(env)
+    env = envs.Runner(env)
+    replay = ch.ExperienceReplay()
 
-for step in range(1, MAX_STEPS + 1):
-    replay += env.run(get_action, episodes=1)
+    for step in range(1, MAX_STEPS + 1):
+        replay += env.run(agent, episodes=1)
 
-    if len(replay) >= BATCH_SIZE:
-        with torch.no_grad():
-            advantages = ch.rewards.generalized_advantage(DISCOUNT,
-                                                          TRACE_DECAY,
-                                                          replay.rewards,
-                                                          replay.dones,
-                                                          replay.values,
-                                                          torch.zeros(1))
-            advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-            returns = ch.rewards.discount(DISCOUNT,
-                                          replay.rewards,
-                                          replay.dones)
-            old_log_probs = replay.log_probs
+        if len(replay) >= BATCH_SIZE:
+            with torch.no_grad():
+                advantages = ch.rewards.generalized_advantage(DISCOUNT,
+                                                              TRACE_DECAY,
+                                                              replay.rewards,
+                                                              replay.dones,
+                                                              replay.values,
+                                                              torch.zeros(1))
+                advantages = ch.utils.normalize(advantages, epsilon=1e-8)
+                returns = ch.rewards.discount(DISCOUNT,
+                                              replay.rewards,
+                                              replay.dones)
+                old_log_probs = replay.log_probs
 
-        new_values = replay.values
-        new_log_probs = replay.log_probs
-        for epoch in range(PPO_EPOCHS):
-            # Recalculate outputs for subsequent iterations
-            if epoch > 0:
-                masses, new_values = agent(replay.states)
-                new_log_probs = masses.log_prob(replay.actions)
+            new_values = replay.values
+            new_log_probs = replay.log_probs
+            for epoch in range(PPO_EPOCHS):
+                # Recalculate outputs for subsequent iterations
+                if epoch > 0:
+                    _, infos = agent(replay.states)
+                    masses = infos['mass']
+                    new_values = infos['value'].view(-1, 1)
+                    new_log_probs = masses.log_prob(replay.actions)
 
-            # Update the policy by maximising the PPO-Clip objective
-            policy_loss = ch.algorithms.ppo.policy_loss(new_log_probs,
-                                                        old_log_probs,
-                                                        advantages,
-                                                        clip=PPO_CLIP_RATIO)
-            actor_optimiser.zero_grad()
-            policy_loss.backward()
-            actor_optimiser.step()
-            print('Step', step)
-            print('ploss', policy_loss.item())
+                # Update the policy by maximising the PPO-Clip objective
+                policy_loss = ch.algorithms.ppo.policy_loss(new_log_probs,
+                                                            old_log_probs,
+                                                            advantages,
+                                                            clip=PPO_CLIP_RATIO)
+                actor_optimiser.zero_grad()
+                policy_loss.backward()
+                actor_optimiser.step()
 
-            # Fit value function by regression on mean-squared error
-            value_loss = ch.algorithms.a2c.state_value_loss(new_values, returns)
-            critic_optimiser.zero_grad()
-            value_loss.backward()
-            critic_optimiser.step()
-            print('vloss', value_loss.item())
-            print('')
+                # Fit value function by regression on mean-squared error
+                value_loss = ch.algorithms.a2c.state_value_loss(new_values,
+                                                                returns)
+                critic_optimiser.zero_grad()
+                value_loss.backward()
+                critic_optimiser.step()
 
-        replay.empty()
+            replay.empty()
+
+if __name__ == '__main__':
+    main()
