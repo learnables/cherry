@@ -291,8 +291,6 @@ class TestSpinningUpDDPG(unittest.TestCase):
             self.assertTrue(len(spinup[key]) > 0)
             for cv, sv in zip(cherry[key], spinup[key]):
                 if isinstance(cv, torch.Tensor):
-                    if not close(cv, sv):
-                        import pdb; pdb.set_trace()
                     self.assertTrue(close(cv, sv))
                 else:
                     self.assertTrue(abs(cv - sv) <= 1e-5)
