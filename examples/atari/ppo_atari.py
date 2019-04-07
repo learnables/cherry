@@ -17,7 +17,7 @@ from cherry.algorithms import ppo
 
 RENDER = False
 RECORD = True
-SEED = 42
+SEED = 420
 TOTAL_STEPS = 10000000
 LR = 2.5e-4
 GAMMA = 0.99
@@ -55,15 +55,24 @@ class NatureCNN(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay.next_states[-1])
-    advantages = ch.rewards.generalized_advantage(GAMMA,
-                                                  TAU,
-                                                  replay.rewards,
-                                                  replay.dones,
-                                                  replay.values,
-                                                  next_state_value)
+    # NOTE: Kostrikov uses GAE here.
+    # advantages = ch.rewards.generalized_advantage(GAMMA,
+    #                                           TAU,
+    #                                           replay.rewards,
+    #                                           replay.dones,
+    #                                           replay.values,
+    #                                           next_state_value)
 
+    # advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
+    # rewards = [a + v for a, v in zip(advantages, replay.values)]
+
+    rewards = ch.rewards.discount(GAMMA,
+                                  replay.rewards,
+                                  replay.dones,
+                                  bootstrap=next_state_value)
+    rewards = rewards.detach()
+    advantages = rewards.detach() - replay.values.detach()
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
-    rewards = [a + v for a, v in zip(advantages, replay.values)]
 
     replay.update(lambda i, sars: {
         'reward': rewards[i].detach(),
@@ -133,7 +142,7 @@ if __name__ == '__main__':
     th.manual_seed(SEED)
 
     env_name = 'PongNoFrameskip-v4'
-    env_name = 'BreakoutNoFrameskip-v4'
+#    env_name = 'BreakoutNoFrameskip-v4'
     env = gym.make(env_name)
     env = envs.OpenAIAtari(env)
     env = envs.Logger(env, interval=PPO_STEPS)
