@@ -6,22 +6,22 @@ os:
 python:
     - 3.5
     - 3.6
-    - 3.7
+    # - 3.7
     - "3.5-dev"
     - "3.6-dev"
     - "3.7-dev"
 
-matrix:
-    include:
-        - os: osx
-          language: generic
-          env: PYTHON=3.5.0
-        - os: osx
-          language: generic
-          env: PYTHON=3.6.0
-        - os: osx
-          language: generic
-          env: PYTHON=3.7.0
+# matrix:
+#     include:
+#         - os: osx
+#           language: generic
+#           env: PYTHON=3.5.0
+#         - os: osx
+#           language: generic
+#           env: PYTHON=3.6.0
+#         - os: osx
+#           language: generic
+#           env: PYTHON=3.7.0
 
 before_install: |
    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
