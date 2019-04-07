@@ -2,17 +2,22 @@
 
 import unittest
 
-import gym
-import copy
+import numpy as np
 import torch
 import random
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+import gym
+import copy
 from collections import deque
-import numpy as np
 from torch import optim
 from torch import nn
 from torch.distributions import Normal, Distribution
 import cherry as ch
 from cherry import envs
+
+TOL = 1e-4
 
 ACTION_DISCRETISATION = 5
 ACTION_NOISE = 0.1
@@ -26,7 +31,7 @@ ENTROPY_WEIGHT = 0.2
 HIDDEN_SIZE = 32
 KL_LIMIT = 0.05
 LEARNING_RATE = 0.001
-MAX_STEPS = 15000
+MAX_STEPS = 11000
 ON_POLICY_BATCH_SIZE = 2048
 BATCH_SIZE = 128
 POLICY_DELAY = 2
@@ -137,6 +142,7 @@ def train_spinup():
     }
 
     env = Env()
+
     actor = SoftActor(HIDDEN_SIZE)
     critic_1 = Critic(HIDDEN_SIZE, state_action=True)
     critic_2 = Critic(HIDDEN_SIZE, state_action=True)
@@ -225,7 +231,6 @@ def train_cherry():
         'qweights1': [],
         'qweights2': [],
     }
-
 
     env = gym.make('Pendulum-v0')
     env.seed(SEED)
@@ -329,7 +334,7 @@ def train_cherry():
 
 
 def close(a, b):
-    return (a-b).norm(p=2) <= 1e-6
+    return (a-b).norm(p=2) <= TOL
 
 
 class TestSpinningUpSAC(unittest.TestCase):
@@ -351,7 +356,7 @@ class TestSpinningUpSAC(unittest.TestCase):
                 if isinstance(cv, torch.Tensor):
                     self.assertTrue(close(cv, sv))
                 else:
-                    self.assertTrue(abs(cv - sv) <= 1e-5)
+                    self.assertTrue(abs(cv - sv) <= TOL)
 
 
 if __name__ == "__main__":
