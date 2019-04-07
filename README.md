@@ -112,4 +112,4 @@ Cherry draws inspiration from many reinforcement learning implementations, inclu
 
 ### Why 'cherry' ?
 
-Because everyone knows it's the sweetest part of [the cake](https://twitter.com/ylecun/status/1097532314614034433).
+Because it's the sweetest part of [the cake](https://twitter.com/ylecun/status/1097532314614034433).
