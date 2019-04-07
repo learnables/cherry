@@ -26,7 +26,7 @@ ENTROPY_WEIGHT = 0.2
 HIDDEN_SIZE = 32
 KL_LIMIT = 0.05
 LEARNING_RATE = 0.001
-MAX_STEPS = 10000
+MAX_STEPS = 15000
 ON_POLICY_BATCH_SIZE = 2048
 BATCH_SIZE = 128
 POLICY_DELAY = 2
@@ -163,6 +163,7 @@ def train_spinup():
             state = next_state
             if done:
                 state = env.reset()
+            result['rewards'].append(reward)
 
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             batch = random.sample(D, BATCH_SIZE)
@@ -194,7 +195,7 @@ def train_spinup():
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()
-            print('ploss', policy_loss.item())
+#            print('ploss', policy_loss.item())
             result['plosses'].append(policy_loss.item())
 
             # Update target value network
@@ -254,6 +255,7 @@ def train_cherry():
             else:
                 replay += env.run(get_action, steps=1)
         replay = replay[-REPLAY_SIZE:]
+        result['rewards'].append(replay.storage['rewards'][-1].item())
 
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             sample = random.sample(replay, BATCH_SIZE)
@@ -317,7 +319,7 @@ def train_cherry():
             # Update target value network
             ch.models.polyak_average(target_value_critic,
                                      value_critic,
-                                     1.0 - POLYAK_FACTOR)
+                                     POLYAK_FACTOR)
     result['pweights'] = list(actor.parameters())
     result['vweights'] = list(value_critic.parameters())
     result['vweights_target'] = list(target_value_critic.parameters())
@@ -327,7 +329,7 @@ def train_cherry():
 
 
 def close(a, b):
-    return (a-b).norm(p=2) <= 1e-8
+    return (a-b).norm(p=2) <= 1e-6
 
 
 class TestSpinningUpSAC(unittest.TestCase):
@@ -343,6 +345,8 @@ class TestSpinningUpSAC(unittest.TestCase):
         spinup = train_spinup()
 
         for key in cherry.keys():
+            self.assertTrue(len(cherry[key]) > 0)
+            self.assertTrue(len(spinup[key]) > 0)
             for cv, sv in zip(cherry[key], spinup[key]):
                 if isinstance(cv, torch.Tensor):
                     self.assertTrue(close(cv, sv))

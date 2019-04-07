@@ -9,8 +9,8 @@ def polyak_average(source, target, alpha):
 
     Shifts the parameters of source towards those of target.
 
-    Note: the parameter `alpha` indicates how much to shift in the direction of `target`.
-    (i.e. the old parameters are kept at a rate of 1 - `alpha`.)
+    Note: the parameter `alpha` indicates the convex combination weight of the source.
+    (i.e. the old parameters are kept at a rate of `alpha`.)
     
     **References**
 
@@ -26,8 +26,8 @@ def polyak_average(source, target, alpha):
     ~~~python
     target_qf = nn.Linear(23, 34)
     qf = nn.Linear(23, 34)
-    ch.models.polyak_average(target_qf, qf, alpha=0.1)
+    ch.models.polyak_average(target_qf, qf, alpha=0.9)
     ~~~
     """
     for s, t in zip(source.parameters(), target.parameters()):
-        s.data.mul_(1.0 - alpha).add_(alpha, t.data)
+        s.data.mul_(alpha).add_(1.0 - alpha, t.data)
