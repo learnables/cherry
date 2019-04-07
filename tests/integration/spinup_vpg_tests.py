@@ -268,21 +268,14 @@ class TestSpinningUpVPG(unittest.TestCase):
         cherry = train_cherry()
         spinup = train_spinup()
 
-        # Check rewards
-        for rc, rs in zip(cherry['rewards'], spinup['rewards']):
-            self.assertTrue(abs(rc - rs) <= 1e-5)
-
-        # Check policy loss
-        for pc, ps in zip(cherry['policy_losses'], spinup['policy_losses']):
-            self.assertTrue(abs(pc - ps) <= 1e-5)
-
-        # Check value loss
-        for vc, vs in zip(cherry['value_losses'], spinup['value_losses']):
-            self.assertTrue(abs(vc - vs) <= 1e-5)
-
-        # Check weights
-        for wc, ws in zip(cherry['weights'], spinup['weights']):
-            self.assertTrue(close(wc, ws))
+        for key in cherry.keys():
+            self.assertTrue(len(cherry[key]) > 0)
+            self.assertTrue(len(spinup[key]) > 0)
+            for cv, sv in zip(cherry[key], spinup[key]):
+                if isinstance(cv, torch.Tensor):
+                    self.assertTrue(close(cv, sv))
+                else:
+                    self.assertTrue(abs(cv - sv) <= 1e-5)
 
 
 if __name__ == "__main__":
