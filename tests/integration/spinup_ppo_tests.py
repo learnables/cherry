@@ -2,15 +2,20 @@
 
 import unittest
 
-import gym
 import torch
 import random
 import numpy as np
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+import gym
 from torch import optim
 from torch import nn
 from torch.distributions import Normal
 import cherry as ch
 from cherry import envs
+
+TOL = 1e-6
 
 ACTION_DISCRETISATION = 5
 ACTION_NOISE = 0.1
@@ -265,7 +270,7 @@ def train_cherry():
 
 
 def close(a, b):
-    return (a-b).norm(p=2) <= 1e-8
+    return (a-b).norm(p=2) <= TOL
 
 
 class TestSpinningUpPPO(unittest.TestCase):
@@ -287,7 +292,7 @@ class TestSpinningUpPPO(unittest.TestCase):
                 if isinstance(cv, torch.Tensor):
                     self.assertTrue(close(cv, sv))
                 else:
-                    self.assertTrue(abs(cv - sv) <= 1e-5)
+                    self.assertTrue(abs(cv - sv) <= TOL)
 
 
 if __name__ == "__main__":
