@@ -21,7 +21,17 @@ pip install 'gym[atari]'
 
 ### DQN
 
+**Status** Needs work.
+
+### PPO
+
+**Status** Needs work.
+
 ### Distributed A2C
 
+**Status** Should be good, needs benchmark.
+
 ### Debugging Reinforcement Learning
+
+**Status** Needs work.
 
