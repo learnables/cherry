@@ -19,7 +19,7 @@ grid:
 	python examples/actor_critic_gridworld.py
 
 # Atari
-dist:
+dist-a2c:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
@@ -45,6 +45,7 @@ dist-ppo:
 	python -m torch.distributed.launch \
 	          --nproc_per_node=16 \
 		    examples/pybullet/dist_ppo_pybullet.py
+
 ppo:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
