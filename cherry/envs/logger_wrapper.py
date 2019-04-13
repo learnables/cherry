@@ -11,7 +11,7 @@ class Logger(Wrapper):
     Tracks and prints some common statistics about the environment.
     """
 
-    def __init__(self, env, interval=1000, episode_interval=10):
+    def __init__(self, env, interval=1000, episode_interval=10, title=None):
         super(Logger, self).__init__(env)
         self.num_steps = 0
         self.num_episodes = 0
@@ -21,6 +21,9 @@ class Logger(Wrapper):
         self.ep_interval = episode_interval
         self.values = {}
         self.values_idx = {}
+        if title is None:
+            title = env.spec.id
+        self.title = title
 
     def _episodes_length_rewards(self, rewards, dones):
         episode_rewards = []
@@ -86,7 +89,7 @@ class Logger(Wrapper):
 
         # Overall stats
         num_logs = len(self.all_rewards) // self.interval
-        msg = '-' * 20 + 'Log ' + str(num_logs) + '-' * 20 + '\n'
+        msg = '-' * 20 + self.title + 'Log ' + str(num_logs) + '-' * 20 + '\n'
         msg += 'Overall:' + '\n'
         msg += '- Steps: ' + str(self.num_steps) + '\n'
         msg += '- Episodes: ' + str(self.num_episodes) + '\n'
