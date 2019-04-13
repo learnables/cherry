@@ -2,6 +2,7 @@
 
 import numpy as np
 import torch as th
+import cherry as ch
 
 from gym.spaces import Discrete
 
@@ -25,12 +26,12 @@ class Torch(Wrapper):
 
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
-            state = np.array([state])
+            state = th.Tensor([state])
         if isinstance(state, dict):
             state = {k: self._convert_state(state[k]) for k in state}
             return state
         if isinstance(state, np.ndarray):
-            return th.from_numpy(state).float().unsqueeze(0)
+            return ch.utils.totensor(state)
         return state
 
     def step(self, action):

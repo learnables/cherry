@@ -5,7 +5,54 @@ import numpy as np
 import torch.nn as nn
 
 
+def pong_control_(module, bias=0.1):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Control initialization from Vitchyr Pong's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
+    weight = module.weight
+    size = weight.size()
+    if len(size) == 2:
+        fan_in = size[0]
+    elif len(size) > 2:
+        fan_in = np.prod(size[1:])
+    else:
+        raise Exception("Shape must be have dimension at least 2.")
+    bound = 1.0 / np.sqrt(fan_in)
+    weight.data.uniform_(-bound, bound)
+    module.bias.data.fill_(bias)
+    return module
+
+
 def kostrikov_control_(module, gain=None):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Control initialization from Ilya Kostrikov's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
     with th.no_grad():
         if gain is None:
             gain = np.sqrt(2.0)
@@ -15,6 +62,22 @@ def kostrikov_control_(module, gain=None):
 
 
 def atari_init_(module, gain=None):
+    """
+    [[Source]]()
+
+    **Description**
+
+    Atari initialization from Ilya Kostrikov's implementations.
+
+    **References**
+
+    **Arguments**
+
+    **Returns**
+
+    **Example**
+
+    """
     if gain is None:
         gain = nn.init.calculate_gain('relu')
     nn.init.orthogonal_(module.weight.data, gain=gain)

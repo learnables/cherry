@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 
-from .base import Wrapper
-
 import numpy as np
-from collections import deque
+import cherry as ch
 import gym
 from gym import spaces
-import cv2
-cv2.ocl.setUseOpenCL(False)
+from collections import deque
+
+from .base import Wrapper
+
+try:
+    import cv2
+    cv2.ocl.setUseOpenCL(False)
+except ImportError:
+    cv2 = ch.utils._ImportRaiser('OpenCV2', 'pip install opencv-python')
 
 """
 Inspired from OpenAI's baselines:
