@@ -89,7 +89,7 @@ class Logger(Wrapper):
 
         # Overall stats
         num_logs = len(self.all_rewards) // self.interval
-        msg = '-' * 20 + self.title + 'Log ' + str(num_logs) + '-' * 20 + '\n'
+        msg = '-' * 20 + self.title + ' Log ' + str(num_logs) + '-' * 20 + '\n'
         msg += 'Overall:' + '\n'
         msg += '- Steps: ' + str(self.num_steps) + '\n'
         msg += '- Episodes: ' + str(self.num_episodes) + '\n'
