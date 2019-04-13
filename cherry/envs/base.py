@@ -2,7 +2,7 @@
 
 import gym
 
-from cherry.utils import get_space_dimension
+from .utils import get_space_dimension
 
 
 class Wrapper(gym.Wrapper):
@@ -12,6 +12,7 @@ class Wrapper(gym.Wrapper):
     access the properties of wrapped wrappers.
 
     Example:
+
         env = gym.make('MyEnv-v0')
         env = envs.Logger(env)
         env = envs.Runner(env)
@@ -31,4 +32,3 @@ class Wrapper(gym.Wrapper):
             return getattr(self, attr)
         else:
             return getattr(self.env, attr)
-
