@@ -22,7 +22,10 @@ class Logger(Wrapper):
         self.values = {}
         self.values_idx = {}
         if title is None:
-            title = env.spec.id
+            if hasattr(env, 'spec') and hasattr(env.spec, 'id'):
+                title = env.spec.id
+            else:
+                title = ''
         self.title = title
 
     def _episodes_length_rewards(self, rewards, dones):
@@ -89,7 +92,7 @@ class Logger(Wrapper):
 
         # Overall stats
         num_logs = len(self.all_rewards) // self.interval
-        msg = '-' * 20 + self.title + ' Log ' + str(num_logs) + '-' * 20 + '\n'
+        msg = '-' * 20 + ' ' + self.title + ' Log ' + str(num_logs) + ' ' + '-' * 20 + '\n'
         msg += 'Overall:' + '\n'
         msg += '- Steps: ' + str(self.num_steps) + '\n'
         msg += '- Episodes: ' + str(self.num_episodes) + '\n'
