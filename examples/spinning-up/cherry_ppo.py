@@ -95,13 +95,13 @@ class ActorCritic(nn.Module):
         }
 
 
-def main():
+def main(env='Pendulum-v0'):
     agent = ActorCritic(HIDDEN_SIZE)
     actor_optimiser = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
     critic_optimiser = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
     replay = ch.ExperienceReplay()
 
-    env = gym.make('Pendulum-v0')
+    env = gym.make(env)
     env.seed(SEED)
     env = envs.Torch(env)
     env = envs.Logger(env)
@@ -115,25 +115,25 @@ def main():
             with torch.no_grad():
                 advantages = ch.rewards.generalized_advantage(DISCOUNT,
                                                               TRACE_DECAY,
-                                                              replay.rewards,
-                                                              replay.dones,
-                                                              replay.values,
+                                                              replay.reward(),
+                                                              replay.done(),
+                                                              replay.value(),
                                                               torch.zeros(1))
                 advantages = ch.utils.normalize(advantages, epsilon=1e-8)
                 returns = ch.rewards.discount(DISCOUNT,
-                                              replay.rewards,
-                                              replay.dones)
-                old_log_probs = replay.log_probs
+                                              replay.reward(),
+                                              replay.done())
+                old_log_probs = replay.log_prob()
 
-            new_values = replay.values
-            new_log_probs = replay.log_probs
+            new_values = replay.value()
+            new_log_probs = replay.log_prob()
             for epoch in range(PPO_EPOCHS):
                 # Recalculate outputs for subsequent iterations
                 if epoch > 0:
-                    _, infos = agent(replay.states)
+                    _, infos = agent(replay.state())
                     masses = infos['mass']
                     new_values = infos['value'].view(-1, 1)
-                    new_log_probs = masses.log_prob(replay.actions)
+                    new_log_probs = masses.log_prob(replay.action())
 
                 # Update the policy by maximising the PPO-Clip objective
                 policy_loss = ch.algorithms.ppo.policy_loss(new_log_probs,
@@ -152,6 +152,7 @@ def main():
                 critic_optimiser.step()
 
             replay.empty()
+
 
 if __name__ == '__main__':
     main()
