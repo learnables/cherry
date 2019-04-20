@@ -156,30 +156,34 @@ def main(env='Pendulum-v0'):
             batch = ch.ExperienceReplay(sample)
 
             # Pre-compute some quantities
-            masses = actor(batch.state())
+            states = batch.state()
+            rewards = batch.reward()
+            old_actions = batch.action()
+            dones = batch.done()
+            masses = actor(states)
             actions = masses.rsample()
             log_probs = masses.log_prob(actions)
-            q_values = torch.min(critic_1(batch.state(), actions.detach()),
-                                 critic_2(batch.state(), actions.detach())
+            q_values = torch.min(critic_1(states, actions.detach()),
+                                 critic_2(states, actions.detach())
                                  ).view(-1, 1)
 
             # Compute Q losses
             v_next = target_value_critic(batch.next_state()).view(-1, 1)
-            q_old_pred1 = critic_1(batch.state(),
-                                   batch.action().detach()
+            q_old_pred1 = critic_1(states,
+                                   old_actions.detach()
                                    ).view(-1, 1)
-            q_old_pred2 = critic_2(batch.state(),
-                                   batch.action().detach()
+            q_old_pred2 = critic_2(states,
+                                   old_actions.detach()
                                    ).view(-1, 1)
             qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
                                                          v_next,
-                                                         batch.reward(),
-                                                         batch.done(),
+                                                         rewards,
+                                                         dones,
                                                          DISCOUNT)
             qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
                                                          v_next,
-                                                         batch.reward(),
-                                                         batch.done(),
+                                                         rewards,
+                                                         dones,
                                                          DISCOUNT)
 
             # Update Q-functions by one step of gradient descent

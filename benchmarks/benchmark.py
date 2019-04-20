@@ -13,7 +13,11 @@ import wandb
 
 
 if __name__ == '__main__':
+    # To avoid undefined warnings
     main = None
+    agent = policy = model = actor = critic = None
+
+    # Parse arguments
     script, env, seed = sys.argv[1:]
     script_dir = os.path.dirname(script)
     script_file = os.path.basename(script)
@@ -47,10 +51,16 @@ if __name__ == '__main__':
     th.manual_seed(seed)
 
     # Train
+    print('Benchmarks: Started training.')
     exec(main_code)
+
+    # Update informations about environment
+    if hasattr(env, 'spec'):
+        wandb.config.update(env.spec)
 
     # Compute and log all rewards
     if hasattr(env, 'all_rewards'):
+        print('Benchmarks: Computing rewards.')
         R = 0
         returns = []
         for reward, done in zip(env.all_rewards, env.all_dones):
@@ -58,15 +68,32 @@ if __name__ == '__main__':
                 'all_rewards': reward,
                 'all_dones': done,
             })
+
             R += reward
             if bool(done):
-                wandb.log({'episode_rewards': R})
+                wandb.log({
+                    'episode_rewards': R,
+                })
                 returns.append(R)
                 R = 0
-        returns = ch.plot.smooth(returns)[1]
-        for r in returns:
-            wandb.log({'smoothed_returns': r})
 
-    # Compute some test rewards
+        smoothed_returns = ch.plot.smooth(returns)[1]
+        for r in smoothed_returns:
+            wandb.log({
+                'smoothed_returns': r,
+            })
+
+    # TODO: Compute some test rewards
+
     # Save model weights
-    # Save some visualizations
+    print('Benchmarks: Saving weights.')
+    for name, __model in [('model.pth', model),
+                          ('actor.pth', actor),
+                          ('critic.pth', critic),
+                          ('policy.pth', policy),
+                          ('agent.pth', agent)]:
+        if __model is not None:
+            path = os.path.join(wandb.run.dir, name)
+            th.save(__model.state_dict(),  path)
+
+    # TODO: Save some visualizations
