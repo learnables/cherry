@@ -5,6 +5,7 @@ import torch as th
 from torch import Tensor as T
 
 from collections import namedtuple
+from copy import deepcopy
 
 from cherry.utils import totensor, min_size
 
@@ -17,15 +18,28 @@ TODO: replay.astype(dtype) + init dtype
 """
 
 
-def transition_factory(state, action, reward, next_state, done, **infos):
-    names = ['state', 'action', 'reward', 'next_state', 'done']
-    names += infos.keys()
-    Transition = namedtuple('Transition', names)
-    Transition.__new__.__defaults__ = (None, ) * len(names)
-    return Transition
+class Transition(dict):
+
+    def __init__(self, state, action, reward, next_state, done, **infos):
+        self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
+        values = [state, action, reward, next_state, done]
+        for key, val in zip(self.__fields, values):
+            setattr(self, key, val)
+            self[key] = val
+        info_keys = infos.keys()
+        self.__fields += info_keys
+        for key in info_keys:
+            setattr(self, key, infos[key])
+            self[key] = infos[key]
+
+    def __str__(self):
+        return 'Transition(' + ', '.join(self.__fields) + ')'
+
+    def __repr__(self):
+        return str(self)
 
 
-class ExperienceReplay(object):
+class ExperienceReplay(list):
 
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py)
@@ -84,14 +98,18 @@ class ExperienceReplay(object):
     ~~~
     """
 
-    def __init__(self, storage=None, transition=None):
+    def __init__(self, storage=None):
+        list.__init__(self)
         if storage is None:
             storage = []
         self._storage = storage
-        self.Transition = transition
 
     def _access_property(self, name):
-        values = [getattr(sars, name) for sars in self._storage]
+        try:
+            values = [getattr(sars, name) for sars in self._storage]
+        except:
+            msg = 'Attribute ' + name + ' not in entire replay.'
+            raise AttributeError(msg)
         true_size = min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
@@ -109,7 +127,7 @@ class ExperienceReplay(object):
 
     def __add__(self, other):
         storage = self._storage + other._storage
-        return ExperienceReplay(storage, transition=self.Transition)
+        return ExperienceReplay(storage)
 
     def __iadd__(self, other):
         self._storage += other._storage
@@ -120,16 +138,12 @@ class ExperienceReplay(object):
             yield self[i]
 
     def __getattr__(self, attr):
-        if attr in self.Transition._fields:
-            return lambda: self._access_property(attr)
-        else:
-            msg = attr + ' not in ' + str(self.Transition._fields)
-            raise AttributeError(msg)
+        return lambda: self._access_property(attr)
 
     def __getitem__(self, key):
         value = self._storage[key]
         if isinstance(key, slice):
-            return ExperienceReplay(value, transition=self.Transition)
+            return ExperienceReplay(value)
         return value
 
     def state(self):
@@ -162,8 +176,7 @@ class ExperienceReplay(object):
         replay.save('my_replay_file.pt')
         ~~~
         """
-        data = [sars._asdict() for sars in self._storage]
-        th.save(data, path)
+        th.save(self._storage, path)
 
     def load(self, path):
         """
@@ -180,9 +193,9 @@ class ExperienceReplay(object):
         replay.load('my_replay_file.pt')
         ~~~
         """
-        data = th.load(path)
-        self.Transition = transition_factory(**data[0])
-        self._storage = [self.Transition(**sars) for sars in data]
+        self._storage = th.load(path)
+#        data = th.load(path)
+#        self._storage = [Transition(**sars) for sars in data]
 
     def append(self,
                state=None,
@@ -215,21 +228,14 @@ class ExperienceReplay(object):
         })
         ~~~
         """
-        if self.Transition is None:
-            self.Transition = transition_factory(state,
-                                                 action,
-                                                 reward,
-                                                 next_state,
-                                                 done,
-                                                 **infos)
         for key in infos:
             infos[key] = totensor(infos[key])
-        sars = self.Transition(totensor(state),
-                               totensor(action),
-                               totensor(reward),
-                               totensor(next_state),
-                               totensor(done),
-                               **infos)
+        sars = Transition(totensor(state),
+                          totensor(action),
+                          totensor(reward),
+                          totensor(next_state),
+                          totensor(done),
+                          **infos)
         self._storage.append(sars)
 
     def update(self, fn):
@@ -259,7 +265,7 @@ class ExperienceReplay(object):
         })
         ~~~
         """
-        attributes = self.Transition._fields
+        attributes = self._storage[0].__fields
         for i, sars in enumerate(self):
             update = fn(i, sars)
             for attr in update:
@@ -286,13 +292,12 @@ class ExperienceReplay(object):
           transitions.
         """
         if len(self) < 1 or size < 1:
-            return ExperienceReplay(transition=self.Transition)
+            return ExperienceReplay()
 
         indices = []
         if episodes:
             if size > 1 and not contiguous:
-                replay = ExperienceReplay(transition=self.Transition)
-                replay.Transition = self.Transition
+                replay = ExperienceReplay()
                 return sum([self.sample(1, episodes=True) for _ in range(size)], replay)
             else:  # Sample 'size' contiguous episodes
                 num_episodes = self.done().sum().int().item()
@@ -325,7 +330,7 @@ class ExperienceReplay(object):
 
         # Fill the sample
         storage = [self[idx] for idx in indices]
-        return ExperienceReplay(storage, transition=self.Transition)
+        return ExperienceReplay(storage)
 
     def empty(self):
         """

@@ -226,7 +226,7 @@ def train_cherry():
             else:
                 replay += env.run(get_action, steps=1)
 
-        result['rewards'].append(replay.storage['rewards'][-1].item())
+        result['rewards'].append(replay.reward()[-1].item())
         replay = replay[-REPLAY_SIZE:]
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             sample = random.sample(replay, BATCH_SIZE)
@@ -234,14 +234,14 @@ def train_cherry():
             for sars in sample:
                 batch.append(**sars)
 
-            next_values = target_critic(batch.next_states,
-                                        target_actor(batch.next_states)
+            next_values = target_critic(batch.next_state(),
+                                        target_actor(batch.next_state())
                                         ).view(-1, 1)
-            values = critic(batch.states, batch.actions).view(-1, 1)
+            values = critic(batch.state(), batch.action()).view(-1, 1)
             value_loss = ch.algorithms.ddpg.state_value_loss(values,
                                                              next_values,
-                                                             batch.rewards,
-                                                             batch.dones,
+                                                             batch.reward(),
+                                                             batch.done(),
                                                              DISCOUNT)
             critic_optimiser.zero_grad()
             value_loss.backward()
@@ -249,7 +249,7 @@ def train_cherry():
             result['vlosses'].append(value_loss.item())
 
             # Update policy by one step of gradient ascent
-            policy_loss = -critic(batch.states, actor(batch.states)).mean()
+            policy_loss = -critic(batch.state(), actor(batch.state())).mean()
             actor_optimiser.zero_grad()
             policy_loss.backward()
             actor_optimiser.step()

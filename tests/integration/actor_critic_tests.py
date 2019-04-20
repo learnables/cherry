@@ -96,11 +96,11 @@ class ActorCriticNet(nn.Module):
 def update(replay, optimizer):
     policy_loss = []
     value_loss = []
-    rewards = discount(GAMMA, replay.rewards, replay.dones)
+    rewards = discount(GAMMA, replay.reward(), replay.done())
     rewards = normalize(rewards)
-    for info, reward in zip(replay.infos, rewards):
-        log_prob = info['log_prob']
-        value = info['value']
+    for sars, reward in zip(replay, rewards):
+        log_prob = sars.log_prob
+        value = sars.value
         policy_loss.append(-log_prob * (reward - value.item()))
         value_loss.append(F.mse_loss(value, reward.detach()))
     optimizer.zero_grad()

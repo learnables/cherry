@@ -109,7 +109,7 @@ class TestExperienceReplay(unittest.TestCase):
         subsample = self.replay[0:len(self.replay)//2]
         self.assertTrue(isinstance(subsample, ch.ExperienceReplay))
         self.assertEqual(len(subsample), len(self.replay)//2)
-        self.assertTrue(isinstance(self.replay[0], self.replay.Transition))
+        self.assertTrue(isinstance(self.replay[0], ch.Transition))
         subsample = self.replay[-1:]
         self.assertEqual(len(subsample), 1)
 
