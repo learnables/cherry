@@ -20,7 +20,7 @@ dist-a2c:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=2 \
+	          --nproc_per_node=16 \
 		    examples/atari/dist_a2c_atari.py
 ppoa:
 	OMP_NUM_THREADS=4 \
@@ -40,7 +40,7 @@ dist-ppo:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=2 \
+	          --nproc_per_node=16 \
 		    examples/pybullet/dist_ppo_pybullet.py
 
 ppo:
