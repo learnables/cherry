@@ -35,7 +35,7 @@ if __name__ == '__main__':
     envs = agent = policy = model = actor = critic = None
 
     # Parse arguments
-    script, env, seed = sys.argv[1:]
+    script, env, seed = sys.argv[-3:]
     script_dir = os.path.dirname(script)
     script_file = os.path.basename(script)
     seed = int(seed)

@@ -93,10 +93,9 @@ def get_action_value(state, policy):
     return action, info
 
 
-def main(num_steps=5000000,
-         env_name='PongNoFrameskip-v4',
-#         env_name='BreakoutNoFrameskip-v4',
-         seed=42):
+def main(env='PongNoFrameskip-v4'):
+    num_steps = 5000000
+    seed = 42
 
     import argparse
     parser = argparse.ArgumentParser()
@@ -113,7 +112,7 @@ def main(num_steps=5000000,
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
-    env = gym.make(env_name)
+    env = gym.make(env)
     if rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
@@ -132,22 +131,9 @@ def main(num_steps=5000000,
 
         # Update policy
         update(replay, optimizer, policy, env=env)
-        if step % 500 == 0 and rank == 0:
-            ppt.plot(mean(env.all_rewards[-10000:]), env_name)
-
-    if rank == 0:
-        result = mean(env.all_rewards[-10000:])
-        data = {
-            'result': result,
-            'env': env_name,
-            'all_rewards': env.all_rewards,
-            'all_dones': env.all_dones,
-            'infos': env.values,
-        }
-        th.save(data, './regression_test/' + env_name + '.pickle')
-        th.save(policy.state_dict(),
-                './regression_test/' + env_name + '.pth')
 
 
 if __name__ == '__main__':
-    main()
+    env = 'BreakoutNoFrameskip-v4'
+    env = 'PongNoFrameskip-v4'
+    main(env)
