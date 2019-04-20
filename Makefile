@@ -4,9 +4,6 @@
 all: sac
 
 # Demo
-acp:
-	python examples/actor_critic_pendulum.py
-
 reinforce:
 	python examples/reinforce_cartpole.py
 
@@ -19,11 +16,11 @@ grid:
 	python examples/actor_critic_gridworld.py
 
 # Atari
-dist:
+dist-a2c:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=16 \
+	          --nproc_per_node=2 \
 		    examples/atari/dist_a2c_atari.py
 ppoa:
 	OMP_NUM_THREADS=4 \
@@ -39,6 +36,13 @@ dqn:
 	python examples/atari/dqn_atari.py
 
 # PyBullet
+dist-ppo:
+	OMP_NUM_THREADS=1 \
+	MKL_NUM_THREADS=1 \
+	python -m torch.distributed.launch \
+	          --nproc_per_node=2 \
+		    examples/pybullet/dist_ppo_pybullet.py
+
 ppo:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \

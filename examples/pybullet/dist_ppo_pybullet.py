@@ -13,12 +13,14 @@ import roboschool
 import torch as th
 import torch.nn as nn
 import torch.optim as optim
+import torch.distributed as dist
 
 import cherry as ch
-import cherry.distributions as dist
+import cherry.distributions as distributions
 import cherry.models as models
 import cherry.envs as envs
 from cherry.algorithms import ppo
+from cherry.optim import Distributed
 
 RENDER = False
 RECORD = True
@@ -37,10 +39,6 @@ PPO_BSZ = 64
 PPO_NUM_BATCHES = 32
 PPO_STEPS = 2048
 
-random.seed(SEED)
-np.random.seed(SEED)
-th.manual_seed(SEED)
-
 
 class ActorCriticNet(nn.Module):
     def __init__(self, env):
@@ -50,9 +48,9 @@ class ActorCriticNet(nn.Module):
                                           layer_sizes=[64, 64])
         self.critic = models.control.ControlMLP(env.state_size, 1)
 
-        self.action_dist = dist.ActionDistribution(env,
-                                                   use_probs=False,
-                                                   reparam=False)
+        self.action_dist = distributions.ActionDistribution(env,
+                                                            use_probs=False,
+                                                            reparam=False)
 
     def forward(self, x):
         action_scores = self.actor(x)
@@ -62,7 +60,7 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    _, next_state_value = policy(replay[-1].next_state)
+    _, next_state_value = policy(replay[-1].next_state())
     advantages = ch.rewards.generalized_advantage(GAMMA,
                                                   TAU,
                                                   replay.reward(),
@@ -72,7 +70,6 @@ def update(replay, optimizer, policy, env, lr_schedule):
 
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
     rewards = [a + v for a, v in zip(advantages, replay.value())]
-
 
     for i, sars in enumerate(replay):
         sars.reward = rewards[i].detach()
@@ -113,10 +110,11 @@ def update(replay, optimizer, policy, env, lr_schedule):
         value_losses.append(value_loss)
 
     # Log metrics
-    env.log('policy loss', mean(policy_losses).item())
-    env.log('policy entropy', mean(entropies).item())
-    env.log('value loss', mean(value_losses).item())
-    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO results')
+    if dist.get_rank() == 0:
+        env.log('policy loss', mean(policy_losses).item())
+        env.log('policy entropy', mean(entropies).item())
+        env.log('value loss', mean(value_losses).item())
+        ppt.plot(mean(env.all_rewards[-10000:]), 'PPO results')
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -133,14 +131,29 @@ def get_action_value(state, policy):
     return action, info
 
 
-if __name__ == '__main__':
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--local_rank", type=int)
+    args = parser.parse_args()
+    dist.init_process_group('gloo',
+   			    init_method='file:///home/seba-1511/.dist_init',
+			    rank=args.local_rank,
+			    world_size=16)
+
+    rank = dist.get_rank()
+    th.set_num_threads(1)
+    random.seed(SEED + rank)
+    th.manual_seed(SEED + rank)
+    np.random.seed(SEED + rank)
+
     # env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
-    env_name = 'MinitaurTrottingEnv-v0'
 #    env_name = 'RoboschoolAnt-v1'
     env = gym.make(env_name)
     env = envs.AddTimestep(env)
-    env = envs.Logger(env, interval=PPO_STEPS)
+    if rank == 0:
+        env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -151,6 +164,7 @@ if __name__ == '__main__':
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
     lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
+    optimizer = Distributed(policy.parameters(), optimizer)
     get_action = lambda state: get_action_value(state, policy)
 
     for epoch in range(num_updates):
@@ -160,15 +174,6 @@ if __name__ == '__main__':
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
 
-    mean = lambda x: sum(x) / len(x)
-    result = mean(env.all_rewards[-10000:])
-    data = {
-        'result': result,
-        'env': env_name,
-        'all_rewards': env.all_rewards,
-        'all_dones': env.all_dones,
-        'infos': env.values,
-    }
-    th.save(data, './regression_test/' + env_name + '.pickle')
-    th.save(policy.state_dict(),
-            './regression_test/' + env_name + '.pth')
+
+if __name__ == '__main__':
+    main()

@@ -13,4 +13,8 @@ Demonstrations of tabular reinforcement learning algorithms implemented with che
 
 ### Q-Learning
 
+**Status** Replicates Sutton & Barto's implementation of Figure 6.4.
+
 ### SARSA
+
+**Status** Replicates Sutton & Barto's implementation.

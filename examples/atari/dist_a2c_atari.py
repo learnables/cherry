@@ -56,18 +56,18 @@ class NatureCNN(nn.Module):
 
 def update(replay, optimizer, policy, env):
     # Compute advantages
-    _, next_state_value = policy(replay.next_states[-1])
+    _, next_state_value = policy(replay[-1].next_state)
     rewards = ch.rewards.discount(GAMMA,
-                                  replay.rewards,
-                                  replay.dones,
+                                  replay.reward(),
+                                  replay.done(),
                                   bootstrap=next_state_value)
     rewards = rewards.detach()
 
     # Compute loss
-    entropy = replay.entropys.mean()
-    advantages = rewards.detach() - replay.values.detach()
-    policy_loss = a2c.policy_loss(replay.log_probs, advantages)
-    value_loss = a2c.state_value_loss(replay.values, rewards)
+    entropy = replay.entropy().mean()
+    advantages = rewards.detach() - replay.value().detach()
+    policy_loss = a2c.policy_loss(replay.log_prob(), advantages)
+    value_loss = a2c.state_value_loss(replay.value(), rewards)
     loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
 
     # Take optimization step
@@ -94,8 +94,8 @@ def get_action_value(state, policy):
 
 
 def main(num_steps=5000000,
-#         env_name='PongNoFrameskip-v4',
-         env_name='BreakoutNoFrameskip-v4',
+         env_name='PongNoFrameskip-v4',
+#         env_name='BreakoutNoFrameskip-v4',
          seed=42):
 
     import argparse

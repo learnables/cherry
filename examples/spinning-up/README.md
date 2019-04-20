@@ -6,6 +6,8 @@ They single-file implementations using the `Pendulum-v1` environment, and were o
 
 **Note** We use those implementations in our [integration tests](../../tests/integration/).
 
+**State** All implementations replicate the original repo.
+
 ## Requirements
 
 * Gym, torch, and cherry installed.

@@ -18,5 +18,8 @@ Demonstrations of deep reinforcement learning algorithms for robotics environmen
 
 ### SAC
 
+**Status** Replicates rlkit's SAC, but we want twin-SAC. 
+
 ### PPO
 
+**Status** Replicates Ilya Kostrikov's PPO. 
