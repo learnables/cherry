@@ -60,23 +60,20 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    _, next_state_value = policy(replay.next_states[-1])
+    _, next_state_value = policy(replay[-1].next_state())
     advantages = ch.rewards.generalized_advantage(GAMMA,
                                                   TAU,
-                                                  replay.rewards,
-                                                  replay.dones,
-                                                  replay.values,
+                                                  replay.reward(),
+                                                  replay.done(),
+                                                  replay.value(),
                                                   next_state_value)
 
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
-    rewards = [a + v for a, v in zip(advantages, replay.values)]
+    rewards = [a + v for a, v in zip(advantages, replay.value())]
 
-    replay.update(lambda i, sars: {
-        'reward': rewards[i].detach(),
-        'info': {
-            'advantage': advantages[i].detach()
-        },
-    })
+    for i, sars in enumerate(replay):
+        sars.reward = rewards[i].detach()
+        sars.advantage = advantages[i].detach()
 
     # Logging
     policy_losses = []
@@ -87,18 +84,18 @@ def update(replay, optimizer, policy, env, lr_schedule):
     # Perform some optimization steps
     for step in range(PPO_EPOCHS * PPO_NUM_BATCHES):
         batch = replay.sample(PPO_BSZ)
-        masses, values = policy(batch.states)
+        masses, values = policy(batch.state())
 
         # Compute losses
-        new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
+        new_log_probs = masses.log_prob(batch.action()).sum(-1, keepdim=True)
         entropy = masses.entropy().sum(-1).mean()
         policy_loss = ppo.policy_loss(new_log_probs,
-                                      batch.log_probs,
-                                      batch.advantages,
+                                      batch.log_prob(),
+                                      batch.advantage(),
                                       clip=PPO_CLIP)
         value_loss = ppo.state_value_loss(values,
-                                          batch.values.detach(),
-                                          batch.rewards,
+                                          batch.value().detach(),
+                                          batch.reward(),
                                           clip=PPO_CLIP)
         loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 

@@ -215,22 +215,22 @@ def train_cherry():
 
         replay += env.run(get_action, episodes=1)
         if len(replay) > BATCH_SIZE:
-            for r in replay.rewards:
+            for r in replay.reward():
                 result['rewards'].append(r.item())
             with torch.no_grad():
                 advantages = ch.rewards.generalized_advantage(DISCOUNT,
                                                               TRACE_DECAY,
-                                                              replay.rewards,
-                                                              replay.dones,
-                                                              replay.values,
+                                                              replay.reward(),
+                                                              replay.done(),
+                                                              replay.value(),
                                                               torch.zeros(1))
                 advantages = ch.utils.normalize(advantages, epsilon=1e-8)
                 returns = ch.rewards.discount(DISCOUNT,
-                                              replay.rewards,
-                                              replay.dones)
+                                              replay.reward(),
+                                              replay.done())
 
             # Policy loss
-            log_probs = replay.log_probs
+            log_probs = replay.log_prob()
             policy_loss = ch.algorithms.a2c.policy_loss(log_probs, advantages)
             actor_optimiser.zero_grad()
             policy_loss.backward()
@@ -238,7 +238,7 @@ def train_cherry():
             result['policy_losses'].append(policy_loss.item())
 
             # Value loss
-            value_loss = ch.algorithms.a2c.state_value_loss(replay.values,
+            value_loss = ch.algorithms.a2c.state_value_loss(replay.value(),
                                                             returns)
             critic_optimiser.zero_grad()
             value_loss.backward()

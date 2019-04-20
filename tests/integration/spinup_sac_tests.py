@@ -260,34 +260,32 @@ def train_cherry():
             else:
                 replay += env.run(get_action, steps=1)
         replay = replay[-REPLAY_SIZE:]
-        result['rewards'].append(replay.storage['rewards'][-1].item())
+        result['rewards'].append(replay.reward()[-1].item())
 
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             sample = random.sample(replay, BATCH_SIZE)
-            batch = ch.ExperienceReplay()
-            for sars in sample:
-                batch.append(**sars)
+            batch = ch.ExperienceReplay(sample)
 
             # Pre-compute some quantities
-            masses = actor(batch.states)
+            masses = actor(batch.state())
             actions = masses.rsample()
             log_probs = masses.log_prob(actions)
-            q_values = torch.min(critic_1(batch.states, actions.detach()),
-                                 critic_2(batch.states, actions.detach())).view(-1, 1)
+            q_values = torch.min(critic_1(batch.state(), actions.detach()),
+                                 critic_2(batch.state(), actions.detach())).view(-1, 1)
 
             # Compute Q losses
-            v_next = target_value_critic(batch.next_states).view(-1, 1)
-            q_old_pred1 = critic_1(batch.states, batch.actions.detach()).view(-1, 1)
-            q_old_pred2 = critic_2(batch.states, batch.actions.detach()).view(-1, 1)
+            v_next = target_value_critic(batch.next_state()).view(-1, 1)
+            q_old_pred1 = critic_1(batch.state(), batch.action().detach()).view(-1, 1)
+            q_old_pred2 = critic_2(batch.state(), batch.action().detach()).view(-1, 1)
             qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
                                                          v_next,
-                                                         batch.rewards,
-                                                         batch.dones,
+                                                         batch.reward(),
+                                                         batch.done(),
                                                          DISCOUNT)
             qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
                                                          v_next,
-                                                         batch.rewards,
-                                                         batch.dones,
+                                                         batch.reward(),
+                                                         batch.done(),
                                                          DISCOUNT)
 
             # Update Q-functions by one step of gradient descent
@@ -298,7 +296,7 @@ def train_cherry():
             result['qlosses'].append(qloss.item())
 
             # Update V-function by one step of gradient descent
-            v_pred = value_critic(batch.states).view(-1, 1)
+            v_pred = value_critic(batch.state()).view(-1, 1)
             vloss = ch.algorithms.sac.state_value_loss(v_pred,
                                                        log_probs,
                                                        q_values,
@@ -309,7 +307,7 @@ def train_cherry():
             result['vlosses'].append(vloss.item())
 
             # Update policy by one step of gradient ascent
-            q_actions = critic_1(batch.states, actions).view(-1, 1)
+            q_actions = critic_1(batch.state(), actions).view(-1, 1)
             policy_loss = ch.algorithms.sac.policy_loss(log_probs,
                                                         q_actions,
                                                         alpha=ENTROPY_WEIGHT)
