@@ -62,11 +62,11 @@ class DQN(nn.Module):
 
 def update(replay, optimizer, dqn, target_dqn, env):
     batch = replay.sample(BSZ)
-    target_q = target_dqn(batch.next_states).detach().max(dim=1)[0].view(-1, 1)
-    target_q = batch.rewards + GAMMA * target_q * (1.0 - batch.dones)
-    q_preds = dqn(batch.states)
+    target_q = target_dqn(batch.next_state()).detach().max(dim=1)[0].view(-1, 1)
+    target_q = batch.reward() + GAMMA * target_q * (1.0 - batch.done())
+    q_preds = dqn(batch.state())
     softnorm = F.softmax(q_preds, dim=1).norm(p=2).item()
-    actions = batch.actions.view(-1).long()
+    actions = batch.action().view(-1).long()
     range_tensor = th.Tensor(list(range(BSZ))).long()
     q_preds = q_preds[range_tensor, actions]
     loss = (target_q - q_preds).pow(2).mul(0.5).mean()

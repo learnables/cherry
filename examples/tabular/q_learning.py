@@ -41,7 +41,7 @@ if __name__ == '__main__':
     for t in range(1, 10000):
         transition = env.run(agent, steps=1)[0]
 
-        curr_q = transition.info['q_action']
+        curr_q = transition.q_action
         next_state = ch.utils.onehot(transition.next_state,
                                      dim=env.state_size)
         next_q = agent.qf(next_state).max().detach()

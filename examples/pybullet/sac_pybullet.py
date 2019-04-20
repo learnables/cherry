@@ -106,7 +106,7 @@ def update(replay,
            target_entropy):
 
     batch = replay.sample(BSZ)
-    density = policy(batch.states)
+    density = policy(batch.state())
     # NOTE: The following lines are specific to the TanhNormal policy.
     #       Other policies should constrain the output of the policy net.
     actions, log_probs = density.rsample_and_log_prob()
@@ -128,17 +128,17 @@ def update(replay,
         alpha_loss = th.zeros(1)
 
     # QF loss
-    q_old_pred = qf(batch.states, batch.actions.detach())
-    v_next = target_vf(batch.next_states)
+    q_old_pred = qf(batch.state(), batch.action().detach())
+    v_next = target_vf(batch.next_state())
     qf_loss = sac.action_value_loss(q_old_pred,
                                     v_next,
-                                    batch.rewards,
-                                    batch.dones,
+                                    batch.reward(),
+                                    batch.done(),
                                     GAMMA)
 
     # VF loss
-    v_pred = vf(batch.states)
-    q_values = qf(batch.states, actions)
+    v_pred = vf(batch.state())
+    q_values = qf(batch.state(), actions)
     vf_loss = sac.state_value_loss(v_pred, log_probs, q_values, alpha)
 
     # Policy loss
@@ -154,9 +154,9 @@ def update(replay,
     env.log("QF Loss: ", qf_loss.item())
     env.log("VF Loss: ", vf_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
-    env.log("Average Rewards: ", batch.rewards.mean().item())
+    env.log("Average Rewards: ", batch.reward().mean().item())
     if random.random() < 0.05:
-        ppt.plot(replay.rewards[-1000:].mean().item(), 'cherry true rewards')
+        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards')
 
     # Update
     qf_opt.zero_grad()

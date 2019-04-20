@@ -18,19 +18,17 @@ TODO: replay.astype(dtype) + init dtype
 """
 
 
-class Transition(dict):
+class Transition(object):
 
     def __init__(self, state, action, reward, next_state, done, **infos):
         self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
         values = [state, action, reward, next_state, done]
         for key, val in zip(self.__fields, values):
             setattr(self, key, val)
-            self[key] = val
         info_keys = infos.keys()
         self.__fields += info_keys
         for key in info_keys:
             setattr(self, key, infos[key])
-            self[key] = infos[key]
 
     def __str__(self):
         return 'Transition(' + ', '.join(self.__fields) + ')'
@@ -146,21 +144,6 @@ class ExperienceReplay(list):
             return ExperienceReplay(value)
         return value
 
-    def state(self):
-        return self._access_property('state')
-
-    def action(self):
-        return self._access_property('action')
-
-    def reward(self):
-        return self._access_property('reward')
-
-    def next_state(self):
-        return self._access_property('next_state')
-
-    def done(self):
-        return self._access_property('done')
-
     def save(self, path):
         """
         **Description**
@@ -194,8 +177,6 @@ class ExperienceReplay(list):
         ~~~
         """
         self._storage = th.load(path)
-#        data = th.load(path)
-#        self._storage = [Transition(**sars) for sars in data]
 
     def append(self,
                state=None,
@@ -237,42 +218,6 @@ class ExperienceReplay(list):
                           totensor(done),
                           **infos)
         self._storage.append(sars)
-
-    def update(self, fn):
-        """
-        **Description**
-
-        Updates all samples in the replay according to `fn`.
-
-        `fn` should take two arguments and returns a dict of updated values.
-        The first one corresponds to the index of the transition to be updated.
-        The second is the transition itself.
-
-        Note: You should return the updated values, not modify the values
-              in-place on the transition.
-
-        **Arguments**
-
-        * **fn** (function) - Update function.
-
-        **Example**
-        ~~~python
-        replay.update(lambda i, sars: {
-            'reward': rewards[i].detach(),
-            'info': {
-                'advantage': advantages[i].detach()
-            },
-        })
-        ~~~
-        """
-        attributes = self._storage[0].__fields
-        for i, sars in enumerate(self):
-            update = fn(i, sars)
-            for attr in update:
-                if attr in attributes:
-                    setattr(self._storage[i], update[attr])
-                else:
-                    raise Exception('Update not properly formatted.')
 
     def sample(self, size=1, contiguous=False, episodes=False):
         """

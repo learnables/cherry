@@ -264,9 +264,7 @@ def train_cherry():
 
         if step > UPDATE_START and step % UPDATE_INTERVAL == 0:
             sample = random.sample(replay, BATCH_SIZE)
-            batch = ch.ExperienceReplay()
-            for sars in sample:
-                batch.append(**sars)
+            batch = ch.ExperienceReplay(sample)
 
             # Pre-compute some quantities
             masses = actor(batch.state())
