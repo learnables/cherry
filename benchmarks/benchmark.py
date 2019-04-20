@@ -7,6 +7,7 @@ import inspect
 import random
 import numpy as np
 import torch as th
+import cherry as ch
 
 import wandb
 
@@ -51,6 +52,7 @@ if __name__ == '__main__':
     # Compute and log all rewards
     if hasattr(env, 'all_rewards'):
         R = 0
+        returns = []
         for reward, done in zip(env.all_rewards, env.all_dones):
             wandb.log({
                 'all_rewards': reward,
@@ -59,7 +61,11 @@ if __name__ == '__main__':
             R += reward
             if bool(done):
                 wandb.log({'episode_rewards': R})
+                returns.append(R)
                 R = 0
+        returns = ch.plot.smooth(returns)[1]
+        for r in returns:
+            wandb.log({'smoothed_returns': r})
 
     # Compute some test rewards
     # Save model weights
