@@ -12,10 +12,27 @@ import cherry as ch
 import wandb
 
 
+def benchmark_log(original_log):
+    def new_log(self, key, value):
+        wandb.log({key: value})
+        original_log(self, key, value)
+    return new_log
+
+
+def benchmark_stats(original_stats):
+    mean = lambda x: sum(x) / len(x)
+
+    def new_stats(self, *args, **kwargs):
+        result = original_stats(self, *args, **kwargs)
+        wandb.log({'last_episode_rewards': mean(result['episode_rewards'])})
+        return result
+    return new_stats
+
+
 if __name__ == '__main__':
     # To avoid undefined warnings
     main = None
-    agent = policy = model = actor = critic = None
+    envs = agent = policy = model = actor = critic = None
 
     # Parse arguments
     script, env, seed = sys.argv[1:]
@@ -49,6 +66,10 @@ if __name__ == '__main__':
     random.seed(seed)
     np.random.seed(seed)
     th.manual_seed(seed)
+
+    # Wrap envs.Logger.log for live logging
+    envs.Logger.log = benchmark_log(envs.Logger.log)
+    envs.Logger._episodes_stats = benchmark_stats(envs.Logger._episodes_stats)
 
     # Train
     print('Benchmarks: Started training.')
