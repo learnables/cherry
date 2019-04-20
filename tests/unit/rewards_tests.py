@@ -63,16 +63,20 @@ class TestRewards(unittest.TestCase):
 
     def test_discount(self):
         vector = th.randn(VECTOR_SIZE)
-        for i in range(5):
+        for i in range(4):
             self.replay.append(vector,
                                vector,
-                               8,
+                               8.0,
                                vector,
                                False)
-        self.replay.storage['dones'][-1] += 1
+        self.replay.append(vector,
+                           vector,
+                           8.0,
+                           vector,
+                           True)
         discounted = discount(GAMMA,
-                              self.replay.rewards,
-                              self.replay.dones,
+                              self.replay.reward(),
+                              self.replay.done(),
                               bootstrap=0)
         ref = th.Tensor([15.5, 15.0, 14.0, 12.0, 8.0]).view(-1, 1)
         self.assertTrue(close(discounted, ref))
@@ -80,8 +84,8 @@ class TestRewards(unittest.TestCase):
         # Test overlapping episodes with bootstrap
         overlap = self.replay[2:] + self.replay[:3]
         overlap_discounted = discount(GAMMA,
-                                      overlap.rewards,
-                                      overlap.dones,
+                                      overlap.reward(),
+                                      overlap.done(),
                                       bootstrap=discounted[3])
         ref = th.cat((discounted[2:], discounted[:3]), dim=0)
         self.assertTrue(close(overlap_discounted, ref))
@@ -94,10 +98,10 @@ class TestRewards(unittest.TestCase):
                                random.random(),
                                vector,
                                False)
-        self.replay.storage['dones'][-1] += 1
-        values = th.randn_like(self.replay.rewards)
-        rewards = self.replay.rewards.view(-1).tolist()
-        dones = self.replay.dones.view(-1).tolist()
+        self.replay.done()[-1] += 1
+        values = th.randn_like(self.replay.reward())
+        rewards = self.replay.reward().view(-1).tolist()
+        dones = self.replay.done().view(-1).tolist()
         next_value = random.random()
         ref = generalized_advantage_estimate(GAMMA,
                                              TAU,
@@ -107,8 +111,8 @@ class TestRewards(unittest.TestCase):
                                              next_value)
         advantages = generalized_advantage(GAMMA,
                                            TAU,
-                                           self.replay.rewards,
-                                           self.replay.dones,
+                                           self.replay.reward(),
+                                           self.replay.done(),
                                            values,
                                            next_value+th.zeros(1))
         ref = th.Tensor(ref).view(advantages.size())
@@ -120,13 +124,13 @@ class TestRewards(unittest.TestCase):
         overlap_next_value = th.randn(1)
         overlap_adv = generalized_advantage(GAMMA,
                                             TAU,
-                                            overlap.rewards.double(),
-                                            overlap.dones.double(),
+                                            overlap.reward().double(),
+                                            overlap.done().double(),
                                             overlap_values.double(),
                                             overlap_next_value.double())
         values = overlap_values.view(-1).tolist()
-        rewards = overlap.rewards.view(-1).tolist()
-        dones = overlap.dones.view(-1).tolist()
+        rewards = overlap.reward().view(-1).tolist()
+        dones = overlap.done().view(-1).tolist()
         ref = generalized_advantage_estimate(GAMMA,
                                              TAU,
                                              rewards,

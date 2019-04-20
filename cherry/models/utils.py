@@ -1,9 +1,40 @@
 #!/usr/bin/env python3
 
+from torch import nn
+
+
+class RandomPolicy(nn.Module):
+
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py)
+
+    **Description**
+
+    Policy that randomly samples actions from the environment action space.
+
+    **Arguments**
+
+    * **env** (Environment) - Environment from which to sample actions.
+
+    **Example**
+    ~~~python
+    policy = ch.models.RandomPolicy(env)
+    env = envs.Runner(env)
+    replay = env.run(policy, steps=2048)
+    ~~~
+    """
+
+    def __init__(self, env, *args, **kwargs):
+        super(RandomPolicy, self).__init__()
+        self.env = env
+
+    def forward(self, *args, **kwargs):
+        return self.env.action_space.sample()
+
 
 def polyak_average(source, target, alpha):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py)
 
     **Description**
 

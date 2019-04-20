@@ -41,7 +41,7 @@ if __name__ == '__main__':
     for t in range(1, 10000):
         transition = env.run(agent, steps=1)[0]
 
-        curr_q = transition.info['q_action']
+        curr_q = transition.q_action
         next_action, next_info = agent(transition.next_state)
         next_q = next_info['q_action'].detach()
         td_error = transition.reward + discount * next_q - curr_q
