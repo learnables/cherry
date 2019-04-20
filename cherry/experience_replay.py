@@ -4,6 +4,8 @@ import random
 import torch as th
 from torch import Tensor as T
 
+from collections import namedtuple
+
 from cherry.utils import totensor, min_size
 
 """
@@ -15,59 +17,15 @@ TODO: replay.astype(dtype) + init dtype
 """
 
 
-class Transition(dict):
-
-    """
-    **Description**
-
-    Represents a (s, a, r, s', d) tuple.
-
-    **Arguments**
-
-    * **state** (tensor) - Originating state.
-    * **action** (tensor) - Executed action.
-    * **reward** (tensor) - Observed reward.
-    * **next_state** (tensor) - Resulting state.
-    * **done** (tensor) - Is `next_state` a terminal (absorbing) state ?
-    * **info** (dict, *optional*, default=None) - Additional information on
-      the transition.
-
-    **Example**
-
-    ~~~python
-    for transition in replay:
-        print(transition.state)
-    ~~~
-    """
-
-    def __init__(self, state, action, reward, next_state, done, info=None):
-        self.__attributes = ['state',
-                             'action',
-                             'reward',
-                             'next_state',
-                             'done',
-                             'info']
-        self['state'] = state
-        self['action'] = action
-        self['reward'] = reward
-        self['next_state'] = next_state
-        self['done'] = done
-        self['info'] = info
-        for attr in self.__attributes:
-            setattr(self, attr, self[attr])
-
-    def __str__(self):
-        name = 'Transition('
-        for k in self.__attributes:
-            name += k + '=' + str(getattr(self, k)) + ', '
-        name += ')'
-        return name
-
-    def __repr__(self):
-        return str(self)
+def transition_factory(state, action, reward, next_state, done, **infos):
+    names = ['state', 'action', 'reward', 'next_state', 'done']
+    names += infos.keys()
+    Transition = namedtuple('Transition', names)
+    Transition.__new__.__defaults__ = (None, ) * len(names)
+    return Transition
 
 
-class ExperienceReplay(list):
+class ExperienceReplay(object):
 
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py)
@@ -110,15 +68,14 @@ class ExperienceReplay(list):
                   reward,
                   next_state,
                   done,
-                  info={
-                       'density': action_density,
-                       'log_prob': action_density.log_prob(action),
-                  })
+                  density: action_density,
+                  log_prob: action_density.log_prob(action),
+                  )
 
-    replay.state  # Tensor of states
-    replay.actions  # Tensor of actions
-    replay.densitys  # list of action_density
-    replay.log_probs  # Tensor of log_probabilities
+    replay.state()  # Tensor of states
+    replay.action()  # Tensor of actions
+    replay.density()  # list of action_density
+    replay.log_prob()  # Tensor of log_probabilities
 
     new_replay = replay[-10:]  # Last 10 transitions in new_replay
 
@@ -127,25 +84,14 @@ class ExperienceReplay(list):
     ~~~
     """
 
-    def __init__(self,
-                 states=None,
-                 actions=None,
-                 rewards=None,
-                 next_states=None,
-                 dones=None,
-                 infos=None):
-        list.__init__(self, [])
-        self.storage = {
-            'states': [] if states is None else states,
-            'actions': [] if actions is None else actions,
-            'rewards': [] if rewards is None else rewards,
-            'next_states': [] if next_states is None else next_states,
-            'dones': [] if dones is None else dones,
-            'infos': [] if infos is None else infos,
-        }
+    def __init__(self, storage=None, transition=None):
+        if storage is None:
+            storage = []
+        self._storage = storage
+        self.Transition = transition
 
     def _access_property(self, name):
-        values = self.storage[name]
+        values = [getattr(sars, name) for sars in self._storage]
         true_size = min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
@@ -153,7 +99,7 @@ class ExperienceReplay(list):
         return self.__getitem__(slice(i, j))
 
     def __len__(self):
-        return len(self.storage['states'])
+        return len(self._storage)
 
     def __str__(self):
         return 'ExperienceReplay(' + str(len(self)) + ')'
@@ -162,16 +108,11 @@ class ExperienceReplay(list):
         return str(self)
 
     def __add__(self, other):
-        new_replay = ExperienceReplay()
-        for sars in self:
-            new_replay.append(**sars)
-        for sars in other:
-            new_replay.append(**sars)
-        return new_replay
+        storage = self._storage + other._storage
+        return ExperienceReplay(storage, transition=self.Transition)
 
     def __iadd__(self, other):
-        for sars in other:
-            self.append(**sars)
+        self._storage += other._storage
         return self
 
     def __iter__(self):
@@ -179,58 +120,32 @@ class ExperienceReplay(list):
             yield self[i]
 
     def __getattr__(self, attr):
-        name = attr[:-1]
-        values = [info[name] if name in info else None for info in self.infos]
-        if isinstance(values[0], T):
-            size = values[0].size()
-            if all([isinstance(t, T) and t.size() == size for t in values]):
-                true_size = min_size(values[0])
-                return th.stack(values, dim=0).view(len(values), *true_size)
-        return values
+        if attr in self.Transition._fields:
+            return lambda: self._access_property(attr)
+        else:
+            msg = attr + ' not in ' + str(self.Transition._fields)
+            raise AttributeError(msg)
 
     def __getitem__(self, key):
-        content = {
-            'state': self.storage['states'][key],
-            'action': self.storage['actions'][key],
-            'reward': self.storage['rewards'][key],
-            'next_state': self.storage['next_states'][key],
-            'done': self.storage['dones'][key],
-            'info': self.storage['infos'][key],
-        }
+        value = self._storage[key]
         if isinstance(key, slice):
-            return ExperienceReplay(
-                states=content['state'],
-                actions=content['action'],
-                rewards=content['reward'],
-                next_states=content['next_state'],
-                dones=content['done'],
-                infos=content['info'],
-            )
-        return Transition(**content)
+            return ExperienceReplay(value, transition=self.Transition)
+        return value
 
-    @property
-    def states(self):
-        return self._access_property('states')
+    def state(self):
+        return self._access_property('state')
 
-    @property
-    def actions(self):
-        return self._access_property('actions')
+    def action(self):
+        return self._access_property('action')
 
-    @property
-    def rewards(self):
-        return self._access_property('rewards')
+    def reward(self):
+        return self._access_property('reward')
 
-    @property
-    def next_states(self):
-        return self._access_property('next_states')
+    def next_state(self):
+        return self._access_property('next_state')
 
-    @property
-    def dones(self):
-        return self._access_property('dones')
-
-    @property
-    def infos(self):
-        return self.storage['infos']
+    def done(self):
+        return self._access_property('done')
 
     def save(self, path):
         """
@@ -247,7 +162,8 @@ class ExperienceReplay(list):
         replay.save('my_replay_file.pt')
         ~~~
         """
-        th.save(self.storage, path)
+        data = [sars._asdict() for sars in self._storage]
+        th.save(data, path)
 
     def load(self, path):
         """
@@ -264,10 +180,17 @@ class ExperienceReplay(list):
         replay.load('my_replay_file.pt')
         ~~~
         """
-        storage = th.load(path)
-        self.storage = storage
+        data = th.load(path)
+        self.Transition = transition_factory(**data[0])
+        self._storage = [self.Transition(**sars) for sars in data]
 
-    def append(self, state, action, reward, next_state, done, info=None):
+    def append(self,
+               state=None,
+               action=None,
+               reward=None,
+               next_state=None,
+               done=None,
+               **infos):
         """
         **Description**
 
@@ -281,8 +204,8 @@ class ExperienceReplay(list):
         * **next_state** (tensor/ndarray/list) - Resulting state.
         * **done** (tensor/bool) - Is `next_state` a terminal (absorbing)
           state ?
-        * **info** (dict, *optional*, default=None) - Additional information on
-          the transition.
+        * **infos** (dict, *optional*, default=None) - Additional information
+          on the transition.
 
         **Example**
         ~~~python
@@ -292,20 +215,22 @@ class ExperienceReplay(list):
         })
         ~~~
         """
-        self.storage['states'].append(totensor(state))
-        self.storage['actions'].append(totensor(action))
-        self.storage['rewards'].append(totensor(reward))
-        self.storage['next_states'].append(totensor(next_state))
-        self.storage['dones'].append(totensor(done))
-        self.storage['infos'].append(info)
-
-    def add(self, *args, **kwargs):
-        """
-        **Description**
-
-        (Deprecated) Alias for .append()
-        """
-        self.append(*args, **kwargs)
+        if self.Transition is None:
+            self.Transition = transition_factory(state,
+                                                 action,
+                                                 reward,
+                                                 next_state,
+                                                 done,
+                                                 **infos)
+        for key in infos:
+            infos[key] = totensor(infos[key])
+        sars = self.Transition(totensor(state),
+                               totensor(action),
+                               totensor(reward),
+                               totensor(next_state),
+                               totensor(done),
+                               **infos)
+        self._storage.append(sars)
 
     def update(self, fn):
         """
@@ -334,16 +259,12 @@ class ExperienceReplay(list):
         })
         ~~~
         """
-        infos = self.storage['infos']
-        attributes = ['state', 'action', 'reward', 'next_state', 'done']
+        attributes = self.Transition._fields
         for i, sars in enumerate(self):
             update = fn(i, sars)
             for attr in update:
-                if attr == 'info':
-                    for info_name in update[attr]:
-                        infos[i][info_name] = update['info'][info_name]
-                elif attr in attributes:
-                    self.storage[attr + 's'][i] = update[attr]
+                if attr in attributes:
+                    setattr(self._storage[i], update[attr])
                 else:
                     raise Exception('Update not properly formatted.')
 
@@ -365,27 +286,20 @@ class ExperienceReplay(list):
           transitions.
         """
         if len(self) < 1 or size < 1:
-            return ExperienceReplay()
+            return ExperienceReplay(transition=self.Transition)
 
         indices = []
         if episodes:
             if size > 1 and not contiguous:
-                episodes = [self.sample(1, episodes=True) for _ in range(size)]
-                content = {
-                    'states': sum([e.storage['states'] for e in episodes], []),
-                    'actions': sum([e.storage['actions'] for e in episodes], []),
-                    'rewards': sum([e.storage['rewards'] for e in episodes], []),
-                    'next_states': sum([e.storage['next_states'] for e in episodes], []),
-                    'dones': sum([e.storage['dones'] for e in episodes], []),
-                    'infos': sum([e.storage['infos'] for e in episodes], []),
-                }
-                return ExperienceReplay(**content)
+                replay = ExperienceReplay(transition=self.Transition)
+                replay.Transition = self.Transition
+                return sum([self.sample(1, episodes=True) for _ in range(size)], replay)
             else:  # Sample 'size' contiguous episodes
-                num_episodes = self.dones.sum().int().item()
+                num_episodes = self.done().sum().int().item()
                 end = random.randint(size-1, num_episodes-size)
                 # Find idx of the end-th done
                 count = 0
-                dones = self.dones
+                dones = self.done()
                 for idx, d in reversed(list(enumerate(dones))):
                     if bool(d):
                         if count >= end:
@@ -410,11 +324,8 @@ class ExperienceReplay(list):
                 indices = [random.randint(0, length) for _ in range(size)]
 
         # Fill the sample
-        sample = ExperienceReplay()
-        for idx in indices:
-            transition = self[idx]
-            sample.append(**transition)
-        return sample
+        storage = [self[idx] for idx in indices]
+        return ExperienceReplay(storage, transition=self.Transition)
 
     def empty(self):
         """
@@ -427,4 +338,4 @@ class ExperienceReplay(list):
         replay.empty()
         ~~~
         """
-        self = self.__init__()
+        self._storage = []
