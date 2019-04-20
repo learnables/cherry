@@ -6,7 +6,7 @@ Assumptions
 * main(env)
 * Logger(env)
 * SEED
-* model or policy or actor/critic
+* model or policy or actor/critic or agent
 
 Instructions:
 
