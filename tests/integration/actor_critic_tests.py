@@ -135,6 +135,7 @@ class TestActorCritic(unittest.TestCase):
         Or, it's an out-of-order execution issue. (We did try to use a single
         MKL/OMP thread.)
         """
+
         th.set_num_threads(1)
         random.seed(SEED)
         np.random.seed(SEED)
@@ -157,7 +158,7 @@ class TestActorCritic(unittest.TestCase):
             running_reward = running_reward * 0.99 + len(replay) * 0.01
             if running_reward >= best_running:
                 best_running = running_reward
-            if (episode+1) % 10 == 0 and episode < 185:
+            if (episode+1) % 10 == 0:
 #                print(running_reward)
                 self.assertTrue((GROUND_TRUTHS[episode // 10] - running_reward)**2 <= 1e-8)
 #        self.assertTrue(best_running >= 150.0)
