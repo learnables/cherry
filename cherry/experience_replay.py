@@ -20,6 +20,34 @@ TODO: replay.astype(dtype) + init dtype
 
 class Transition(object):
 
+    """
+
+    **Description**
+
+    Represents a (s, a, r, s', d) tuple.
+
+    All attributes (including the ones in infos) are accessible via
+    `transition.name_of_attr`.
+    (e.g. `transition.log_prob` if `log_prob` is in `infos`.)
+
+    **Arguments**
+
+    * **state** (tensor) - Originating state.
+    * **action** (tensor) - Executed action.
+    * **reward** (tensor) - Observed reward.
+    * **next_state** (tensor) - Resulting state.
+    * **done** (tensor) - Is `next_state` a terminal (absorbing) state ?
+    * **infos** (dict, *optional*, default=None) - Additional information on
+      the transition.
+
+    **Example**
+
+    ~~~python
+    for transition in replay:
+        print(transition.state)
+    ~~~
+    """
+
     def __init__(self, state, action, reward, next_state, done, **infos):
         self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
         values = [state, action, reward, next_state, done]
