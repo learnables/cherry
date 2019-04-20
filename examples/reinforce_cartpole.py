@@ -48,12 +48,12 @@ def update(replay):
     policy_loss = []
 
     # Discount and normalize rewards
-    rewards = discount(GAMMA, replay.rewards, replay.dones)
+    rewards = discount(GAMMA, replay.reward(), replay.done())
     rewards = normalize(rewards)
 
     # Compute loss
-    for info, reward in zip(replay.infos, rewards):
-        log_prob = info['log_prob']
+    for sars, reward in zip(replay, rewards):
+        log_prob = sars.log_prob
         policy_loss.append(-log_prob * reward)
 
     # Take optimization step
@@ -77,13 +77,17 @@ if __name__ == '__main__':
     for i_episode in count(1):
         state = env.reset()
         for t in range(10000):  # Don't infinite loop while learning
-            mass = Categorical(policy(state)) 
+            mass = Categorical(policy(state))
             action = mass.sample()
             old_state = state
             state, reward, done, _ = env.step(action)
-            replay.append(old_state, action, reward, state, done, info={
-                'log_prob': mass.log_prob(action),  # Cache log_prob for later
-            })
+            replay.append(old_state,
+                          action,
+                          reward,
+                          state,
+                          done,
+                          # Cache log_prob for later
+                          log_prob=mass.log_prob(action))
             if RENDER:
                 env.render()
             if done:

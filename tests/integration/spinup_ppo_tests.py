@@ -222,28 +222,28 @@ def train_cherry():
         replay += env.run(get_action, episodes=1)
 
         if len(replay) >= BATCH_SIZE:
-            for r in replay.rewards:
+            for r in replay.reward():
                 result['rewards'].append(r.item())
             with torch.no_grad():
                 advantages = ch.rewards.generalized_advantage(DISCOUNT,
                                                               TRACE_DECAY,
-                                                              replay.rewards,
-                                                              replay.dones,
-                                                              replay.values,
+                                                              replay.reward(),
+                                                              replay.done(),
+                                                              replay.value(),
                                                               torch.zeros(1))
                 advantages = ch.utils.normalize(advantages, epsilon=1e-8)
                 returns = ch.rewards.discount(DISCOUNT,
-                                              replay.rewards,
-                                              replay.dones)
-                old_log_probs = replay.log_probs
+                                              replay.reward(),
+                                              replay.done())
+                old_log_probs = replay.log_prob()
 
-            new_values = replay.values
-            new_log_probs = replay.log_probs
+            new_values = replay.value()
+            new_log_probs = replay.log_prob()
             for epoch in range(PPO_EPOCHS):
                 # Recalculate outputs for subsequent iterations
                 if epoch > 0:
-                    masses, new_values = agent(replay.states)
-                    new_log_probs = masses.log_prob(replay.actions)
+                    masses, new_values = agent(replay.state())
+                    new_log_probs = masses.log_prob(replay.action())
                     new_values = new_values.view(-1, 1)
 
                 # Update the policy by maximising the PPO-Clip objective
