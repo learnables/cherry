@@ -112,7 +112,7 @@ class Logger(Wrapper):
         msg += '- Mean episode reward: ' + '%.2f' % mean(steps_stats['episode_rewards'])
         msg += ' +/- ' + '%.2f' % pstdev(steps_stats['episode_rewards']) + '\n'
         for key in self.values.keys():
-            msg += '- Mean ' + key + ': ' + '%.2f' % mean(steps_stats[key]) 
+            msg += '- Mean ' + key + ': ' + '%.2f' % mean(steps_stats[key])
             msg += ' +/- ' + '%.2f' % pstdev(steps_stats[key]) + '\n'
         return msg
 
@@ -120,12 +120,11 @@ class Logger(Wrapper):
         return self.env.reset(*args, **kwargs)
 
     def log(self, key, value):
-        if not key in self.values:
+        if key not in self.values:
             self.values[key] = []
             self.values_idx[key] = 0
             setattr(self, key, self.values[key])
         self.values[key].append(value)
-
 
     def step(self, *args, **kwargs):
         state, reward, done, info = self.env.step(*args, **kwargs)
