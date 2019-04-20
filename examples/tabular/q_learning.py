@@ -30,8 +30,8 @@ class Agent(nn.Module):
         return action, info
 
 
-if __name__ == '__main__':
-    env = gym.make('CliffWalking-v0')
+def main(env='CliffWalking-v0'):
+    env = gym.make(env)
     env = envs.Logger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -51,3 +51,7 @@ if __name__ == '__main__':
         loss = td_error.pow(2).mul(0.5)
         loss.backward()
         optimizer.step()
+
+
+if __name__ == '__main__':
+    main()
