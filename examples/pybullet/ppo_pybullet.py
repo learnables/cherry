@@ -2,7 +2,6 @@
 
 # See: https://github.com/openai/roboschool/issues/15
 from OpenGL import GLU
-import ppt
 
 import random
 import gym
@@ -116,7 +115,6 @@ def update(replay, optimizer, policy, env, lr_schedule):
     env.log('policy loss', mean(policy_losses).item())
     env.log('policy entropy', mean(entropies).item())
     env.log('value loss', mean(value_losses).item())
-    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO results')
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -133,12 +131,8 @@ def get_action_value(state, policy):
     return action, info
 
 
-if __name__ == '__main__':
-    # env_name = 'CartPoleBulletEnv-v0'
-    env_name = 'AntBulletEnv-v0'
-    env_name = 'MinitaurTrottingEnv-v0'
-#    env_name = 'RoboschoolAnt-v1'
-    env = gym.make(env_name)
+def main(env='MinitaurTrottingEnv-v0'):
+    env = gym.make(env)
     env = envs.AddTimestep(env)
     env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
@@ -160,15 +154,9 @@ if __name__ == '__main__':
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
 
-    mean = lambda x: sum(x) / len(x)
-    result = mean(env.all_rewards[-10000:])
-    data = {
-        'result': result,
-        'env': env_name,
-        'all_rewards': env.all_rewards,
-        'all_dones': env.all_dones,
-        'infos': env.values,
-    }
-    th.save(data, './regression_test/' + env_name + '.pickle')
-    th.save(policy.state_dict(),
-            './regression_test/' + env_name + '.pth')
+if __name__ == '__main__':
+    env_name = 'CartPoleBulletEnv-v0'
+    env_name = 'AntBulletEnv-v0'
+    env_name = 'RoboschoolAnt-v1'
+    env_name = 'MinitaurTrottingEnv-v0'
+    main(env_name)
