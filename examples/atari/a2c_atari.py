@@ -21,6 +21,7 @@ ENT_WEIGHT = 0.01
 LR = 7e-4
 GRAD_NORM = 0.5
 A2C_STEPS = 5 * 16
+SEED = 42
 
 
 class NatureCNN(nn.Module):
@@ -81,20 +82,19 @@ def get_action_value(state, policy):
 
 
 def main(env='PongNoFrameskip-v4'):
-    num_steps = 5000000
-    seed = 42
+    num_steps = 10000000
 
     th.set_num_threads(1)
-    random.seed(seed)
-    th.manual_seed(seed)
-    np.random.seed(seed)
+    random.seed(SEED)
+    th.manual_seed(SEED)
+    np.random.seed(SEED)
 
     env = gym.make(env)
     env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
-    env.seed(seed)
+    env.seed(SEED)
 
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
