@@ -35,10 +35,13 @@ if __name__ == '__main__':
     envs = agent = policy = model = actor = critic = None
 
     # Parse arguments
-    script, env, seed = sys.argv[-3:]
+    script = os.environ['BENCH_SCRIPT']
+    env = os.environ['BENCH_ENV']
+    seed = os.environ['BENCH_SEED']
     script_dir = os.path.dirname(script)
     script_file = os.path.basename(script)
     seed = int(seed)
+    print('Benchmarks: Running ' + script)
 
     # Init result logger
     config = {
