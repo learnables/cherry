@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
-MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 python benchmark.py ../examples/pybullet/ppo_pybullet.py CartPoleBulletEnv-v1 42
-MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 python benchmark.py ../examples/pybullet/ppo_pybullet.py RoboschoolAnt-v1 42
-MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 python benchmark.py ../examples/pybullet/ppo_pybullet.py MinitaurTrottingEnv-v0 42
-MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 python benchmark.py ../examples/pybullet/ppo_pybullet.py AntBulletEnv-v0 42
+# PPO
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/ppo_pybullet.py BENCH_ENV=CartPoleBulletEnv-v1   BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/ppo_pybullet.py BENCH_ENV=ReacherBulletEnv-v0    BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/ppo_pybullet.py BENCH_ENV=RoboschoolAnt-v1       BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/ppo_pybullet.py BENCH_ENV=MinitaurTrottingEnv-v0 BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/ppo_pybullet.py BENCH_ENV=AntBulletEnv-v0        BENCH_SEED=42 python benchmark.py &
+wait
+
+# SAC
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/sac_pybullet.py BENCH_ENV=CartPoleBulletEnv-v1   BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/sac_pybullet.py BENCH_ENV=ReacherBulletEnv-v0    BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/sac_pybullet.py BENCH_ENV=RoboschoolAnt-v1       BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/sac_pybullet.py BENCH_ENV=MinitaurTrottingEnv-v0 BENCH_SEED=42 python benchmark.py &
+MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 BENCH_SCRIPT=../examples/pybullet/sac_pybullet.py BENCH_ENV=AntBulletEnv-v0        BENCH_SEED=42 python benchmark.py &
+wait

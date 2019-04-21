@@ -20,7 +20,6 @@ import cherry.envs as envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
