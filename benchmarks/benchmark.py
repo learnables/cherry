@@ -24,14 +24,15 @@ def benchmark_stats(original_stats):
 
     def new_stats(self, *args, **kwargs):
         result = original_stats(self, *args, **kwargs)
-        wandb.log({'last_episode_rewards': mean(result['episode_rewards'])})
+        wandb.log({'10_ep_mean_reward': mean(result['episode_rewards']),
+                   '10_ep_mean_length': mean(result['episode_lengths'])})
         return result
     return new_stats
 
 
 if __name__ == '__main__':
     # To avoid undefined warnings
-    main = None
+    main = get_action = None
     envs = agent = policy = model = actor = critic = None
 
     # Parse arguments
@@ -50,7 +51,7 @@ if __name__ == '__main__':
         'script': script,
     }
     wandb.init(
-        project='benchmarks',
+        project='cherry-benchmarks',
         name=script_file[:-3] + '/' + env,
         group=script,
         config=config,
@@ -107,8 +108,6 @@ if __name__ == '__main__':
                 'smoothed_returns': r,
             })
 
-    # TODO: Compute some test rewards
-
     # Save model weights
     print('Benchmarks: Saving weights.')
     for name, __model in [('model.pth', model),
@@ -120,4 +119,22 @@ if __name__ == '__main__':
             path = os.path.join(wandb.run.dir, name)
             th.save(__model.state_dict(),  path)
 
-    # TODO: Save some visualizations
+    # Sample new episodes
+    act = None
+    if get_action is not None:  # PyBulet + Atari
+        act = get_action
+    elif agent is not None:  # Spinup + Tabular
+        act = agent
+
+    if act is not None:
+        # Compute some test rewards
+        if hasattr(env, 'run'):
+            print('Benchmarks: Computing test rewards.')
+            for step in range(25):
+                replay = env.run(act, episodes=1)
+                sum_rew = replay.reward().sum().item()
+                wandb.log({
+                    'test_time_rewards': sum_rew
+                }, step=step)
+        # TODO: Save some visualizations
+        print('Benchmarks: Creating rollout videos.')
