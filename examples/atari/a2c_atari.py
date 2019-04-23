@@ -96,16 +96,19 @@ def main(env='PongNoFrameskip-v4'):
     env = envs.Runner(env)
     env.seed(SEED)
 
+    num_updates = num_steps // A2C_STEPS + 1
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
+    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda step: 1 - step/num_updates)
     get_action = lambda state: get_action_value(state, policy)
 
-    for step in range(num_steps // A2C_STEPS + 1):
+    for updt in range(num_updates):
         # Sample some transitions
         replay = env.run(get_action, steps=A2C_STEPS)
 
         # Update policy
         update(replay, optimizer, policy, env=env)
+        lr_schedule.step(updt)
 
 
 if __name__ == '__main__':
