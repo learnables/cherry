@@ -11,6 +11,8 @@ import cherry as ch
 
 import wandb
 
+from shutil import copyfile
+
 
 def benchmark_log(original_log):
     def new_log(self, key, value):
@@ -49,6 +51,7 @@ if __name__ == '__main__':
         'seed': seed,
         'env': env,
         'script': script,
+        'cherry.__version__': ch.__version__,
     }
     wandb.init(
         project='cherry-benchmarks',
@@ -56,6 +59,11 @@ if __name__ == '__main__':
         group=script,
         config=config,
     )
+
+    # Save benchmarking script
+    path = os.path.join(wandb.run.dir, script_file)
+    copyfile(script, path)
+
 
     # Import script context
     sys.path.insert(0, script_dir)
