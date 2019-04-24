@@ -23,6 +23,18 @@ def totensor(array, dtype=None):
     return array
 
 
+def istensorable(array):
+    types = (int,
+             float,
+             list,
+             np.ndarray,
+             np.bool_,
+             th.Tensor)
+    if isinstance(array, types):
+        return True
+    return False
+
+
 def min_size(tensor):
     """
     [[Source]]()
