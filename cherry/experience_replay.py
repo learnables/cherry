@@ -63,7 +63,7 @@ class Transition(object):
     def __str__(self):
         string = 'Transition(' + ', '.join(self.__fields)
         if self.device is not None:
-            string += ', device=' + str(self.device)
+            string += ', device=\'' + str(self.device) + '\''
         string += ')'
         return string
 
@@ -171,7 +171,7 @@ class ExperienceReplay(list):
     def __str__(self):
         string = 'ExperienceReplay(' + str(len(self))
         if self.device is not None:
-            string += ', device=' + str(self.device)
+            string += ', device=\'' + str(self.device) + '\''
         string += ')'
         return string
 
