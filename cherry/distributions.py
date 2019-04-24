@@ -107,15 +107,16 @@ class ActionDistribution(nn.Module):
     def __init__(self, env, logstd=None, use_probs=False, reparam=False):
         super(ActionDistribution, self).__init__()
         self.env = env
-        if logstd is None:
-            action_size = ch.envs.get_space_dimension(env.action_space)
-            logstd = nn.Parameter(th.zeros(action_size))
-        if isinstance(logstd, (float, int)):
-            logstd = nn.Parameter(th.Tensor([logstd]))
-        self.logstd = logstd
         self.use_probs = use_probs
         self.reparam = reparam
         self.is_discrete = isinstance(env.action_space, Discrete)
+        if not self.is_discrete:
+            if logstd is None:
+                action_size = ch.envs.get_space_dimension(env.action_space)
+                logstd = nn.Parameter(th.zeros(action_size))
+            if isinstance(logstd, (float, int)):
+                logstd = nn.Parameter(th.Tensor([logstd]))
+            self.logstd = logstd
 
     def forward(self, x):
         if self.is_discrete:
