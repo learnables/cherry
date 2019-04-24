@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import ppt
 import random
 import gym
 import numpy as np
@@ -56,20 +55,21 @@ class NatureCNN(nn.Module):
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay[-1].next_state)
     # NOTE: Kostrikov uses GAE here.
-    # advantages = ch.rewards.generalized_advantage(GAMMA,
-    #                                           TAU,
-    #                                           replay.rewards,
-    #                                           replay.dones,
-    #                                           replay.values,
-    #                                           next_state_value)
+    advantages = ch.rewards.generalized_advantage(GAMMA,
+                                                  TAU,
+                                                  replay.reward(),
+                                                  replay.done(),
+                                                  replay.value(),
+                                                  next_state_value)
 
-    # advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
-    # rewards = [a + v for a, v in zip(advantages, replay.values)]
+    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
+#    rewards = [a + v for a, v in zip(advantages, replay.value())]
+    rewards = advantages + replay.value()
 
-    rewards = ch.rewards.discount(GAMMA,
-                                  replay.reward(),
-                                  replay.done(),
-                                  bootstrap=next_state_value)
+#    rewards = ch.rewards.discount(GAMMA,
+#                                  replay.reward(),
+#                                  replay.done(),
+#                                  bootstrap=next_state_value)
     rewards = rewards.detach()
     advantages = rewards.detach() - replay.value().detach()
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
@@ -108,15 +108,14 @@ def update(replay, optimizer, policy, env, lr_schedule):
         th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
         optimizer.step()
 
-        policy_losses.append(policy_loss)
-        entropies.append(entropy)
-        value_losses.append(value_loss)
+        policy_losses.append(policy_loss.item())
+        entropies.append(entropy.item())
+        value_losses.append(value_loss.item())
 
     # Log metrics
-    env.log('policy loss', mean(policy_losses).item())
-    env.log('policy entropy', mean(entropies).item())
-    env.log('value loss', mean(value_losses).item())
-    ppt.plot(mean(env.all_rewards[-10000:]), 'PPO ATARI')
+    env.log('policy loss', mean(policy_losses))
+    env.log('policy entropy', mean(entropies))
+    env.log('value loss', mean(value_losses))
 
     # Update the parameters on schedule
     if LINEAR_SCHEDULE:
@@ -133,26 +132,33 @@ def get_action_value(state, policy):
     return action, info
 
 
-if __name__ == '__main__':
+def main(env='PongNoFrameskip-v4'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
 
-    env_name = 'PongNoFrameskip-v4'
-#    env_name = 'BreakoutNoFrameskip-v4'
-    env = gym.make(env_name)
+    env = gym.make(env)
     env = envs.OpenAIAtari(env)
     env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
-    policy = NatureCNN(env)
+    policy = NatureCNN(env).to('cuda:0')
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
     lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
     get_action = lambda state: get_action_value(state, policy)
 
     for epoch in range(num_updates):
+        policy.cpu()
         replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
+        replay = replay.cuda()
+        policy.cuda()
         update(replay, optimizer, policy, env, lr_schedule)
+
+
+if __name__ == '__main__':
+    env_name = 'PongNoFrameskip-v4'
+#    env_name = 'BreakoutNoFrameskip-v4'
+    main(env_name)
