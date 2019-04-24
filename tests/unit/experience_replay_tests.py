@@ -276,7 +276,7 @@ class TestExperienceReplay(unittest.TestCase):
             self.assertTrue(close(sars.next_state, sars_.next_state))
             self.assertTrue(close(sars.vector, sars_.vector))
 
-    def update_test(self):
+    def test_to_device(self):
         for i in range(NUM_SAMPLES):
             self.replay.append(th.randn(VECTOR_SIZE),
                                th.randn(VECTOR_SIZE),
@@ -285,18 +285,47 @@ class TestExperienceReplay(unittest.TestCase):
                                False,
                                vector=th.randn(VECTOR_SIZE))
 
-        clone = ch.ExperienceReplay(copy.deepcopy(self.replay._storage))
-        self.replay.update(lambda i, sars: {
-            'reward': sars.reward + 1,
-            'action': sars.action + 1,
-            'state': sars.state + 1,
-            'vector': sars.vector + 1,
-        })
-        for sars, sars_ in zip(clone, self.replay):
-            self.assertTrue(close(sars.reward + 1, sars_.reward))
-            self.assertTrue(close(sars.action + 1, sars_.action))
-            self.assertTrue(close(sars.state + 1, sars_.state))
-            self.assertTrue(close(sars.vector + 1, sars_.vector))
+        # Test function calls
+        replay = self.replay.to(None)
+        self.assertEqual(len(replay), len(self.replay))
+        replay = self.replay.to('cpu')
+        self.assertEqual(len(replay), len(self.replay))
+        replay = self.replay.cpu()
+        self.assertEqual(len(replay), len(self.replay))
+
+        for cr, sr in zip(replay, self.replay):
+            self.assertTrue(cr.state is sr.state)
+            self.assertTrue(cr.action is sr.action)
+            self.assertTrue(cr.next_state is sr.next_state)
+            self.assertTrue(cr.reward is sr.reward)
+            self.assertTrue(cr.vector is sr.vector)
+            self.assertTrue(cr.vector is sr.vector)
+
+        # Test cuda
+        if th.cuda.is_available():
+            cuda_replay = self.replay.cuda()
+
+            self.assertEqual(len(cuda_replay), len(self.replay))
+
+            for cr, sr in zip(cuda_replay, self.replay):
+                self.assertTrue(close(cr.state, sr.state.cuda()))
+                self.assertTrue(close(cr.action, sr.action.cuda()))
+                self.assertTrue(close(cr.next_state, sr.next_state.cuda()))
+                self.assertTrue(close(cr.reward, sr.reward.cuda()))
+                self.assertTrue(close(cr.vector, sr.vector.cuda()))
+                self.assertTrue(close(cr.vector, sr.vector.cuda()))
+
+            replay = cuda_replay.to('cpu')
+
+            self.assertEqual(len(replay), len(self.replay))
+
+            for cr, sr in zip(replay, self.replay):
+                self.assertTrue(close(cr.state, sr.state))
+                self.assertTrue(close(cr.action, sr.action))
+                self.assertTrue(close(cr.next_state, sr.next_state))
+                self.assertTrue(close(cr.reward, sr.reward))
+                self.assertTrue(close(cr.vector, sr.vector))
+                self.assertTrue(close(cr.vector, sr.vector))
 
 
 if __name__ == '__main__':
