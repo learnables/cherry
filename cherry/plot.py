@@ -194,7 +194,7 @@ def exponential_smoothing(x, y=None, temperature=1.0):
 
 def smooth(x, y=None, temperature=1.0):
     # Not officially supported.
-    result = exponential_smoothing(x, temperature=temperature)[1]
+    result = exponential_smoothing(x=x, y=y, temperature=temperature)
     if y is None:
         return result[1]
     return result
