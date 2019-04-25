@@ -33,7 +33,7 @@ class EpsilonGreedy(nn.Module):
 
     def __init__(self, epsilon=0.05, learnable=False):
         super(EpsilonGreedy, self).__init__()
-        msg = 'epsilon is not in a valid range'
+        msg = 'EpsilonGreedy: epsilon is not in a valid range.'
         assert epsilon >= 0.0 and epsilon <= 1.0, msg
         if learnable:
             epsilon = nn.Parameter(th.Tensor([epsilon]))
