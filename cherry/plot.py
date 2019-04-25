@@ -131,7 +131,6 @@ def exponential_smoothing(x, y=None, temperature=1.0):
     **Decription**
 
     Two-sided exponential moving average for smoothing a curve.
-    Alised to `smooth`.
 
     It performs regular exponential moving average twice from two different
     sides and then combines the results together.
@@ -193,4 +192,9 @@ def exponential_smoothing(x, y=None, temperature=1.0):
     return x_after1, y_after
 
 
-smooth = exponential_smoothing
+def smooth(x, y=None, temperature=1.0):
+    # Not officially supported.
+    result = exponential_smoothing(x, temperature=temperature)[1]
+    if y is None:
+        return result[1]
+    return result
