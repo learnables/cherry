@@ -16,7 +16,7 @@ from shutil import copyfile
 
 def benchmark_log(original_log):
     def new_log(self, key, value):
-        wandb.log({key: value})
+        wandb.log({key: value}, step=self.num_steps)
         original_log(self, key, value)
     return new_log
 
@@ -27,7 +27,8 @@ def benchmark_stats(original_stats):
     def new_stats(self, *args, **kwargs):
         result = original_stats(self, *args, **kwargs)
         wandb.log({'10_ep_mean_reward': mean(result['episode_rewards']),
-                   '10_ep_mean_length': mean(result['episode_lengths'])})
+                   '10_ep_mean_length': mean(result['episode_lengths'])},
+                  step=self.num_steps)
         return result
     return new_stats
 
@@ -96,25 +97,26 @@ if __name__ == '__main__':
         print('Benchmarks: Computing rewards.')
         R = 0
         returns = []
-        for reward, done in zip(env.all_rewards, env.all_dones):
+        for i, (reward, done) in enumerate(zip(env.all_rewards,
+                                               env.all_dones)):
             wandb.log({
                 'all_rewards': reward,
                 'all_dones': done,
-            })
+            }, step=i)
 
             R += reward
             if bool(done):
                 wandb.log({
                     'episode_rewards': R,
-                })
+                }, step=i)
                 returns.append(R)
                 R = 0
 
         smoothed_returns = ch.plot.smooth(returns)[1]
-        for r in smoothed_returns:
+        for i, r in enumerate(smoothed_returns):
             wandb.log({
                 'smoothed_returns': r,
-            })
+            }, step=i)
 
     # Save model weights
     print('Benchmarks: Saving weights.')
