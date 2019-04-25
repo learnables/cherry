@@ -127,7 +127,8 @@ if __name__ == '__main__':
                           ('agent.pth', agent)]:
         if __model is not None:
             path = os.path.join(wandb.run.dir, name)
-            th.save(__model.state_dict(),  path)
+            if hasattr(__model, 'state_dict'):
+                th.save(__model.state_dict(),  path)
 
     # Sample new episodes
     act = None
