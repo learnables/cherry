@@ -67,6 +67,7 @@ def main(env):
     env.seed(SEED)
     env = envs.Torch(env)
     env = envs.ActionLambda(env, convert_discrete_to_continuous_action)
+    env = envs.Logger(env)
     env = envs.Runner(env)
 
     replay = ch.ExperienceReplay()
@@ -108,8 +109,6 @@ def main(env):
             # Update Q-function by one step of gradient descent
             pred_values = agent(batch.state())[1].gather(1, batch.action())
             value_loss = F.mse_loss(pred_values, target_values)
-            print('step', step)
-            print('vloss', value_loss.item())
             optimiser.zero_grad()
             value_loss.backward()
             optimiser.step()
