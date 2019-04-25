@@ -15,7 +15,12 @@ def totensor(array, dtype=None):
         array = [array, ]
     if isinstance(array, list):
         array = np.array(array)
-    if isinstance(array, (np.ndarray, np.bool_)):
+    if isinstance(array, (np.ndarray,
+                          np.bool_,
+                          np.float32,
+                          np.float64,
+                          np.int32,
+                          np.int64)):
         if array.dtype == np.bool_:
             array = array.astype(np.uint8)
         array = th.tensor(array, dtype=dtype)
