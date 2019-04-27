@@ -66,8 +66,8 @@ replay.append(old_state, action, reward, state, done, info = {
     'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
     'value': value
 })
-replay.actions  # Tensor of all stored actions
-replay.states  # Tensor of all stored states
+replay.action()  # Tensor of all stored actions
+replay.state()  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
 
 # Discounting and normalizing rewards
@@ -84,7 +84,7 @@ Concrete examples are available in the [examples/](./examples/) folder.
 
 ## Documentation
 
-Documentation and tutorials are available on cherry’s website: [http://seba-1511.github.io/cherry](http://seba-1511.github.io/cherry).
+Documentation and tutorials are available on cherry’s website: [http://cherry-rl.net](http://cherry-rl.net).
 
 ## TODO
 
