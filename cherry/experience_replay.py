@@ -6,8 +6,6 @@ import torch as th
 from cherry.utils import totensor, istensorable, min_size
 
 """
-TODO: replay.myattr doesn't recompute a new tensor.
-TODO: replay.to(device)
 TODO: replay.astype(dtype) + init dtype
 """
 
@@ -76,15 +74,27 @@ class Transition(object):
     def cuda(self, device=0, *args, **kwargs):
         return self.to('cuda:' + str(device), *args, **kwargs)
 
-    def to(self, device='cpu', *args, **kwargs):
+    def _apply(self, fn, device=None):
+        if device is None:
+            device = self.device
         new_transition = {'device': device}
         for field in self.__fields:
             value = getattr(self, field)
-            if hasattr(value, 'to'):
-                new_transition[field] = value.to(device, *args, **kwargs)
+            if isinstance(value, th.Tensor):
+                new_transition[field] = fn(value)
             else:
                 new_transition[field] = value
         return Transition(**new_transition)
+
+    def to(self, *args, **kwargs):
+        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        return self._apply(lambda t: t.to(device, dtype if t.is_floating_point() else None, non_blocking), device)
+
+    def half(self):
+        return self._apply(lambda t: t.half() if t.is_floating_point() else t)
+
+    def double(self):
+        return self._apply(lambda t: t.double() if t.is_floating_point() else t)
 
 
 class ExperienceReplay(list):
@@ -352,6 +362,15 @@ class ExperienceReplay(list):
     def cuda(self, device=0, *args, **kwargs):
         return self.to('cuda:' + str(device), *args, **kwargs)
 
-    def to(self, device='cpu', *args, **kwargs):
-        storage = [sars.to(device, *args, **kwargs) for sars in self._storage]
+    def to(self, *args, **kwargs):
+        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        storage = [sars.to(*args, **kwargs) for sars in self._storage]
         return ExperienceReplay(storage, device=device)
+
+    def half(self):
+        storage = [sars.half() for sars in self._storage]
+        return ExperienceReplay(storage, device=self.device)
+
+    def double(self):
+        storage = [sars.double() for sars in self._storage]
+        return ExperienceReplay(storage, device=self.device)
