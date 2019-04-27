@@ -27,7 +27,7 @@ def ci95(values):
     smoothed = []
     for replay in replays:
         rewards = replay.rewards.view(-1).tolist()
-        x, y_smoothed = ch.plot.smooth(rewards)
+        y_smoothed = ch.plot.smooth(rewards)
         smoothed.append(y_smoothed)
     means = [mean(r) for r in zip(*smoothed)]
     confidences = [ch.plot.ci95(r) for r in zip(*smoothed)]
