@@ -62,10 +62,14 @@ env = ch.envs.Torch(env)  # Converts actions/states to tensors
 
 # Storing and retrieving experience
 replay = ch.ExperienceReplay()
-replay.append(old_state, action, reward, state, done, info = {
-    'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
-    'value': value
-})
+replay.append(old_state,
+              action,
+              reward,
+              state,
+              done,
+              log_prob=mass.log_prob(action),  # Can add any variable/tensor to the transitions
+              value=value
+            )
 replay.action()  # Tensor of all stored actions
 replay.state()  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
