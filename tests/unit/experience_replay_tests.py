@@ -327,6 +327,48 @@ class TestExperienceReplay(unittest.TestCase):
                 self.assertTrue(close(cr.vector, sr.vector))
                 self.assertTrue(close(cr.vector, sr.vector))
 
+    def test_to_dtype(self):
+        for i in range(NUM_SAMPLES):
+            self.replay.append(th.randn(VECTOR_SIZE),
+                               th.randn(VECTOR_SIZE),
+                               i,
+                               th.randn(VECTOR_SIZE),
+                               False,
+                               vector=th.randn(VECTOR_SIZE))
+        f32 = self.replay.to(th.float32)
+        f64 = self.replay.to(th.float64)
+        i32 = self.replay.to(th.int32)
+        i64 = self.replay.to(th.int64)
+
+    def test_half_double(self):
+        for i in range(NUM_SAMPLES):
+            self.replay.append(th.randn(VECTOR_SIZE),
+                               th.randn(VECTOR_SIZE),
+                               i,
+                               th.randn(VECTOR_SIZE),
+                               False,
+                               vector=th.randn(VECTOR_SIZE))
+        half = self.replay.half()
+        half_dtype = self.replay[0].state.half().dtype
+        for sars in half:
+            self.assertTrue(sars.state.dtype == half_dtype)
+
+        double = self.replay.double()
+        double_dtype = self.replay[0].state.double().dtype
+        for sars in double:
+            self.assertTrue(sars.state.dtype == double_dtype)
+
+        if th.cuda.is_available():
+            cuda_replay = self.replay.cuda()
+            half = cuda_replay.half()
+            half_dtype = cuda_replay[0].state.half().dtype
+            for sars in half:
+                self.assertTrue(sars.state.dtype == half_dtype)
+            double = cuda_replay.double()
+            double_dtype = cuda_replay[0].state.double().dtype
+            for sars in double:
+                self.assertTrue(sars.state.dtype == double_dtype)
+
 
 if __name__ == '__main__':
     unittest.main()
