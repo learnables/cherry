@@ -19,6 +19,9 @@ class Wrapper(gym.Wrapper):
         env.log('asdf', 23)  # Uses log() method from envs.Logger.
     """
 
+    def reset(self, *args, **kwargs):
+        return self.env.reset(*args, **kwargs)
+
     @property
     def state_size(self):
         return get_space_dimension(self.observation_space)
