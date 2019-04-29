@@ -22,6 +22,12 @@ dist-a2c:
 	python -m torch.distributed.launch \
 	          --nproc_per_node=16 \
 		    examples/atari/dist_a2c_atari.py
+
+a2c:
+	OMP_NUM_THREADS=4 \
+	MKL_NUM_THREADS=4 \
+	python examples/atari/a2c_atari.py
+
 ppoa:
 	OMP_NUM_THREADS=4 \
 	MKL_NUM_THREADS=4 \

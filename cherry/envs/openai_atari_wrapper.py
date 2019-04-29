@@ -106,7 +106,7 @@ class EpisodicLifeEnv(Wrapper):
         """
         Wrapper.__init__(self, env)
         self.lives = 0
-        self.was_real_done  = True
+        self.was_real_done = True
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
@@ -236,7 +236,6 @@ class FrameStack(FrameStack_):
     def _get_ob(self):
         assert len(self.frames) == self.k
         return LazyFrames(list(self.frames))
-
 
 
 class ScaledFloatFrame(gym.ObservationWrapper):
