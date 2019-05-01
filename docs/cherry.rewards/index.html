@@ -217,14 +217,17 @@ discounted = ch.rewards.discount(0.99,
 <li>tensor - Tensor of advantages.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">mass, next_value = policy(replay.next_states[-1])
+<pre><code class="python">mass, next_value = policy(replay[-1].next_state)
 advantages = generalized_advantage(0.99,
                                    0.95,
-                                   replay.)
+                                   replay.reward(),
+                                   replay.value(),
+                                   replay.done(),
+                                   next_value)
 </code></pre>
 
 <h2 id="temporal_difference">temporal_difference</h2>
-<pre><code class="python">temporal_difference(gamma, rewards, dones, values, next_value)
+<pre><code class="python">temporal_difference(gamma, rewards, dones, values, next_values)
 </code></pre>
 
 <p><strong>Description</strong></p>
@@ -241,16 +244,17 @@ advantages = generalized_advantage(0.99,
 <li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
   Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
 <li><strong>values</strong> (tensor) - Values for the states producing the rewards.</li>
-<li><strong>next_value</strong> (tensor) - Value of the state obtained after the
+<li><strong>next_values</strong> (tensor) - Values of the state obtained after the
   transition from the state used to compute the last value in <code>values</code>.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">value = vf(state)
+<pre><code class="python">values = vf(replay.states())
+next_values = vf(replay.next_states())
 td_errors = temporal_difference(0.99,
-                                replay.rewards,
-                                replay.dones,
-                                replay.values,
-                                next_value)
+                                replay.reward(),
+                                replay.done(),
+                                values,
+                                next_values)
 </code></pre></div>
         </div>
 

@@ -171,7 +171,7 @@
 smoothed = []
 for replay in replays:
     rewards = replay.rewards.view(-1).tolist()
-    x, y_smoothed = ch.plot.smooth(rewards)
+    y_smoothed = ch.plot.smooth(rewards)
     smoothed.append(y_smoothed)
 means = [mean(r) for r in zip(*smoothed)]
 confidences = [ch.plot.ci95(r) for r in zip(*smoothed)]
@@ -185,8 +185,7 @@ upper_bound = [conf[1] for conf in confidences]
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/plot.py">[Source]</a></p>
 <p><strong>Decription</strong></p>
-<p>Two-sided exponential moving average for smoothing a curve.
-Alised to <code>smooth</code>.</p>
+<p>Two-sided exponential moving average for smoothing a curve.</p>
 <p>It performs regular exponential moving average twice from two different
 sides and then combines the results together.</p>
 <p><strong>Arguments</strong></p>

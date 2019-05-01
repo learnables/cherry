@@ -210,12 +210,16 @@ env = ch.envs.Torch(env)  # Converts actions/states to tensors
 
 # Storing and retrieving experience
 replay = ch.ExperienceReplay()
-replay.append(old_state, action, reward, state, done, info = {
-    'log_prob': mass.log_prob(action),  # Can add any variable/tensor to the transitions
-    'value': value
-})
-replay.actions  # Tensor of all stored actions
-replay.states  # Tensor of all stored states
+replay.append(old_state,
+              action,
+              reward,
+              state,
+              done,
+              log_prob=mass.log_prob(action),  # Can add any variable/tensor to the transitions
+              value=value
+            )
+replay.action()  # Tensor of all stored actions
+replay.state()  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
 
 # Discounting and normalizing rewards
@@ -230,7 +234,7 @@ replay = env.run(get_action, steps=100)  # alternatively: episodes=10
 
 <p>Concrete examples are available in the <a href="./examples/">examples/</a> folder.</p>
 <h2 id="documentation">Documentation</h2>
-<p>Documentation and tutorials are available on cherry’s website: <a href="http://seba-1511.github.io/cherry">http://seba-1511.github.io/cherry</a>.</p>
+<p>Documentation and tutorials are available on cherry’s website: <a href="http://cherry-rl.net">http://cherry-rl.net</a>.</p>
 <h2 id="todo">TODO</h2>
 <p>Some functionalities that we might want to implement.</p>
 <ul>
@@ -336,5 +340,5 @@ replay = env.run(get_action, steps=100)  # alternatively: episodes=10
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-04-20 19:06:44
+Build Date UTC : 2019-05-01 04:44:55
 -->
