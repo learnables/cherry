@@ -44,7 +44,11 @@ def main(env='CliffWalking-v0'):
         curr_q = transition.q_action
         next_action, next_info = agent(transition.next_state)
         next_q = next_info['q_action'].detach()
-        td_error = transition.reward + discount * next_q - curr_q
+        td_error = temporal_difference(discount,
+                                       transition.reward,
+                                       transition.done,
+                                       curr_q,
+                                       next_q)
 
         optimizer.zero_grad()
         loss = td_error.pow(2).mul(0.5)

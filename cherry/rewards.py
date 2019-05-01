@@ -103,10 +103,13 @@ def generalized_advantage(gamma,
 
     **Example**
     ~~~python
-    mass, next_value = policy(replay.next_states[-1])
+    mass, next_value = policy(replay[-1].next_state)
     advantages = generalized_advantage(0.99,
                                        0.95,
-                                       replay.)
+                                       replay.reward(),
+                                       replay.value(),
+                                       replay.done(),
+                                       next_value)
     ~~~
     """
 
@@ -118,12 +121,13 @@ def generalized_advantage(gamma,
     msg = 'rewards, values, and dones must have equal length.'
     assert len(values) == len(rewards) == len(dones), msg
 
-    td_errors = temporal_difference(gamma, rewards, dones, values, next_value)
+    next_values = th.cat((values[1:], next_value), dim=0)
+    td_errors = temporal_difference(gamma, rewards, dones, values, next_values)
     advantages = discount(tau * gamma, td_errors, dones)
     return advantages
 
 
-def temporal_difference(gamma, rewards, dones, values, next_value):
+def temporal_difference(gamma, rewards, dones, values, next_values):
     """
     **Description**
 
@@ -141,26 +145,26 @@ def temporal_difference(gamma, rewards, dones, values, next_value):
     * **dones** (tensor) - Tensor indicating episode termination.
       Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.
     * **values** (tensor) - Values for the states producing the rewards.
-    * **next_value** (tensor) - Value of the state obtained after the
+    * **next_values** (tensor) - Values of the state obtained after the
       transition from the state used to compute the last value in `values`.
 
     **Example**
 
     ~~~python
-    value = vf(state)
+    values = vf(replay.states())
+    next_values = vf(replay.next_states())
     td_errors = temporal_difference(0.99,
-                                    replay.rewards,
-                                    replay.dones,
-                                    replay.values,
-                                    next_value)
+                                    replay.reward(),
+                                    replay.done(),
+                                    values,
+                                    next_values)
     ~~~
     """
 
     rewards = _reshape_helper(rewards)
     dones = _reshape_helper(dones)
     values = _reshape_helper(values)
-    next_value = _reshape_helper(next_value)
+    next_values = _reshape_helper(next_values)
 
-    all_values = th.cat((values, next_value), dim=0)
     not_dones = 1.0 - dones
-    return rewards + gamma * not_dones * all_values[1:] - all_values[:-1]
+    return rewards + gamma * not_dones * next_values - values
