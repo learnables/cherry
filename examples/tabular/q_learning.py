@@ -7,6 +7,7 @@ import torch.optim as optim
 
 import cherry as ch
 import cherry.envs as envs
+from cherry.rewards import temporal_difference
 from cherry.models.tabular import ActionValueFunction
 from cherry.distributions import EpsilonGreedy
 
@@ -45,7 +46,11 @@ def main(env='CliffWalking-v0'):
         next_state = ch.utils.onehot(transition.next_state,
                                      dim=env.state_size)
         next_q = agent.qf(next_state).max().detach()
-        td_error = transition.reward + discount * next_q - curr_q
+        td_error = temporal_difference(discount,
+                                       transition.reward,
+                                       transition.done,
+                                       curr_q,
+                                       next_q)
 
         optimizer.zero_grad()
         loss = td_error.pow(2).mul(0.5)

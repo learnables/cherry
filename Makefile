@@ -60,10 +60,10 @@ sac:
 	python examples/pybullet/sac_pybullet.py
 
 # Tabular
-tabular-q:
+tabular-s:
 	python examples/tabular/sarsa.py
 
-tabular-l:
+tabular-q:
 	python examples/tabular/q_learning.py
 
 
