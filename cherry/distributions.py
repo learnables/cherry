@@ -149,4 +149,3 @@ class TanhNormal(Distribution):
         z = self.normal.rsample()
         z.requires_grad_()
         return th.tanh(z)
-
