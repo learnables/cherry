@@ -106,16 +106,16 @@ def main(env='Pendulum-v0'):
         replay += env.run(agent, episodes=1)
         if len(replay) > BATCH_SIZE:
             with torch.no_grad():
-                advantages = ch.rewards.generalized_advantage(DISCOUNT,
-                                                              TRACE_DECAY,
-                                                              replay.reward(),
-                                                              replay.done(),
-                                                              replay.value(),
-                                                              torch.zeros(1))
+                advantages = ch.rl.generalized_advantage(DISCOUNT,
+                                                         TRACE_DECAY,
+                                                         replay.reward(),
+                                                         replay.done(),
+                                                         replay.value(),
+                                                         torch.zeros(1))
                 advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-                returns = ch.rewards.discount(DISCOUNT,
-                                              replay.reward(),
-                                              replay.done())
+                returns = ch.rl.discount(DISCOUNT,
+                                         replay.reward(),
+                                         replay.done())
 
             # Policy loss
             log_probs = replay.log_prob()

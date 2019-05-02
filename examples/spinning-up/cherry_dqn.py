@@ -12,7 +12,6 @@ from torch.nn import functional as F
 
 import cherry as ch
 from cherry import envs
-from cherry import distributions as dist
 
 
 ACTION_DISCRETISATION = 5
@@ -43,7 +42,7 @@ class DQN(nn.Module):
                   nn.Tanh(),
                   nn.Linear(hidden_size, num_actions)]
         self.dqn = nn.Sequential(*layers)
-        self.egreedy = dist.EpsilonGreedy(EPSILON)
+        self.egreedy = ch.nn.EpsilonGreedy(EPSILON)
 
     def forward(self, state):
         values = self.dqn(state)
