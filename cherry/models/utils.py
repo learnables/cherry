@@ -42,7 +42,7 @@ def polyak_average(source, target, alpha):
 
     Note: the parameter `alpha` indicates the convex combination weight of the source.
     (i.e. the old parameters are kept at a rate of `alpha`.)
-    
+
     **References**
 
     1. Polyak, B., and A. Juditsky. 1992. “Acceleration of Stochastic Approximation by Averaging.”

@@ -85,9 +85,9 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
         x_before = np.arange(len(y_before))
 
     assert len(x_before) == len(y_before), \
-           'x_before and y_before must have equal length.'
+        'x_before and y_before must have equal length.'
     assert all(x_before[i] <= x_before[i+1] for i in range(len(x_before)-1)), \
-           'x_before needs to be sorted in ascending order.'
+        'x_before needs to be sorted in ascending order.'
 
     # Resampling
     size = len(x_before)

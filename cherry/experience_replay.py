@@ -166,7 +166,7 @@ class ExperienceReplay(list):
     def _access_property(self, name):
         try:
             values = [getattr(sars, name) for sars in self._storage]
-        except:
+        except AttributeError:
             msg = 'Attribute ' + name + ' not in replay.'
             raise AttributeError(msg)
         true_size = min_size(values[0])
