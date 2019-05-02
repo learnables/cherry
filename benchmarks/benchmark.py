@@ -112,7 +112,7 @@ if __name__ == '__main__':
                 returns.append(R)
                 R = 0
 
-        smoothed_returns = ch.plot.smooth(returns)[1]
+        smoothed_returns = ch.plot.smooth(returns)
         for i, r in enumerate(smoothed_returns):
             wandb.log({
                 'smoothed_returns': r,

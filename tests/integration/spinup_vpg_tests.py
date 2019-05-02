@@ -218,16 +218,16 @@ def train_cherry():
             for r in replay.reward():
                 result['rewards'].append(r.item())
             with torch.no_grad():
-                advantages = ch.rewards.generalized_advantage(DISCOUNT,
-                                                              TRACE_DECAY,
-                                                              replay.reward(),
-                                                              replay.done(),
-                                                              replay.value(),
-                                                              torch.zeros(1))
+                advantages = ch.rl.generalized_advantage(DISCOUNT,
+                                                         TRACE_DECAY,
+                                                         replay.reward(),
+                                                         replay.done(),
+                                                         replay.value(),
+                                                         torch.zeros(1))
                 advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-                returns = ch.rewards.discount(DISCOUNT,
-                                              replay.reward(),
-                                              replay.done())
+                returns = ch.rl.discount(DISCOUNT,
+                                         replay.reward(),
+                                         replay.done())
 
             # Policy loss
             log_probs = replay.log_prob()

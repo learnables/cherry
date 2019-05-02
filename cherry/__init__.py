@@ -3,7 +3,7 @@
 from ._version import __version__
 
 from .experience_replay import ExperienceReplay, Transition
-from . import rewards
+from . import rl
 from . import envs
 from . import utils
 from . import optim

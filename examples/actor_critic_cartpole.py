@@ -18,7 +18,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import cherry.envs as envs
-from cherry.rewards import discount
+from cherry.rl import discount
 from cherry.utils import normalize
 import cherry.distributions as distributions
 

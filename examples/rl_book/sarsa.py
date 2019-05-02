@@ -8,7 +8,6 @@ import torch.optim as optim
 import cherry as ch
 import cherry.envs as envs
 from cherry.models.tabular import ActionValueFunction
-from cherry.distributions import EpsilonGreedy
 
 
 class Agent(nn.Module):
@@ -18,7 +17,7 @@ class Agent(nn.Module):
         self.env = env
         self.qf = ActionValueFunction(env.state_size,
                                       env.action_size)
-        self.e_greedy = EpsilonGreedy(0.1)
+        self.e_greedy = ch.nn.EpsilonGreedy(0.1)
 
     def forward(self, x):
         x = ch.utils.onehot(x, self.env.state_size)
@@ -44,11 +43,11 @@ def main(env='CliffWalking-v0'):
         curr_q = transition.q_action
         next_action, next_info = agent(transition.next_state)
         next_q = next_info['q_action'].detach()
-        td_error = temporal_difference(discount,
-                                       transition.reward,
-                                       transition.done,
-                                       curr_q,
-                                       next_q)
+        td_error = ch.rl.temporal_difference(discount,
+                                             transition.reward,
+                                             transition.done,
+                                             curr_q,
+                                             next_q)
 
         optimizer.zero_grad()
         loss = td_error.pow(2).mul(0.5)

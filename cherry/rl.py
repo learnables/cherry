@@ -47,10 +47,10 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
     rewards = th.ones(23, 1) * 8
     dones = th.zeros_like(rewards)
     dones[-1] += 1.0
-    discounted = ch.rewards.discount(0.99,
-                                     rewards,
-                                     dones,
-                                     bootstrap=1.0)
+    discounted = ch.rl.discount(0.99,
+                                rewards,
+                                dones,
+                                bootstrap=1.0)
     ~~~
 
     """
