@@ -90,10 +90,60 @@ div.navbar-header {
     background-size: 40px 40px;
 }
 
+.well, .bs-sidenav, .bs-sidebar {
+    border-color: black;
+}
+
+.navbar-nav > li > a,
+.navbar,
+.navbar-nav,
+.navbar-collapse,
+.collapse,
+.navbar-nav > li > a {
+    background-color: white;
+    color: black !important;
+    border-color: lightgray;
+}
+
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:hover {
+    background-color: white;
+    color: #ee4c2c !important;
+    border-color: lightgray;
+}
+
+.navbar-nav > .active > a,
+.navbar-nav > .open > a,
+.navbar-nav > .active > a {
+    background-color: white !important;
+    color: #ee4c2c !important;
+    border-color: lightgray;
+}
+
+.navbar-toggle {
+    background-color: black;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > .active > a {
+    background-color: #ecf0f1 !important;
+    color: #ee4c2c !important;
+    border-color: lightgray;
+}
+
+.dropdown .active, .active > a {
+    background-color: white;
+    color: #ee4c2c;
+}
+
+body {
+    color: black;
+}
+
 a:visited .navbar-brand,
 a:active .navbar-brand,
 a.navbar-brand {
-    color: white !important;
+    color: black !important;
 }
 
 kbd {
@@ -133,7 +183,8 @@ footer {
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
     border-bottom: 1px solid #ecf0f1;
-    color: #2c3e50;
+    /*color: #2c3e50;*/
+    color: black;
     background-color: #ecf0f1;
     font-size: 17px;
     font-weight: 400;
