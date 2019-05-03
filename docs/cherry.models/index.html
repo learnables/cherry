@@ -229,7 +229,7 @@ conjunction with PyTorch's optimizers.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">vf = StateValueFunction(env.state_size)
 state = env.reset()
-state = ch.utils.onehot(state, env.state_size)
+state = ch.onehot(state, env.state_size)
 state_value = vf(state)
 </code></pre>
 
@@ -258,9 +258,9 @@ conjunction with PyTorch's optimizers.</p>
 <p><strong>Example</strong></p>
 <pre><code class="python">qf = ActionValueFunction(env.state_size, env.action_size)
 state = env.reset()
-state = ch.utils.onehot(state, env.state_size)
+state = ch.onehot(state, env.state_size)
 all_action_values = qf(state)
-action = ch.utils.onehot(0, env.action_size)
+action = ch.onehot(0, env.action_size)
 action_value = qf(state, action)
 </code></pre>
 
