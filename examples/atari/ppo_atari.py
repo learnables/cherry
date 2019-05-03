@@ -55,21 +55,21 @@ class NatureCNN(nn.Module):
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay[-1].next_state)
     # NOTE: Kostrikov uses GAE here.
-    advantages = ch.rl.generalized_advantage(GAMMA,
-                                             TAU,
-                                             replay.reward(),
-                                             replay.done(),
-                                             replay.value(),
-                                             next_state_value)
+    advantages = ch.generalized_advantage(GAMMA,
+                                          TAU,
+                                          replay.reward(),
+                                          replay.done(),
+                                          replay.value(),
+                                          next_state_value)
 
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
 #    rewards = [a + v for a, v in zip(advantages, replay.value())]
     rewards = advantages + replay.value()
 
-#    rewards = ch.rl.discount(GAMMA,
-#                             replay.reward(),
-#                             replay.done(),
-#                             bootstrap=next_state_value)
+#    rewards = ch.discount(GAMMA,
+#                          replay.reward(),
+#                          replay.done(),
+#                          bootstrap=next_state_value)
     rewards = rewards.detach()
     advantages = rewards.detach() - replay.value().detach()
     advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)

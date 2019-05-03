@@ -75,8 +75,8 @@ replay.state()  # Tensor of all stored states
 replay.empty()  # Removes all stored experience
 
 # Discounting and normalizing rewards
-rewards = ch.rl.discount(GAMMA, replay.rewards, replay.dones)
-rewards = ch.utils.normalize(rewards)
+rewards = ch.td.discount(GAMMA, replay.rewards, replay.dones)
+rewards = ch.normalize(rewards)
 
 # Sampling rollouts per episode or samples
 env = envs.Runner(env)

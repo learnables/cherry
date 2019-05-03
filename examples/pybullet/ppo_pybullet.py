@@ -15,8 +15,9 @@ import torch.optim as optim
 
 import cherry as ch
 import cherry.distributions as dist
-import cherry.models as models
-import cherry.envs as envs
+from cherry import pg
+from cherry import models
+from cherry import envs
 from cherry.algorithms import ppo
 
 RENDER = False
@@ -61,14 +62,15 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay[-1].next_state)
-    advantages = ch.rl.generalized_advantage(GAMMA,
-                                             TAU,
-                                             replay.reward(),
-                                             replay.done(),
-                                             replay.value(),
-                                             next_state_value)
+    import pdb; pdb.set_trace()
+    advantages = pg.generalized_advantage(GAMMA,
+                                          TAU,
+                                          replay.reward(),
+                                          replay.done(),
+                                          replay.value(),
+                                          next_state_value)
 
-    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
+    advantages = ch.normalize(advantages, epsilon=1e-5).view(-1, 1)
     rewards = [a + v for a, v in zip(advantages, replay.value())]
 
 

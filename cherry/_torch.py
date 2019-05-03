@@ -1,46 +1,12 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import torch as th
+import numpy as np
 
-EPS = 1e-8
+from cherry._utils import EPS
 
 
 def totensor(array, dtype=None):
-    if dtype is None:
-        dtype = th.get_default_dtype()
-    if isinstance(array, int):
-        array = float(array)
-    if isinstance(array, float):
-        array = [array, ]
-    if isinstance(array, list):
-        array = np.array(array)
-    if isinstance(array, (np.ndarray,
-                          np.bool_,
-                          np.float32,
-                          np.float64,
-                          np.int32,
-                          np.int64)):
-        if array.dtype == np.bool_:
-            array = array.astype(np.uint8)
-        array = th.tensor(array, dtype=dtype)
-    array = array.unsqueeze(0)
-    return array
-
-
-def istensorable(array):
-    types = (int,
-             float,
-             list,
-             np.ndarray,
-             np.bool_,
-             th.Tensor)
-    if isinstance(array, types):
-        return True
-    return False
-
-
-def min_size(tensor):
     """
     [[Source]]()
 
@@ -58,12 +24,25 @@ def min_size(tensor):
     **Example**
 
     """
-    true_size = tensor.size()
-    if len(true_size) < 1:
-        return (1, )
-    while true_size[0] == 1 and len(true_size) > 1:
-        true_size = true_size[1:]
-    return true_size
+    if dtype is None:
+        dtype = th.get_default_dtype()
+    if isinstance(array, int):
+        array = float(array)
+    if isinstance(array, float):
+        array = [array, ]
+    if isinstance(array, list):
+        array = np.array(array)
+    if isinstance(array, (np.ndarray,
+                          np.bool_,
+                          np.float32,
+                          np.float64,
+                          np.int32,
+                          np.int64)):
+        if array.dtype == np.bool_:
+            array = array.astype(np.uint8)
+        array = th.tensor(array, dtype=dtype)
+        array = array.unsqueeze(0)
+    return array
 
 
 def normalize(tensor, epsilon=EPS):
@@ -115,14 +94,3 @@ def onehot(x, dim):
     onehot = th.zeros(size, dim)
     onehot[:, x] = 1.0
     return onehot
-
-
-class _ImportRaiser(object):
-
-    def __init__(self, name, command):
-        self.name = name
-        self.command = command
-
-    def __getattr__(self, *args, **kwargs):
-        msg = self.name + ' required. Try: ' + self.command
-        raise ImportError(msg)

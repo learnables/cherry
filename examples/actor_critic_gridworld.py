@@ -19,10 +19,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import cherry as ch
-import cherry.envs as envs
-from cherry.rewards import discount
-from cherry.utils import normalize
-import cherry.distributions as distributions
+from cherry import envs
+from cherry import td
+from cherry import distributions
 
 SEED = 567
 GAMMA = 0.99
@@ -56,8 +55,8 @@ def update(replay, optimizer, policy):
     value_loss = []
 
     # Discount and normalize rewards
-    rewards = discount(GAMMA, replay.reward(), replay.done())
-    rewards = normalize(rewards)
+    rewards = td.discount(GAMMA, replay.reward(), replay.done())
+    rewards = ch.normalize(rewards)
 
     # Compute losses
     for sars, reward in zip(replay, rewards):
