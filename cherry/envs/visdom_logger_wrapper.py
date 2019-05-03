@@ -8,7 +8,7 @@ from .base import Wrapper
 try:
     import visdom
 except ImportError:
-    visdom = ch.utils._ImportRaiser('Visdom', 'pip install visdom')
+    visdom = ch._utils._ImportRaiser('Visdom', 'pip install visdom')
 
 
 class VisdomLogger(Wrapper):
