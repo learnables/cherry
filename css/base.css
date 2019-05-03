@@ -120,8 +120,10 @@ div.navbar-header {
     border-color: lightgray;
 }
 
+.dropdown-menu > li > a,
 .navbar-toggle {
-    background-color: black;
+    background-color: white;
+    color: #ee4c2c;
 }
 
 .dropdown-menu > li > a:hover,
