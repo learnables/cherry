@@ -12,7 +12,7 @@ try:
     import cv2
     cv2.ocl.setUseOpenCL(False)
 except ImportError:
-    cv2 = ch.utils._ImportRaiser('OpenCV2', 'pip install opencv-python')
+    cv2 = ch._utils._ImportRaiser('OpenCV2', 'pip install opencv-python')
 
 """
 Inspired from OpenAI's baselines:
