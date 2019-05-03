@@ -4,11 +4,15 @@ import gym
 import torch
 import random
 import numpy as np
+
 from torch import optim
 from torch import nn
 from torch.distributions import Normal
+
 import cherry as ch
 from cherry import envs
+from cherry import td
+from cherry import pg
 
 DISCOUNT = 0.99
 EPSILON = 0.05
@@ -106,16 +110,16 @@ def main(env='Pendulum-v0'):
         replay += env.run(agent, episodes=1)
         if len(replay) > BATCH_SIZE:
             with torch.no_grad():
-                advantages = ch.rl.generalized_advantage(DISCOUNT,
-                                                         TRACE_DECAY,
-                                                         replay.reward(),
-                                                         replay.done(),
-                                                         replay.value(),
-                                                         torch.zeros(1))
-                advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-                returns = ch.rl.discount(DISCOUNT,
-                                         replay.reward(),
-                                         replay.done())
+                advantages = pg.generalized_advantage(DISCOUNT,
+                                                      TRACE_DECAY,
+                                                      replay.reward(),
+                                                      replay.done(),
+                                                      replay.value(),
+                                                      torch.zeros(1))
+                advantages = ch.normalize(advantages, epsilon=1e-8)
+                returns = td.discount(DISCOUNT,
+                                      replay.reward(),
+                                      replay.done())
 
             # Policy loss
             log_probs = replay.log_prob()

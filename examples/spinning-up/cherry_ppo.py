@@ -10,6 +10,8 @@ from torch import nn
 from torch.distributions import Normal
 
 import cherry as ch
+from cherry import td
+from cherry import pg
 from cherry import envs
 
 DISCOUNT = 0.99
@@ -113,14 +115,14 @@ def main(env='Pendulum-v0'):
 
         if len(replay) >= BATCH_SIZE:
             with torch.no_grad():
-                advantages = ch.rl.generalized_advantage(DISCOUNT,
-                                                         TRACE_DECAY,
-                                                         replay.reward(),
-                                                         replay.done(),
-                                                         replay.value(),
-                                                         torch.zeros(1))
-                advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-                returns = ch.rl.discount(DISCOUNT,
+                advantages = pg.generalized_advantage(DISCOUNT,
+                                                      TRACE_DECAY,
+                                                      replay.reward(),
+                                                      replay.done(),
+                                                      replay.value(),
+                                                      torch.zeros(1))
+                advantages = ch.normalize(advantages, epsilon=1e-8)
+                returns = td.discount(DISCOUNT,
                                          replay.reward(),
                                          replay.done())
                 old_log_probs = replay.log_prob()

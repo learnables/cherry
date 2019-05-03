@@ -90,6 +90,16 @@ div.navbar-header {
     background-size: 40px 40px;
 }
 
+.navbar, .dropdown, .navbar-nav, .navbar-collapse, .collapse, .navbar-nav > li > a {
+    background-color: white;
+    color: black;
+    border-color: lightgray;
+}
+
+body {
+    color: black;
+}
+
 a:visited .navbar-brand,
 a:active .navbar-brand,
 a.navbar-brand {
@@ -133,7 +143,8 @@ footer {
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
     border-bottom: 1px solid #ecf0f1;
-    color: #2c3e50;
+    /*color: #2c3e50;*/
+    color: black;
     background-color: #ecf0f1;
     font-size: 17px;
     font-weight: 400;

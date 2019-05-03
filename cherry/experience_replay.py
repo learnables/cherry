@@ -3,7 +3,8 @@
 import random
 import torch as th
 
-from cherry.utils import totensor, istensorable, min_size
+import cherry as ch
+from cherry._utils import _istensorable, _min_size
 
 """
 TODO: replay.astype(dtype) + init dtype
@@ -169,7 +170,7 @@ class ExperienceReplay(list):
         except AttributeError:
             msg = 'Attribute ' + name + ' not in replay.'
             raise AttributeError(msg)
-        true_size = min_size(values[0])
+        true_size = _min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
     def __getslice__(self, i, j):
@@ -275,13 +276,13 @@ class ExperienceReplay(list):
         ~~~
         """
         for key in infos:
-            if istensorable(infos[key]):
-                infos[key] = totensor(infos[key])
-        sars = Transition(totensor(state),
-                          totensor(action),
-                          totensor(reward),
-                          totensor(next_state),
-                          totensor(done),
+            if _istensorable(infos[key]):
+                infos[key] = ch.totensor(infos[key])
+        sars = Transition(ch.totensor(state),
+                          ch.totensor(action),
+                          ch.totensor(reward),
+                          ch.totensor(next_state),
+                          ch.totensor(done),
                           **infos)
         self._storage.append(sars.to(self.device))
 

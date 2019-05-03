@@ -20,7 +20,7 @@ class Agent(nn.Module):
         self.e_greedy = ch.nn.EpsilonGreedy(0.1)
 
     def forward(self, x):
-        x = ch.utils.onehot(x, self.env.state_size)
+        x = ch.onehot(x, self.env.state_size)
         q_values = self.qf(x)
         action = self.e_greedy(q_values)
         info = {
@@ -44,11 +44,11 @@ def main(env='CliffWalking-v0'):
         next_state = ch.utils.onehot(transition.next_state,
                                      dim=env.state_size)
         next_q = agent.qf(next_state).max().detach()
-        td_error = ch.rl.temporal_difference(discount,
-                                             transition.reward,
-                                             transition.done,
-                                             curr_q,
-                                             next_q)
+        td_error = ch.temporal_difference(discount,
+                                          transition.reward,
+                                          transition.done,
+                                          curr_q,
+                                          next_q)
 
         optimizer.zero_grad()
         loss = td_error.pow(2).mul(0.5)

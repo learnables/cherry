@@ -57,10 +57,10 @@ class NatureCNN(nn.Module):
 def update(replay, optimizer, policy, env):
     # Compute advantages
     _, next_state_value = policy(replay[-1].next_state)
-    rewards = ch.rl.discount(GAMMA,
-                             replay.reward(),
-                             replay.done(),
-                             bootstrap=next_state_value)
+    rewards = ch.discount(GAMMA,
+                          replay.reward(),
+                          replay.done(),
+                          bootstrap=next_state_value)
     rewards = rewards.detach()
 
     # Compute loss
