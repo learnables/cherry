@@ -31,7 +31,7 @@ class StateValueFunction(nn.Module):
     ~~~python
     vf = StateValueFunction(env.state_size)
     state = env.reset()
-    state = ch.utils.onehot(state, env.state_size)
+    state = ch.onehot(state, env.state_size)
     state_value = vf(state)
     ~~~
 
@@ -77,9 +77,9 @@ class ActionValueFunction(nn.Module):
     ~~~python
     qf = ActionValueFunction(env.state_size, env.action_size)
     state = env.reset()
-    state = ch.utils.onehot(state, env.state_size)
+    state = ch.onehot(state, env.state_size)
     all_action_values = qf(state)
-    action = ch.utils.onehot(0, env.action_size)
+    action = ch.onehot(0, env.action_size)
     action_value = qf(state, action)
     ~~~
 

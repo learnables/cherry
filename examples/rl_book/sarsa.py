@@ -20,7 +20,7 @@ class Agent(nn.Module):
         self.e_greedy = ch.nn.EpsilonGreedy(0.1)
 
     def forward(self, x):
-        x = ch.utils.onehot(x, self.env.state_size)
+        x = ch.onehot(x, self.env.state_size)
         q_values = self.qf(x)
         action = self.e_greedy(q_values)
         info = {

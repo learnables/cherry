@@ -41,8 +41,8 @@ def main(env='CliffWalking-v0'):
         transition = env.run(agent, steps=1)[0]
 
         curr_q = transition.q_action
-        next_state = ch.utils.onehot(transition.next_state,
-                                     dim=env.state_size)
+        next_state = ch.onehot(transition.next_state,
+                               dim=env.state_size)
         next_q = agent.qf(next_state).max().detach()
         td_error = ch.temporal_difference(discount,
                                           transition.reward,
