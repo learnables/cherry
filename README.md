@@ -61,19 +61,11 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 
 ## Installation
 
-**Note** Cherry is considered in alpha release. Some stuff might break in the future.
-
-For the latest release of cherry, run the following command in your favorite shell.
+**Note** Cherry is considered in early alpha release.
 
 ```
 pip install cherry-rl
 ```
-
-For the cutting edge version, you can run the following commands.
-
-1. Clone the repo: `git clone https://github.com/seba-1511/cherry`
-2. `cd cherry`
-3. `pip install -e .`
 
 ## Documentation
 
