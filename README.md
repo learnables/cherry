@@ -57,7 +57,7 @@ replay = env.run(get_action, steps=100)  # alternatively: episodes=10
 
 ~~~
 
-Concrete examples are available in the [examples/](./examples/) folder.
+Many more high-quality examples are available in the [examples/](./examples/) folder.
 
 ## Installation
 
