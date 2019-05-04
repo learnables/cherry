@@ -25,7 +25,7 @@ To learn more about the tools and philosophy behind cherry, check out our [Getti
 
 ## Example
 
-The following snippet showcases some of the tools offered by cherry.
+The following snippet showcases some of the tools offered by cherry. Stuff might break.
 
 ~~~python
 import cherry as ch
