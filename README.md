@@ -83,9 +83,9 @@ Here are a couple of guidelines we strive to follow.
 * If you want to contribute a new example using cherry, it would preferably stand in a single file.
 * If you would like to contribute a new feature to the core library, we suggest to first implement an example showcasing your new functionality. Doing so is quite useful:
     * it allows for automatic testing,
-    * ensures that the functionality is correctly implemented
-    * shows users how to use your functionality,
-    * and gives a concrete example when discussing the best way to port your implementation over.
+    * it ensures that the functionality is correctly implemented,
+    * it shows users how to use your functionality, and
+    * it gives a concrete example when discussing the best way to merge your implementation.
 
 We don't have forums, but are happy to discuss with you on slack.
 Make sure to send an email to [smr.arnold@gmail.com](smr.arnold@gmail.com) to get an invite.
