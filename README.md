@@ -21,6 +21,8 @@ So if you don't like a specific tool, you don’t need to use it.
 * Painless and efficient distributed training on CPUs and GPUs.
 * Unit, integration, and regression tested, continuously integrated.
 
+To learn more about the tools and philosophy behind cherry, check out our [Getting Started tutorial](http://cherry-rl.net/tutorials/getting_started/).
+
 ## Example
 
 The following snippet showcases some of the tools offered by cherry.
