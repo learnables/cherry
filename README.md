@@ -21,36 +21,9 @@ So if you don't like a specific tool, you don’t need to use it.
 * Painless and efficient distributed training on CPUs and GPUs.
 * Unit, integration, and regression tested, continuously integrated.
 
-## Installation
+## Example
 
-**Note** Cherry is considered in alpha release. Some stuff might break in the future.
-
-For the latest release of cherry, run the following command in your favorite shell.
-
-```
-pip install cherry-rl
-```
-
-For the cutting edge version, you can run the following commands.
-
-1. Clone the repo: `git clone https://github.com/seba-1511/cherry`
-2. `cd cherry`
-3. `pip install -e .`
-
-### Requirements
-
-* `torch` >= 1.0.0
-*  `gym` >= 0.15
-
-### Development Guidelines
-
-* The `master` branch is always working, considered stable.
-* The `dev` branch should always work and is ahead of `master`, considered cutting edge.
-* To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
-
-## Usage
-
-The following snippet demonstrates some of the tools offered by cherry.
+The following snippet showcases some of the tools offered by cherry.
 
 ~~~python
 import cherry as ch
@@ -86,21 +59,51 @@ replay = env.run(get_action, steps=100)  # alternatively: episodes=10
 
 Concrete examples are available in the [examples/](./examples/) folder.
 
+## Installation
+
+**Note** Cherry is considered in alpha release. Some stuff might break in the future.
+
+For the latest release of cherry, run the following command in your favorite shell.
+
+```
+pip install cherry-rl
+```
+
+For the cutting edge version, you can run the following commands.
+
+1. Clone the repo: `git clone https://github.com/seba-1511/cherry`
+2. `cd cherry`
+3. `pip install -e .`
+
 ## Documentation
 
 Documentation and tutorials are available on cherry’s website: [http://cherry-rl.net](http://cherry-rl.net).
 
-## TODO
+## Contributing
 
-Some functionalities that we might want to implement.
+First, thanks for your consideration in contributing to cherry.
+Here are a couple of guidelines we strive to follow.
 
-* parallelize environments and a way to handle it with `ExperienceReplay`,
-* `VisdomLogger` as a dashboard to debug an implementation,
-* example with reccurent net,
-* minimal but complete documentation,
-* GPU implementations.
+* It's always a good idea to open an issue first, where we can discuss how to best proceed.
+* Branch/fork from `dev`, and create a pull request as soon as possible, to allow for early discussions.
+* If you want to contribute a new example using cherry, it would preferably stand in a single file.
+* If you would like to contribute a new feature to the core library, we suggest to first implement an example showcasing your new functionality. Doing so is quite useful:
+    * it allows for automatic testing,
+    * ensures that the functionality is correctly implemented
+    * shows users how to use your functionality,
+    * and gives a concrete example when discussing the best way to port your implementation over.
 
-### Acknowledgements
+We don't have forums, but are happy to discuss with you on slack.
+Make sure to send an email to [smr.arnold@gmail.com](smr.arnold@gmail.com) to get an invite.
+
+### Branch Organisation
+
+* `master`: always working, considered stable.
+* `dev`: should always work, ahead of `master`, considered cutting edge.
+
+To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
+
+## Acknowledgements
 
 Cherry draws inspiration from many reinforcement learning implementations, including
 
@@ -114,6 +117,6 @@ Cherry draws inspiration from many reinforcement learning implementations, inclu
 * [RLLab](https://github.com/rll/rllab).
 
 
-### Why 'cherry' ?
+## Why 'cherry' ?
 
 Because it's the sweetest part of [the cake](https://twitter.com/ylecun/status/1097532314614034433).
