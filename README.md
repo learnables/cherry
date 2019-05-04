@@ -77,7 +77,7 @@ First, thanks for your consideration in contributing to cherry.
 Here are a couple of guidelines we strive to follow.
 
 * It's always a good idea to open an issue first, where we can discuss how to best proceed.
-* Branch/fork from `dev`, and create a pull request as soon as possible, to allow for early discussions.
+* Branch/fork from `dev`, and create a pull request as soon as possible to allow for early discussions.
 * If you want to contribute a new example using cherry, it would preferably stand in a single file.
 * If you would like to contribute a new feature to the core library, we suggest to first implement an example showcasing your new functionality. Doing so is quite useful:
     * it allows for automatic testing,
@@ -87,13 +87,6 @@ Here are a couple of guidelines we strive to follow.
 
 We don't have forums, but are happy to discuss with you on slack.
 Make sure to send an email to [smr.arnold@gmail.com](smr.arnold@gmail.com) to get an invite.
-
-### Branch Organisation
-
-* `master`: always working, considered stable.
-* `dev`: should always work, ahead of `master`, considered cutting edge.
-
-To implement a new functionality: branch `dev` into `your_name/functionality_name`, implement your functionality, then pull request to `dev`. It will be periodically merged into `master`.
 
 ## Acknowledgements
 
