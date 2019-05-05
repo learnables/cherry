@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+A set of common distributions.
+
+"""
+
 import torch as th
 import torch.nn as nn
 import cherry as ch

@@ -25,7 +25,7 @@ To learn more about the tools and philosophy behind cherry, check out our [Getti
 
 ## Example
 
-The following snippet showcases some of the tools offered by cherry. Stuff might break.
+The following snippet showcases some of the tools offered by cherry.
 
 ~~~python
 import cherry as ch
@@ -63,7 +63,7 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 
 ## Installation
 
-**Note** Cherry is considered in early alpha release.
+**Note** Cherry is considered in early alpha release. Stuff might break.
 
 ```
 pip install cherry-rl

@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Plotting utilities for reproducible research.
+"""
+
 import math
 import torch as th
 import numpy as np
@@ -8,6 +14,8 @@ from statistics import mean, stdev
 
 def ci95(values):
     """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+
     **Description**
 
     Computes the 95% confidence interval around the given values.

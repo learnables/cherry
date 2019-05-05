@@ -51,14 +51,12 @@ Our long-term development strategy can be summarized as follows.
 1. Have as many recent and high-quality [examples](https://github.com/seba-1511/cherry/tree/master/examples) as possible.
 2. Merge advances that turn up to be fundamental in theory or practice into the core library.
 
-We hope to combat the reproducibility crisis extensively [testing](https://github.com/seba-1511/cherry/tree/master/tests) and [benchmarking](https://github.com/seba-1511/cherry/tree/master/benchmarks) our implementations.
+We hope to combat the reproducibility crisis by extensively [testing](https://github.com/seba-1511/cherry/tree/master/tests) and [benchmarking](https://github.com/seba-1511/cherry/tree/master/benchmarks) our implementations.
 
 **Note** Cherry is in its early days and is still missing some of the well-established methods from the past 60 years.
 Those ones are being implemented as fast as we can :)
 
 ## Core Features
-
-
 
 #### Transitions and Experience Replay
 
