@@ -25,6 +25,41 @@ For instance, check the examples using [simple_rl](https://github.com/seba-1511/
 
 ## Overview
 
+**Why do we need cherry ?**
+There are many reinforcement learning libraries, many of which feature high-quality implementations.
+However, few of them provide the kind of low-level utilities useful to researchers.
+Cherry aims to alleviate this issue.
+Instead of an interface akin to `PPO(env_name).train(1000)`, it provides researchers with a set of tools they can use to write readable, replicable, and flexible implementations.
+Cherry prioritizes time-to-correct-implementation over time-to-run, by explicitely helping you check, debug, and reliably report your results.
+
+
+**How to use cherry ?**
+Our goal is to make cherry a natural extension to PyTorch with reinforcement learning in mind.
+To this end, we closely follow the package structure of PyTorch while providing additional utilities where we saw fit.
+So if your goal is to implement a novel distributed off-policy policy gradient algorithm, you can count on cherry to provide you experience replays, policy gradient losses, discounting and advantage functions, and distributed optimizers.
+Those functions not only reduce the time spent writing code, they also check that your implementation is sane.
+(e.g. do the log probabilities and rewards have identical shapes?)
+Moreover, cherry provides implementation details -- unfortunately -- necessary to make deep reinforcement learning work.
+(e.g. initializations, modules, and wrappers commonly used in robotic or Atari benchmarks.)
+Importantly, it includes built-in debugging functionalities: cherry can help you visualize what is happening under the hood of your algorithm to help you find bugs faster.
+
+
+**What's the future of cherry ?**
+Reinforcement learning is a fast moving field, and it is difficult to predict which advances are safe bets for the future.
+Our long-term development strategy can be summarized as follows.
+
+1. Have as many recent and high-quality [examples](https://github.com/seba-1511/cherry/tree/master/examples) as possible.
+2. Merge advances that turn up to be fundamental in theory or practice into the core library.
+
+We hope to combat the reproducibility crisis extensively [testing](https://github.com/seba-1511/cherry/tree/master/tests) and [benchmarking](https://github.com/seba-1511/cherry/tree/master/benchmarks) our implementations.
+
+**Note** Cherry is in its early days and is still missing some of the well-established methods from the past 60 years.
+Those ones are being implemented as fast as we can :)
+
+## Core Features
+
+
+
 #### Transitions and Experience Replay
 
 #### Temporal Difference and Policy Gradients
