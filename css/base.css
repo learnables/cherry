@@ -112,6 +112,11 @@ div.navbar-header {
     border-color: lightgray;
 }
 
+input.form-control:focus {
+    border-color: #ee4c2c;
+}
+
+h3 > a,
 .navbar-nav > .active > a,
 .navbar-nav > .open > a,
 .navbar-nav > .active > a {

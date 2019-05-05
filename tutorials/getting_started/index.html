@@ -146,17 +146,70 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#getting-started-with-cherry">Getting Started with Cherry</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#core-features">Core Features</a></li>
+            <li><a href="#implementing-reinforce">Implementing REINFORCE</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
 <h1 id="getting-started-with-cherry">Getting Started with Cherry</h1>
-<ul>
-<li>Install</li>
-<li>Explain philosophy</li>
-<li>Overview of tools</li>
-<li>Use for a very simple examples: reinforce and q-learning on debug grid world.</li>
-</ul></div>
+<p>This document provides an overview of the philosophy behind cherry, the tools it provides, and a small illustrative example.
+By the end of this tutorial, you should be well-equiped to incorporate cherry in your research workflow.</p>
+<p>We assume that you are already familiar with reinforcement learning.
+If, instead, you're looking for an introduction to the field we recommend looking at Josh Achiam's <a href="http://spinningup.openai.com/">Spinning Up in Deep RL</a>.</p>
+<h2 id="installation">Installation</h2>
+<p>The first step in getting started with cherry is to install it.
+Since it is implemented purely on top of PyTorch, you can easily do that by typing the following command in your favorite shell.</p>
+<pre><code class="shell">pip install cherry-rl
+</code></pre>
+
+<p>By default cherry only has two dependencies: <code>torch</code> and <code>gym</code>.
+However, more dependencies might be required if you plan to use some more specific functionalities.
+For example, the <code>OpenAIAtari</code> wrapper requires OpenCV (<code>pip install opencv-python</code>) and the <code>VisdomLogger</code> requires visdom (<code>pip install visdom</code>).</p>
+<p><strong>Note</strong>
+While cherry depends on <code>gym</code> for its environment wrappers, it doesn't restrict you to Gym environemnts.
+For instance, check the examples using <a href="https://github.com/seba-1511/cherry/tree/master/examples/simple_rl">simple_rl</a> and <a href="https://github.com/seba-1511/cherry/tree/master/examples/pycolab">pycolab</a> environments for Gym-free usage of cherry.</p>
+<h2 id="overview">Overview</h2>
+<p><strong>Why do we need cherry ?</strong>
+There are many reinforcement learning libraries, many of which feature high-quality implementations.
+However, few of them provide the kind of low-level utilities useful to researchers.
+Cherry aims to alleviate this issue.
+Instead of an interface akin to <code>PPO(env_name).train(1000)</code>, it provides researchers with a set of tools they can use to write readable, replicable, and flexible implementations.
+Cherry prioritizes time-to-correct-implementation over time-to-run, by explicitely helping you check, debug, and reliably report your results.</p>
+<p><strong>How to use cherry ?</strong>
+Our goal is to make cherry a natural extension to PyTorch with reinforcement learning in mind.
+To this end, we closely follow the package structure of PyTorch while providing additional utilities where we saw fit.
+So if your goal is to implement a novel distributed off-policy policy gradient algorithm, you can count on cherry to provide you experience replays, policy gradient losses, discounting and advantage functions, and distributed optimizers.
+Those functions not only reduce the time spent writing code, they also check that your implementation is sane.
+(e.g. do the log probabilities and rewards have identical shapes?)
+Moreover, cherry provides implementation details -- unfortunately -- necessary to make deep reinforcement learning work.
+(e.g. initializations, modules, and wrappers commonly used in robotic or Atari benchmarks.)
+Importantly, it includes built-in debugging functionalities: cherry can help you visualize what is happening under the hood of your algorithm to help you find bugs faster.</p>
+<p><strong>What's the future of cherry ?</strong>
+Reinforcement learning is a fast moving field, and it is difficult to predict which advances are safe bets for the future.
+Our long-term development strategy can be summarized as follows.</p>
+<ol>
+<li>Have as many recent and high-quality <a href="https://github.com/seba-1511/cherry/tree/master/examples">examples</a> as possible.</li>
+<li>Merge advances that turn up to be fundamental in theory or practice into the core library.</li>
+</ol>
+<p>We hope to combat the reproducibility crisis extensively <a href="https://github.com/seba-1511/cherry/tree/master/tests">testing</a> and <a href="https://github.com/seba-1511/cherry/tree/master/benchmarks">benchmarking</a> our implementations.</p>
+<p><strong>Note</strong> Cherry is in its early days and is still missing some of the well-established methods from the past 60 years.
+Those ones are being implemented as fast as we can :)</p>
+<h2 id="core-features">Core Features</h2>
+<h4 id="transitions-and-experience-replay">Transitions and Experience Replay</h4>
+<h4 id="temporal-difference-and-policy-gradients">Temporal Difference and Policy Gradients</h4>
+<h4 id="models-and-pytorch">Models and PyTorch</h4>
+<h4 id="gym-wrappers">Gym Wrappers</h4>
+<h4 id="plots">Plots</h4>
+<p>Reporting comparable results has become a central problem in modern reinforcement learning.
+In order to alleviate this issue, cherry provides utilities to smooth and compute confidence intervals over lists of rewards.
+Those are available in the <a href="http://cherry-rl.net/docs/cherry.plot/">cherry.plot</a> submodule.</p>
+<h2 id="implementing-reinforce">Implementing REINFORCE</h2>
+<p><strong>Note</strong>
+One of the characteristics of cherry is to avoid providing "pre-baked" algorithms.
+Having a look at the numerous <a href="https://github.com/seba-1511/cherry/tree/master/examples">examples</a> might be a good source of inspiration.</p></div>
         </div>
 
         <footer class="col-md-12">
