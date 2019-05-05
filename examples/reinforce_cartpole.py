@@ -4,6 +4,8 @@
 Simple example of using cherry to solve cartpole.
 
 The code is an adaptation of the PyTorch reinforcement learning example.
+
+TODO: This is not reinforce, this is policy gradient.
 """
 
 import random
@@ -101,3 +103,4 @@ if __name__ == '__main__':
         # Update policy
         update(replay)
         replay.empty()
+

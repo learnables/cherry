@@ -30,33 +30,39 @@ The following snippet showcases some of the tools offered by cherry.
 ~~~python
 import cherry as ch
 
-# Wrapping environments
-env = ch.envs.Logger(env, interval=1000)  # Prints rollouts statistics
-env = ch.envs.Normalized(env, normalize_state=True, normalize_reward=False)  
-env = ch.envs.Torch(env)  # Converts actions/states to tensors
+# Wrap environments
+env = gym.make('CartPole-v0')
+env = ch.envs.Logger(env, interval=1000)
+env = ch.envs.Torch(env)
 
-# Storing and retrieving experience
-replay = ch.ExperienceReplay()
-replay.append(old_state,
-              action,
-              reward,
-              state,
-              done,
-              log_prob=mass.log_prob(action),  # Can add any variable/tensor to the transitions
-              value=value
-            )
-replay.action()  # Tensor of all stored actions
-replay.state()  # Tensor of all stored states
-replay.empty()  # Removes all stored experience
+policy = PolicyNet()
+optimizer = optim.Adam(policy.parameters(), lr=1e-2)
+replay = ch.ExperienceReplay()  # Manage transitions
 
-# Discounting and normalizing rewards
-rewards = ch.td.discount(GAMMA, replay.rewards, replay.dones)
-rewards = ch.normalize(rewards)
+for step in range(1000):
+    state = env.reset()
+    while True:
+        mass = Categorical(policy(state))
+        action = mass.sample()
+        log_prob = mass.log_prob(action)
+        next_state, reward, done, _ = env.step(action)
 
-# Sampling rollouts per episode or samples
-env = envs.Runner(env)
-replay = env.run(get_action, steps=100)  # alternatively: episodes=10
+        # Build the ExperienceReplay
+        replay.append(state, action, reward, next_state, done, log_prob=log_prob)
+        if done:
+            break
+        else:
+            state = next_state
 
+    # Discounting and normalizing rewards
+    rewards = ch.td.discount(0.99, replay.reward(), replay.done())
+    rewards = ch.normalize(rewards)
+
+    loss = -th.sum(replay.log_prob() * rewards)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    replay.empty()
 ~~~
 
 Many more high-quality examples are available in the [examples/](./examples/) folder.
@@ -88,7 +94,7 @@ Here are a couple of guidelines we strive to follow.
     * it gives a concrete example when discussing the best way to merge your implementation.
 
 We don't have forums, but are happy to discuss with you on slack.
-Make sure to send an email to [smr.arnold@gmail.com](smr.arnold@gmail.com) to get an invite.
+Make sure to send an email to [smr.arnold@gmail.com](mailto:smr.arnold@gmail.com) to get an invite.
 
 ## Acknowledgements
 

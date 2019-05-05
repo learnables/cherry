@@ -17,10 +17,10 @@ pip install cherry-rl
 
 By default cherry only has two dependencies: `torch` and `gym`.
 However, more dependencies might be required if you plan to use some more specific functionalities.
-For example, the `OpenAIAtari` wrapper requires OpenCV (`pip install opencv-python`) and the `VisdomLogger` requires visdom (`pip install visdom`).
+For example, the [OpenAIAtari]() wrapper requires OpenCV (`pip install opencv-python`) and the [VisdomLogger]() requires visdom (`pip install visdom`).
 
 **Note**
-While cherry depends on `gym` for its environment wrappers, it doesn't restrict you to Gym environemnts.
+While cherry depends on Gym for its environment wrappers, it doesn't restrict you to Gym environments.
 For instance, check the examples using [simple_rl](https://github.com/seba-1511/cherry/tree/master/examples/simple_rl) and [pycolab](https://github.com/seba-1511/cherry/tree/master/examples/pycolab) environments for Gym-free usage of cherry.
 
 ## Overview
@@ -58,6 +58,8 @@ Those ones are being implemented as fast as we can :)
 
 ## Core Features
 
+TODO: Write this section.
+
 #### Transitions and Experience Replay
 
 #### Temporal Difference and Policy Gradients
@@ -72,9 +74,96 @@ Reporting comparable results has become a central problem in modern reinforcemen
 In order to alleviate this issue, cherry provides utilities to smooth and compute confidence intervals over lists of rewards.
 Those are available in the [cherry.plot](http://cherry-rl.net/docs/cherry.plot/) submodule.
 
-## Implementing REINFORCE
+## Implementing Policy Gradient
 
-**Note**
-One of the characteristics of cherry is to avoid providing "pre-baked" algorithms.
-Having a look at the numerous [examples](https://github.com/seba-1511/cherry/tree/master/examples) might be a good source of inspiration.
+The following snippet demonstrates how to use cherry to implement the policy gradient theorem.
 
+~~~python
+import cherry as ch
+
+env = gym.make('CartPole-v0')
+env = ch.envs.Logger(env, interval=1000)
+env = ch.envs.Torch(env)
+env = ch.envs.Runner(env)
+env.seed(42)
+
+policy = PolicyNet()
+optimizer = optim.Adam(policy.parameters(), lr=1e-2)
+action_dist = ch.distributions.ActionDistribution(env)
+
+def get_action(state):
+    mass = action_dist(policy(state))
+    action = mass.sample()
+    log_prob = mass.log_prob(action)
+    return action, {'log_prob': log_prob}
+
+for step in range(1000):
+    replay = env.run(get_action, episodes=1)
+
+    rewards = ch.td.discount(0.99, replay.reward(), replay.done())
+    rewards = ch.normalize(rewards)
+
+    loss = -th.sum(replay.log_prob() * rewards)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+~~~
+
+After importing cherry, the first step is to instanciate, wrap, and seed the desired gym environment.
+
+~~~python
+env = gym.make('CartPole-v0')
+env = ch.envs.Logger(env, interval=1000)
+env = ch.envs.Torch(env)
+env = ch.envs.Runner(env)
+env.seed(42)
+~~~
+
+The [Logger](), [Torch](), and [Runner]() classes are Gym [environment wrappers]() that systematically modify the behaviour of an environment:
+
+* `Logger` keeps track of metrics and prints them at a given interval.
+* `Torch` converts Gym states into PyTorch tensors, and action tensors into numpy arrays.
+* `Runner` implements a `run` method which allows to easily gather transitions for a number of steps or episodes.
+
+One particularity of wrappers is that they automatically expose the methods of the wrapped environment if it is not reimplemented: so when calling `env.seed(42)` we are calling the method from `CartPole-v0`.
+
+Second, we instanciate the policy, optimizer, as well as the action distribution.
+The action distribution is created by calling
+
+~~~python
+action_dist = ch.distributions.ActionDistribution(env)
+~~~
+
+which will automatically choose between a diagonal Gaussian for continuous action-spaces or a categorical distribution discrete ones.
+
+Next, we define `get_action` which defines how to get an action from our agent and will be used in conjuction to `env.run()` to quickly collect experience data:
+
+~~~python
+replay = env.run(get_action, episodes=1)
+~~~
+
+`env.run()` assumes that the first returned value by `get_action` is the action to be passed to the environment and the second, optional, returned value is a dictionary to be saved into the experience replay.
+Under the hood, `env.run()` creates a new [ExperienceReplay]() and fills it with the desired number of transitions;
+instead of `episodes=1` we could have passed `steps=100`.
+
+Finally, we discount and normalize the rewards and take an optimization step on the policy gradient loss.
+
+~~~python
+rewards = ch.td.discount(0.99, replay.reward(), replay.done())
+rewards = ch.normalize(rewards)
+
+loss = -th.sum(replay.log_prob() * rewards)
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+~~~
+
+When calling `replay.reward()`, `replay.done()`, or `replay.log_prob()`, the experience replay will concatenate the corresponding attribute across all of its transitions and **return a new tensor**.
+This means that this operation is rather expensive (cache it when possible) and that modifying this tensor does not modify the corresponding transitions in `replay`.
+Note that in this case `log_prob` is a custom attribute which is not declared in the original implementation of `ExperienceReplay`, and we could have given it any name by changing the dictionary key in `get_action()`.
+
+
+### Conclusion
+You should now be able to use cherry in your own work.
+For more information, have a look at the [documentation](http://cherry-rl.net/docs/cherry/), the other [tutorials](http://cherry-rl.net/tutorials/distributed_ppo/), or the numerous [examples](https://github.com/seba-1511/cherry/tree/master/examples). 
+Since one of the characteristics of cherry is to avoid providing "pre-baked" algorithms, we tried our best to heavily document its usage.
