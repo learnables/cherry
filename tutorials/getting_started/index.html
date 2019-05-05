@@ -149,7 +149,7 @@
             <li><a href="#installation">Installation</a></li>
             <li><a href="#overview">Overview</a></li>
             <li><a href="#core-features">Core Features</a></li>
-            <li><a href="#implementing-reinforce">Implementing REINFORCE</a></li>
+            <li><a href="#implementing-policy-gradient">Implementing Policy Gradient</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -167,9 +167,9 @@ Since it is implemented purely on top of PyTorch, you can easily do that by typi
 
 <p>By default cherry only has two dependencies: <code>torch</code> and <code>gym</code>.
 However, more dependencies might be required if you plan to use some more specific functionalities.
-For example, the <code>OpenAIAtari</code> wrapper requires OpenCV (<code>pip install opencv-python</code>) and the <code>VisdomLogger</code> requires visdom (<code>pip install visdom</code>).</p>
+For example, the <a href="">OpenAIAtari</a> wrapper requires OpenCV (<code>pip install opencv-python</code>) and the <a href="">VisdomLogger</a> requires visdom (<code>pip install visdom</code>).</p>
 <p><strong>Note</strong>
-While cherry depends on <code>gym</code> for its environment wrappers, it doesn't restrict you to Gym environemnts.
+While cherry depends on Gym for its environment wrappers, it doesn't restrict you to Gym environments.
 For instance, check the examples using <a href="https://github.com/seba-1511/cherry/tree/master/examples/simple_rl">simple_rl</a> and <a href="https://github.com/seba-1511/cherry/tree/master/examples/pycolab">pycolab</a> environments for Gym-free usage of cherry.</p>
 <h2 id="overview">Overview</h2>
 <p><strong>Why do we need cherry ?</strong>
@@ -194,10 +194,11 @@ Our long-term development strategy can be summarized as follows.</p>
 <li>Have as many recent and high-quality <a href="https://github.com/seba-1511/cherry/tree/master/examples">examples</a> as possible.</li>
 <li>Merge advances that turn up to be fundamental in theory or practice into the core library.</li>
 </ol>
-<p>We hope to combat the reproducibility crisis extensively <a href="https://github.com/seba-1511/cherry/tree/master/tests">testing</a> and <a href="https://github.com/seba-1511/cherry/tree/master/benchmarks">benchmarking</a> our implementations.</p>
+<p>We hope to combat the reproducibility crisis by extensively <a href="https://github.com/seba-1511/cherry/tree/master/tests">testing</a> and <a href="https://github.com/seba-1511/cherry/tree/master/benchmarks">benchmarking</a> our implementations.</p>
 <p><strong>Note</strong> Cherry is in its early days and is still missing some of the well-established methods from the past 60 years.
 Those ones are being implemented as fast as we can :)</p>
 <h2 id="core-features">Core Features</h2>
+<p>TODO: Write this section.</p>
 <h4 id="transitions-and-experience-replay">Transitions and Experience Replay</h4>
 <h4 id="temporal-difference-and-policy-gradients">Temporal Difference and Policy Gradients</h4>
 <h4 id="models-and-pytorch">Models and PyTorch</h4>
@@ -206,10 +207,83 @@ Those ones are being implemented as fast as we can :)</p>
 <p>Reporting comparable results has become a central problem in modern reinforcement learning.
 In order to alleviate this issue, cherry provides utilities to smooth and compute confidence intervals over lists of rewards.
 Those are available in the <a href="http://cherry-rl.net/docs/cherry.plot/">cherry.plot</a> submodule.</p>
-<h2 id="implementing-reinforce">Implementing REINFORCE</h2>
-<p><strong>Note</strong>
-One of the characteristics of cherry is to avoid providing "pre-baked" algorithms.
-Having a look at the numerous <a href="https://github.com/seba-1511/cherry/tree/master/examples">examples</a> might be a good source of inspiration.</p></div>
+<h2 id="implementing-policy-gradient">Implementing Policy Gradient</h2>
+<p>The following snippet demonstrates how to use cherry to implement the policy gradient theorem.</p>
+<pre><code class="python">import cherry as ch
+
+env = gym.make('CartPole-v0')
+env = ch.envs.Logger(env, interval=1000)
+env = ch.envs.Torch(env)
+env = ch.envs.Runner(env)
+env.seed(42)
+
+policy = PolicyNet()
+optimizer = optim.Adam(policy.parameters(), lr=1e-2)
+action_dist = ch.distributions.ActionDistribution(env)
+
+def get_action(state):
+    mass = action_dist(policy(state))
+    action = mass.sample()
+    log_prob = mass.log_prob(action)
+    return action, {'log_prob': log_prob}
+
+for step in range(1000):
+    replay = env.run(get_action, episodes=1)
+
+    rewards = ch.td.discount(0.99, replay.reward(), replay.done())
+    rewards = ch.normalize(rewards)
+
+    loss = -th.sum(replay.log_prob() * rewards)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+</code></pre>
+
+<p>After importing cherry, the first step is to instanciate, wrap, and seed the desired gym environment.</p>
+<pre><code class="python">env = gym.make('CartPole-v0')
+env = ch.envs.Logger(env, interval=1000)
+env = ch.envs.Torch(env)
+env = ch.envs.Runner(env)
+env.seed(42)
+</code></pre>
+
+<p>The <a href="">Logger</a>, <a href="">Torch</a>, and <a href="">Runner</a> classes are Gym <a href="">environment wrappers</a> that systematically modify the behaviour of an environment:</p>
+<ul>
+<li><code>Logger</code> keeps track of metrics and prints them at a given interval.</li>
+<li><code>Torch</code> converts Gym states into PyTorch tensors, and action tensors into numpy arrays.</li>
+<li><code>Runner</code> implements a <code>run</code> method which allows to easily gather transitions for a number of steps or episodes.</li>
+</ul>
+<p>One particularity of wrappers is that they automatically expose the methods of the wrapped environment if it is not reimplemented: so when calling <code>env.seed(42)</code> we are calling the method from <code>CartPole-v0</code>.</p>
+<p>Second, we instanciate the policy, optimizer, as well as the action distribution.
+The action distribution is created by calling</p>
+<pre><code class="python">action_dist = ch.distributions.ActionDistribution(env)
+</code></pre>
+
+<p>which will automatically choose between a diagonal Gaussian for continuous action-spaces or a categorical distribution discrete ones.</p>
+<p>Next, we define <code>get_action</code> which defines how to get an action from our agent and will be used in conjuction to <code>env.run()</code> to quickly collect experience data:</p>
+<pre><code class="python">replay = env.run(get_action, episodes=1)
+</code></pre>
+
+<p><code>env.run()</code> assumes that the first returned value by <code>get_action</code> is the action to be passed to the environment and the second, optional, returned value is a dictionary to be saved into the experience replay.
+Under the hood, <code>env.run()</code> creates a new <a href="">ExperienceReplay</a> and fills it with the desired number of transitions;
+instead of <code>episodes=1</code> we could have passed <code>steps=100</code>.</p>
+<p>Finally, we discount and normalize the rewards and take an optimization step on the policy gradient loss.</p>
+<pre><code class="python">rewards = ch.td.discount(0.99, replay.reward(), replay.done())
+rewards = ch.normalize(rewards)
+
+loss = -th.sum(replay.log_prob() * rewards)
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+</code></pre>
+
+<p>When calling <code>replay.reward()</code>, <code>replay.done()</code>, or <code>replay.log_prob()</code>, the experience replay will concatenate the corresponding attribute across all of its transitions and <strong>return a new tensor</strong>.
+This means that this operation is rather expensive (cache it when possible) and that modifying this tensor does not modify the corresponding transitions in <code>replay</code>.
+Note that in this case <code>log_prob</code> is a custom attribute which is not declared in the original implementation of <code>ExperienceReplay</code>, and we could have given it any name by changing the dictionary key in <code>get_action()</code>.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>You should now be able to use cherry in your own work.
+For more information, have a look at the <a href="http://cherry-rl.net/docs/cherry/">documentation</a>, the other <a href="http://cherry-rl.net/tutorials/distributed_ppo/">tutorials</a>, or the numerous <a href="https://github.com/seba-1511/cherry/tree/master/examples">examples</a>. 
+Since one of the characteristics of cherry is to avoid providing "pre-baked" algorithms, we tried our best to heavily document its usage.</p></div>
         </div>
 
         <footer class="col-md-12">
