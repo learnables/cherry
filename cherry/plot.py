@@ -197,7 +197,7 @@ def exponential_smoothing(x, y=None, temperature=1.0):
 
     y_after = y_after1 * y_count1 + y_after2 * y_count2
     y_after /= (y_count1 + y_count2)
-    return x_after1, y_after
+    return x_after1.tolist(), y_after.tolist()
 
 
 def smooth(x, y=None, temperature=1.0):
