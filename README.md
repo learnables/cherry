@@ -13,7 +13,7 @@ So if you don't like a specific tool, you don’t need to use it.
 
 **Features**
 
-* Pythonic and modular interface *à la* Pytorch.
+* Pythonic and low-level interface *à la* Pytorch.
 * Support for tabular (!) and function approximation algorithms.
 * Various OpenAI Gym environment wrappers.
 * Helper functions for popular algorithms. (e.g. A2C, DDPG, TRPO, PPO, SAC)
