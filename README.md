@@ -107,7 +107,7 @@ Cherry draws inspiration from many reinforcement learning implementations, inclu
 * Dave Abel's [implementations](https://github.com/david-abel/simple_rl/),
 * Vitchyr Pong's [implementations](https://github.com/vitchyr/rlkit),
 * Kai Arulkumaran's [implementations](https://github.com/Kaixhin/spinning-up-basic),
-* [RLLab](https://github.com/rll/rllab).
+* [RLLab](https://github.com/rll/rllab) / [Garage](https://github.com/rlworkgroup/garage).
 
 
 ## Why 'cherry' ?
