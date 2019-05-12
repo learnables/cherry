@@ -58,15 +58,35 @@ Those ones are being implemented as fast as we can :)
 
 ## Core Features
 
-TODO: Write this section.
+The following features are fundamental components of cherry.
 
 #### Transitions and Experience Replay
 
+A majority of algorithms needs to store, retrieve, and sample past experience.
+To do that, you can use cherry's [ExperienceReplay]().
+An experience replay is implemented as a wrapper around a standard Python list.
+The major difference is that the [append()]() method expects arguments used to create a [Transition]().
+In addition to behaving like a list, it exposes methods that act on this list, such as [to(device)]() (moves the replay to a device), [sample()]() (randomly samples some experience), or [load()]()/[save()]() (for convenient serialization).
+An [ExperienceReplay]() contains [Transition]()s, which are akin to (`state`, `action`, `reward`, `next_state`, `done`) named tuples with possibly additional custom fields.
+Those fields are easily accessible directly from the replay by accessing the method named after them.
+For example, calling `replay.action()` will fetch the action field from every transition stored in `replay`, stack them along the first dimension, and return that large tensor.
+The same is true for custom fields; if all transitions have a `logprob` field, `replay.logprob()` will return the result of stacking them.
+
 #### Temporal Difference and Policy Gradients
+
+Many low-level utilities used to implement temporal difference and policy gradient algorithms are available in the [cherry.td]() and [cherry.pg]() modules, respectively.
+Those modules include classical methods such as [discounting rewards]() or computing the [temporal difference](), as well as more recent advances such as the [generalized advantage estimator]().
+We tried our best to avoid philosophical dissonance when a method belonged to both families of algorithms, but it is our understanding that conflict is innevitable.
 
 #### Models and PyTorch
 
+Similar to PyTorch, we provide differentiable modules in [cherry.nn](), domain-specific initialization schemes in [cherry.nn.init](), and optimization utilities in [cherry.optim]().
+In addition, popular higher-level models are available in [cherry.models](); for instance, those include [tabular modules](), the Atari CNN [features extractor](), and a [Multi-Layer Perceptron]() for continuous control.
+
 #### Gym Wrappers
+
+Given the popularity of OpenAI Gym environment in modern reinforcement learning benchmarks, cherry includes convenient wrappers in the [cherry.envs]() package.
+Examples include normalization of [states]() and [actions](), [Atari]() frames pre-processing, customizable [action]() / [reward]() processing, and automatic collection of [experience]() in a replay.
 
 #### Plots
 
