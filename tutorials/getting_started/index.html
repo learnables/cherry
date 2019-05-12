@@ -198,11 +198,27 @@ Our long-term development strategy can be summarized as follows.</p>
 <p><strong>Note</strong> Cherry is in its early days and is still missing some of the well-established methods from the past 60 years.
 Those ones are being implemented as fast as we can :)</p>
 <h2 id="core-features">Core Features</h2>
-<p>TODO: Write this section.</p>
+<p>The following features are fundamental components of cherry.</p>
 <h4 id="transitions-and-experience-replay">Transitions and Experience Replay</h4>
+<p>A majority of algorithms needs to store, retrieve, and sample past experience.
+To do that, you can use cherry's <a href="">ExperienceReplay</a>.
+An experience replay is implemented as a wrapper around a standard Python list.
+The major difference is that the <a href="">append()</a> method expects arguments used to create a <a href="">Transition</a>.
+In addition to behaving like a list, it exposes methods that act on this list, such as <a href="">to(device)</a> (moves the replay to a device), <a href="">sample()</a> (randomly samples some experience), or <a href="">load()</a>/<a href="">save()</a> (for convenient serialization).
+An <a href="">ExperienceReplay</a> contains <a href="">Transition</a>s, which are akin to (<code>state</code>, <code>action</code>, <code>reward</code>, <code>next_state</code>, <code>done</code>) named tuples with possibly additional custom fields.
+Those fields are easily accessible directly from the replay by accessing the method named after them.
+For example, calling <code>replay.action()</code> will fetch the action field from every transition stored in <code>replay</code>, stack them along the first dimension, and return that large tensor.
+The same is true for custom fields; if all transitions have a <code>logprob</code> field, <code>replay.logprob()</code> will return the result of stacking them.</p>
 <h4 id="temporal-difference-and-policy-gradients">Temporal Difference and Policy Gradients</h4>
+<p>Many low-level utilities used to implement temporal difference and policy gradient algorithms are available in the <a href="">cherry.td</a> and <a href="">cherry.pg</a> modules, respectively.
+Those modules include classical methods such as <a href="">discounting rewards</a> or computing the <a href="">temporal difference</a>, as well as more recent advances such as the <a href="">generalized advantage estimator</a>.
+We tried our best to avoid philosophical dissonance when a method belonged to both families of algorithms, but it is our understanding that conflict is innevitable.</p>
 <h4 id="models-and-pytorch">Models and PyTorch</h4>
+<p>Similar to PyTorch, we provide differentiable modules in <a href="">cherry.nn</a>, domain-specific initialization schemes in <a href="">cherry.nn.init</a>, and optimization utilities in <a href="">cherry.optim</a>.
+In addition, popular higher-level models are available in <a href="">cherry.models</a>; for instance, those include <a href="">tabular modules</a>, the Atari CNN <a href="">features extractor</a>, and a <a href="">Multi-Layer Perceptron</a> for continuous control.</p>
 <h4 id="gym-wrappers">Gym Wrappers</h4>
+<p>Given the popularity of OpenAI Gym environment in modern reinforcement learning benchmarks, cherry includes convenient wrappers in the <a href="">cherry.envs</a> package.
+Examples include normalization of <a href="">states</a> and <a href="">actions</a>, <a href="">Atari</a> frames pre-processing, customizable <a href="">action</a> / <a href="">reward</a> processing, and automatic collection of <a href="">experience</a> in a replay.</p>
 <h4 id="plots">Plots</h4>
 <p>Reporting comparable results has become a central problem in modern reinforcement learning.
 In order to alleviate this issue, cherry provides utilities to smooth and compute confidence intervals over lists of rewards.
