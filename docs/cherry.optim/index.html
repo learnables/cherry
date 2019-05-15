@@ -147,6 +147,7 @@
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryoptim">cherry.optim</a></li>
             <li><a href="#distributed">Distributed</a></li>
+            <li><a href="#distributedes">DistributedES</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -196,7 +197,44 @@ opt.sync_parameters()
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>root</strong> (int, <em>optional</em>, default=0) - Rank of root replica.</li>
-</ul></div>
+</ul>
+<h2 id="distributedes">DistributedES</h2>
+<pre><code class="python">DistributedES(self, params=&lt;required parameter&gt;, lr=0.001, noise=0.1, sync=None)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/optim.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>params</strong> (iterable) - Iterable of parameters.</li>
+</ul>
+<p><strong>References</strong></p>
+<ol>
+<li>OpenAI Paper</li>
+</ol>
+<p><strong>Example</strong></p>
+<pre><code class="python">opt = DistributedES(policy.parameters(), lr=1e-3, noise=0.1)
+
+__Train-time__
+
+opt.train()
+for step in range(10):
+    replay = env.run(get_action, steps=2048)
+    opt.step(-replay.reward().sum())
+
+__Test-time__
+
+opt.eval()
+replay = env.run(get_action, steps=2048)
+</code></pre>
+
+<h3 id="step">step</h3>
+<pre><code class="python">DistributedES.step(self)
+</code></pre>
+
+<p>Note:
+<em> comm both result + seed
+</em> use a separate RNG</p></div>
         </div>
 
         <footer class="col-md-12">
