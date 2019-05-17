@@ -5,14 +5,27 @@ import torch as th
 
 def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
     """
-    Clipped policy loss.
 
-    Arguments:
+    **Description**
+    
+    To calculate the clipped policy loss from old policy to new policy.
 
-    * new_log_probs: (tensor)
-    * old_log_probs: (tensor)
-    * advantages: (tensor)
-    * clip: (tensor)
+    **Arguments**
+    
+    * **new_log_probs** (tensor) - The log density of the actions from the new policy on some states
+    * **old_log_probs** (tensor) - The log density of the actions from the old policy on some states
+    * **advantages** (tensor) - The advantage of a state.
+    * **clip** (float) - The hyperparameter saying how far away the new policy is allowed to go from the old.
+
+    **References**
+
+    **Example**
+    ~~~python
+    advantages = replay.advantages
+    log_probs = replay.log_probs
+    loss = ppo.policy_loss(log_probs, advantages)
+    ~~~
+
     """
     msg = 'new_log_probs, old_log_probs and advantages must have equal size.'
     assert new_log_probs.size() == old_log_probs.size() == advantages.size(),\
@@ -25,14 +38,29 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
 
 def state_value_loss(new_values, old_values, rewards, clip=0.1):
     """
-    Clipped value loss.
+    **Description**
+    
+    To calculate the clipped value loss of some states from old policy to new policy.
 
-    Arguments:
+    **Arguments**
 
-    * new_values: (tensor)
-    * old_values: (tensor)
-    * rewards: (tensor)
-    * clip: (tensor)
+    * **new_values** (tensor) - The state's V value resulted from new policy.
+    * **old_values** (tensor) - The state's V value resulted from old policy.
+    * **rewards** (tensor) - Observerd rewards during the transition.
+    * **clip** (float) - The hyperparameter saying how far away the new value is allowed to go from the old.
+
+    **References**
+
+    **Example**
+    ~~~python
+    batch = replay.sample(PPO_BSZ)
+    values = policy(batch.state())
+    value_loss = ppo.state_value_loss(values,
+                                      batch.value().detach(),
+                                      batch.reward(),
+                                      clip=0.1)
+    ~~~
+    
     """
     msg = 'new_values, old_values, and rewards must have equal size.'
     assert new_values.size() == old_values.size() == rewards.size(), msg
