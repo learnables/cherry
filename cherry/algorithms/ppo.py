@@ -21,9 +21,12 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
 
     **Example**
     ~~~python
-    advantages = replay.advantages
-    log_probs = replay.log_probs
-    loss = ppo.policy_loss(log_probs, advantages)
+    batch = replay.sample(PPO_BSZ)
+    new_log_probs = masses.log_prob(batch.action()).sum(-1, keepdim=True)
+    policy_loss = ppo.policy_loss(new_log_probs,
+                                  batch.log_prob(),
+                                  batch.advantage(),
+                                  clip=0.1)
     ~~~
 
     """
@@ -60,7 +63,7 @@ def state_value_loss(new_values, old_values, rewards, clip=0.1):
                                       batch.reward(),
                                       clip=0.1)
     ~~~
-    
+
     """
     msg = 'new_values, old_values, and rewards must have equal size.'
     assert new_values.size() == old_values.size() == rewards.size(), msg

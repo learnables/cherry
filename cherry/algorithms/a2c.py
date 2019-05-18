@@ -13,13 +13,18 @@ def policy_loss(log_probs, advantages):
 
     **Description**
 
-    Advantage Actor-Critic policy loss.
+    To calculate the policy loss from old policy to new policy in A2C method.
+
+    **Arguments**
+    
+    * **log_probs** (tensor) - The log density of the actions from the new policy on some states
+    * **advantages** (tensor) - The advantage of a state.
 
     **References**
 
-    **Arguments**
-
     **Returns**
+
+    (tensor)
 
     **Example**
 
@@ -36,7 +41,27 @@ def policy_loss(log_probs, advantages):
 
 def state_value_loss(values, rewards):
     """
-    Advantage Actor-Critic value loss.
+    **Description**
+
+    To calculate the value loss of some states from old policy to new policy in A2C method.
+    
+    **Arguments**
+    
+    * **values** (tensor) - The state's V value.
+    * **rewards** (tensor) - Observerd rewards during the transition.
+
+    **References**
+
+
+    **Example**
+    ~~~python
+    rewards = ch.rewards.discount(GAMMA,
+                                  replay.reward(),
+                                  replay.done(),
+                                  bootstrap=next_state_value)
+    rewards = rewards.detach()
+    value_loss = a2c.state_value_loss(replay.value(), rewards)
+    ~~~
     """
     msg = 'values and rewards must have equal size.'
     assert values.size() == rewards.size(), msg
