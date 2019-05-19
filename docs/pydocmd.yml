@@ -5,9 +5,15 @@ site_name: "cherry"
 # is a tree of Python member names (modules, classes, etc.) that should be
 # documented. Higher indentation leads to smaller header size.
 generate:
-- docs/cherry.experience-replay.md:
-    - cherry.Transition++
-    - cherry.ExperienceReplay++
+- docs/cherry.md:
+    - cherry.Transition+
+    - cherry.ExperienceReplay+
+    - cherry.totensor
+    - cherry.normalize
+- docs/cherry.td.md:
+    - cherry.td++
+- docs/cherry.pg.md:
+    - cherry.pg++
 - docs/cherry.algorithms.md:
     - cherry.algorithms.a2c++
     - cherry.algorithms.ppo++
@@ -29,8 +35,6 @@ generate:
     - cherry.envs.action_space_scaler_wrapper.ActionSpaceScaler++
 - docs/cherry.optim.md:
     - cherry.optim++
-- docs/cherry.rewards.md:
-    - cherry.rewards++
 - docs/cherry.distributions.md:
     - cherry.distributions++
 - docs/cherry.models.md:
@@ -42,11 +46,8 @@ generate:
     - cherry.nn.ControlLinear
 - docs/cherry.nn.init.md:
     - cherry.nn.init++
-- docs/cherry.utils.md:
-    - cherry.utils++
 - docs/cherry.plot.md:
-    - cherry.plot.ci95
-    - cherry.plot.exponential_smoothing
+    - cherry.plot++
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -60,17 +61,17 @@ pages:
     - Recurrent Policy Gradients with A2C: tutorials/recurrent_a2c.md
     - Debugging Reinforcement Learning: tutorials/debugging_rl.md
 - Documentation:
-    - cherry.ExperienceReplay: docs/cherry.experience-replay.md
-    - cherry.envs: docs/cherry.envs.md
+    - cherry: docs/cherry.md
     - cherry.algorithms: docs/cherry.algorithms.md
+    - cherry.distributions: docs/cherry.distributions.md
+    - cherry.envs: docs/cherry.envs.md
     - cherry.models: docs/cherry.models.md
-    - cherry.rewards: docs/cherry.rewards.md
-    - cherry.optim: docs/cherry.optim.md
     - cherry.nn: docs/cherry.nn.md
     - cherry.nn.init: docs/cherry.nn.init.md
-    - cherry.distributions: docs/cherry.distributions.md
+    - cherry.optim: docs/cherry.optim.md
+    - cherry.pg: docs/cherry.pg.md
     - cherry.plot: docs/cherry.plot.md
-    - cherry.utils: docs/cherry.utils.md
+    - cherry.td: docs/cherry.td.md
 
 # These options all show off their default values. You don't have to add
 # them to your configuration if you're fine with the default.

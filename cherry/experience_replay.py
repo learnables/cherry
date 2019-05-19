@@ -2,18 +2,11 @@
 
 import random
 import torch as th
-from torch import Tensor as T
 
-from collections import namedtuple
-from copy import deepcopy
-
-from cherry.utils import totensor, min_size
+import cherry as ch
+from cherry._utils import _istensorable, _min_size
 
 """
-TODO: Fixed-size experience replay.
-TODO: Use tensors for storage, automatically grow them as needed.
-TODO: replay.myattr doesn't recompute a new tensor.
-TODO: replay.to(device)
 TODO: replay.astype(dtype) + init dtype
 """
 
@@ -48,7 +41,14 @@ class Transition(object):
     ~~~
     """
 
-    def __init__(self, state, action, reward, next_state, done, **infos):
+    def __init__(self,
+                 state,
+                 action,
+                 reward,
+                 next_state,
+                 done,
+                 device=None,
+                 **infos):
         self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
         values = [state, action, reward, next_state, done]
         for key, val in zip(self.__fields, values):
@@ -57,12 +57,45 @@ class Transition(object):
         self.__fields += info_keys
         for key in info_keys:
             setattr(self, key, infos[key])
+        self.device = device
 
     def __str__(self):
-        return 'Transition(' + ', '.join(self.__fields) + ')'
+        string = 'Transition(' + ', '.join(self.__fields)
+        if self.device is not None:
+            string += ', device=\'' + str(self.device) + '\''
+        string += ')'
+        return string
 
     def __repr__(self):
         return str(self)
+
+    def cpu(self):
+        return self.to('cpu')
+
+    def cuda(self, device=0, *args, **kwargs):
+        return self.to('cuda:' + str(device), *args, **kwargs)
+
+    def _apply(self, fn, device=None):
+        if device is None:
+            device = self.device
+        new_transition = {'device': device}
+        for field in self.__fields:
+            value = getattr(self, field)
+            if isinstance(value, th.Tensor):
+                new_transition[field] = fn(value)
+            else:
+                new_transition[field] = value
+        return Transition(**new_transition)
+
+    def to(self, *args, **kwargs):
+        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        return self._apply(lambda t: t.to(device, dtype if t.is_floating_point() else None, non_blocking), device)
+
+    def half(self):
+        return self._apply(lambda t: t.half() if t.is_floating_point() else t)
+
+    def double(self):
+        return self._apply(lambda t: t.double() if t.is_floating_point() else t)
 
 
 class ExperienceReplay(list):
@@ -124,19 +157,20 @@ class ExperienceReplay(list):
     ~~~
     """
 
-    def __init__(self, storage=None):
+    def __init__(self, storage=None, device=None):
         list.__init__(self)
         if storage is None:
             storage = []
         self._storage = storage
+        self.device = device
 
     def _access_property(self, name):
         try:
             values = [getattr(sars, name) for sars in self._storage]
-        except:
-            msg = 'Attribute ' + name + ' not in entire replay.'
+        except AttributeError:
+            msg = 'Attribute ' + name + ' not in replay.'
             raise AttributeError(msg)
-        true_size = min_size(values[0])
+        true_size = _min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
     def __getslice__(self, i, j):
@@ -146,7 +180,11 @@ class ExperienceReplay(list):
         return len(self._storage)
 
     def __str__(self):
-        return 'ExperienceReplay(' + str(len(self)) + ')'
+        string = 'ExperienceReplay(' + str(len(self))
+        if self.device is not None:
+            string += ', device=\'' + str(self.device) + '\''
+        string += ')'
+        return string
 
     def __repr__(self):
         return str(self)
@@ -238,14 +276,15 @@ class ExperienceReplay(list):
         ~~~
         """
         for key in infos:
-            infos[key] = totensor(infos[key])
-        sars = Transition(totensor(state),
-                          totensor(action),
-                          totensor(reward),
-                          totensor(next_state),
-                          totensor(done),
+            if _istensorable(infos[key]):
+                infos[key] = ch.totensor(infos[key])
+        sars = Transition(ch.totensor(state),
+                          ch.totensor(action),
+                          ch.totensor(reward),
+                          ch.totensor(next_state),
+                          ch.totensor(done),
                           **infos)
-        self._storage.append(sars)
+        self._storage.append(sars.to(self.device))
 
     def sample(self, size=1, contiguous=False, episodes=False):
         """
@@ -317,3 +356,22 @@ class ExperienceReplay(list):
         ~~~
         """
         self._storage = []
+
+    def cpu(self):
+        return self.to('cpu')
+
+    def cuda(self, device=0, *args, **kwargs):
+        return self.to('cuda:' + str(device), *args, **kwargs)
+
+    def to(self, *args, **kwargs):
+        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        storage = [sars.to(*args, **kwargs) for sars in self._storage]
+        return ExperienceReplay(storage, device=device)
+
+    def half(self):
+        storage = [sars.half() for sars in self._storage]
+        return ExperienceReplay(storage, device=self.device)
+
+    def double(self):
+        storage = [sars.double() for sars in self._storage]
+        return ExperienceReplay(storage, device=self.device)

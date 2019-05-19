@@ -1,38 +1,27 @@
 #!/usr/bin/env python3
 
-import ppt
-
 import random
-import argparse
 import gym
 import numpy as np
 
 import torch as th
 import torch.optim as optim
 import torch.nn as nn
-import torch.distributed as dist
 
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
 
-from cherry.optim import Distributed
 from cherry.algorithms import a2c
 from cherry.models import atari
-
-from statistics import mean
-
-"""
-This is a demonstration of how to use cherry to train an agent in a distributed
-setting.
-"""
 
 GAMMA = 0.99
 V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 LR = 7e-4
 GRAD_NORM = 0.5
-A2C_STEPS = 5
+A2C_STEPS = 5 * 16
+SEED = 42
 
 
 class NatureCNN(nn.Module):
@@ -76,10 +65,9 @@ def update(replay, optimizer, policy, env):
     nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
     optimizer.step()
 
-    if dist.get_rank() == 0:
-        env.log('policy loss', policy_loss.item())
-        env.log('value loss', value_loss.item())
-        env.log('entropy', entropy.item())
+    env.log('policy loss', policy_loss.item())
+    env.log('value loss', value_loss.item())
+    env.log('entropy', entropy.item())
 
 
 def get_action_value(state, policy):
@@ -94,43 +82,33 @@ def get_action_value(state, policy):
 
 
 def main(env='PongNoFrameskip-v4'):
-    num_steps = 5000000
-    seed = 42
+    num_steps = 10000000
 
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--local_rank", type=int)
-    args = parser.parse_args()
-    dist.init_process_group('gloo',
-   			    init_method='file:///home/seba-1511/.dist_init',
-			    rank=args.local_rank,
-			    world_size=16)
-
-    rank = dist.get_rank()
     th.set_num_threads(1)
-    random.seed(seed + rank)
-    th.manual_seed(seed + rank)
-    np.random.seed(seed + rank)
+    random.seed(SEED)
+    th.manual_seed(SEED)
+    np.random.seed(SEED)
 
     env = gym.make(env)
-    if rank == 0:
-        env = envs.Logger(env, interval=1000)
+    env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
-    env.seed(seed + rank)
+    env.seed(SEED)
 
+    num_updates = num_steps // A2C_STEPS + 1
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
-    optimizer = Distributed(policy.parameters(), optimizer)
+    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda step: 1 - step/num_updates)
     get_action = lambda state: get_action_value(state, policy)
 
-    for step in range(num_steps // A2C_STEPS + 1):
+    for updt in range(num_updates):
         # Sample some transitions
         replay = env.run(get_action, steps=A2C_STEPS)
 
         # Update policy
         update(replay, optimizer, policy, env=env)
+        lr_schedule.step(updt)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ from .base import Wrapper
 try:
     import visdom
 except ImportError:
-    visdom = ch.utils._ImportRaiser('Visdom', 'pip install visdom')
+    visdom = ch._utils._ImportRaiser('Visdom', 'pip install visdom')
 
 
 class VisdomLogger(Wrapper):
@@ -118,7 +118,7 @@ class VisdomLogger(Wrapper):
         return state, reward, done, info
 
     def log(self, key, value, opts=None):
-        if not key in self.values:
+        if key not in self.values:
             if opts is None:
                 opts = {'title': key}
             elif 'title' not in opts:
@@ -155,4 +155,3 @@ class VisdomLogger(Wrapper):
                              Y=y,
                              win=self.rewards_plot,
                              update='append')
-                            

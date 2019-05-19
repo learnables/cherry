@@ -2048,7 +2048,7 @@ class TestPlot(unittest.TestCase):
             smoothed = []
             for replay in range(10):
                 rewards = [random.random() for _ in range(100)]
-                x, y_smoothed = plot.smooth(rewards)
+                y_smoothed = plot.smooth(rewards)
                 smoothed.append(y_smoothed)
             means = [mean(r) for r in zip(*smoothed)]
             confidences = [plot.ci95(r) for r in zip(*smoothed)]

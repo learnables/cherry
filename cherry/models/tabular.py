@@ -31,7 +31,7 @@ class StateValueFunction(nn.Module):
     ~~~python
     vf = StateValueFunction(env.state_size)
     state = env.reset()
-    state = ch.utils.onehot(state, env.state_size)
+    state = ch.onehot(state, env.state_size)
     state_value = vf(state)
     ~~~
 
@@ -42,7 +42,10 @@ class StateValueFunction(nn.Module):
         self.values = nn.Parameter(th.zeros((state_size, 1)))
         self.state_size = state_size
         if init is not None:
-            init(self.values)
+            if isinstance(init, (float, int, th.Tensor)):
+                self.values.data.add_(init)
+            else:
+                init(self.values)
 
     def forward(self, state):
         return state.view(-1, self.state_size) @ self.values
@@ -77,9 +80,9 @@ class ActionValueFunction(nn.Module):
     ~~~python
     qf = ActionValueFunction(env.state_size, env.action_size)
     state = env.reset()
-    state = ch.utils.onehot(state, env.state_size)
+    state = ch.onehot(state, env.state_size)
     all_action_values = qf(state)
-    action = ch.utils.onehot(0, env.action_size)
+    action = ch.onehot(0, env.action_size)
     action_value = qf(state, action)
     ~~~
 
@@ -92,7 +95,10 @@ class ActionValueFunction(nn.Module):
         self.state_size = state_size
         self.action_size = action_size
         if init is not None:
-            init(self.values)
+            if isinstance(init, (float, int, th.Tensor)):
+                self.values.data.add_(init)
+            else:
+                init(self.values)
 
     def forward(self, state, action=None):
         action_values = (state @ self.values).view(-1, self.action_size)

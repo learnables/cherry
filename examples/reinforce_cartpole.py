@@ -4,6 +4,8 @@
 Simple example of using cherry to solve cartpole.
 
 The code is an adaptation of the PyTorch reinforcement learning example.
+
+TODO: This is not reinforce, this is policy gradient.
 """
 
 import random
@@ -20,8 +22,6 @@ from torch.distributions import Categorical
 
 import cherry as ch
 import cherry.envs as envs
-from cherry.rewards import discount
-from cherry.utils import normalize
 
 SEED = 567
 GAMMA = 0.99
@@ -48,8 +48,8 @@ def update(replay):
     policy_loss = []
 
     # Discount and normalize rewards
-    rewards = discount(GAMMA, replay.reward(), replay.done())
-    rewards = normalize(rewards)
+    rewards = ch.discount(GAMMA, replay.reward(), replay.done())
+    rewards = ch.normalize(rewards)
 
     # Compute loss
     for sars, reward in zip(replay, rewards):
@@ -103,3 +103,4 @@ if __name__ == '__main__':
         # Update policy
         update(replay)
         replay.empty()
+

@@ -31,7 +31,7 @@ class Torch(Wrapper):
             state = {k: self._convert_state(state[k]) for k in state}
             return state
         if isinstance(state, np.ndarray):
-            return ch.utils.totensor(state)
+            return ch.totensor(state)
         return state
 
     def step(self, action):

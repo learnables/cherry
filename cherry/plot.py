@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Plotting utilities for reproducible research.
+"""
+
 import math
 import torch as th
 import numpy as np
@@ -8,6 +14,8 @@ from statistics import mean, stdev
 
 def ci95(values):
     """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+
     **Description**
 
     Computes the 95% confidence interval around the given values.
@@ -27,7 +35,7 @@ def ci95(values):
     smoothed = []
     for replay in replays:
         rewards = replay.rewards.view(-1).tolist()
-        x, y_smoothed = ch.plot.smooth(rewards)
+        y_smoothed = ch.plot.smooth(rewards)
         smoothed.append(y_smoothed)
     means = [mean(r) for r in zip(*smoothed)]
     confidences = [ch.plot.ci95(r) for r in zip(*smoothed)]
@@ -85,9 +93,9 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
         x_before = np.arange(len(y_before))
 
     assert len(x_before) == len(y_before), \
-           'x_before and y_before must have equal length.'
+        'x_before and y_before must have equal length.'
     assert all(x_before[i] <= x_before[i+1] for i in range(len(x_before)-1)), \
-           'x_before needs to be sorted in ascending order.'
+        'x_before needs to be sorted in ascending order.'
 
     # Resampling
     size = len(x_before)
@@ -131,7 +139,6 @@ def exponential_smoothing(x, y=None, temperature=1.0):
     **Decription**
 
     Two-sided exponential moving average for smoothing a curve.
-    Alised to `smooth`.
 
     It performs regular exponential moving average twice from two different
     sides and then combines the results together.
@@ -190,7 +197,12 @@ def exponential_smoothing(x, y=None, temperature=1.0):
 
     y_after = y_after1 * y_count1 + y_after2 * y_count2
     y_after /= (y_count1 + y_count2)
-    return x_after1, y_after
+    return x_after1.tolist(), y_after.tolist()
 
 
-smooth = exponential_smoothing
+def smooth(x, y=None, temperature=1.0):
+    # Not officially supported.
+    result = exponential_smoothing(x=x, y=y, temperature=temperature)
+    if y is None:
+        return result[1]
+    return result

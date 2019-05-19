@@ -75,3 +75,7 @@ class TestPPOAlgorithms(unittest.TestCase):
                                                 rewards.view(*shape),
                                                 clip=clip)
                     self.assertAlmostEqual(loss.item(), ref.item())
+
+
+if __name__ == '__main__':
+    unittest.main()

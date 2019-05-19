@@ -20,8 +20,14 @@ dist-a2c:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=2 \
+	          --nproc_per_node=16 \
 		    examples/atari/dist_a2c_atari.py
+
+a2c:
+	OMP_NUM_THREADS=4 \
+	MKL_NUM_THREADS=4 \
+	python examples/atari/a2c_atari.py
+
 ppoa:
 	OMP_NUM_THREADS=4 \
 	MKL_NUM_THREADS=4 \
@@ -40,7 +46,7 @@ dist-ppo:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=2 \
+	          --nproc_per_node=16 \
 		    examples/pybullet/dist_ppo_pybullet.py
 
 ppo:
@@ -54,23 +60,33 @@ sac:
 	python examples/pybullet/sac_pybullet.py
 
 # Tabular
-tabular-q:
+tabular-s:
 	python examples/tabular/sarsa.py
 
-tabular-l:
+tabular-q:
 	python examples/tabular/q_learning.py
 
 
 
 # Admin
 dev:
-	pip install --progress-bar off torch gym >> log_install.txt
+	pip install --progress-bar off torch gym pycodestyle >> log_install.txt
 	python setup.py develop
+
+lint:
+	pycodestyle cherry/ --max-line-length=160
+
+lint-examples:
+	pycodestyle examples/ --max-line-length=80
+
+lint-tests:
+	pycodestyle tests/ --max-line-length=180
 
 tests:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -W ignore::DeprecationWarning -m unittest discover -s 'tests' -p '*_tests.py' -v
+	make lint
 
 docs:
 	cd docs && pydocmd build && pydocmd serve
