@@ -1,0 +1,1815 @@
+-------------------- HalfCheetahBulletEnv-v0 Log 1 --------------------
+Overall:
+- Steps: 1000
+- Episodes: 1
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1214.25 +/- 0.00
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1214.25 +/- 0.00
+
+-------------------- HalfCheetahBulletEnv-v0 Log 2 --------------------
+Overall:
+- Steps: 2000
+- Episodes: 2
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1215.02 +/- 0.77
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1215.79 +/- 0.00
+- Mean Average Rewards: : -1.23 +/- 0.09
+- Mean alpha Loss:: -1.51 +/- 0.87
+- Mean alpha: : 0.86 +/- 0.07
+- Mean QF Loss: : 0.81 +/- 1.14
+- Mean Policy Loss: : -5.71 +/- 0.63
+
+-------------------- HalfCheetahBulletEnv-v0 Log 3 --------------------
+Overall:
+- Steps: 3000
+- Episodes: 3
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1270.44 +/- 78.39
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1381.29 +/- 0.00
+- Mean Average Rewards: : -1.24 +/- 0.08
+- Mean alpha Loss:: -4.53 +/- 0.87
+- Mean alpha: : 0.64 +/- 0.06
+- Mean QF Loss: : 0.40 +/- 0.08
+- Mean Policy Loss: : -3.95 +/- 0.49
+
+-------------------- HalfCheetahBulletEnv-v0 Log 4 --------------------
+Overall:
+- Steps: 4000
+- Episodes: 4
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1311.15 +/- 97.87
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1433.27 +/- 0.00
+- Mean Average Rewards: : -1.29 +/- 0.08
+- Mean alpha Loss:: -7.53 +/- 0.86
+- Mean alpha: : 0.47 +/- 0.04
+- Mean QF Loss: : 0.27 +/- 0.06
+- Mean Policy Loss: : -2.52 +/- 0.36
+
+^[
+-------------------- HalfCheetahBulletEnv-v0 Log 5 --------------------
+Overall:
+- Steps: 5000
+- Episodes: 5
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1293.09 +/- 94.70
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1220.85 +/- 0.00
+- Mean Average Rewards: : -1.30 +/- 0.07
+- Mean alpha Loss:: -10.45 +/- 0.83
+- Mean alpha: : 0.35 +/- 0.03
+- Mean QF Loss: : 0.22 +/- 0.04
+- Mean Policy Loss: : -1.49 +/- 0.26
+
+-------------------- HalfCheetahBulletEnv-v0 Log 6 --------------------
+Overall:
+- Steps: 6000
+- Episodes: 6
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1266.66 +/- 104.72
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.49 +/- 0.00
+- Mean Average Rewards: : -1.28 +/- 0.07
+- Mean alpha Loss:: -13.28 +/- 0.80
+- Mean alpha: : 0.26 +/- 0.02
+- Mean QF Loss: : 0.21 +/- 0.04
+- Mean Policy Loss: : -0.75 +/- 0.20
+
+-------------------- HalfCheetahBulletEnv-v0 Log 7 --------------------
+Overall:
+- Steps: 7000
+- Episodes: 7
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1249.94 +/- 105.25
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1149.65 +/- 0.00
+- Mean Average Rewards: : -1.25 +/- 0.07
+- Mean alpha Loss:: -15.91 +/- 0.74
+- Mean alpha: : 0.19 +/- 0.02
+- Mean QF Loss: : 0.20 +/- 0.04
+- Mean Policy Loss: : -0.21 +/- 0.16
+
+-------------------- HalfCheetahBulletEnv-v0 Log 8 --------------------
+Overall:
+- Steps: 8000
+- Episodes: 8
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1235.48 +/- 105.62
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.26 +/- 0.00
+- Mean Average Rewards: : -1.25 +/- 0.07
+- Mean alpha Loss:: -18.23 +/- 0.64
+- Mean alpha: : 0.14 +/- 0.01
+- Mean QF Loss: : 0.19 +/- 0.04
+- Mean Policy Loss: : 0.19 +/- 0.12
+
+-------------------- HalfCheetahBulletEnv-v0 Log 9 --------------------
+Overall:
+- Steps: 9000
+- Episodes: 9
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1226.70 +/- 102.63
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1156.47 +/- 0.00
+- Mean Average Rewards: : -1.23 +/- 0.07
+- Mean alpha Loss:: -20.14 +/- 0.57
+- Mean alpha: : 0.11 +/- 0.01
+- Mean QF Loss: : 0.18 +/- 0.04
+- Mean Policy Loss: : 0.48 +/- 0.10
+
+-------------------- HalfCheetahBulletEnv-v0 Log 10 --------------------
+Overall:
+- Steps: 10000
+- Episodes: 10
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1221.15 +/- 98.78
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1171.15 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.07
+- Mean alpha Loss:: -21.65 +/- 0.50
+- Mean alpha: : 0.08 +/- 0.01
+- Mean QF Loss: : 0.17 +/- 0.04
+- Mean Policy Loss: : 0.68 +/- 0.10
+
+-------------------- HalfCheetahBulletEnv-v0 Log 11 --------------------
+Overall:
+- Steps: 11000
+- Episodes: 11
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1223.35 +/- 98.85
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1236.28 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.07
+- Mean alpha Loss:: -22.47 +/- 0.51
+- Mean alpha: : 0.06 +/- 0.00
+- Mean QF Loss: : 0.16 +/- 0.04
+- Mean Policy Loss: : 0.83 +/- 0.09
+
+-------------------- HalfCheetahBulletEnv-v0 Log 12 --------------------
+Overall:
+- Steps: 12000
+- Episodes: 12
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1223.58 +/- 98.83
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1218.09 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -22.53 +/- 0.62
+- Mean alpha: : 0.05 +/- 0.00
+- Mean QF Loss: : 0.14 +/- 0.04
+- Mean Policy Loss: : 0.93 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 13 --------------------
+Overall:
+- Steps: 13000
+- Episodes: 13
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1208.20 +/- 83.94
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1227.52 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -22.13 +/- 0.75
+- Mean alpha: : 0.04 +/- 0.00
+- Mean QF Loss: : 0.13 +/- 0.04
+- Mean Policy Loss: : 0.99 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 14 --------------------
+Overall:
+- Steps: 14000
+- Episodes: 14
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1186.58 +/- 38.99
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1217.01 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -21.08 +/- 0.89
+- Mean alpha: : 0.03 +/- 0.00
+- Mean QF Loss: : 0.11 +/- 0.03
+- Mean Policy Loss: : 1.02 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 15 --------------------
+Overall:
+- Steps: 15000
+- Episodes: 15
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1185.47 +/- 38.15
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1209.82 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -19.98 +/- 0.99
+- Mean alpha: : 0.02 +/- 0.00
+- Mean QF Loss: : 0.11 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 16 --------------------
+Overall:
+- Steps: 16000
+- Episodes: 16
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1189.83 +/- 34.38
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1178.03 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -18.16 +/- 1.18
+- Mean alpha: : 0.02 +/- 0.00
+- Mean QF Loss: : 0.10 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 17 --------------------
+Overall:
+- Steps: 17000
+- Episodes: 17
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1195.49 +/- 31.87
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1206.26 +/- 0.00
+- Mean Average Rewards: : -1.22 +/- 0.06
+- Mean alpha Loss:: -15.95 +/- 1.44
+- Mean alpha: : 0.01 +/- 0.00
+- Mean QF Loss: : 0.09 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 18 --------------------
+Overall:
+- Steps: 18000
+- Episodes: 18
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1194.54 +/- 33.77
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1124.74 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.06
+- Mean alpha Loss:: -13.48 +/- 1.41
+- Mean alpha: : 0.01 +/- 0.00
+- Mean QF Loss: : 0.08 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 19 --------------------
+Overall:
+- Steps: 19000
+- Episodes: 19
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1195.68 +/- 32.63
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1167.94 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.06
+- Mean alpha Loss:: -10.93 +/- 1.56
+- Mean alpha: : 0.01 +/- 0.00
+- Mean QF Loss: : 0.08 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 20 --------------------
+Overall:
+- Steps: 20000
+- Episodes: 20
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1203.02 +/- 34.49
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1244.55 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -8.49 +/- 1.63
+- Mean alpha: : 0.01 +/- 0.00
+- Mean QF Loss: : 0.07 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 21 --------------------
+Overall:
+- Steps: 21000
+- Episodes: 21
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1193.67 +/- 36.80
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1142.75 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -5.45 +/- 1.70
+- Mean alpha: : 0.01 +/- 0.00
+- Mean QF Loss: : 0.07 +/- 0.02
+- Mean Policy Loss: : 1.05 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 22 --------------------
+Overall:
+- Steps: 22000
+- Episodes: 22
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1193.52 +/- 36.71
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1216.61 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -3.17 +/- 1.82
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.07 +/- 0.03
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 23 --------------------
+Overall:
+- Steps: 23000
+- Episodes: 23
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1196.98 +/- 41.12
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1262.13 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -1.58 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.06 +/- 0.02
+- Mean Policy Loss: : 1.05 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 24 --------------------
+Overall:
+- Steps: 24000
+- Episodes: 24
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1182.44 +/- 54.87
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1071.60 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.59 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.06 +/- 0.02
+- Mean Policy Loss: : 1.05 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 25 --------------------
+Overall:
+- Steps: 25000
+- Episodes: 25
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1183.80 +/- 55.70
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1223.43 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.06
+- Mean alpha Loss:: -0.10 +/- 1.82
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.06 +/- 0.02
+- Mean Policy Loss: : 1.05 +/- 0.08
+
+-------------------- HalfCheetahBulletEnv-v0 Log 26 --------------------
+Overall:
+- Steps: 26000
+- Episodes: 26
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1190.88 +/- 58.92
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1248.83 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.05 +/- 1.71
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.06 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 27 --------------------
+Overall:
+- Steps: 27000
+- Episodes: 27
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1187.33 +/- 58.96
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1170.74 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.14 +/- 1.81
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.06 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 28 --------------------
+Overall:
+- Steps: 28000
+- Episodes: 28
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1201.21 +/- 58.93
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1263.52 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.10 +/- 1.72
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.07 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 29 --------------------
+Overall:
+- Steps: 29000
+- Episodes: 29
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1207.99 +/- 58.61
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1235.72 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.11 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.08 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 30 --------------------
+Overall:
+- Steps: 30000
+- Episodes: 30
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1188.37 +/- 73.92
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1048.35 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.21 +/- 1.73
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.08 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 31 --------------------
+Overall:
+- Steps: 31000
+- Episodes: 31
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1195.88 +/- 72.71
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1217.89 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.10 +/- 1.83
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.05 +/- 0.02
+- Mean Policy Loss: : 1.08 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 32 --------------------
+Overall:
+- Steps: 32000
+- Episodes: 32
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1199.90 +/- 74.83
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1256.82 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.05 +/- 1.66
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.09 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 33 --------------------
+Overall:
+- Steps: 33000
+- Episodes: 33
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1199.52 +/- 74.52
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1258.31 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.00 +/- 1.88
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.09 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 34 --------------------
+Overall:
+- Steps: 34000
+- Episodes: 34
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1207.06 +/- 64.31
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1147.01 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: 0.04 +/- 1.71
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.09 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 35 --------------------
+Overall:
+- Steps: 35000
+- Episodes: 35
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1207.52 +/- 64.44
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1228.02 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.12 +/- 1.66
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.10 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 36 --------------------
+Overall:
+- Steps: 36000
+- Episodes: 36
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1197.26 +/- 65.21
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1146.19 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: 0.03 +/- 1.73
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.09 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 37 --------------------
+Overall:
+- Steps: 37000
+- Episodes: 37
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1188.91 +/- 72.95
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1087.32 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.20 +/- 1.74
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.10 +/- 0.07
+
+-------------------- HalfCheetahBulletEnv-v0 Log 38 --------------------
+Overall:
+- Steps: 38000
+- Episodes: 38
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1177.67 +/- 69.15
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1151.08 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.20 +/- 1.87
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.04 +/- 0.02
+- Mean Policy Loss: : 1.10 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 39 --------------------
+Overall:
+- Steps: 39000
+- Episodes: 39
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1189.56 +/- 86.22
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1354.64 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.03 +/- 1.79
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.02
+- Mean Policy Loss: : 1.10 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 40 --------------------
+Overall:
+- Steps: 40000
+- Episodes: 40
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1196.28 +/- 77.09
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1115.52 +/- 0.00
+- Mean Average Rewards: : -1.21 +/- 0.05
+- Mean alpha Loss:: -0.09 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 41 --------------------
+Overall:
+- Steps: 41000
+- Episodes: 41
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1187.99 +/- 78.76
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1135.02 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.13 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.02
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 42 --------------------
+Overall:
+- Steps: 42000
+- Episodes: 42
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1177.35 +/- 75.88
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1150.35 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.01 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 43 --------------------
+Overall:
+- Steps: 43000
+- Episodes: 43
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1168.33 +/- 70.92
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1168.19 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: -0.11 +/- 1.78
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 44 --------------------
+Overall:
+- Steps: 44000
+- Episodes: 44
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1166.21 +/- 71.84
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1125.81 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.04
+- Mean alpha Loss:: -0.02 +/- 1.75
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.10 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 45 --------------------
+Overall:
+- Steps: 45000
+- Episodes: 45
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1156.69 +/- 69.28
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1132.80 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.05
+- Mean alpha Loss:: 0.08 +/- 1.74
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.10 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 46 --------------------
+Overall:
+- Steps: 46000
+- Episodes: 46
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1156.16 +/- 69.38
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1140.89 +/- 0.00
+- Mean Average Rewards: : -1.20 +/- 0.04
+- Mean alpha Loss:: -0.32 +/- 1.81
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 47 --------------------
+Overall:
+- Steps: 47000
+- Episodes: 47
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1157.68 +/- 68.01
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1102.50 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: 0.15 +/- 1.85
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 48 --------------------
+Overall:
+- Steps: 48000
+- Episodes: 48
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1151.54 +/- 71.03
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1089.73 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: 0.02 +/- 1.66
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 49 --------------------
+Overall:
+- Steps: 49000
+- Episodes: 49
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1125.72 +/- 23.61
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1096.39 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: 0.06 +/- 1.74
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.06
+
+-------------------- HalfCheetahBulletEnv-v0 Log 50 --------------------
+Overall:
+- Steps: 50000
+- Episodes: 50
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1129.42 +/- 24.60
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1152.54 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: -0.12 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 51 --------------------
+Overall:
+- Steps: 51000
+- Episodes: 51
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.56 +/- 24.54
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1126.37 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: -0.17 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 52 --------------------
+Overall:
+- Steps: 52000
+- Episodes: 52
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.05 +/- 23.61
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1135.31 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: 0.05 +/- 1.68
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.03 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 53 --------------------
+Overall:
+- Steps: 53000
+- Episodes: 53
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1125.84 +/- 21.70
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1156.08 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: 0.00 +/- 1.65
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 54 --------------------
+Overall:
+- Steps: 54000
+- Episodes: 54
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.02 +/- 21.98
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1137.63 +/- 0.00
+- Mean Average Rewards: : -1.19 +/- 0.04
+- Mean alpha Loss:: -0.01 +/- 1.71
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 55 --------------------
+Overall:
+- Steps: 55000
+- Episodes: 55
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1126.05 +/- 21.92
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1123.11 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.05 +/- 1.73
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 56 --------------------
+Overall:
+- Steps: 56000
+- Episodes: 56
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1119.38 +/- 26.15
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1074.11 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.07 +/- 1.75
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 57 --------------------
+Overall:
+- Steps: 57000
+- Episodes: 57
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1122.54 +/- 25.83
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.09 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: 0.08 +/- 1.79
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 58 --------------------
+Overall:
+- Steps: 58000
+- Episodes: 58
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1126.72 +/- 23.45
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1131.53 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: 0.26 +/- 1.92
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 59 --------------------
+Overall:
+- Steps: 59000
+- Episodes: 59
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1130.81 +/- 21.27
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1137.29 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.20 +/- 1.92
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 60 --------------------
+Overall:
+- Steps: 60000
+- Episodes: 60
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1131.13 +/- 21.62
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1155.75 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.13 +/- 1.67
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 61 --------------------
+Overall:
+- Steps: 61000
+- Episodes: 61
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1133.30 +/- 22.12
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1148.08 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: 0.09 +/- 1.73
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 62 --------------------
+Overall:
+- Steps: 62000
+- Episodes: 62
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1132.67 +/- 22.14
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.99 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.27 +/- 1.72
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 63 --------------------
+Overall:
+- Steps: 63000
+- Episodes: 63
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1130.84 +/- 20.85
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1137.82 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.02 +/- 1.80
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 64 --------------------
+Overall:
+- Steps: 64000
+- Episodes: 64
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1130.80 +/- 20.84
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1137.17 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: 0.06 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 65 --------------------
+Overall:
+- Steps: 65000
+- Episodes: 65
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1129.41 +/- 21.74
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1109.25 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.11 +/- 1.72
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 66 --------------------
+Overall:
+- Steps: 66000
+- Episodes: 66
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1136.38 +/- 11.79
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1143.82 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: 0.04 +/- 1.94
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 67 --------------------
+Overall:
+- Steps: 67000
+- Episodes: 67
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1136.46 +/- 11.78
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.85 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.07 +/- 1.70
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 68 --------------------
+Overall:
+- Steps: 68000
+- Episodes: 68
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1133.76 +/- 15.19
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1104.56 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.97 +/- 2.21
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.11 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 69 --------------------
+Overall:
+- Steps: 69000
+- Episodes: 69
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.06 +/- 15.29
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1140.27 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.48 +/- 2.10
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 70 --------------------
+Overall:
+- Steps: 70000
+- Episodes: 70
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1144.39 +/- 40.54
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1259.09 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.86 +/- 1.76
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 71 --------------------
+Overall:
+- Steps: 71000
+- Episodes: 71
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1140.13 +/- 42.13
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1105.50 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -0.10 +/- 1.84
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 72 --------------------
+Overall:
+- Steps: 72000
+- Episodes: 72
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1153.07 +/- 54.71
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1258.37 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.38 +/- 2.17
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 73 --------------------
+Overall:
+- Steps: 73000
+- Episodes: 73
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1152.19 +/- 55.02
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.99 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 1.08 +/- 2.26
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 74 --------------------
+Overall:
+- Steps: 74000
+- Episodes: 74
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1155.78 +/- 55.09
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1173.10 +/- 0.00
+- Mean Average Rewards: : -1.18 +/- 0.04
+- Mean alpha Loss:: -1.41 +/- 2.11
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 75 --------------------
+Overall:
+- Steps: 75000
+- Episodes: 75
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1160.91 +/- 52.87
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1160.59 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.12 +/- 2.14
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 76 --------------------
+Overall:
+- Steps: 76000
+- Episodes: 76
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1161.86 +/- 52.63
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1153.32 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.15 +/- 1.89
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 77 --------------------
+Overall:
+- Steps: 77000
+- Episodes: 77
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1164.86 +/- 51.86
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1164.84 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.27 +/- 2.36
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 78 --------------------
+Overall:
+- Steps: 78000
+- Episodes: 78
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1166.57 +/- 50.10
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1121.60 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.46 +/- 2.06
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 79 --------------------
+Overall:
+- Steps: 79000
+- Episodes: 79
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1165.28 +/- 50.91
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.45 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.51 +/- 2.15
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 80 --------------------
+Overall:
+- Steps: 80000
+- Episodes: 80
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1154.09 +/- 40.25
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1147.20 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.01 +/- 2.09
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 81 --------------------
+Overall:
+- Steps: 81000
+- Episodes: 81
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1158.65 +/- 36.93
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1151.01 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.72 +/- 1.91
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 82 --------------------
+Overall:
+- Steps: 82000
+- Episodes: 82
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1148.53 +/- 16.35
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1157.19 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.12 +/- 2.20
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 83 --------------------
+Overall:
+- Steps: 83000
+- Episodes: 83
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1139.38 +/- 37.12
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1037.52 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.19 +/- 1.99
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 84 --------------------
+Overall:
+- Steps: 84000
+- Episodes: 84
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1133.93 +/- 35.74
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1118.57 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.39 +/- 1.85
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 85 --------------------
+Overall:
+- Steps: 85000
+- Episodes: 85
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1130.77 +/- 34.63
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1129.03 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.23 +/- 2.15
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 86 --------------------
+Overall:
+- Steps: 86000
+- Episodes: 86
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1129.08 +/- 33.89
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1136.42 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.16 +/- 1.88
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 87 --------------------
+Overall:
+- Steps: 87000
+- Episodes: 87
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1126.71 +/- 32.08
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1141.12 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.43 +/- 2.61
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 88 --------------------
+Overall:
+- Steps: 88000
+- Episodes: 88
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.42 +/- 32.04
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.74 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.38 +/- 1.74
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 89 --------------------
+Overall:
+- Steps: 89000
+- Episodes: 89
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.29 +/- 32.15
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1136.06 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.12 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 90 --------------------
+Overall:
+- Steps: 90000
+- Episodes: 90
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1125.83 +/- 31.54
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1122.65 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.05 +/- 1.69
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 91 --------------------
+Overall:
+- Steps: 91000
+- Episodes: 91
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1124.31 +/- 30.64
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1135.77 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.08 +/- 1.67
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.02 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 92 --------------------
+Overall:
+- Steps: 92000
+- Episodes: 92
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1122.07 +/- 28.93
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1134.88 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: -0.07 +/- 1.69
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 93 --------------------
+Overall:
+- Steps: 93000
+- Episodes: 93
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1129.68 +/- 8.45
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1113.58 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.07 +/- 1.97
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 94 --------------------
+Overall:
+- Steps: 94000
+- Episodes: 94
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.38 +/- 10.75
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1105.55 +/- 0.00
+- Mean Average Rewards: : -1.17 +/- 0.04
+- Mean alpha Loss:: 0.94 +/- 2.03
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 95 --------------------
+Overall:
+- Steps: 95000
+- Episodes: 95
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.15 +/- 11.30
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1116.71 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.64 +/- 2.02
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 96 --------------------
+Overall:
+- Steps: 96000
+- Episodes: 96
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1128.02 +/- 12.29
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1145.21 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.10 +/- 1.94
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 97 --------------------
+Overall:
+- Steps: 97000
+- Episodes: 97
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1126.65 +/- 11.49
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1127.33 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.22 +/- 2.07
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 98 --------------------
+Overall:
+- Steps: 98000
+- Episodes: 98
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1125.12 +/- 12.11
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1113.44 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.05 +/- 1.71
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 99 --------------------
+Overall:
+- Steps: 99000
+- Episodes: 99
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1122.68 +/- 12.11
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1111.67 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.03 +/- 1.70
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 100 --------------------
+Overall:
+- Steps: 100000
+- Episodes: 100
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1119.46 +/- 15.49
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1090.50 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.07 +/- 2.07
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 101 --------------------
+Overall:
+- Steps: 101000
+- Episodes: 101
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1118.20 +/- 14.60
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1123.10 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.75 +/- 3.08
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.05
+
+-------------------- HalfCheetahBulletEnv-v0 Log 102 --------------------
+Overall:
+- Steps: 102000
+- Episodes: 102
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1116.33 +/- 13.50
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1116.20 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.55 +/- 2.30
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 103 --------------------
+Overall:
+- Steps: 103000
+- Episodes: 103
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1113.67 +/- 16.14
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1087.00 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.18 +/- 1.77
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 104 --------------------
+Overall:
+- Steps: 104000
+- Episodes: 104
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1118.20 +/- 19.28
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1150.87 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.25 +/- 1.75
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 105 --------------------
+Overall:
+- Steps: 105000
+- Episodes: 105
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1120.27 +/- 20.10
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1137.35 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.89 +/- 2.31
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.12 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 106 --------------------
+Overall:
+- Steps: 106000
+- Episodes: 106
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1115.46 +/- 19.28
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1097.18 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: 0.25 +/- 2.53
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
+-------------------- HalfCheetahBulletEnv-v0 Log 107 --------------------
+Overall:
+- Steps: 107000
+- Episodes: 107
+Last 10 Episodes:
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1113.81 +/- 18.90
+Last 1000 Steps:
+- Episodes: 1
+- Mean episode length: 999.00 +/- 0.00
+- Mean episode reward: -1110.76 +/- 0.00
+- Mean Average Rewards: : -1.16 +/- 0.04
+- Mean alpha Loss:: -0.67 +/- 2.51
+- Mean alpha: : 0.00 +/- 0.00
+- Mean QF Loss: : 0.01 +/- 0.01
+- Mean Policy Loss: : 1.13 +/- 0.04
+
