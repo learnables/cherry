@@ -11,7 +11,6 @@ import random
 import numpy as np
 import gym
 import pybullet_envs
-#import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -21,7 +20,7 @@ import torch.optim as optim
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
-from cherry.algorithms import sac
+from cherry.algorithms import tsac as sac
 
 SEED = 42
 RENDER = False
@@ -95,13 +94,14 @@ class Policy(MLP):
 
 def update(replay,
            policy,
-           qf,
-           vf,
-           target_vf,
+           qf1,
+           qf2,
+           target_qf1,
+           target_qf2,
            log_alpha,
            policy_opt,
-           qf_opt,
-           vf_opt,
+           qf1_opt,
+           qf2_opt,
            alpha_opt,
            target_entropy):
 
@@ -128,52 +128,69 @@ def update(replay,
         alpha_loss = th.zeros(1)
 
     # QF loss
-    q_old_pred = qf(batch.state(), batch.action().detach())
-    v_next = target_vf(batch.next_state())
-    qf_loss = sac.action_value_loss(q_old_pred,
-                                    v_next,
-                                    batch.reward(),
-                                    batch.done(),
-                                    GAMMA)
+    qf1_old_pred = qf1(batch.state(), batch.action().detach())
+    qf2_old_pred = qf2(batch.state(), batch.action().detach())
 
-    # VF loss
-    v_pred = vf(batch.state())
-    q_values = qf(batch.state(), actions)
-    vf_loss = sac.state_value_loss(v_pred, log_probs, q_values, alpha)
+    q_values = th.min(  qf1(batch.state(), actions), 
+                        qf2(batch.state(), actions)  )
+
+    density = policy(batch.next_state())
+    new_actions, new_log_probs = density.rsample_and_log_prob()
+    new_log_probs = log_probs.sum(dim=1, keepdim=True)
+
+    target_q_values = th.min(  target_qf1(batch.next_state(), new_actions),
+                               target_qf2(batch.next_state(), new_actions)   )
+
+    target_q_values = target_q_values - alpha * new_log_probs
+    
+    qf1_loss = sac.action_value_loss(  qf1_old_pred, 
+                                       target_q_values, 
+                                       batch.reward(), 
+                                       batch.done(),
+                                       GAMMA  )
+
+    qf2_loss = sac.action_value_loss(  qf2_old_pred,
+                                       target_q_values, 
+                                       batch.reward(),
+                                       batch.done(),
+                                       GAMMA  )
+
+    
 
     # Policy loss
     policy_loss = sac.policy_loss(log_probs, q_values, alpha)
+    '''
     mean_reg_loss = MEAN_REG_WEIGHT * policy_mean.pow(2).mean()
     std_reg_loss = STD_REG_WEIGHT * policy_log_std.pow(2).mean()
     policy_reg_loss = mean_reg_loss + std_reg_loss
     policy_loss += policy_reg_loss
+    '''
 
     # Log debugging values
     env.log('alpha Loss:', alpha_loss.item())
     env.log('alpha: ', alpha.item())
-    env.log("QF Loss: ", qf_loss.item())
-    env.log("VF Loss: ", vf_loss.item())
+    env.log("QF Loss: ", qf1_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
     env.log("Average Rewards: ", batch.reward().mean().item())
     if random.random() < 0.05:
-        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards')
+        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards - TSAC1')
 
     # Update
-    qf_opt.zero_grad()
-    qf_loss.backward()
-    qf_opt.step()
+    qf1_opt.zero_grad()
+    qf1_loss.backward()
+    qf1_opt.step()
 
-    vf_opt.zero_grad()
-    vf_loss.backward()
-    vf_opt.step()
+    qf2_opt.zero_grad()
+    qf2_loss.backward()
+    qf2_opt.step()
 
     policy_opt.zero_grad()
     policy_loss.backward()
     policy_opt.step()
 
-    ch.models.polyak_average(source=target_vf,
-                             target=vf,
-                             alpha=VF_TARGET_TAU)
+    ch.models.polyak_average(  source=target_qf1,
+                               target=qf1,
+                               alpha=VF_TARGET_TAU  )
 
 
 if __name__ == '__main__':
@@ -200,13 +217,14 @@ if __name__ == '__main__':
     action_size = env.action_size
 
     policy = Policy(input_size=state_size, output_size=action_size)
-    qf = MLP(input_size=state_size+action_size, output_size=1)
-    vf = MLP(input_size=state_size, output_size=1)
-    target_vf = copy.deepcopy(vf)
+    qf1 = MLP(input_size=state_size+action_size, output_size=1)
+    qf2 = MLP(input_size=state_size+action_size, output_size=1)
+    target_qf1 = copy.deepcopy(qf1)
+    target_qf2 = copy.deepcopy(qf2)
 
     policy_opt = optim.Adam(policy.parameters(), lr=ALL_LR)
-    qf_opt = optim.Adam(qf.parameters(), lr=ALL_LR)
-    vf_opt = optim.Adam(vf.parameters(), lr=ALL_LR)
+    qf1_opt = optim.Adam(qf1.parameters(), lr=ALL_LR)
+    qf2_opt = optim.Adam(qf2.parameters(), lr=ALL_LR)
     alpha_opt = optim.Adam([log_alpha], lr=ALL_LR)
 
     replay = ch.ExperienceReplay()
@@ -220,5 +238,5 @@ if __name__ == '__main__':
         replay += ep_replay
         replay = replay[-REPLAY_SIZE:]
         if len(replay) > MIN_REPLAY:
-            update(replay, policy, qf, vf, target_vf, log_alpha, policy_opt,
-                   qf_opt, vf_opt, alpha_opt, target_entropy)
+            update(replay, policy, qf1, qf2, target_qf1, target_qf2, log_alpha, policy_opt,
+                   qf1_opt, qf2_opt, alpha_opt, target_entropy)
