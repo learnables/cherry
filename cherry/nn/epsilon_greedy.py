@@ -8,19 +8,30 @@ from torch.distributions import Bernoulli, Categorical
 class EpsilonGreedy(nn.Module):
 
     """
-    [[Source]]()
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/epsilon_greedy.py)
 
     **Description**
 
-    Epsilon greedy action selection.
+    Samples actions from a uniform distribution with probability `epsilon` or
+    the one maximizing the input with probability `1 - epsilon`.
 
     **References**
+    
+    1. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
     **Arguments**
-
-    **Returns**
+    
+    * **epsilon** (float, *optional*, default=0.05) - The epsilon factor.
+    * **learnable** (bool, *optional*, default=False) - Whether the epsilon 
+    factor is a learnable parameter or not.
 
     **Example**
+    
+    ~~~python
+    egreedy = EpsilonGreedy()
+    q_values = q_value(state)  # NxM tensor
+    actions = egreedy(q_values)  # Nx1 tensor of longs
+    ~~~
 
     """
 
