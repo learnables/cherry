@@ -160,37 +160,83 @@
 <pre><code class="python">Reparameterization(self, density)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Reparameterized distribution.</p>
+<p>Unifies interface for distributions that support <code>rsample</code> and those that do not.</p>
+<p>When calling <code>sample()</code>, this class checks whether <code>density</code> has a <code>rsample()</code> member,
+and defaults to call <code>sample()</code> if it does not.</p>
 <p><strong>References</strong></p>
+<ol>
+<li>The reparameterization trick.</li>
+<li>More reparameterization tricks (recent paper)</li>
+</ol>
 <p><strong>Arguments</strong></p>
-<p><strong>Returns</strong></p>
+<ul>
+<li><strong>density</strong> (Distribution) - The distribution to wrap.</li>
+</ul>
 <p><strong>Example</strong></p>
+<pre><code class="python">density = Normal(mean, std)
+reparam = Reparameterization(density)
+sample = reparam.sample()  # Uses Normal.rsample()
+</code></pre>
+
 <h2 id="actiondistribution">ActionDistribution</h2>
 <pre><code class="python">ActionDistribution(self, env, logstd=None, use_probs=False, reparam=False)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>A helper module to automatically choose the proper policy distribution,
-based on the environment action_space.</p>
-<p><strong>References</strong></p>
+based on the Gym environment <code>action_space</code>.</p>
+<p>For <code>Discrete</code> action spaces, it uses a <code>Categorical</code> distribution, otherwise
+it uses a <code>Normal</code> which uses a diagonal covariance matrix.</p>
+<p>This class enables to write single version policy body that will be compatible
+with a variety of environments.</p>
 <p><strong>Arguments</strong></p>
-<p><strong>Returns</strong></p>
+<ul>
+<li><strong>env</strong> (Environment) - Gym environment for which actions will be sampled.</li>
+<li><strong>logstd</strong> (float/tensor, <em>optional</em>, default=0) - The log standard
+deviation for the <code>Normal</code> distribution.</li>
+<li><strong>use_probs</strong> (bool, <em>optional</em>, default=False) - Whether to use probabilities or logits
+for the <code>Categorical</code> case.</li>
+<li><strong>reparam</strong> (bool, <em>optional</em>, default=False) - Whether to use reparameterization in the
+<code>Normal</code> case.</li>
+</ul>
 <p><strong>Example</strong></p>
+<pre><code class="python">env = gym.make('CartPole-v1')
+action_dist = ActionDistribution(env)
+</code></pre>
+
 <h2 id="tanhnormal">TanhNormal</h2>
 <pre><code class="python">TanhNormal(self, normal_mean, normal_std)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py">[Source]</a></p>
 <p><strong>Description</strong></p>
+<p>Implements a Normal distribution followed by a Tanh, often used with the Soft Actor-Critic.</p>
+<p>This implementation also exposes <code>sample_and_log_prob</code> and <code>rsample_and_log_prob</code>,
+which returns both samples and log-densities.
+The log-densities are computed using the pre-activation values for numerical stability.</p>
+<p><strong>Credit</strong></p>
 <p>Adapted from Vitchyr Pong's RLkit:
 https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py</p>
 <p><strong>References</strong></p>
+<ol>
+<li>SAC paper that uses TanhNormal distribution.</li>
+</ol>
 <p><strong>Arguments</strong></p>
-<p><strong>Returns</strong></p>
-<p><strong>Example</strong></p></div>
+<ul>
+<li><strong>normal_mean</strong> (tensor) - Mean of the Normal distribution.</li>
+<li><strong>normal_std</strong> (tensor) - Standard deviation of the Normal distribution.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">mean = th.zeros(5)
+std = th.ones(5)
+dist = TanhNormal(mean, std)
+samples = dist.rsample()
+logprobs = dist.log_prob(samples)  # Numerically unstable :(
+samples, logprobs = dist.rsample_and_log_prob()  # Stable :)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

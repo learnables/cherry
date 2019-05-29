@@ -155,6 +155,7 @@
             <li><a href="#policy_loss_2">policy_loss</a></li>
             <li><a href="#action_value_loss">action_value_loss</a></li>
             <li><a href="#state_value_loss_2">state_value_loss</a></li>
+            <li><a href="#entropy_weight_loss">entropy_weight_loss</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -165,15 +166,26 @@
 <pre><code class="python">policy_loss(log_probs, advantages)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Advantage Actor-Critic policy loss.</p>
+<p>The policy loss of the Advantage Actor-Critic.</p>
+<p>This function simply performs an element-wise multiplication and a mean reduction.</p>
 <p><strong>References</strong></p>
+<ol>
+<li>A3C paper</li>
+</ol>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>log_probs</strong> (tensor) - Log-density of the selected actions.</li>
+<li><strong>advantages</strong> (tensor) - Advantage of the action-state pairs.</li>
+</ul>
 <p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">advantages = replay.advantages
-log_probs = replay.log_probs
+<pre><code class="python">advantages = replay.advantage()
+log_probs = replay.log_prob()
 loss = a2c.policy_loss(log_probs, advantages)
 </code></pre>
 
@@ -181,68 +193,236 @@ loss = a2c.policy_loss(log_probs, advantages)
 <pre><code class="python">state_value_loss(values, rewards)
 </code></pre>
 
-<p>Advantage Actor-Critic value loss.</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The state-value loss of the Advantage Actor-Critic.</p>
+<p>This function is equivalent to a MSELoss.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>A3C paper</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>values</strong> (tensor) - Predicted values for some states.</li>
+<li><strong>rewards</strong> (tensor) - Observed rewards for those states.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The value loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">values = replay.value
+rewards = replay.reward
+loss = a2c.state_value_loss(values, rewards)
+</code></pre>
+
 <h1 id="cherryalgorithmsppo">cherry.algorithms.ppo</h1>
 <h2 id="policy_loss_1">policy_loss</h2>
 <pre><code class="python">policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1)
 </code></pre>
 
-<p>Clipped policy loss.</p>
-<p>Arguments:</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The clipped policy loss of Proximal Policy Optimization.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>PPO paper</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>new_log_probs: (tensor)</li>
-<li>old_log_probs: (tensor)</li>
-<li>advantages: (tensor)</li>
-<li>clip: (tensor)</li>
+<li><strong>new_log_probs</strong> (tensor) - The log-density of actions from the target policy.</li>
+<li><strong>old_log_probs</strong> (tensor) - The log-density of actions from the behaviour policy.</li>
+<li><strong>advantages</strong> (tensor) - Advantage of the actions.</li>
+<li><strong>clip</strong> (float, <em>optional</em>, default=0.1) - The clipping coefficient.</li>
 </ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The clipped policy loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">advantage = ch.pg.generalized_advantage(GAMMA,
+                                        TAU,
+                                        replay.reward(),
+                                        replay.done(),
+                                        replay.value(),
+                                        next_state_value)
+new_densities = policy(replay.state())
+new_logprobs = new_densities.log_prob(replay.action())
+loss = policy_loss(new_logprobs,
+                   replay.logprob().detach(),
+                   advantage.detach(),
+                   clip=0.2)
+</code></pre>
+
 <h2 id="state_value_loss_1">state_value_loss</h2>
 <pre><code class="python">state_value_loss(new_values, old_values, rewards, clip=0.1)
 </code></pre>
 
-<p>Clipped value loss.</p>
-<p>Arguments:</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The clipped state-value loss of Proximal Policy Optimization.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>PPO paper</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>new_values: (tensor)</li>
-<li>old_values: (tensor)</li>
-<li>rewards: (tensor)</li>
-<li>clip: (tensor)</li>
+<li><strong>new_values</strong> (tensor) - State values from the optimized value function.</li>
+<li><strong>old_values</strong> (tensor) - State values from the reference value function.</li>
+<li><strong>rewards</strong> (tensor) -  Observed rewards.</li>
+<li><strong>clip</strong> (float, <em>optional</em>, default=0.1) - The clipping coefficient.</li>
 </ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The clipped value loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">values = v_function(batch.state())
+value_loss = ppo.state_value_loss(values,
+                                  batch.value().detach(),
+                                  batch.reward(),
+                                  clip=0.2)
+</code></pre>
+
 <h1 id="cherryalgorithmssac">cherry.algorithms.sac</h1>
 <h2 id="policy_loss_2">policy_loss</h2>
-<pre><code class="python">policy_loss(log_probs, q_actions, alpha=1.0)
+<pre><code class="python">policy_loss(log_probs, q_curr, alpha=1.0)
 </code></pre>
 
-<p>Arguments:</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The policy loss of the Soft Actor-Critic.</p>
+<p>New actions are sampled from the target policy, and those are used to compute the Q-values.
+While we should back-propagate through the Q-values to the policy parameters, we shouldn't
+use that gradient to optimize the Q parameters.
+This is often avoided by either using a target Q function, or by zero-ing out the gradients
+of the Q function parameters.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>SAC papers (1, 2, &amp; 3)</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>log_probs: the log density of the actions from the current policy on
-           some states.</li>
-<li>q_actions: the Q-values for those same actions.</li>
-<li>alpha: the weight of the policy entropy.</li>
+<li><strong>log_probs</strong> (tensor) - Log-density of the selected actions.</li>
+<li><strong>q_curr</strong> (tensor) - Q-values of state-action pairs.</li>
+<li><strong>alpha</strong> (float, <em>optional</em>, default=1.0) - Entropy weight.</li>
 </ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">densities = policy(batch.state())
+actions = densities.sample()
+log_probs = densities.log_prob(actions)
+q_curr = q_function(batch.state(), actions)
+loss = policy_loss(log_probs, q_curr, alpha=0.1)
+</code></pre>
+
 <h2 id="action_value_loss">action_value_loss</h2>
-<pre><code class="python">action_value_loss(q_old_pred, v_next, rewards, dones, gamma)
+<pre><code class="python">action_value_loss(q_old, v_next, rewards, dones, gamma)
 </code></pre>
 
-<p>Arguments:</p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The action-value loss of the Soft Actor-Critic.</p>
+<p>For a given transition, the Q-values and V-values are recomputed on the actual transition data.
+The we should not back-propagate through the V-values, and often use a target network for them.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>SAC papers (1, 2, &amp; 3)</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>q_old_pred: Q values on an existing transition.</li>
-<li>v_next: V values for the resulting state.</li>
-<li>rewards: observed rewards during the transition.</li>
-<li>dones: which states were terminal.</li>
-<li>gamma: discount factor.</li>
+<li><strong>q_old</strong> (tensor) - Action values of the actual transition.</li>
+<li><strong>v_next</strong> (tensor) - State values of the resulting state.</li>
+<li><strong>rewards</strong> (tensor) - Observed rewards of the transition.</li>
+<li><strong>dones</strong> (tensor) - Which states were terminal.</li>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
 </ul>
-<h2 id="state_value_loss_2">state_value_loss</h2>
-<pre><code class="python">state_value_loss(v_pred, log_probs, q_values, alpha=1.0)
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">q_old = qf(batch.state(), batch.action().detach())
+v_next = targe_vf(batch.next_state())
+loss = action_value_loss(q_old,
+                         v_next,
+                         batch.reward(),
+                         batch.done(),
+                         gamma=0.99)
 </code></pre>
 
-<p>Arguments:</p>
+<h2 id="state_value_loss_2">state_value_loss</h2>
+<pre><code class="python">state_value_loss(v_curr, log_probs, q_curr, alpha=1.0)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The state-value loss of the Soft Actor-Critic.</p>
+<p>This update is computed "on-policy": states are sampled from a replay but the state values,
+action values, and log-densities are computed using the current value functions and policy.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>SAC papers (1, 2, &amp; 3)</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>v_pred: the V values of states from a batch.</li>
-<li>log_probs: the log density of actions from the current policy on
-           those states.</li>
-<li>q_values: the Q values of the those actions on those states.</li>
-<li>alpha: the weight of the policy entropy.</li>
-</ul></div>
+<li><strong>v_curr</strong> (tensor) - State values for some observed states.</li>
+<li><strong>log_probs</strong> (tensor) - Log-density of actions sampled from the current policy.</li>
+<li><strong>q_curr</strong> (tensor) - Action values of the actions for the current policy.</li>
+<li><strong>alpha</strong> (float, <em>optional</em>, default=1.0) - Entropy weight.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The state value loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">densities = policy(batch.state())
+actions = densities.sample()
+log_probs = densities.log_prob(actions)
+q_curr = qf(batch.state(), actions)
+v_curr = vf(batch.state())
+loss = state_value_loss(v_curr,
+                        log_probs,
+                        q_curr,
+                        alpha=0.1)
+</code></pre>
+
+<h2 id="entropy_weight_loss">entropy_weight_loss</h2>
+<pre><code class="python">entropy_weight_loss(log_alpha, log_probs, target_entropy)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Loss of the entropy weight, to automatically tune it.</p>
+<p>The target entropy needs to be manually tuned.
+However, a popular heuristic for TanhNormal policies is to use the negative of the action-space
+dimensionality. (e.g. -4 when operating the voltage of a quad-rotor.)</p>
+<p><strong>References</strong></p>
+<ol>
+<li>SAC paper 3</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>log_alpha</strong> (tensor) - Log of the entropy weight.</li>
+<li><strong>log_probs</strong> (tensor) - Log-density of policy actions.</li>
+<li><strong>target_entropy</strong> (float) - Target of the entropy value.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The state value loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">densities = policy(batch.state())
+actions = densities.sample()
+log_probs = densities.log_prob(actions)
+target_entropy = -np.prod(env.action_space.shape).item()
+loss = entropy_weight_loss(alpha.log(),
+                           log_probs,
+                           target_entropy)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

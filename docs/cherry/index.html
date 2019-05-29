@@ -319,25 +319,48 @@ batch = replay.sample(32, contiguous=True)
 <pre><code class="python">totensor(array, dtype=None)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Returns the minimium viewable size of a tensor.
-e.g. (1, 1, 3, 4) -&gt; (3, 4)</p>
-<p><strong>References</strong></p>
+<p>Converts the argument <code>array</code> to a torch.tensor 1xN, regardless of its
+type or dimension.</p>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>array</strong> (int, float, ndarray, tensor) - Data to be converted to array.</li>
+<li><strong>dtype</strong> (dtype, <em>optional</em>, default=None) - Data type to use for representation.
+By default, uses <code>torch.get_default_dtype()</code>.</li>
+</ul>
 <p><strong>Returns</strong></p>
+<ul>
+<li>Tensor of shape 1xN with the appropriate data type.</li>
+</ul>
 <p><strong>Example</strong></p>
+<pre><code class="python">array = [5, 6, 7.0]
+tensor = cherry.totensor(array, dtype=th.float32)
+array = np.array(array, dtype=np.float64)
+tensor = cherry.totensor(array, dtype=th.float16)
+</code></pre>
+
 <h1 id="normalize">normalize</h1>
 <pre><code class="python">normalize(tensor, epsilon=1e-08)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Normalizes a tensor to zero mean and unit std.</p>
-<p><strong>References</strong></p>
+<p>Normalizes a tensor to have zero mean and unit standard deviation values.</p>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>tensor</strong> (tensor) - The tensor to normalize.</li>
+<li><strong>epsilon</strong> (float, <em>optional</em>, default=1e-8) - Numerical stability constant for
+normalization.</li>
+</ul>
 <p><strong>Returns</strong></p>
-<p><strong>Example</strong></p></div>
+<ul>
+<li>A new tensor, containing the normalized values.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">tensor = torch.arange(23) / 255.0
+tensor = cherry.normalize(tensor, epsilon=1e-3)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

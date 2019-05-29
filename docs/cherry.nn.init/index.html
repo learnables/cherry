@@ -158,35 +158,71 @@
 <pre><code class="python">pong_control_(module, bias=0.1)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Control initialization from Vitchyr Pong's implementations.</p>
-<p><strong>References</strong></p>
+<p>The default initialization for robotic control of RLkit.</p>
+<p><strong>Credit</strong></p>
+<p>Adapted from Vitchyr Pong's implementations.</p>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>module</strong> (nn.Module) - Module to initialize.</li>
+<li><strong>bias</strong> (float, <em>optional</em>, default=0.1) - Constant bias initialization.</li>
+</ul>
 <p><strong>Returns</strong></p>
+<ul>
+<li>Module, whose weight and bias have been modified in-place.</li>
+</ul>
 <p><strong>Example</strong></p>
+<pre><code class="python">linear = nn.Linear(23, 5)
+pong_control_(linear)
+</code></pre>
+
 <h2 id="kostrikov_control_">kostrikov_control_</h2>
 <pre><code class="python">kostrikov_control_(module, gain=None)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Control initialization from Ilya Kostrikov's implementations.</p>
-<p><strong>References</strong></p>
+<p>Default initialization for robotic control.</p>
+<p><strong>Credit</strong></p>
+<p>Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.</p>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>module</strong> (nn.Module) - Module to initialize.</li>
+<li><strong>gain</strong> (float, <em>optional</em>, default=sqrt(2.0)) - Gain of orthogonal initialization.</li>
+</ul>
 <p><strong>Returns</strong></p>
+<ul>
+<li>Module, whose weight and bias have been modified in-place.</li>
+</ul>
 <p><strong>Example</strong></p>
+<pre><code class="python">linear = nn.Linear(23, 5)
+kostrikov_control_(linear)
+</code></pre>
+
 <h2 id="atari_init_">atari_init_</h2>
 <pre><code class="python">atari_init_(module, gain=None)
 </code></pre>
 
-<p><a href="">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Atari initialization from Ilya Kostrikov's implementations.</p>
-<p><strong>References</strong></p>
+<p>Default initialization for Atari environments.</p>
+<p><strong>Credit</strong></p>
+<p>Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.</p>
 <p><strong>Arguments</strong></p>
+<ul>
+<li><strong>module</strong> (nn.Module) - Module to initialize.</li>
+<li><strong>gain</strong> (float, <em>optional</em>, default=None) - Gain of orthogonal initialization.
+Default is computed for ReLU activation with <code>torch.nn.init.calculate_gain('relu')</code>.</li>
+</ul>
 <p><strong>Returns</strong></p>
-<p><strong>Example</strong></p></div>
+<ul>
+<li>Module, whose weight and bias have been modified in-place.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">linear = nn.Linear(23, 5)
+atari_init_(linear)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

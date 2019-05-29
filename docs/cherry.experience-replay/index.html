@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>cherry.nn - cherry</title>
+        <title>Transition - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -70,7 +70,7 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -94,8 +94,8 @@
     <a href="../cherry.models/">cherry.models</a>
 </li>
                                     
-<li class="active">
-    <a href="./">cherry.nn</a>
+<li >
+    <a href="../cherry.nn/">cherry.nn</a>
 </li>
                                     
 <li >
@@ -127,16 +127,6 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../cherry.models/">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li >
-                                <a rel="prev" href="../cherry.nn.init/">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
                     </ul>
                 </div>
             </div>
@@ -145,28 +135,172 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#controllinear">ControlLinear</a></li>
+        <li class="main active"><a href="#transition">Transition</a></li>
+        <li class="main "><a href="#experiencereplay">ExperienceReplay</a></li>
+            <li><a href="#save">save</a></li>
+            <li><a href="#load">load</a></li>
+            <li><a href="#append">append</a></li>
+            <li><a href="#sample">sample</a></li>
+            <li><a href="#empty">empty</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="controllinear">ControlLinear</h1>
-<pre><code class="python">ControlLinear(self, *args, **kwargs)
+<h1 id="transition">Transition</h1>
+<pre><code class="python">Transition(self, state, action, reward, next_state, done, **infos)
 </code></pre>
 
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/control_layers.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Akin to <code>nn.Linear</code>, but with proper initialization for robotic control.</p>
-<p><strong>Credit</strong></p>
-<p>Adapted from Ilya Kostrikov's implementation.</p>
+<p>Represents a (s, a, r, s', d) tuple.</p>
+<p>All attributes (including the ones in infos) are accessible via
+<code>transition.name_of_attr</code>.
+(e.g. <code>transition.log_prob</code> if <code>log_prob</code> is in <code>infos</code>.)</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>gain</strong> (float, <em>optional</em>) - Gain factor passed to <code>kostrikov_control_</code> initialization.</li>
-<li>This class extends <code>nn.Linear</code> and supports all of its arguments.</li>
+<li><strong>state</strong> (tensor) - Originating state.</li>
+<li><strong>action</strong> (tensor) - Executed action.</li>
+<li><strong>reward</strong> (tensor) - Observed reward.</li>
+<li><strong>next_state</strong> (tensor) - Resulting state.</li>
+<li><strong>done</strong> (tensor) - Is <code>next_state</code> a terminal (absorbing) state ?</li>
+<li><strong>infos</strong> (dict, <em>optional</em>, default=None) - Additional information on
+  the transition.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">linear = ch.nn.Linear(23, 5, bias=True)
-action_mean = linear(state)
+<pre><code class="python">for transition in replay:
+    print(transition.state)
+</code></pre>
+
+<h1 id="experiencereplay">ExperienceReplay</h1>
+<pre><code class="python">ExperienceReplay(self, storage=None)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/experience_replay.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Experience replay buffer to store, retrieve, and sample past transitions.</p>
+<p><code>ExperienceReplay</code> behaves like a list of transitions, .
+It also support accessing specific properties, such as states, actions,
+rewards, next_states, and informations.
+The first four are returned as tensors, while <code>infos</code> is returned as
+a list of dicts.
+The properties of infos can be accessed directly by appending an <code>s</code> to
+their dictionary key -- see Examples below.
+In this case, if the values of the infos are tensors, they will be returned
+as a concatenated Tensor.
+Otherwise, they default to a list of values.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of states.</li>
+<li><strong>actions</strong> (Tensor, <em>optional</em>, default=None) - Tensor of actions.</li>
+<li><strong>rewards</strong> (Tensor, <em>optional</em>, default=None) - Tensor of rewards.</li>
+<li><strong>next_states</strong> (Tensor, <em>optional</em>, default=None) - Tensor of
+  next_states.</li>
+<li><strong>dones</strong> (Tensor, <em>optional</em>, default=None) - Tensor of dones.</li>
+<li><strong>infos</strong> (list, <em>optional</em>, default=None) - List of infos.</li>
+</ul>
+<p><strong>References</strong></p>
+<ol>
+<li>Lin, Long-Ji. 1992. “Self-Improving Reactive Agents Based on Reinforcement Learning, Planning and Teaching.” Machine Learning 8 (3): 293–321.</li>
+</ol>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay = ch.ExperienceReplay()  # Instanciate a new replay
+replay.append(state,  # Add experience to the replay
+              action,
+              reward,
+              next_state,
+              done,
+              density: action_density,
+              log_prob: action_density.log_prob(action),
+              )
+
+replay.state()  # Tensor of states
+replay.action()  # Tensor of actions
+replay.density()  # list of action_density
+replay.log_prob()  # Tensor of log_probabilities
+
+new_replay = replay[-10:]  # Last 10 transitions in new_replay
+
+#Sample some previous experience
+batch = replay.sample(32, contiguous=True)
+</code></pre>
+
+<h2 id="save">save</h2>
+<pre><code class="python">ExperienceReplay.save(self, path)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Serializes and saves the ExperienceReplay into the given path.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>path</strong> (str) - File path.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay.save('my_replay_file.pt')
+</code></pre>
+
+<h2 id="load">load</h2>
+<pre><code class="python">ExperienceReplay.load(self, path)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Loads data from a serialized ExperienceReplay.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>path</strong> (str) - File path of serialized ExperienceReplay.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay.load('my_replay_file.pt')
+</code></pre>
+
+<h2 id="append">append</h2>
+<pre><code class="python">ExperienceReplay.append(self, state=None, action=None, reward=None, next_state=None, done=None, **infos)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Appends new data to the list ExperienceReplay.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>state</strong> (tensor/ndarray/list) - Originating state.</li>
+<li><strong>action</strong> (tensor/ndarray/list) - Executed action.</li>
+<li><strong>reward</strong> (tensor/ndarray/list) - Observed reward.</li>
+<li><strong>next_state</strong> (tensor/ndarray/list) - Resulting state.</li>
+<li><strong>done</strong> (tensor/bool) - Is <code>next_state</code> a terminal (absorbing)
+  state ?</li>
+<li><strong>infos</strong> (dict, <em>optional</em>, default=None) - Additional information
+  on the transition.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay.append(state, action, reward, next_state, done, info={
+    'density': density,
+    'log_prob': density.log_prob(action),
+})
+</code></pre>
+
+<h2 id="sample">sample</h2>
+<pre><code class="python">ExperienceReplay.sample(self, size=1, contiguous=False, episodes=False)
+</code></pre>
+
+<p>Samples from the Experience replay.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>size</strong> (int, <em>optional</em>, default=1) - The number of samples.</li>
+<li><strong>contiguous</strong> (bool, <em>optional</em>, default=False) - Whether to sample
+  contiguous transitions.</li>
+<li><strong>episodes</strong> (bool, <em>optional</em>, default=False) - Sample full
+  episodes, instead of transitions.</li>
+</ul>
+<p><strong>Return</strong></p>
+<ul>
+<li>ExperienceReplay - New ExperienceReplay containing the sampled
+  transitions.</li>
+</ul>
+<h2 id="empty">empty</h2>
+<pre><code class="python">ExperienceReplay.empty(self)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Removes all data from an ExperienceReplay.</p>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay.empty()
 </code></pre></div>
         </div>
 
