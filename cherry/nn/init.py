@@ -14,20 +14,20 @@ def pong_control_(module, bias=0.1):
     The default initialization for robotic control of RLkit.
 
     **Credit**
-    
+
     Adapted from Vitchyr Pong's implementations.
 
     **Arguments**
-    
+
     * **module** (nn.Module) - Module to initialize.
     * **bias** (float, *optional*, default=0.1) - Constant bias initialization.
 
     **Returns**
-    
+
     * Module, whose weight and bias have been modified in-place.
 
     **Example**
-    
+
     ~~~python
     linear = nn.Linear(23, 5)
     pong_control_(linear)
@@ -57,20 +57,20 @@ def kostrikov_control_(module, gain=None):
     Default initialization for robotic control.
 
     **Credit**
-    
+
     Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.
 
     **Arguments**
-    
+
     * **module** (nn.Module) - Module to initialize.
     * **gain** (float, *optional*, default=sqrt(2.0)) - Gain of orthogonal initialization.
 
     **Returns**
-    
+
     * Module, whose weight and bias have been modified in-place.
 
     **Example**
-    
+
     ~~~python
     linear = nn.Linear(23, 5)
     kostrikov_control_(linear)
@@ -88,27 +88,27 @@ def kostrikov_control_(module, gain=None):
 def atari_init_(module, gain=None):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py)
-    
+
     **Description**
 
     Default initialization for Atari environments.
 
     **Credit**
-    
+
     Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.
 
     **Arguments**
-    
+
     * **module** (nn.Module) - Module to initialize.
     * **gain** (float, *optional*, default=None) - Gain of orthogonal initialization.
     Default is computed for ReLU activation with `torch.nn.init.calculate_gain('relu')`.
 
     **Returns**
-    
+
     * Module, whose weight and bias have been modified in-place.
 
     **Example**
-    
+
     ~~~python
     linear = nn.Linear(23, 5)
     atari_init_(linear)

@@ -12,21 +12,21 @@ def totensor(array, dtype=None):
 
     **Description**
 
-    Converts the argument `array` to a torch.tensor 1xN, regardless of its 
+    Converts the argument `array` to a torch.tensor 1xN, regardless of its
     type or dimension.
 
     **Arguments**
-    
+
     * **array** (int, float, ndarray, tensor) - Data to be converted to array.
     * **dtype** (dtype, *optional*, default=None) - Data type to use for representation.
     By default, uses `torch.get_default_dtype()`.
 
     **Returns**
-    
+
     * Tensor of shape 1xN with the appropriate data type.
 
     **Example**
-    
+
     ~~~python
     array = [5, 6, 7.0]
     tensor = cherry.totensor(array, dtype=th.float32)
@@ -61,21 +61,21 @@ def normalize(tensor, epsilon=EPS):
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py)
 
     **Description**
-    
+
     Normalizes a tensor to have zero mean and unit standard deviation values.
 
     **Arguments**
-    
+
     * **tensor** (tensor) - The tensor to normalize.
     * **epsilon** (float, *optional*, default=1e-8) - Numerical stability constant for
     normalization.
 
     **Returns**
-    
+
     * A new tensor, containing the normalized values.
 
     **Example**
-    
+
     ~~~python
     tensor = torch.arange(23) / 255.0
     tensor = cherry.normalize(tensor, epsilon=1e-3)
@@ -96,20 +96,20 @@ def onehot(x, dim):
     Creates a new onehot tensor of the specified dimension.
 
     **Arguments**
-    
+
     * **x** (int, ndarray, tensor) - Index or N-dimensional tensor of indices to be one-hot encoded.
     * **dim** (int) - Size of the one-hot vector.
 
     **Returns**
-    
+
     * A new Nxdim tensor containing one(s) at position(s) `x`, zeros everywhere else.
 
     **Example**
-    
+
     ~~~python
     action = 2
     action = cherry.onehot(action, dim=5)
-    
+
     actions = torch.tensor([[2], [1], [2]]).long()  # 3x1 tensor
     actions = cherry.onehot(actions, dim=5)  # 3x5 tensor
     ~~~
