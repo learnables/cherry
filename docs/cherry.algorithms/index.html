@@ -172,7 +172,7 @@
 <p>This function simply performs an element-wise multiplication and a mean reduction.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>A3C paper</li>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -226,7 +226,7 @@ loss = a2c.state_value_loss(values, rewards)
 <p>The clipped policy loss of Proximal Policy Optimization.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>PPO paper</li>
+<li>Schulman et al. 2017. “Proximal Policy Optimization Algorithms.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -299,7 +299,8 @@ This is often avoided by either using a target Q function, or by zero-ing out th
 of the Q function parameters.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>SAC papers (1, 2, &amp; 3)</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -330,7 +331,8 @@ loss = policy_loss(log_probs, q_curr, alpha=0.1)
 The we should not back-propagate through the V-values, and often use a target network for them.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>SAC papers (1, 2, &amp; 3)</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -365,7 +367,8 @@ loss = action_value_loss(q_old,
 action values, and log-densities are computed using the current value functions and policy.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>SAC papers (1, 2, &amp; 3)</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -402,7 +405,7 @@ However, a popular heuristic for TanhNormal policies is to use the negative of t
 dimensionality. (e.g. -4 when operating the voltage of a quad-rotor.)</p>
 <p><strong>References</strong></p>
 <ol>
-<li>SAC paper 3</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
