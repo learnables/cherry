@@ -16,17 +16,17 @@ class EpsilonGreedy(nn.Module):
     the one maximizing the input with probability `1 - epsilon`.
 
     **References**
-    
+
     1. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
     **Arguments**
-    
+
     * **epsilon** (float, *optional*, default=0.05) - The epsilon factor.
-    * **learnable** (bool, *optional*, default=False) - Whether the epsilon 
+    * **learnable** (bool, *optional*, default=False) - Whether the epsilon
     factor is a learnable parameter or not.
 
     **Example**
-    
+
     ~~~python
     egreedy = EpsilonGreedy()
     q_values = q_value(state)  # NxM tensor

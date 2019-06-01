@@ -12,18 +12,18 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
     The clipped policy loss of Proximal Policy Optimization.
 
     **References**
-    
-    1. PPO paper
+
+    1. Schulman et al. 2017. “Proximal Policy Optimization Algorithms.” arXiv [cs.LG].
 
     **Arguments**
-    
+
     * **new_log_probs** (tensor) - The log-density of actions from the target policy.
     * **old_log_probs** (tensor) - The log-density of actions from the behaviour policy.
     * **advantages** (tensor) - Advantage of the actions.
     * **clip** (float, *optional*, default=0.1) - The clipping coefficient.
 
     **Returns**
-    
+
     * (tensor) - The clipped policy loss for the given arguments.
 
     **Example**
@@ -61,18 +61,18 @@ def state_value_loss(new_values, old_values, rewards, clip=0.1):
     The clipped state-value loss of Proximal Policy Optimization.
 
     **References**
-    
+
     1. PPO paper
 
     **Arguments**
-    
+
     * **new_values** (tensor) - State values from the optimized value function.
     * **old_values** (tensor) - State values from the reference value function.
     * **rewards** (tensor) -  Observed rewards.
     * **clip** (float, *optional*, default=0.1) - The clipping coefficient.
 
     **Returns**
-    
+
     * (tensor) - The clipped value loss for the given arguments.
 
     **Example**

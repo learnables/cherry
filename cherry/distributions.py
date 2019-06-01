@@ -26,21 +26,20 @@ class Reparameterization(object):
     **Description**
 
     Unifies interface for distributions that support `rsample` and those that do not.
-    
+
     When calling `sample()`, this class checks whether `density` has a `rsample()` member,
     and defaults to call `sample()` if it does not.
 
     **References**
-    
-    1. The reparameterization trick.
-    2. More reparameterization tricks (recent paper)
+
+    1. Kingma and Welling. 2013. “Auto-Encoding Variational Bayes.” arXiv [stat.ML].
 
     **Arguments**
-    
+
     * **density** (Distribution) - The distribution to wrap.
 
     **Example**
-    
+
     ~~~python
     density = Normal(mean, std)
     reparam = Reparameterization(density)
@@ -75,15 +74,15 @@ class ActionDistribution(nn.Module):
 
     A helper module to automatically choose the proper policy distribution,
     based on the Gym environment `action_space`.
-    
+
     For `Discrete` action spaces, it uses a `Categorical` distribution, otherwise
     it uses a `Normal` which uses a diagonal covariance matrix.
-    
+
     This class enables to write single version policy body that will be compatible
     with a variety of environments.
 
     **Arguments**
-    
+
     * **env** (Environment) - Gym environment for which actions will be sampled.
     * **logstd** (float/tensor, *optional*, default=0) - The log standard
     deviation for the `Normal` distribution.
@@ -93,7 +92,7 @@ class ActionDistribution(nn.Module):
     `Normal` case.
 
     **Example**
-    
+
     ~~~python
     env = gym.make('CartPole-v1')
     action_dist = ActionDistribution(env)
@@ -135,22 +134,23 @@ class TanhNormal(Distribution):
     **Description**
 
     Implements a Normal distribution followed by a Tanh, often used with the Soft Actor-Critic.
-    
+
     This implementation also exposes `sample_and_log_prob` and `rsample_and_log_prob`,
     which returns both samples and log-densities.
     The log-densities are computed using the pre-activation values for numerical stability.
 
     **Credit**
-    
+
     Adapted from Vitchyr Pong's RLkit:
     https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py
 
     **References**
-    
-    1. SAC paper that uses TanhNormal distribution.
+
+    1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
+    2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
 
     **Arguments**
-    
+
     * **normal_mean** (tensor) - Mean of the Normal distribution.
     * **normal_std** (tensor) - Standard deviation of the Normal distribution.
 

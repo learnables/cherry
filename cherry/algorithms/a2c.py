@@ -14,20 +14,20 @@ def policy_loss(log_probs, advantages):
     **Description**
 
     The policy loss of the Advantage Actor-Critic.
-    
+
     This function simply performs an element-wise multiplication and a mean reduction.
 
     **References**
-    
-    1. A3C paper
+
+    1. Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.” arXiv [cs.LG].
 
     **Arguments**
-    
+
     * **log_probs** (tensor) - Log-density of the selected actions.
     * **advantages** (tensor) - Advantage of the action-state pairs.
 
     **Returns**
-    
+
     * (tensor) - The policy loss for the given arguments.
 
     **Example**
@@ -50,20 +50,20 @@ def state_value_loss(values, rewards):
     **Description**
 
     The state-value loss of the Advantage Actor-Critic.
-    
+
     This function is equivalent to a MSELoss.
 
     **References**
-    
+
     1. A3C paper
 
     **Arguments**
-    
+
     * **values** (tensor) - Predicted values for some states.
     * **rewards** (tensor) - Observed rewards for those states.
 
     **Returns**
-    
+
     * (tensor) - The value loss for the given arguments.
 
     **Example**
