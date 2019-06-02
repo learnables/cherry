@@ -109,10 +109,6 @@ venv.bak/
 */.DS_Store
 */**/.DS_Store
 results/*
-
-# spinningup
-/spinningup
-
 videos/*
 benchmarks/wandb/**
 examples/simple_rl/results/**
