@@ -146,12 +146,14 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#transition">Transition</a></li>
+            <li><a href="#to">to</a></li>
         <li class="main "><a href="#experiencereplay">ExperienceReplay</a></li>
             <li><a href="#save">save</a></li>
             <li><a href="#load">load</a></li>
             <li><a href="#append">append</a></li>
             <li><a href="#sample">sample</a></li>
             <li><a href="#empty">empty</a></li>
+            <li><a href="#to_1">to</a></li>
         <li class="main "><a href="#totensor">totensor</a></li>
         <li class="main "><a href="#normalize">normalize</a></li>
     </ul>
@@ -182,6 +184,12 @@
     print(transition.state)
 </code></pre>
 
+<h2 id="to">to</h2>
+<pre><code class="python">Transition.to(self, *args, **kwargs)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Moves the constituents of the transition to the desired format and device.</p>
 <h1 id="experiencereplay">ExperienceReplay</h1>
 <pre><code class="python">ExperienceReplay(self, storage=None, device=None)
 </code></pre>
@@ -315,6 +323,13 @@ batch = replay.sample(32, contiguous=True)
 <pre><code class="python">replay.empty()
 </code></pre>
 
+<h2 id="to_1">to</h2>
+<pre><code class="python">ExperienceReplay.to(self, *args, **kwargs)
+</code></pre>
+
+<p><strong>Description</strong></p>
+<p>Calls <code>.to()</code> on all transitions of the experience replay, moving them to the
+desired device and casting the to the desired format.</p>
 <h1 id="totensor">totensor</h1>
 <pre><code class="python">totensor(array, dtype=None)
 </code></pre>

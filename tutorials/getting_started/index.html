@@ -161,13 +161,13 @@ By the end of this tutorial, you should be well-equiped to incorporate cherry in
 If, instead, you're looking for an introduction to the field we recommend looking at Josh Achiam's <a href="http://spinningup.openai.com/">Spinning Up in Deep RL</a>.</p>
 <h2 id="installation">Installation</h2>
 <p>The first step in getting started with cherry is to install it.
-Since it is implemented purely on top of PyTorch, you can easily do that by typing the following command in your favorite shell.</p>
+You can easily do that by typing the following command in your favorite shell.</p>
 <pre><code class="shell">pip install cherry-rl
 </code></pre>
 
 <p>By default cherry only has two dependencies: <code>torch</code> and <code>gym</code>.
-However, more dependencies might be required if you plan to use some more specific functionalities.
-For example, the <a href="">OpenAIAtari</a> wrapper requires OpenCV (<code>pip install opencv-python</code>) and the <a href="">VisdomLogger</a> requires visdom (<code>pip install visdom</code>).</p>
+However, more dependencies might be required if you plan to use some specific functionalities.
+For example, the <a href="http://cherry-rl.net/docs/cherry.envs/#openaiatari">OpenAIAtari</a> wrapper requires OpenCV (<code>pip install opencv-python</code>) and the <a href="http://cherry-rl.net/docs/cherry.envs/#visdomlogger">VisdomLogger</a> requires visdom (<code>pip install visdom</code>).</p>
 <p><strong>Note</strong>
 While cherry depends on Gym for its environment wrappers, it doesn't restrict you to Gym environments.
 For instance, check the examples using <a href="https://github.com/seba-1511/cherry/tree/master/examples/simple_rl">simple_rl</a> and <a href="https://github.com/seba-1511/cherry/tree/master/examples/pycolab">pycolab</a> environments for Gym-free usage of cherry.</p>
@@ -179,12 +179,12 @@ Cherry aims to alleviate this issue.
 Instead of an interface akin to <code>PPO(env_name).train(1000)</code>, it provides researchers with a set of tools they can use to write readable, replicable, and flexible implementations.
 Cherry prioritizes time-to-correct-implementation over time-to-run, by explicitely helping you check, debug, and reliably report your results.</p>
 <p><strong>How to use cherry ?</strong>
-Our goal is to make cherry a natural extension to PyTorch with reinforcement learning in mind.
-To this end, we closely follow the package structure of PyTorch while providing additional utilities where we saw fit.
-So if your goal is to implement a novel distributed off-policy policy gradient algorithm, you can count on cherry to provide you experience replays, policy gradient losses, discounting and advantage functions, and distributed optimizers.
+Our goal is to make cherry a natural extension to PyTorch, with reinforcement learning in mind.
+To this end, we closely follow the package structure of PyTorch while providing additional utilities where we see fit.
+So if your goal is to implement a novel distributed off-policy policy gradient algorithm, you can count on cherry to provide you experience replays, policy gradient losses, discounting/advantage functions, and distributed optimizers.
 Those functions not only reduce the time spent writing code, they also check that your implementation is sane.
 (e.g. do the log probabilities and rewards have identical shapes?)
-Moreover, cherry provides implementation details -- unfortunately -- necessary to make deep reinforcement learning work.
+Moreover, cherry provides the implementation details necessary to make deep reinforcement learning work.
 (e.g. initializations, modules, and wrappers commonly used in robotic or Atari benchmarks.)
 Importantly, it includes built-in debugging functionalities: cherry can help you visualize what is happening under the hood of your algorithm to help you find bugs faster.</p>
 <p><strong>What's the future of cherry ?</strong>
@@ -201,9 +201,9 @@ Those ones are being implemented as fast as we can :)</p>
 <p>The following features are fundamental components of cherry.</p>
 <h4 id="transitions-and-experience-replay">Transitions and Experience Replay</h4>
 <p>A majority of algorithms needs to store, retrieve, and sample past experience.
-To do that, you can use cherry's <a href="">ExperienceReplay</a>.
+To that end, you can use cherry's <a href="http://cherry-rl.net/docs/cherry/#experiencereplay">ExperienceReplay</a>.
 An experience replay is implemented as a wrapper around a standard Python list.
-The major difference is that the <a href="">append()</a> method expects arguments used to create a <a href="">Transition</a>.
+The major difference is that the <a href="http://cherry-rl.net/docs/cherry/#append">append()</a> method expects arguments used to create a <a href="http://cherry-rl.net/docs/cherry/#transition">Transition</a>.
 In addition to behaving like a list, it exposes methods that act on this list, such as <a href="">to(device)</a> (moves the replay to a device), <a href="">sample()</a> (randomly samples some experience), or <a href="">load()</a>/<a href="">save()</a> (for convenient serialization).
 An <a href="">ExperienceReplay</a> contains <a href="">Transition</a>s, which are akin to (<code>state</code>, <code>action</code>, <code>reward</code>, <code>next_state</code>, <code>done</code>) named tuples with possibly additional custom fields.
 Those fields are easily accessible directly from the replay by accessing the method named after them.
