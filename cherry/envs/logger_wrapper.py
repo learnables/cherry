@@ -114,7 +114,7 @@ class Logger(Wrapper):
         for key in self.values.keys():
             msg += '- Mean ' + key + ': ' + '%.2f' % mean(steps_stats[key])
             msg += ' +/- ' + '%.2f' % pstdev(steps_stats[key]) + '\n'
-        return msg
+        return msg, ep_stats, steps_stats
 
     def reset(self, *args, **kwargs):
         return self.env.reset(*args, **kwargs)
@@ -132,5 +132,8 @@ class Logger(Wrapper):
         self.all_dones.append(done)
         self.num_steps += 1
         if self.interval > 0 and self.num_steps % self.interval == 0:
-            print(self.stats())
+            msg, ep_stats, steps_stats = self.stats()
+            info['logger_steps_stats'] = steps_stats
+            info['logger_ep_stats'] = ep_stats
+            print(msg)
         return state, reward, done, info
