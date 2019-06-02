@@ -189,7 +189,20 @@
 </code></pre>
 
 <p><strong>Description</strong></p>
-<p>Moves the constituents of the transition to the desired format and device.</p>
+<p>Moves the constituents of the transition to the desired device,
+and casts them to the desired format.</p>
+<p>Note: This is done in-place and doesn't create a new transition.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>device</strong> (device, <em>optional</em>, default=None) - The device to move the data to.</li>
+<li><strong>dtype</strong> (dtype, <em>optional</em>, default=None) - The torch.dtype format to cast to.</li>
+<li><strong>non_blocking</strong> (bool, <em>optional</em>, default=False) - Whether to perform the move asynchronously.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">sars = Transition(state, action, reward, next_state)
+sars.to('cuda')
+</code></pre>
+
 <h1 id="experiencereplay">ExperienceReplay</h1>
 <pre><code class="python">ExperienceReplay(self, storage=None, device=None)
 </code></pre>
@@ -330,6 +343,20 @@ batch = replay.sample(32, contiguous=True)
 <p><strong>Description</strong></p>
 <p>Calls <code>.to()</code> on all transitions of the experience replay, moving them to the
 desired device and casting the to the desired format.</p>
+<p>Note: This return a new experience replay, but the transitions are modified in-place.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>device</strong> (device, <em>optional</em>, default=None) - The device to move the data to.</li>
+<li><strong>dtype</strong> (dtype, <em>optional</em>, default=None) - The torch.dtype format to cast to.</li>
+<li><strong>non_blocking</strong> (bool, <em>optional</em>, default=False) - Whether to perform the move asynchronously.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">replay.to('cuda:1')
+policy.to('cuda:1')
+for sars in replay:
+    cuda_action = policy(sars.state).sample()
+</code></pre>
+
 <h1 id="totensor">totensor</h1>
 <pre><code class="python">totensor(array, dtype=None)
 </code></pre>
