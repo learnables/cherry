@@ -17,7 +17,13 @@ class Runner(Wrapper):
         self._current_state = None
 
     def reset(self, *args, **kwargs):
-        return self.env.reset(*args, **kwargs)
+        self._current_state = self.env.reset(*args, **kwargs)
+        self._needs_reset = False
+        return self._current_state
+
+    def step(self, action, *args, **kwargs):
+        # TODO: Implement it to be compatible with .run()
+        raise NotImplementedError('Runner does not currently support step.')
 
     def run(self,
             get_action,
@@ -37,9 +43,10 @@ class Runner(Wrapper):
         collected_episodes = 0
         collected_steps = 0
         while True:
+            if collected_steps >= steps or collected_episodes >= episodes:
+                return replay
             if self._needs_reset:
-                self._current_state = self.env.reset()
-                self._needs_reset = False
+                self.reset()
             info = {}
             action = tuple(get_action(self._current_state))
             if len(action) == 2:
@@ -51,11 +58,9 @@ class Runner(Wrapper):
             state, reward, done, _ = self.env.step(action)
             if done:
                 collected_episodes += 1
-                state = self.env.reset()
-            replay.add(old_state, action, reward, state, done, info=info)
+                self._needs_reset = True
+            replay.append(old_state, action, reward, state, done, **info)
             self._current_state = state
             if render:
                 self.env.render()
             collected_steps += 1
-            if collected_steps >= steps or collected_episodes >= episodes:
-                return replay

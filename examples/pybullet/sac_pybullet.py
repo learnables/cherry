@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
 """
-An implementation of SoftActorCritic.
-
-TODO:
-    * Decide whether to keep rsample_and_log_prob() or change
-      to a 3.0*Tanh before inputing to TanhNormal().
-      (The latter might actually work.)
+An implementation of Soft Actor-Critic.
 """
 
+from OpenGL import GLU
 import ppt
 import copy
 import random
 import numpy as np
 import gym
 import pybullet_envs
+import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -36,7 +33,7 @@ REPLAY_SIZE = 1000000
 ALL_LR = 3e-4
 MEAN_REG_WEIGHT = 1e-3
 STD_REG_WEIGHT = 1e-3
-VF_TARGET_TAU = 0.001
+VF_TARGET_TAU = 0.99
 USE_AUTOMATIC_ENTROPY_TUNING = True
 TARGET_ENTROPY = -6
 
@@ -109,7 +106,7 @@ def update(replay,
            target_entropy):
 
     batch = replay.sample(BSZ)
-    density = policy(batch.states)
+    density = policy(batch.state())
     # NOTE: The following lines are specific to the TanhNormal policy.
     #       Other policies should constrain the output of the policy net.
     actions, log_probs = density.rsample_and_log_prob()
@@ -131,14 +128,18 @@ def update(replay,
         alpha_loss = th.zeros(1)
 
     # QF loss
-    q_old_pred = qf(batch.states, batch.actions.detach())
-    v_next = target_vf(batch.next_states)
-    qf_loss = sac.q_loss(q_old_pred, v_next, batch.rewards, batch.dones, GAMMA)
+    q_old_pred = qf(batch.state(), batch.action().detach())
+    v_next = target_vf(batch.next_state())
+    qf_loss = sac.action_value_loss(q_old_pred,
+                                    v_next,
+                                    batch.reward(),
+                                    batch.done(),
+                                    GAMMA)
 
     # VF loss
-    v_pred = vf(batch.states)
-    q_values = qf(batch.states, actions)
-    vf_loss = sac.v_loss(v_pred, log_probs, q_values, alpha)
+    v_pred = vf(batch.state())
+    q_values = qf(batch.state(), actions)
+    vf_loss = sac.state_value_loss(v_pred, log_probs, q_values, alpha)
 
     # Policy loss
     policy_loss = sac.policy_loss(log_probs, q_values, alpha)
@@ -153,8 +154,9 @@ def update(replay,
     env.log("QF Loss: ", qf_loss.item())
     env.log("VF Loss: ", vf_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
-    env.log("Average Rewards: ", batch.rewards.mean().item())
-    ppt.plot(replay.rewards[-1000:].mean().item(), 'cherry true rewards')
+    env.log("Average Rewards: ", batch.reward().mean().item())
+    if random.random() < 0.05:
+        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards')
 
     # Update
     qf_opt.zero_grad()
@@ -178,7 +180,9 @@ if __name__ == '__main__':
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
-    env = gym.make('HalfCheetahBulletEnv-v0')
+    env_name = 'HalfCheetahBulletEnv-v0'
+    env_name = 'RoboschoolAnt-v1'
+    env = gym.make(env_name)
     env = envs.Logger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)

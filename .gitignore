@@ -112,8 +112,10 @@ results/*
 
 # spinningup
 /spinningup
-=======
+
 videos/*
+benchmarks/wandb/**
+examples/simple_rl/results/**
 
 # ignore .idea 
 *.idea

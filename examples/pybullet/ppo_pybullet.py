@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-"""
-TODO:
-    * Add enjoy mode
-    * Add command line argument parsing
-    * Decide whether to keep envs.Normalize or envs.OpenAINormalize (and rename to Normalize)
-"""
+# See: https://github.com/openai/roboschool/issues/15
+from OpenGL import GLU
 
 import random
 import gym
 import numpy as np
 import pybullet_envs
+import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -18,12 +15,12 @@ import torch.optim as optim
 
 import cherry as ch
 import cherry.distributions as dist
-import cherry.models as models
-import cherry.envs as envs
+from cherry import pg
+from cherry import models
+from cherry import envs
 from cherry.algorithms import ppo
 
 RENDER = False
-RECORD = True
 SEED = 42
 TOTAL_STEPS = 10000000
 LR = 3e-4
@@ -64,23 +61,22 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer, policy, env, lr_schedule):
-    _, next_state_value = policy(replay.next_states[-1])
-    advantages = ch.rewards.gae(GAMMA,
-                                TAU,
-                                replay.rewards,
-                                replay.dones,
-                                replay.values,
-                                next_state_value)
+    _, next_state_value = policy(replay[-1].next_state)
+    import pdb; pdb.set_trace()
+    advantages = pg.generalized_advantage(GAMMA,
+                                          TAU,
+                                          replay.reward(),
+                                          replay.done(),
+                                          replay.value(),
+                                          next_state_value)
 
-    rewards = [a + v for a, v in zip(advantages, replay.values)]
-    advantages = ch.utils.normalize(ch.utils.totensor(advantages), epsilon=1e-5).view(-1, 1)
+    advantages = ch.normalize(advantages, epsilon=1e-5).view(-1, 1)
+    rewards = [a + v for a, v in zip(advantages, replay.value())]
 
-    replay.update(lambda i, sars: {
-        'reward': rewards[i].detach(),
-        'info': {
-            'advantage': advantages[i].detach()
-        },
-    })
+
+    for i, sars in enumerate(replay):
+        sars.reward = rewards[i].detach()
+        sars.advantage = advantages[i].detach()
 
     # Logging
     policy_losses = []
@@ -89,33 +85,32 @@ def update(replay, optimizer, policy, env, lr_schedule):
     mean = lambda a: sum(a) / len(a)
 
     # Perform some optimization steps
-    for step in range(PPO_EPOCHS):
-        for mb in range(PPO_NUM_BATCHES):
-            batch = replay.sample(PPO_BSZ)
-            masses, values = policy(batch.states)
+    for step in range(PPO_EPOCHS * PPO_NUM_BATCHES):
+        batch = replay.sample(PPO_BSZ)
+        masses, values = policy(batch.state())
 
-            # Compute losses
-            new_log_probs = masses.log_prob(batch.actions).sum(-1, keepdim=True)
-            entropy = masses.entropy().sum(-1).mean()
-            policy_loss = ppo.policy_loss(new_log_probs,
-                                          batch.log_probs,
-                                          batch.advantages,
+        # Compute losses
+        new_log_probs = masses.log_prob(batch.action()).sum(-1, keepdim=True)
+        entropy = masses.entropy().sum(-1).mean()
+        policy_loss = ppo.policy_loss(new_log_probs,
+                                      batch.log_prob(),
+                                      batch.advantage(),
+                                      clip=PPO_CLIP)
+        value_loss = ppo.state_value_loss(values,
+                                          batch.value().detach(),
+                                          batch.reward(),
                                           clip=PPO_CLIP)
-            value_loss = ppo.value_loss(values,
-                                        batch.values.detach(),
-                                        batch.rewards,
-                                        clip=PPO_CLIP)
-            loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
+        loss = policy_loss - ENT_WEIGHT * entropy + V_WEIGHT * value_loss
 
-            # Take optimization step
-            optimizer.zero_grad()
-            loss.backward()
-            th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
-            optimizer.step()
+        # Take optimization step
+        optimizer.zero_grad()
+        loss.backward()
+        th.nn.utils.clip_grad_norm_(policy.parameters(), GRAD_NORM)
+        optimizer.step()
 
-            policy_losses.append(policy_loss)
-            entropies.append(entropy)
-            value_losses.append(value_loss)
+        policy_losses.append(policy_loss)
+        entropies.append(entropy)
+        value_losses.append(value_loss)
 
     # Log metrics
     env.log('policy loss', mean(policy_losses).item())
@@ -137,20 +132,16 @@ def get_action_value(state, policy):
     return action, info
 
 
-if __name__ == '__main__':
-    # env_name = 'CartPoleBulletEnv-v0'
-    env_name = 'AntBulletEnv-v0'
-    env = gym.make(env_name)
+def main(env='MinitaurTrottingEnv-v0'):
+    env = gym.make(env)
     env = envs.AddTimestep(env)
-    env = envs.VisdomLogger(env, interval=PPO_STEPS)
-    env = envs.OpenAINormalize(env)
+    env = envs.Logger(env, interval=PPO_STEPS)
+    env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
-    if RECORD:
-        record_env = envs.Monitor(env, './videos/')
-
+    th.set_num_threads(1)
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
@@ -159,10 +150,15 @@ if __name__ == '__main__':
 
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
-        replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
+        replay = env.run(get_action, steps=PPO_STEPS, render=False)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
 
-        if RECORD and epoch % 10 == 0:
-            record_env.run(get_action, episodes=3, render=True)
+
+if __name__ == '__main__':
+    env_name = 'CartPoleBulletEnv-v0'
+    env_name = 'AntBulletEnv-v0'
+    env_name = 'RoboschoolAnt-v1'
+    env_name = 'MinitaurTrottingEnv-v0'
+    main(env_name)

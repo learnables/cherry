@@ -6,6 +6,33 @@ from cherry.nn import ControlLinear
 
 class ControlMLP(nn.Module):
 
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/control.py)
+
+    **Description**
+
+    A multi-layer perceptron with proper initialization for continuous control.
+
+    **Credit**
+
+    Adapted from Ilya Kostrikov's implementation.
+
+    **Arguments**
+
+    * **inputs_size** (int) - Size of input.
+    * **output_size** (int) - Size of output.
+    * **layer_sizes** (list, *optional*, default=None) - A list of ints,
+      each indicating the size of a hidden layer.
+      (Defaults to two hidden layers of 64 units.)
+
+    **Example**
+    ~~~python
+    target_qf = ch.models.control.ControlMLP(23,
+                                             34,
+                                             layer_sizes=[32, 32])
+    ~~~
+    """
+
     def __init__(self, input_size, output_size, layer_sizes=None):
         super(ControlMLP, self).__init__()
         if layer_sizes is None:
@@ -26,6 +53,34 @@ class ControlMLP(nn.Module):
 
 
 class Actor(ControlMLP):
+
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/control.py)
+
+    **Description**
+
+    A multi-layer perceptron with initialization designed for choosing
+    actions in continuous control environments.
+
+    **Credit**
+
+    Adapted from Ilya Kostrikov's implementation.
+
+    **Arguments**
+
+    * **inputs_size** (int) - Size of input.
+    * **output_size** (int) - Size of action size.
+    * **layer_sizes** (list, *optional*, default=None) - A list of ints,
+      each indicating the size of a hidden layer.
+      (Defaults to two hidden layers of 64 units.)
+
+    **Example**
+    ~~~python
+    policy_mean = ch.models.control.Actor(28,
+                                          8,
+                                          layer_sizes=[64, 32, 16])
+    ~~~
+    """
 
     def __init__(self, input_size, output_size, layer_sizes=None):
         super(ControlMLP, self).__init__()

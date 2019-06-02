@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import gym
+import cherry as ch
 
 from .base import Wrapper
 
 try:
     import visdom
 except ImportError:
-    visdom = None
+    visdom = ch._utils._ImportRaiser('Visdom', 'pip install visdom')
 
 
 class VisdomLogger(Wrapper):
@@ -18,7 +18,7 @@ class VisdomLogger(Wrapper):
 
     Arguments
 
-    * env: The environment to wrap. 
+    * env: The environment to wrap.
     * interval: (int) Update frequency for episodes.
 
 
@@ -31,7 +31,7 @@ class VisdomLogger(Wrapper):
                  name=None
                  ):
         """
-        
+
         """
         super(VisdomLogger, self).__init__(env)
         self.interval = interval
@@ -217,7 +217,7 @@ class VisdomLogger(Wrapper):
         return state, reward, done, info
 
     def log(self, key, value, opts=None):
-        if not key in self.values:
+        if key not in self.values:
             if opts is None:
                 opts = {'title': key}
             elif 'title' not in opts:
@@ -257,4 +257,3 @@ class VisdomLogger(Wrapper):
                              Y=y,
                              win=self.rewards_plot,
                              update='append')
-                            

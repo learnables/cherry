@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+import ppt
+
 import random
+import argparse
 import gym
 import numpy as np
 
@@ -12,9 +15,12 @@ import torch.distributed as dist
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
+
 from cherry.optim import Distributed
 from cherry.algorithms import a2c
 from cherry.models import atari
+
+from statistics import mean
 
 """
 This is a demonstration of how to use cherry to train an agent in a distributed
@@ -50,18 +56,18 @@ class NatureCNN(nn.Module):
 
 def update(replay, optimizer, policy, env):
     # Compute advantages
-    _, next_state_value = policy(replay.next_states[-1])
-    rewards = ch.rewards.discount(GAMMA,
-                                  replay.rewards,
-                                  replay.dones,
-                                  bootstrap=next_state_value)
-    rewards = th.cat(rewards, dim=0).view(-1, 1).detach()
+    _, next_state_value = policy(replay[-1].next_state)
+    rewards = ch.discount(GAMMA,
+                          replay.reward(),
+                          replay.done(),
+                          bootstrap=next_state_value)
+    rewards = rewards.detach()
 
     # Compute loss
-    entropy = replay.entropys.mean()
-    advantages = rewards.detach() - replay.values.detach()
-    policy_loss = a2c.policy_loss(replay.log_probs, advantages)
-    value_loss = a2c.value_loss(replay.values, rewards)
+    entropy = replay.entropy().mean()
+    advantages = rewards.detach() - replay.value().detach()
+    policy_loss = a2c.policy_loss(replay.log_prob(), advantages)
+    value_loss = a2c.state_value_loss(replay.value(), rewards)
     loss = policy_loss + V_WEIGHT * value_loss - ENT_WEIGHT * entropy
 
     # Take optimization step
@@ -87,18 +93,26 @@ def get_action_value(state, policy):
     return action, info
 
 
-def main(num_steps=10000000,
-         env_name='PongNoFrameskip-v4',
-#         env_name='BreakoutNoFrameskip-v4',
-         seed=42):
-    dist.init_process_group('gloo')
+def main(env='PongNoFrameskip-v4'):
+    num_steps = 5000000
+    seed = 42
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--local_rank", type=int)
+    args = parser.parse_args()
+    dist.init_process_group('gloo',
+   			    init_method='file:///home/seba-1511/.dist_init',
+			    rank=args.local_rank,
+			    world_size=16)
+
     rank = dist.get_rank()
     th.set_num_threads(1)
     random.seed(seed + rank)
     th.manual_seed(seed + rank)
     np.random.seed(seed + rank)
 
-    env = gym.make(env_name)
+    env = gym.make(env)
     if rank == 0:
         env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
@@ -117,28 +131,9 @@ def main(num_steps=10000000,
 
         # Update policy
         update(replay, optimizer, policy, env=env)
-        if rank == 0:
-            percent = (A2C_STEPS * step / num_steps)
-            if percent in [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
-                th.save(policy.state_dict(),
-                        './saved_models/' + env_name + '_' + str(percent) + '.pth')
-
-    if rank == 0:
-        import randopt as ro
-        from statistics import mean
-        exp = ro.Experiment(name=env_name, directory='results')
-        result = mean(env.all_rewards[-10000:])
-        data = {
-            'env': env_name,
-            'all_rewards': env.all_rewards,
-            'all_dones': env.all_dones,
-            'infos': env.values,
-        }
-        exp.add_result(result, data)
-        percent = 1.0
-        th.save(policy.state_dict(),
-                './saved_models/' + env_name + '_' + str(percent) + '.pth')
 
 
 if __name__ == '__main__':
-    main()
+    env = 'BreakoutNoFrameskip-v4'
+    env = 'PongNoFrameskip-v4'
+    main(env)
