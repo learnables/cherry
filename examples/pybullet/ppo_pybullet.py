@@ -137,6 +137,7 @@ def main(env='MinitaurTrottingEnv-v0'):
     env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
+#    env = envs.Recorder(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
