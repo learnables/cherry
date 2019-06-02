@@ -49,8 +49,12 @@ class ActorCriticNet(nn.Module):
 
 
 def update(replay, optimizer):
+
+    # Logging
     policy_loss = []
+    entropies = []
     value_loss = []
+    mean = lambda a: sum(a) / len(a)
 
     # Discount and normalize rewards
     rewards = ch.discount(GAMMA, replay.reward(), replay.done())
@@ -70,6 +74,12 @@ def update(replay, optimizer):
     optimizer.step()
 
 
+    # Log metrics
+    env.log('policy loss', mean(policy_loss).item())
+    #env.log('policy entropy', mean(entropies).item())
+    env.log('value loss', mean(value_loss).item())
+
+
 def get_action_value(state, policy):
     mass, value = policy(state)
     action = mass.sample()
@@ -82,10 +92,13 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    env = envs.Logger(env, interval=1000)
+    env = envs.VisdomLogger(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
+
+    #if RECORD:
+    #    record_env = envs.Monitor(env, './videos/')
 
     policy = ActorCriticNet(env)
     optimizer = optim.Adam(policy.parameters(), lr=1e-2)
