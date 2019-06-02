@@ -62,7 +62,6 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay[-1].next_state)
-    import pdb; pdb.set_trace()
     advantages = pg.generalized_advantage(GAMMA,
                                           TAU,
                                           replay.reward(),

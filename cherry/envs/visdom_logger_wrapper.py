@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+import uuid
 import numpy as np
 import cherry as ch
+
+from gym.spaces import Discrete
 
 from .base import Wrapper
 
@@ -27,32 +30,30 @@ class VisdomLogger(Wrapper):
     def __init__(self,
                  env,
                  interval=1000,
-                 episode_interval=100,
+                 episode_interval=10,
                  name=None
                  ):
-        """
-
-        """
         super(VisdomLogger, self).__init__(env)
         self.interval = interval
+        self.episode_interval = episode_interval
         self.all_rewards = []
         self.all_dones = []
         self.ep_actions = []
         self.ep_states = []
-        self.new_ep_actions = []
-        self.new_ep_states = []
         self.num_steps = 0
         self.num_episodes = 0
         self.ep_length = 0
         self.values = {}
         self.values_plots = {}
         self.values_idx = {}
-
+        self.discrete_actions = isinstance(env.action_space, Discrete)
+        self.ep_actions_win = str(uuid.uuid4())
 
         # Instanciate visdom environment
         if name is None:
             name = env.spec.id
         self.visdom = visdom.Visdom(env=name)
+        self.name = name
 
         # Mean rewards plot
         opts = {
@@ -82,66 +83,11 @@ class VisdomLogger(Wrapper):
                                                Y=np.zeros(1),
                                                opts=opts)
 
-        # Epsiode Actions
-        opts = {
-            'title': 'Actions on 1 Episode',
-            'layoutopts': {
-                'plotly': {
-                    'xaxis': {'title': 'Episodes'},
-                    'yaxis': {'title': 'Length'},
-                    'zaxis': {'title': 'Magnitude'},
-                }
-            }
-        }
-        x = np.tile(np.arange(1, 101), (100, 1))
-        y = x.transpose()
-        X = np.exp((((x - 50) ** 2) + ((y - 50) ** 2)) / -(20.0 ** 2))
-        self.ep_actions_plot = self.visdom.surf(X=X,
-                                                opts=opts)
-
-        # Ribbon Plot
-        # start with just a random plot
-        opts =  {
-                'title': 'Ribbon Plot',
-                'layoutopts': {
-                    'plotly': {
-                        'xaxis': {'title': 'policy'},
-                        'yaxis': {'title': 'time'},
-                        'zaxis': {'title': 'activaion'},
-                            }
-                    }
-                }
-
-        #self.ep_ribbon_plot = self.visdom.line(X=np.zeros(1),
-        #                                      Y=np.zeros(1),
-        #                                      opts=opts)
-        layout = dict(title="Ribbon Plot", xaxis={'title': 'x1'}, yaxis={'title': 'x2'}, zaxis={'title': 'z'}) 
-        # create sample data points
-        trace1 = dict(x=[[1, 2], [1,2], [1,2]], y=[[4, 4], [5, 5], [6, 6]], z=[[7,7], [8, 8], [9, 9]], type='surface', name='1st Trace')
-        trace2 = dict(x=[[2, 3], [2,3], [2,3]], y=[[6, 6], [5, 5], [4, 4]], z=[[7,7], [8, 8], [9, 9]], type='surface', name='1st Trace')
-        self.visdom._send({'data': [trace1, trace2], 'layout': layout, 'win': 'mywin'})
-
-    # reads the list of actions that are indexed according to time step, then plot them and empty the action list
-    def make_ribbon_plot(self):
-        # check if it is continuous or discrete
-        # get the number of ribbons (i.e. actions), and number of time steps
-        discrete = False
-        num_actions = None
-        print("####### self.ep_actions[0] is of type: ",type(self.ep_actions[0]))
-        if type(self.ep_actions[0]) != np.ndarray:
-            discrete = True
-            num_actions = int(np.max(self.ep_actions))
-            print("----discrete")
-        else:
-            num_actions = len(self.ep_actions[0])
+    def plot_ep_actions(self):
+        discrete = isinstance(self.action_space, Discrete)
+        num_actions = self.action_size
         num_steps = len(self.ep_actions)
-       
-        print("num actions: ", num_actions)
-        print("num steps: ", num_steps)
-
-        # create a dictionary for each ribon (serves as the trace for the action)
         ribons = []
-       
         x_t = []
         y_t = []
         z_t = []
@@ -151,48 +97,33 @@ class VisdomLogger(Wrapper):
             x_in = [None] * num_steps
             y_in = [None] * num_steps
             z_in = [None] * num_steps
+            z_buff = float(self.ep_actions[0][i])
 
-            z_buff = 0
-
-            #print("for action ", i)
             for j, step_action in enumerate(self.ep_actions):
                 x_in[j] = [i*2, i*2 + 1]
                 y_in[j] = [j, j]
-                if discrete:
-                    if step_action == i:
-                        z_buff = 1
-                    else:
-                        z_buff = 0
-                else:
-                    z_buff = 0.005 * float(step_action[i]) + 0.995 * z_buff
-
+                z_buff = 0.5 * z_buff + 0.5 * float(step_action[i])
                 z_in[j] = [z_buff, z_buff]
-                print("----z_buff: ", z_buff)
 
-            trace = dict(x=x_in, y=y_in, z=z_in, type='surface', name='')
+            trace = dict(x=x_in,
+                         y=y_in,
+                         z=z_in,
+                         type='surface',
+                         name='')
             ribons.append(trace)
-            print("x: ", x_in[:10], "\ny: ", y_in[:10], "\nz: ", z_in[:10])
             x_t = x_in
             y_t = y_in
             z_t = z_in
 
-            #print("x: ", x_in[:10], "\ny: ", y_in[:10], "\nz: ", z_in[:10])
-        
-        # create the layout
-        layout = dict(title="Ribbon Plot", xaxis={'title': 'x1'}, yaxis={'title': 'x2'}, zaxis={'title': 'z'}) 
+        layout = dict(title='Actions over 1 Episode',
+                      xaxis={'title': 'Policy'},
+                      yaxis={'title': 'Time'},
+                      zaxis={'title': 'Activation'})
 
-        # send the trace, and layout to visdom 
-        self.visdom._send({'data': ribons, 'layout': layout, 'win': 'mywin'})
-
-        layout = dict(title="Ribbon Plot", xaxis={'title': 'x1'}, yaxis={'title': 'x2'}, zaxis={'title': 'z'}) 
-        # create sample data points
-        #import pdb;pdb.set_trace()
-        #trace1 = dict(x=x_t, y=y_t, z=z_t, type='surface', name='1st Trace')
-        #trace2 = dict(x=[[2, 3], [2,3], [2,3]], y=[[6, 6], [5, 5], [4, 4]], z=[[7,7], [8, 8], [9, 9]], type='surface', name='1st Trace')
-        #self.visdom._send({'data': [trace1, trace2], 'layout': layout, 'win': 'mywin'})
-        
-        # reset the action list
-        self.ep_actions = []
+        # send the trace, and layout to visdom
+        self.visdom._send({'data': ribons,
+                           'layout': layout,
+                           'win': self.ep_actions_win})
 
     def reset(self, *args, **kwargs):
         return self.env.reset(*args, **kwargs)
@@ -201,11 +132,9 @@ class VisdomLogger(Wrapper):
         state, reward, done, info = self.env.step(action)
         self.all_rewards.append(reward)
         self.all_dones.append(done)
+        if self.discrete_actions:
+            action = ch.onehot(action, dim=self.action_size)[0]
         self.ep_actions.append(action)
-        self.new_ep_actions.append(action)
-        self.new_ep_states.append(state)
-
-        #print("## the action taken was: ", action)
 
         interval = self.interval > 0 and self.num_steps % self.interval == 0
         self._update(interval=interval)
@@ -244,10 +173,10 @@ class VisdomLogger(Wrapper):
                          win=self.ep_length_plot,
                          update='append')
         self.ep_length = 0
+        if self.num_episodes % self.episode_interval == 0:
+            self.plot_ep_actions()
+        self.ep_actions = []
 
-        # call the function to print the ribon plot
-        self.make_ribbon_plot() 
-    
     def _update(self, interval=False):
         # Log immediate, non-self.values metrics
         if interval:

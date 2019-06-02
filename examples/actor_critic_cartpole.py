@@ -55,11 +55,10 @@ def update(replay, optimizer):
     entropies = []
     value_loss = []
     mean = lambda a: sum(a) / len(a)
-    
+
     # Discount and normalize rewards
     rewards = ch.discount(GAMMA, replay.reward(), replay.done())
     rewards = ch.normalize(rewards)
-
 
     # Compute losses
     for sars, reward in zip(replay, rewards):
@@ -93,12 +92,6 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    #env = envs.Logger(env, interval=1000)
-    #env = envs.Torch(env)
-    #env = envs.Runner(env)
-    #env.seed(SEED)
-
-
     env = envs.VisdomLogger(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
