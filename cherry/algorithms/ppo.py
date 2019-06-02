@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Helper functions for implementing PPO.
+"""
+
 import torch as th
 
 

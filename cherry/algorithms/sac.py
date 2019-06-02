@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Helper functions for implementing SAC.
+"""
+
 import torch as th
 from torch.nn import functional as F
 

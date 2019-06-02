@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 """
-Helper functions for A2C.
+**Description**
+
+Helper functions for implementing A2C.
 """
 
 import torch as th

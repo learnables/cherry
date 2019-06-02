@@ -80,6 +80,9 @@ def update(replay, optimizer, policy, env):
         env.log('policy loss', policy_loss.item())
         env.log('value loss', value_loss.item())
         env.log('entropy', entropy.item())
+        ppt.plot(policy_loss.item(), 'A2C - Policy Loss')
+        ppt.plot(value_loss.item(), 'A2C - Value Loss')
+        ppt.plot(entropy.item(), 'A2C - Entropy')
 
 
 def get_action_value(state, policy):
@@ -102,7 +105,7 @@ def main(env='PongNoFrameskip-v4'):
     parser.add_argument("--local_rank", type=int)
     args = parser.parse_args()
     dist.init_process_group('gloo',
-   			    init_method='file:///home/seba-1511/.dist_init',
+   			    init_method='file:///home/seba-1511/.dist_init_' + env,
 			    rank=args.local_rank,
 			    world_size=16)
 
@@ -135,5 +138,5 @@ def main(env='PongNoFrameskip-v4'):
 
 if __name__ == '__main__':
     env = 'BreakoutNoFrameskip-v4'
-    env = 'PongNoFrameskip-v4'
+#    env = 'PongNoFrameskip-v4'
     main(env)
