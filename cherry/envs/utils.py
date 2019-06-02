@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Helper functions for OpenAI Gym environments.
+"""
+
+
 import operator
 
 from functools import reduce

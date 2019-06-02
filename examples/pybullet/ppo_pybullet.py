@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # See: https://github.com/openai/roboschool/issues/15
-from OpenGL import GLU
+#from OpenGL import GLU
 
 import random
 import gym
 import numpy as np
 import pybullet_envs
-import roboschool
+#import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -137,6 +137,7 @@ def main(env='MinitaurTrottingEnv-v0'):
     env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
+#    env = envs.Recorder(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
@@ -158,6 +159,6 @@ def main(env='MinitaurTrottingEnv-v0'):
 if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
-    env_name = 'RoboschoolAnt-v1'
-    env_name = 'MinitaurTrottingEnv-v0'
+#    env_name = 'RoboschoolAnt-v1'
+#    env_name = 'MinitaurTrottingEnv-v0'
     main(env_name)

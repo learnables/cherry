@@ -32,6 +32,7 @@ generate:
     - cherry.envs.openai_atari_wrapper.OpenAIAtari++
     - cherry.envs.timestep_wrapper.AddTimestep++
     - cherry.envs.state_lambda_wrapper.StateLambda++
+    - cherry.envs.action_lambda_wrapper.ActionLambda++
     - cherry.envs.action_space_scaler_wrapper.ActionSpaceScaler++
 - docs/cherry.optim.md:
     - cherry.optim++

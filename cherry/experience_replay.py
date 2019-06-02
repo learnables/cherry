@@ -88,6 +88,28 @@ class Transition(object):
         return Transition(**new_transition)
 
     def to(self, *args, **kwargs):
+        """
+        **Description**
+
+        Moves the constituents of the transition to the desired device,
+        and casts them to the desired format.
+
+        Note: This is done in-place and doesn't create a new transition.
+
+        **Arguments**
+
+        * **device** (device, *optional*, default=None) - The device to move the data to.
+        * **dtype** (dtype, *optional*, default=None) - The torch.dtype format to cast to.
+        * **non_blocking** (bool, *optional*, default=False) - Whether to perform the move asynchronously.
+
+        **Example**
+
+        ~~~python
+        sars = Transition(state, action, reward, next_state)
+        sars.to('cuda')
+        ~~~
+
+        """
         device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
         return self._apply(lambda t: t.to(device, dtype if t.is_floating_point() else None, non_blocking), device)
 
@@ -364,6 +386,30 @@ class ExperienceReplay(list):
         return self.to('cuda:' + str(device), *args, **kwargs)
 
     def to(self, *args, **kwargs):
+        """
+        **Description**
+
+        Calls `.to()` on all transitions of the experience replay, moving them to the
+        desired device and casting the to the desired format.
+
+        Note: This return a new experience replay, but the transitions are modified in-place.
+
+        **Arguments**
+
+        * **device** (device, *optional*, default=None) - The device to move the data to.
+        * **dtype** (dtype, *optional*, default=None) - The torch.dtype format to cast to.
+        * **non_blocking** (bool, *optional*, default=False) - Whether to perform the move asynchronously.
+
+        **Example**
+
+        ~~~python
+        replay.to('cuda:1')
+        policy.to('cuda:1')
+        for sars in replay:
+            cuda_action = policy(sars.state).sample()
+        ~~~
+
+        """
         device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
         storage = [sars.to(*args, **kwargs) for sars in self._storage]
         return ExperienceReplay(storage, device=device)

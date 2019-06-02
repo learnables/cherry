@@ -20,7 +20,7 @@ V_WEIGHT = 0.5
 ENT_WEIGHT = 0.01
 LR = 7e-4
 GRAD_NORM = 0.5
-A2C_STEPS = 5 * 16
+A2C_STEPS = 5
 SEED = 42
 
 
@@ -51,6 +51,7 @@ def update(replay, optimizer, policy, env):
                           replay.done(),
                           bootstrap=next_state_value)
     rewards = rewards.detach()
+    import pdb; pdb.set_trace()
 
     # Compute loss
     entropy = replay.entropy().mean()
@@ -90,6 +91,7 @@ def main(env='PongNoFrameskip-v4'):
     np.random.seed(SEED)
 
     env = gym.make(env)
+    env.seed(1234)
     env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)
     env = envs.Torch(env)
@@ -97,9 +99,10 @@ def main(env='PongNoFrameskip-v4'):
     env.seed(SEED)
 
     num_updates = num_steps // A2C_STEPS + 1
+    th.manual_seed(1234)
     policy = NatureCNN(env)
     optimizer = optim.RMSprop(policy.parameters(), lr=LR, alpha=0.99, eps=1e-5)
-    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda step: 1 - step/num_updates)
+#    lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda step: 1 - step/num_updates)
     get_action = lambda state: get_action_value(state, policy)
 
     for updt in range(num_updates):
@@ -108,10 +111,9 @@ def main(env='PongNoFrameskip-v4'):
 
         # Update policy
         update(replay, optimizer, policy, env=env)
-        lr_schedule.step(updt)
+#        lr_schedule.step(updt)
 
 
 if __name__ == '__main__':
     env = 'BreakoutNoFrameskip-v4'
-    env = 'PongNoFrameskip-v4'
     main(env)
