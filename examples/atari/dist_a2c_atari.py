@@ -138,5 +138,4 @@ def main(env='PongNoFrameskip-v4'):
 
 if __name__ == '__main__':
     env = 'BreakoutNoFrameskip-v4'
-#    env = 'PongNoFrameskip-v4'
     main(env)
