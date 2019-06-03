@@ -139,7 +139,7 @@ class VisdomLogger(Logger):
                     frames = np.stack(self.full_ep_renders)
                     self.update_video(frames, self.ep_renders_win)
                     self.full_ep_renders = []
-                except:
+                except Exception:
                     pass
 
         # Should record ?
