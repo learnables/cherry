@@ -21,7 +21,7 @@ from cherry import envs
 from cherry.algorithms import ppo
 
 RENDER = False
-SEED = 42
+SEED = 1234
 TOTAL_STEPS = 10000000
 LR = 3e-4
 GAMMA = 0.99

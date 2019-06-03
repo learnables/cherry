@@ -40,10 +40,15 @@ class VisdomLogger(Logger):
                                            title=title)
         self.ep_actions = []
         self.full_ep_actions = []
+        self.ep_renders = []
+        self.full_ep_renders = []
         self.values_plots = {}
         self.discrete_actions = isinstance(env.action_space, Discrete)
         self.visdom = visdom.Visdom(env=self.title)
         self.ep_actions_win = str(uuid.uuid4())
+        self.ep_renders_win = str(uuid.uuid4())
+
+        self.can_record = 'rgb_array' in self.env.metadata['render.modes']
 
         # Mean rewards plot
         opts = {
@@ -120,20 +125,38 @@ class VisdomLogger(Logger):
     def step(self, action, *args, **kwargs):
         state, reward, done, info = super(VisdomLogger, self).step(action, *args, **kwargs)
 
-        if self.discrete_actions:
-            action = ch.onehot(action, dim=self.action_size)[0]
-        self.ep_actions.append(action)
-
         if self.interval > 0 and self.num_steps % self.interval == 0:
             self.update_steps_plots(info['logger_steps_stats'])
             self.update_ep_plots(info['logger_ep_stats'])
-            self.update_ribbon_plot(self.ep_actions,
-                                    self.ep_actions_win)
 
-        if done:
+            if len(self.full_ep_actions) > 0:
+                self.update_ribbon_plot(self.full_ep_actions,
+                                        self.ep_actions_win)
+            if len(self.full_ep_renders) > 0:
+                try:
+                    # TODO: Remove try clause when merged:
+                    # https://github.com/facebookresearch/visdom/pull/595
+                    frames = np.stack(self.full_ep_renders)
+                    self.update_video(frames, self.ep_renders_win)
+                    self.full_ep_renders = []
+                except:
+                    pass
+
+        # Should record ?
+        if self.num_episodes % self.ep_interval == 0:
+            if self.discrete_actions:
+                action = ch.onehot(action, dim=self.action_size)[0]
+            self.ep_actions.append(action)
+            if self.can_record:
+                frame = self.env.render(mode='rgb_array')
+                self.ep_renders.append(frame)
+
+        # Done recording ?
+        if done and (self.num_episodes - 1) % self.ep_interval == 0:
             self.full_ep_actions = self.ep_actions
             self.ep_actions = []
-            self.num_episodes += 1
+            self.full_ep_renders = self.ep_renders
+            self.ep_renders = []
 
         return state, reward, done, info
 
@@ -178,3 +201,6 @@ class VisdomLogger(Logger):
                                  Y=y_values,
                                  win=self.values_plots[key],
                                  update=update)
+
+    def update_video(self, frames, win_name):
+        self.visdom.video(frames, win=win_name,)
