@@ -43,8 +43,8 @@ class Logger(Wrapper):
                 accum = 0.0
                 length = 0
         if length > 0:
-                episode_rewards.append(accum)
-                episode_lengths.append(length)
+            episode_rewards.append(accum)
+            episode_lengths.append(length)
         return episode_rewards, episode_lengths
 
     def _episodes_stats(self):

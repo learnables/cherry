@@ -13,6 +13,8 @@ from torch import optim
 from torch import nn
 from torch.distributions import Normal
 import cherry as ch
+from cherry import pg
+from cherry import td
 from cherry import envs
 
 TOL = 1e-6
@@ -225,16 +227,16 @@ def train_cherry():
             for r in replay.reward():
                 result['rewards'].append(r.item())
             with torch.no_grad():
-                advantages = ch.rewards.generalized_advantage(DISCOUNT,
-                                                              TRACE_DECAY,
-                                                              replay.reward(),
-                                                              replay.done(),
-                                                              replay.value(),
-                                                              torch.zeros(1))
-                advantages = ch.utils.normalize(advantages, epsilon=1e-8)
-                returns = ch.rewards.discount(DISCOUNT,
-                                              replay.reward(),
-                                              replay.done())
+                advantages = pg.generalized_advantage(DISCOUNT,
+                                                      TRACE_DECAY,
+                                                      replay.reward(),
+                                                      replay.done(),
+                                                      replay.value(),
+                                                      torch.zeros(1))
+                advantages = ch.normalize(advantages, epsilon=1e-8)
+                returns = td.discount(DISCOUNT,
+                                      replay.reward(),
+                                      replay.done())
                 old_log_probs = replay.log_prob()
 
             new_values = replay.value()

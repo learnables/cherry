@@ -2,7 +2,8 @@ import unittest
 import random
 import torch as th
 import cherry as ch
-from cherry.rewards import discount, generalized_advantage
+from cherry.td import discount
+from cherry.pg import generalized_advantage
 
 GAMMA = 0.5
 TAU = 0.9

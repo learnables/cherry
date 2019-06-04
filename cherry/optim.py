@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+**Description**
+
+Optimization utilities for scalable, high-performance reinforcement learning.
+
+"""
+
 import torch.distributed as dist
 from torch.optim.optimizer import Optimizer, required
 

@@ -47,7 +47,7 @@ before_install: |
    fi
 
 install: 
-    - pip install -U pip && pip install --progress-bar off -r requirements.txt
+    - pip install -U pip && pip install --progress-bar off -r requirements.txt && pip install pycodestyle
 
 script: 
     - make tests
