@@ -131,27 +131,40 @@ def update(replay,
     qf1_old_pred = qf1(batch.state(), batch.action().detach())
     qf2_old_pred = qf2(batch.state(), batch.action().detach())
 
-    q_values = th.min(qf1(batch.state(), actions), qf2(batch.state(), actions))
+    q_values = th.min(  qf1(batch.state(), actions), 
+                        qf2(batch.state(), actions)  )
 
-    target_q_values = th.min(target_qf1(batch.state(), batch.action().detach()),
-        target_qf2(batch.state(), batch.action().detach())) - alpha * log_probs
+    density = policy(batch.next_state())
+    new_actions, new_log_probs = density.rsample_and_log_prob()
+    new_log_probs = log_probs.sum(dim=1, keepdim=True)
+
+    target_q_values = th.min(  target_qf1(batch.next_state(), new_actions),
+                               target_qf2(batch.next_state(), new_actions)   )
+
+    target_q_values = target_q_values - alpha * new_log_probs
     
-    qf1_loss = sac.action_value_loss(qf1_old_pred, target_q_values, batch.reward(), batch.done(), GAMMA)
+    qf1_loss = sac.action_value_loss(  qf1_old_pred, 
+                                       target_q_values, 
+                                       batch.reward(), 
+                                       batch.done(),
+                                       GAMMA  )
 
-    qf2_loss = sac.action_value_loss(qf2_old_pred,
-                                    target_q_values, 
-                                    batch.reward(),
-                                    batch.done(),
-                                    GAMMA)
+    qf2_loss = sac.action_value_loss(  qf2_old_pred,
+                                       target_q_values, 
+                                       batch.reward(),
+                                       batch.done(),
+                                       GAMMA  )
 
     
 
     # Policy loss
     policy_loss = sac.policy_loss(log_probs, q_values, alpha)
+    '''
     mean_reg_loss = MEAN_REG_WEIGHT * policy_mean.pow(2).mean()
     std_reg_loss = STD_REG_WEIGHT * policy_log_std.pow(2).mean()
     policy_reg_loss = mean_reg_loss + std_reg_loss
     policy_loss += policy_reg_loss
+    '''
 
     # Log debugging values
     env.log('alpha Loss:', alpha_loss.item())
@@ -159,10 +172,8 @@ def update(replay,
     env.log("QF Loss: ", qf1_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
     env.log("Average Rewards: ", batch.reward().mean().item())
-    '''
     if random.random() < 0.05:
-        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards')
-        '''
+        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards - TSAC1')
 
     # Update
     qf1_opt.zero_grad()
@@ -177,11 +188,9 @@ def update(replay,
     policy_loss.backward()
     policy_opt.step()
 
-'''
-    ch.models.polyak_average(source=target_qf1,
-                             target=qf1,
-                             alpha=VF_TARGET_TAU)
-                             '''
+    ch.models.polyak_average(  source=target_qf1,
+                               target=qf1,
+                               alpha=VF_TARGET_TAU  )
 
 
 if __name__ == '__main__':
