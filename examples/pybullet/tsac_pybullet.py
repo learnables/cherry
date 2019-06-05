@@ -20,7 +20,7 @@ import torch.optim as optim
 import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
-from cherry.algorithms import tsac as sac
+from cherry.algorithms import sac
 
 SEED = 42
 RENDER = False
@@ -46,7 +46,7 @@ class MLP(nn.Module):
     def __init__(self, input_size, output_size, layer_sizes=None, init_w=3e-3):
         super(MLP, self).__init__()
         if layer_sizes is None:
-            layer_sizes = [300, 300]
+            layer_sizes = [256, 256]
         self.layers = nn.ModuleList()
 
         in_size = input_size
@@ -127,12 +127,15 @@ def update(replay,
         alpha = th.ones(1)
         alpha_loss = th.zeros(1)
 
+    # Policy loss
+    q_values = th.min(  qf1(batch.state(), actions), 
+                        qf2(batch.state(), actions)  )
+    policy_loss = sac.policy_loss(log_probs, q_values, alpha)
+
     # QF loss
     qf1_old_pred = qf1(batch.state(), batch.action().detach())
     qf2_old_pred = qf2(batch.state(), batch.action().detach())
 
-    q_values = th.min(  qf1(batch.state(), actions), 
-                        qf2(batch.state(), actions)  )
 
     density = policy(batch.next_state())
     new_actions, new_log_probs = density.rsample_and_log_prob()
@@ -154,16 +157,6 @@ def update(replay,
                                        GAMMA  )
 
     
-
-    # Policy loss
-    policy_loss = sac.policy_loss(log_probs, q_values, alpha)
-    '''
-    mean_reg_loss = MEAN_REG_WEIGHT * policy_mean.pow(2).mean()
-    std_reg_loss = STD_REG_WEIGHT * policy_log_std.pow(2).mean()
-    policy_reg_loss = mean_reg_loss + std_reg_loss
-    policy_loss += policy_reg_loss
-    '''
-
     # Log debugging values
     env.log('alpha Loss:', alpha_loss.item())
     env.log('alpha: ', alpha.item())
@@ -171,7 +164,7 @@ def update(replay,
     env.log("Policy Loss: ", policy_loss.item())
     env.log("Average Rewards: ", batch.reward().mean().item())
     if random.random() < 0.05:
-        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards - TSAC')
+        ppt.plot(batch.reward().mean().item(), 'cherry true rewards - TSAC batch mean')
 
     # Update
     qf1_opt.zero_grad()
