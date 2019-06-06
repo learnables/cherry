@@ -8,20 +8,31 @@ from cherry._utils import EPS
 
 def totensor(array, dtype=None):
     """
-    [[Source]]()
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py)
 
     **Description**
 
-    Returns the minimium viewable size of a tensor.
-    e.g. (1, 1, 3, 4) -> (3, 4)
-
-    **References**
+    Converts the argument `array` to a torch.tensor 1xN, regardless of its
+    type or dimension.
 
     **Arguments**
 
+    * **array** (int, float, ndarray, tensor) - Data to be converted to array.
+    * **dtype** (dtype, *optional*, default=None) - Data type to use for representation.
+    By default, uses `torch.get_default_dtype()`.
+
     **Returns**
 
+    * Tensor of shape 1xN with the appropriate data type.
+
     **Example**
+
+    ~~~python
+    array = [5, 6, 7.0]
+    tensor = cherry.totensor(array, dtype=th.float32)
+    array = np.array(array, dtype=np.float64)
+    tensor = cherry.totensor(array, dtype=th.float16)
+    ~~~
 
     """
     if dtype is None:
@@ -47,19 +58,28 @@ def totensor(array, dtype=None):
 
 def normalize(tensor, epsilon=EPS):
     """
-    [[Source]]()
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py)
 
     **Description**
 
-    Normalizes a tensor to zero mean and unit std.
-
-    **References**
+    Normalizes a tensor to have zero mean and unit standard deviation values.
 
     **Arguments**
 
+    * **tensor** (tensor) - The tensor to normalize.
+    * **epsilon** (float, *optional*, default=1e-8) - Numerical stability constant for
+    normalization.
+
     **Returns**
 
+    * A new tensor, containing the normalized values.
+
     **Example**
+
+    ~~~python
+    tensor = torch.arange(23) / 255.0
+    tensor = cherry.normalize(tensor, epsilon=1e-3)
+    ~~~
 
     """
     if tensor.numel() <= 1:
@@ -69,19 +89,30 @@ def normalize(tensor, epsilon=EPS):
 
 def onehot(x, dim):
     """
-    [[Source]]()
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/_torch.py)
 
     **Description**
 
-    Creates a new onehot encoded tensor.
-
-    **References**
+    Creates a new onehot tensor of the specified dimension.
 
     **Arguments**
 
+    * **x** (int, ndarray, tensor) - Index or N-dimensional tensor of indices to be one-hot encoded.
+    * **dim** (int) - Size of the one-hot vector.
+
     **Returns**
 
+    * A new Nxdim tensor containing one(s) at position(s) `x`, zeros everywhere else.
+
     **Example**
+
+    ~~~python
+    action = 2
+    action = cherry.onehot(action, dim=5)
+
+    actions = torch.tensor([[2], [1], [2]]).long()  # 3x1 tensor
+    actions = cherry.onehot(actions, dim=5)  # 3x5 tensor
+    ~~~
 
     """
     size = 1

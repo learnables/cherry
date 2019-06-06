@@ -110,5 +110,9 @@ venv.bak/
 */**/.DS_Store
 results/*
 videos/*
+examples/videos/*
 benchmarks/wandb/**
 examples/simple_rl/results/**
+
+# ignore .idea 
+*.idea

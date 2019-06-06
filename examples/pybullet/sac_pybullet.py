@@ -11,7 +11,7 @@ import random
 import numpy as np
 import gym
 import pybullet_envs
-#import roboschool
+import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     np.random.seed(SEED)
     th.manual_seed(SEED)
     env_name = 'HalfCheetahBulletEnv-v0'
-    #env_name = 'RoboschoolAnt-v1'
+    env_name = 'RoboschoolAnt-v1'
     env = gym.make(env_name)
     env = envs.Logger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)

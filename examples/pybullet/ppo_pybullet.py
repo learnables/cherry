@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 # See: https://github.com/openai/roboschool/issues/15
-from OpenGL import GLU
+#from OpenGL import GLU
 
 import random
 import gym
 import numpy as np
 import pybullet_envs
-import roboschool
+#import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -21,7 +21,7 @@ from cherry import envs
 from cherry.algorithms import ppo
 
 RENDER = False
-SEED = 42
+SEED = 1234
 TOTAL_STEPS = 10000000
 LR = 3e-4
 GAMMA = 0.99
@@ -62,7 +62,6 @@ class ActorCriticNet(nn.Module):
 
 def update(replay, optimizer, policy, env, lr_schedule):
     _, next_state_value = policy(replay[-1].next_state)
-    import pdb; pdb.set_trace()
     advantages = pg.generalized_advantage(GAMMA,
                                           TAU,
                                           replay.reward(),
@@ -135,7 +134,7 @@ def get_action_value(state, policy):
 def main(env='MinitaurTrottingEnv-v0'):
     env = gym.make(env)
     env = envs.AddTimestep(env)
-    env = envs.Logger(env, interval=PPO_STEPS)
+    env = envs.VisdomLogger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -150,14 +149,15 @@ def main(env='MinitaurTrottingEnv-v0'):
 
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
-        replay = env.run(get_action, steps=PPO_STEPS, render=False)
+        replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
 
+
 if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
-    env_name = 'RoboschoolAnt-v1'
-    env_name = 'MinitaurTrottingEnv-v0'
+#    env_name = 'RoboschoolAnt-v1'
+#    env_name = 'MinitaurTrottingEnv-v0'
     main(env_name)

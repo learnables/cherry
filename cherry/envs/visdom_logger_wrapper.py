@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import uuid
 import numpy as np
 import cherry as ch
 
+from gym.spaces import Discrete
+
 from .base import Wrapper
+from .logger_wrapper import Logger
 
 try:
     import visdom
@@ -11,7 +15,7 @@ except ImportError:
     visdom = ch._utils._ImportRaiser('Visdom', 'pip install visdom')
 
 
-class VisdomLogger(Wrapper):
+class VisdomLogger(Logger):
 
     """
     Enables logging and debug values to Visdom.
@@ -27,131 +31,176 @@ class VisdomLogger(Wrapper):
     def __init__(self,
                  env,
                  interval=1000,
-                 episode_interval=100,
-                 name=None
+                 episode_interval=10,
+                 title=None
                  ):
-        """
-
-        """
-        super(VisdomLogger, self).__init__(env)
-        self.interval = interval
-        self.all_rewards = []
-        self.all_dones = []
+        super(VisdomLogger, self).__init__(env=env,
+                                           interval=interval,
+                                           episode_interval=episode_interval,
+                                           title=title)
         self.ep_actions = []
-        self.ep_states = []
-        self.new_ep_actions = []
-        self.new_ep_states = []
-        self.num_steps = 0
-        self.num_episodes = 0
-        self.ep_length = 0
-        self.values = {}
+        self.full_ep_actions = []
+        self.ep_renders = []
+        self.full_ep_renders = []
         self.values_plots = {}
-        self.values_idx = {}
+        self.discrete_actions = isinstance(env.action_space, Discrete)
+        self.visdom = visdom.Visdom(env=self.title)
+        self.ep_actions_win = str(uuid.uuid4())
+        self.ep_renders_win = str(uuid.uuid4())
 
-        # Instanciate visdom environment
-        if name is None:
-            name = env.spec.id
-        self.visdom = visdom.Visdom(env=name)
+        self.can_record = 'rgb_array' in self.env.metadata['render.modes']
 
         # Mean rewards plot
         opts = {
-            'title': 'Mean Last ' + str(interval) + ' Rewards',
+            'title': 'Mean ' + str(self.ep_interval) + ' episode rewards',
             'layoutopts': {
                 'plotly': {
-                    'xaxis': {'title': 'Steps'},
+                    'xaxis': {'title': 'Log'},
                     'yaxis': {'title': 'Rewards'},
                 }
             }
         }
-        self.rewards_plot = self.visdom.line(X=np.zeros(1),
-                                             Y=np.zeros(1),
-                                             opts=opts)
+        self.values_plots['episode_rewards'] = self.visdom.line(X=np.empty(1),
+                                                                Y=np.empty(1),
+                                                                opts=opts)
         # Episode lengths plot
         opts = {
-            'title': 'Episodes Length',
+            'title': 'Mean ' + str(self.ep_interval) + ' episodes length',
             'fillarea': True,
             'layoutopts': {
                 'plotly': {
-                    'xaxis': {'title': 'Episodes'},
+                    'xaxis': {'title': 'Log'},
                     'yaxis': {'title': 'Length'},
                 }
             }
         }
-        self.ep_length_plot = self.visdom.line(X=np.zeros(1),
-                                               Y=np.zeros(1),
-                                               opts=opts)
+        self.values_plots['episode_lengths'] = self.visdom.line(X=np.empty(1),
+                                                                Y=np.empty(1),
+                                                                opts=opts)
 
-        # Epsiode Actions
-        opts = {
-            'title': 'Actions on 1 Episode',
-            'layoutopts': {
-                'plotly': {
-                    'xaxis': {'title': 'Episodes'},
-                    'yaxis': {'title': 'Length'},
-                    'zaxis': {'title': 'Magnitude'},
-                }
-            }
-        }
-        x = np.tile(np.arange(1, 101), (100, 1))
-        y = x.transpose()
-        X = np.exp((((x - 50) ** 2) + ((y - 50) ** 2)) / -(20.0 ** 2))
-        self.ep_actions_plot = self.visdom.surf(X=X,
-                                                opts=opts)
+    def update_ribbon_plot(self, ribbon_data, win_name):
+        num_actions = self.action_size
+        num_steps = len(ribbon_data)
+        ribons = []
+        x_t = []
+        y_t = []
+        z_t = []
+
+        # get the data for each ribon (i.e. action)
+        for i in range(num_actions):
+            x_in = [None] * num_steps
+            y_in = [None] * num_steps
+            z_in = [None] * num_steps
+            z_buff = float(ribbon_data[0][i])
+
+            for j, step_action in enumerate(ribbon_data):
+                x_in[j] = [i*2, i*2 + 1]
+                y_in[j] = [j, j]
+                z_buff = 0.5 * z_buff + 0.5 * float(step_action[i])
+                z_in[j] = [z_buff, z_buff]
+
+            trace = dict(x=x_in,
+                         y=y_in,
+                         z=z_in,
+                         type='surface',
+                         name='')
+            ribons.append(trace)
+            x_t = x_in
+            y_t = y_in
+            z_t = z_in
+
+        layout = dict(title='Actions over 1 Episode',
+                      xaxis={'title': 'Policy'},
+                      yaxis={'title': 'Time'},
+                      zaxis={'title': 'Activation'})
+
+        # send the trace, and layout to visdom
+        self.visdom._send({'data': ribons,
+                           'layout': layout,
+                           'win': win_name})
 
     def reset(self, *args, **kwargs):
         return self.env.reset(*args, **kwargs)
 
-    def step(self, action):
-        state, reward, done, info = self.env.step(action)
-        self.all_rewards.append(reward)
-        self.all_dones.append(done)
-        self.new_ep_actions.append(action)
-        self.new_ep_states.append(state)
+    def step(self, action, *args, **kwargs):
+        state, reward, done, info = super(VisdomLogger, self).step(action, *args, **kwargs)
 
-        interval = self.interval > 0 and self.num_steps % self.interval == 0
-        self._update(interval=interval)
+        if self.interval > 0 and self.num_steps % self.interval == 0:
+            self.update_steps_plots(info['logger_steps_stats'])
+            self.update_ep_plots(info['logger_ep_stats'])
 
-        self.ep_length += 1
-        self.num_steps += 1
-        if done:
-            self._reset_ep_stats()
+            if len(self.full_ep_actions) > 0:
+                self.update_ribbon_plot(self.full_ep_actions,
+                                        self.ep_actions_win)
+            if len(self.full_ep_renders) > 0:
+                try:
+                    # TODO: Remove try clause when merged:
+                    # https://github.com/facebookresearch/visdom/pull/595
+                    frames = np.stack(self.full_ep_renders)
+                    self.update_video(frames, self.ep_renders_win)
+                    self.full_ep_renders = []
+                except Exception:
+                    pass
+
+        # Should record ?
+        if self.num_episodes % self.ep_interval == 0:
+            if self.discrete_actions:
+                action = ch.onehot(action, dim=self.action_size)[0]
+            self.ep_actions.append(action)
+            if self.can_record:
+                frame = self.env.render(mode='rgb_array')
+                self.ep_renders.append(frame)
+
+        # Done recording ?
+        if done and (self.num_episodes - 1) % self.ep_interval == 0:
+            self.full_ep_actions = self.ep_actions
+            self.ep_actions = []
+            self.full_ep_renders = self.ep_renders
+            self.ep_renders = []
+
         return state, reward, done, info
 
     def log(self, key, value, opts=None):
-        if key not in self.values:
+        super(VisdomLogger, self).log(key=key, value=value)
+        # Create the plot
+        if key not in self.values_plots:
             if opts is None:
-                opts = {'title': key}
+                opts = {'title': key,
+                        'layoutopts': {
+                            'plotly': {
+                                'xaxis': {'title': 'Log'},
+                            }
+                            }
+                        }
             elif 'title' not in opts:
                 opts['title'] = key
-            self.values[key] = []
-            self.values_plots[key] = self.visdom.line(X=np.zeros(1),
-                                                      Y=np.zeros(1),
+            self.values_plots[key] = self.visdom.line(X=np.empty(1),
+                                                      Y=np.empty(1),
                                                       opts=opts)
-            self.values_idx[key] = 0
-            setattr(self, key, self.values[key])
-        self.values[key].append(value)
-        new_data = self.values[key][self.values_idx[key]:]
-        x_values = self.values_idx[key] + np.arange(0, len(new_data))
-        self.visdom.line(X=x_values,
-                         Y=np.array(new_data),
-                         win=self.values_plots[key],
-                         update='append')
-        self.values_idx[key] = len(self.values[key])
 
-    def _reset_ep_stats(self):
-        self.num_episodes += 1
-        self.visdom.line(X=np.array([self.num_episodes]),
-                         Y=np.array([self.ep_length]),
-                         win=self.ep_length_plot,
-                         update='append')
-        self.ep_length = 0
+    def update_steps_plots(self, stats):
+        num_logs = len(self.all_rewards) // self.interval
+        update = 'replace' if num_logs <= 1 else 'append'
+        for key in stats:
+            if key not in ['num_episodes', 'episode_lengths', 'episode_rewards']:
+                x_values = np.zeros((1,)) + num_logs
+                y_values = np.array([np.mean(stats[key])])
+                self.visdom.line(X=x_values,
+                                 Y=y_values,
+                                 win=self.values_plots[key],
+                                 update=update)
 
-    def _update(self, interval=False):
-        # Log immediate, non-self.values metrics
-        if interval:
-            y = np.array([self.all_rewards[-interval:]])
-            x = np.array([self.num_steps])
-            self.visdom.line(X=x,
-                             Y=y,
-                             win=self.rewards_plot,
-                             update='append')
+    def update_ep_plots(self, stats):
+        num_logs = len(self.all_rewards) // self.interval
+        update = 'replace' if num_logs <= 1 else 'append'
+        for key in stats:
+            if key is not 'num_episodes':
+                x_values = np.zeros((1,)) + num_logs
+                y_values = np.array([np.mean(stats[key])])
+                self.visdom.line(X=x_values,
+                                 Y=y_values,
+                                 win=self.values_plots[key],
+                                 update=update)
+
+    def update_video(self, frames, win_name):
+        self.visdom.video(frames, win=win_name,)
