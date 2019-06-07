@@ -21,7 +21,7 @@ from cherry import envs
 from cherry.algorithms import ppo
 
 RENDER = False
-SEED = 42
+SEED = 1234
 TOTAL_STEPS = 10000000
 LR = 3e-4
 GAMMA = 0.99
@@ -134,7 +134,7 @@ def get_action_value(state, policy):
 def main(env='MinitaurTrottingEnv-v0'):
     env = gym.make(env)
     env = envs.AddTimestep(env)
-    env = envs.Logger(env, interval=PPO_STEPS)
+    env = envs.VisdomLogger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
 #    env = envs.Recorder(env)
@@ -150,7 +150,7 @@ def main(env='MinitaurTrottingEnv-v0'):
 
     for epoch in range(num_updates):
         # We use the Runner collector, but could've written our own
-        replay = env.run(get_action, steps=PPO_STEPS, render=False)
+        replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
 
         # Update policy
         update(replay, optimizer, policy, env, lr_schedule)
