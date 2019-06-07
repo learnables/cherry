@@ -158,6 +158,7 @@ def main(env='MinitaurTrottingEnv-v0'):
 if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
+    env_name = 'HalfCheetahBulletEnv-v0'
 #    env_name = 'RoboschoolAnt-v1'
 #    env_name = 'MinitaurTrottingEnv-v0'
     main(env_name)

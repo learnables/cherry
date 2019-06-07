@@ -4,14 +4,12 @@
 An implementation of Soft Actor-Critic.
 """
 
-from OpenGL import GLU
-import ppt
+#from OpenGL import GLU
 import copy
 import random
 import numpy as np
 import gym
 import pybullet_envs
-import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -155,8 +153,6 @@ def update(replay,
     env.log("VF Loss: ", vf_loss.item())
     env.log("Policy Loss: ", policy_loss.item())
     env.log("Average Rewards: ", batch.reward().mean().item())
-    if random.random() < 0.05:
-        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards')
 
     # Update
     qf_opt.zero_grad()
@@ -181,9 +177,9 @@ if __name__ == '__main__':
     np.random.seed(SEED)
     th.manual_seed(SEED)
     env_name = 'HalfCheetahBulletEnv-v0'
-    env_name = 'RoboschoolAnt-v1'
+#    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
-    env = envs.Logger(env, interval=1000)
+    env = envs.VisdomLogger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
