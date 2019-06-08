@@ -58,9 +58,9 @@ pages:
 - Home: index.md << ../README.md
 - Tutorials:
     - Getting Started with Cherry: tutorials/getting_started.md
-    - Distributed Training with PPO: tutorials/distributed_ppo.md
-    - Recurrent Policy Gradients with A2C: tutorials/recurrent_a2c.md
-    - Debugging Reinforcement Learning: tutorials/debugging_rl.md
+#    - Distributed Training with PPO: tutorials/distributed_ppo.md
+#    - Recurrent Policy Gradients with A2C: tutorials/recurrent_a2c.md
+#    - Debugging Reinforcement Learning: tutorials/debugging_rl.md
 - Documentation:
     - cherry: docs/cherry.md
     - cherry.algorithms: docs/cherry.algorithms.md
