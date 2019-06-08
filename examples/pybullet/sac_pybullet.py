@@ -172,12 +172,11 @@ def update(env,
                              target=vf,
                              alpha=VF_TARGET_TAU)
 
-def main(env_name='HalfCheetahBulletEnv-v0'):
+def main(env='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
-    env_name = 'HalfCheetahBulletEnv-v0'
-    env = gym.make(env_name)
+    env = gym.make(env)
     env = envs.VisdomLogger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)

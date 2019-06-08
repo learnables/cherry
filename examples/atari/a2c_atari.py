@@ -81,7 +81,7 @@ def get_action_value(state, policy):
     return action, info
 
 
-def main(env_name='PongNoFrameskip-v4'):
+def main(env='PongNoFrameskip-v4'):
     num_steps = 10000000
 
     th.set_num_threads(1)
@@ -89,7 +89,7 @@ def main(env_name='PongNoFrameskip-v4'):
     th.manual_seed(SEED)
     np.random.seed(SEED)
 
-    env = gym.make(env_name)
+    env = gym.make(env)
     env.seed(1234)
     env = envs.Logger(env, interval=1000)
     env = envs.OpenAIAtari(env)

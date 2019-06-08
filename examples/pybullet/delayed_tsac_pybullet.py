@@ -198,11 +198,11 @@ def update(env,
                                  target=critic_qf2,
                                  alpha=VF_TARGET_TAU)
 
-def main(env_name='HalfCheetahBulletEnv-v0'):
+def main(env='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
-    env = gym.make(env_name)
+    env = gym.make(env)
     env = envs.Logger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
