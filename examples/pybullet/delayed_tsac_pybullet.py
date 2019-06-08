@@ -202,7 +202,6 @@ def main(env_name='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
-    env_name = 'HalfCheetahBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.Logger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
