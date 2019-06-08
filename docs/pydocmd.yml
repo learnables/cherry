@@ -73,6 +73,7 @@ pages:
     - cherry.pg: docs/cherry.pg.md
     - cherry.plot: docs/cherry.plot.md
     - cherry.td: docs/cherry.td.md
+- GitHub: https://github.com/seba-1511/cherry/
 
 # These options all show off their default values. You don't have to add
 # them to your configuration if you're fine with the default.

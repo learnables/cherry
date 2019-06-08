@@ -85,7 +85,6 @@ First, thanks for your consideration in contributing to cherry.
 Here are a couple of guidelines we strive to follow.
 
 * It's always a good idea to open an issue first, where we can discuss how to best proceed.
-* Branch/fork from `dev`, and create a pull request as soon as possible to allow for early discussions.
 * If you want to contribute a new example using cherry, it would preferably stand in a single file.
 * If you would like to contribute a new feature to the core library, we suggest to first implement an example showcasing your new functionality. Doing so is quite useful:
     * it allows for automatic testing,
