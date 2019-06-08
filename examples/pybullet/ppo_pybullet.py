@@ -134,7 +134,7 @@ def get_action_value(state, policy):
 def main(env='MinitaurTrottingEnv-v0'):
     env = gym.make(env)
     env = envs.AddTimestep(env)
-    env = envs.VisdomLogger(env, interval=PPO_STEPS)
+    env = envs.Logger(env, interval=PPO_STEPS)
     env = envs.Normalizer(env, states=True, rewards=True)
     env = envs.Torch(env)
 #    env = envs.Recorder(env)
