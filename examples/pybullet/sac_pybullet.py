@@ -91,7 +91,8 @@ class Policy(MLP):
         return density
 
 
-def update(replay,
+def update(env,
+           replay,
            policy,
            qf,
            vf,
@@ -171,13 +172,11 @@ def update(replay,
                              target=vf,
                              alpha=VF_TARGET_TAU)
 
-
-if __name__ == '__main__':
+def main(env_name='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
     env_name = 'HalfCheetahBulletEnv-v0'
-#    env_name = 'AntBulletEnv-v0'
     env = gym.make(env_name)
     env = envs.VisdomLogger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
@@ -216,5 +215,9 @@ if __name__ == '__main__':
         replay += ep_replay
         replay = replay[-REPLAY_SIZE:]
         if len(replay) > MIN_REPLAY:
-            update(replay, policy, qf, vf, target_vf, log_alpha, policy_opt,
+            update(env, replay, policy, qf, vf, target_vf, log_alpha, policy_opt,
                    qf_opt, vf_opt, alpha_opt, target_entropy)
+
+
+if __name__ == '__main__':
+    main()
