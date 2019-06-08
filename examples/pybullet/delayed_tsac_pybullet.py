@@ -4,8 +4,6 @@
 An implementation of Soft Actor-Critic.
 """
 
-from OpenGL import GLU
-import ppt
 import copy
 import random
 import numpy as np
@@ -167,12 +165,6 @@ def update(replay,
     env.log("QF2 Loss: ", critic_qf2_loss.item())
     env.log("Average Rewards: ", batch.reward().mean().item())
 
-    # Plotting via PPT
-    '''
-    if random.random() < 0.05:
-        ppt.plot(replay[-1000:].reward().mean().item(), 'cherry true rewards - TSAC1 delayed')
-    '''
-
     # Update Critic Networks
     critic_qf1_optimizer.zero_grad()
     critic_qf1_loss.backward()
@@ -186,8 +178,8 @@ def update(replay,
     if STEP % DELAY == 0:
 
         # Policy loss
-        q_values = th.min(  critic_qf1(batch.state(), actions), 
-                            critic_qf2(batch.state(), actions)  )
+        q_values = th.min(critic_qf1(batch.state(), actions),
+                          critic_qf2(batch.state(), actions))
         policy_loss = sac.policy_loss(log_probs, q_values, alpha)
 
         env.log("Policy Loss: ", policy_loss.item())
@@ -197,14 +189,13 @@ def update(replay,
         policy_optimizer.step()
 
         # Move target approximator parameters towards critic parameters per [3]
-        ch.models.polyak_average(  source=target_qf1,
-                                   target=critic_qf1,
-                                   alpha=VF_TARGET_TAU  )
+        ch.models.polyak_average(source=target_qf1,
+                                 target=critic_qf1,
+                                 alpha=VF_TARGET_TAU)
 
-        ch.models.polyak_average(  source=target_qf2,
-                                   target=critic_qf2,
-                                   alpha=VF_TARGET_TAU  )
-
+        ch.models.polyak_average(source=target_qf2,
+                                 target=critic_qf2,
+                                 alpha=VF_TARGET_TAU)
 
 
 if __name__ == '__main__':
@@ -251,5 +242,15 @@ if __name__ == '__main__':
         replay += ep_replay
         replay = replay[-REPLAY_SIZE:]
         if len(replay) > MIN_REPLAY:
-            update(replay, policy, critic_qf1, critic_qf2, target_qf1, target_qf2, log_alpha, policy_opt,
-                   qf1_opt, qf2_opt, alpha_opt, target_entropy)
+            update(replay,
+                   policy,
+                   critic_qf1,
+                   critic_qf2,
+                   target_qf1,
+                   target_qf2,
+                   log_alpha,
+                   policy_opt,
+                   qf1_opt,
+                   qf2_opt,
+                   alpha_opt,
+                   target_entropy)
