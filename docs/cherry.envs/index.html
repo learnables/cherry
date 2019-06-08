@@ -56,18 +56,6 @@
 <li >
     <a href="../../tutorials/getting_started/">Getting Started with Cherry</a>
 </li>
-                                    
-<li >
-    <a href="../../tutorials/distributed_ppo/">Distributed Training with PPO</a>
-</li>
-                                    
-<li >
-    <a href="../../tutorials/recurrent_a2c/">Recurrent Policy Gradients with A2C</a>
-</li>
-                                    
-<li >
-    <a href="../../tutorials/debugging_rl/">Debugging Reinforcement Learning</a>
-</li>
                                 </ul>
                             </li>
                             <li class="dropdown active">
@@ -237,7 +225,7 @@ env.run(get_action, episodes=3, render=True)
 
 <p>Flush all monitor data to disk and close any open rending windows</p>
 <h1 id="visdomlogger">VisdomLogger</h1>
-<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=10, name=None)
+<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=10, title=None)
 </code></pre>
 
 <p>Enables logging and debug values to Visdom.</p>
