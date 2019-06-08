@@ -18,7 +18,11 @@ Demonstrations of deep reinforcement learning algorithms for robotics environmen
 
 ### SAC
 
-**Status** Replicates rlkit's SAC, but we want twin-SAC. 
+**Status** Replicates RLkit's SAC. 
+
+### Delayed Twin-SAC
+
+**Status** Replicates RLkit's twin-SAC, and adds an optional delay parameters for improved stability.
 
 ### PPO
 
