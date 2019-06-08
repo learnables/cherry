@@ -51,6 +51,7 @@ def update(replay, optimizer, policy, env):
                           replay.done(),
                           bootstrap=next_state_value)
     rewards = rewards.detach()
+    import pdb; pdb.set_trace()
 
     # Compute loss
     entropy = replay.entropy().mean()
