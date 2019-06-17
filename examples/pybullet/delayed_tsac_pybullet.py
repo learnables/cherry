@@ -179,6 +179,8 @@ def update(env,
     if STEP % DELAY == 0:
 
         # Policy loss
+        q_values = th.min(critic_qf1(batch.state(), actions),
+                          critic_qf2(batch.state(), actions))
         policy_loss = sac.policy_loss(log_probs, q_values, alpha)
 
         env.log("Policy Loss: ", policy_loss.item())
