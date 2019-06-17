@@ -96,10 +96,11 @@ class Policy(MLP):
 
 
 # Gradient Step - Adopted from [1] Section 6 and [2] Section 5.2
-def update(replay,
+def update(env,
+           replay,
            policy,
            critic_qf1,
-           crtic_qf2,
+           critic_qf2,
            target_qf1,
            target_qf2,
            log_alpha,
@@ -195,13 +196,11 @@ def update(replay,
                                  target=critic_qf2,
                                  alpha=VF_TARGET_TAU)
 
-
-if __name__ == '__main__':
+def main(env='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
-    env_name = 'HalfCheetahBulletEnv-v0'
-    env = gym.make(env_name)
+    env = gym.make(env)
     env = envs.Logger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
@@ -240,7 +239,8 @@ if __name__ == '__main__':
         replay += ep_replay
         replay = replay[-REPLAY_SIZE:]
         if len(replay) > MIN_REPLAY:
-            update(replay,
+            update(env,
+                   replay,
                    policy,
                    critic_qf1,
                    critic_qf2,
@@ -252,3 +252,9 @@ if __name__ == '__main__':
                    qf2_opt,
                    alpha_opt,
                    target_entropy)
+
+if __name__ == '__main__':
+    env_name = 'CartPoleBulletEnv-v0'
+    env_name = 'AntBulletEnv-v0'
+    env_name = 'HalfCheetahBulletEnv-v0'
+    main(env_name)
