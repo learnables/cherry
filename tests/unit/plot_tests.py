@@ -2059,5 +2059,5 @@ class TestPlot(unittest.TestCase):
                 self.assertTrue(ub >= m)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

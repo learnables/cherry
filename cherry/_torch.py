@@ -119,9 +119,11 @@ def onehot(x, dim):
     if isinstance(x, np.ndarray):
         size = x.shape[0]
         x = th.from_numpy(x).long()
+    if isinstance(x, list):
+        x = th.tensor(x).long()
     if isinstance(x, th.Tensor):
         size = x.size(0)
         x = x.long()
     onehot = th.zeros(size, dim)
-    onehot[:, x] = 1.0
+    onehot.scatter_(1, x.view(-1, 1), 1.0)
     return onehot
