@@ -122,7 +122,7 @@ def onehot(x, dim):
     if isinstance(x, (int, float)):
         x = [int(x), ]
     if isinstance(x, list):
-        x = th.tensor(x).long()
+        x = th.tensor(x).view(-1, 1).long()
     if isinstance(x, th.Tensor):
         size = x.size(0)
         x = x.long()
