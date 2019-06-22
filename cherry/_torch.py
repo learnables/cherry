@@ -119,6 +119,8 @@ def onehot(x, dim):
     if isinstance(x, np.ndarray):
         size = x.shape[0]
         x = th.from_numpy(x).long()
+    if isinstance(x, (int, float)):
+        x = [int(x), ]
     if isinstance(x, list):
         x = th.tensor(x).long()
     if isinstance(x, th.Tensor):
