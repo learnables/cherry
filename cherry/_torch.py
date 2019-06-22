@@ -124,6 +124,6 @@ def onehot(x, dim):
     if isinstance(x, th.Tensor):
         size = x.size(0)
         x = x.long()
-    onehot = th.zeros(size, dim)
+    onehot = th.zeros(size, dim, device=x.device)
     onehot.scatter_(1, x.view(-1, 1), 1.0)
     return onehot
