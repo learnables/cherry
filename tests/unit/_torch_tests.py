@@ -15,7 +15,7 @@ class TestTorch(unittest.TestCase):
         self.assertTrue(oh_single.size(0) == 1)
         self.assertTrue(oh_single.size(1) == DIM)
         ref = th.zeros(1, DIM)
-        ref[0, single]
+        ref[0, single] += 1
         self.assertTrue((oh_single - ref).pow(2).sum().item() == 0)
         
         multi = th.arange(DIM)
