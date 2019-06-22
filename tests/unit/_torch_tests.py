@@ -7,7 +7,7 @@ import cherry as ch
 DIM = 5
 
 
-class TestPlot(unittest.TestCase):
+class TestTorch(unittest.TestCase):
 
     def test_onehot(self):
         single = 3
