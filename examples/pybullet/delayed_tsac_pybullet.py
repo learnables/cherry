@@ -198,6 +198,7 @@ def update(env,
                                  target=critic_qf2,
                                  alpha=VF_TARGET_TAU)
 
+
 def main(env='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
@@ -259,4 +260,5 @@ if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env_name = 'HalfCheetahBulletEnv-v0'
+    env_name = 'MinitaurTrottingEnv-v0'
     main(env_name)
