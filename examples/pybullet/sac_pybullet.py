@@ -51,7 +51,6 @@ class MLP(nn.Module):
         in_size = input_size
         for next_size in layer_sizes:
             fc = nn.Linear(in_size, next_size)
-            ch.nn.init.pong_control_(fc)
             self.layers.append(fc)
             in_size = next_size
 

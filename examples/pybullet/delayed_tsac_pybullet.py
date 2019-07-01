@@ -54,7 +54,6 @@ class MLP(nn.Module):
         in_size = input_size
         for next_size in layer_sizes:
             fc = nn.Linear(in_size, next_size)
-            ch.nn.init.pong_control_(fc)
             self.layers.append(fc)
             in_size = next_size
 
@@ -204,7 +203,7 @@ def main(env='HalfCheetahBulletEnv-v0'):
     np.random.seed(SEED)
     th.manual_seed(SEED)
     env = gym.make(env)
-    env = envs.Logger(env, interval=1000)
+    env = envs.VisdomLogger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -260,5 +259,5 @@ if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
     env_name = 'AntBulletEnv-v0'
     env_name = 'HalfCheetahBulletEnv-v0'
-    env_name = 'MinitaurTrottingEnv-v0'
+    #env_name = 'MinitaurTrottingEnv-v0'
     main(env_name)
