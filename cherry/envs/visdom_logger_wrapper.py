@@ -32,6 +32,7 @@ class VisdomLogger(Logger):
                  env,
                  interval=1000,
                  episode_interval=10,
+                 render=True,
                  title=None
                  ):
         super(VisdomLogger, self).__init__(env=env,
@@ -47,6 +48,7 @@ class VisdomLogger(Logger):
         self.visdom = visdom.Visdom(env=self.title)
         self.ep_actions_win = str(uuid.uuid4())
         self.ep_renders_win = str(uuid.uuid4())
+        self.render = render
 
         self.can_record = 'rgb_array' in self.env.metadata['render.modes']
 
@@ -147,7 +149,7 @@ class VisdomLogger(Logger):
             if self.discrete_actions:
                 action = ch.onehot(action, dim=self.action_size)[0]
             self.ep_actions.append(action)
-            if self.can_record:
+            if self.render and self.can_record:
                 frame = self.env.render(mode='rgb_array')
                 self.ep_renders.append(frame)
 
