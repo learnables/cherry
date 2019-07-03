@@ -43,11 +43,11 @@ class NatureFeatures(nn.Sequential):
 
     def __init__(self, input_size=4, hidden_size=512):
         super(NatureFeatures, self).__init__(
-            atari_init_(nn.Conv2d(input_size, 32, 8, stride=4)),
+            atari_init_(nn.Conv2d(input_size, 32, 8, stride=4, padding=0)),
             nn.ReLU(),
-            atari_init_(nn.Conv2d(32, 64, 4, stride=2)),
+            atari_init_(nn.Conv2d(32, 64, 4, stride=2, padding=0)),
             nn.ReLU(),
-            atari_init_(nn.Conv2d(64, 32, 3, stride=1)),
+            atari_init_(nn.Conv2d(64, 32, 3, stride=1, padding=0)),
             nn.ReLU(),
             Flatten(),
             atari_init_(nn.Linear(32 * 7 * 7, hidden_size)),
