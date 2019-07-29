@@ -92,7 +92,7 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('CartPole-v0')
-    env = envs.VisdomLogger(env)
+    env = envs.Logger(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)

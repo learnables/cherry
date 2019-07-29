@@ -19,7 +19,12 @@ class Dummy(gym.Env):
         self.rng = random.Random()
 
     def step(self, action):
-        pass
+        assert self.observation_space.contains(action)
+        next_state = self.observation_space.sample()
+        reward = action.sum()
+        done = random.random() > 0.95
+        info = {}
+        return next_state, reward, done, info
 
     def reset(self):
         return self.observation_space.sample()

@@ -48,12 +48,16 @@ class Runner(Wrapper):
             if self._needs_reset:
                 self.reset()
             info = {}
-            action = tuple(get_action(self._current_state))
-            if len(action) == 2:
-                info = action[1]
-                action = action[0]
-            else:
-                action = action[0]
+            action = get_action(self._current_state)
+            if isinstance(action, tuple):
+                if len(action) == 2:
+                    info = action[1]
+                    action = action[0]
+                elif len(action) == 1:
+                    action = action[0]
+                else:
+                    msg = 'get_action should return 1 or 2 values.'
+                    raise NotImplementedError(msg)
             old_state = self._current_state
             state, reward, done, _ = self.env.step(action)
             if done:

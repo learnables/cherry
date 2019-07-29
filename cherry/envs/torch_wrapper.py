@@ -38,7 +38,9 @@ class Torch(Wrapper):
         if isinstance(action, th.Tensor):
             action = action.view(-1).data.numpy()
         if isinstance(self.env.action_space, Discrete):
-            action = action[0]
+            if not isinstance(action, (int, float)):
+                action = action[0]
+            action = int(action)
         state, reward, done, info = self.env.step(action)
         state = self._convert_state(state)
         return state, reward, done, info
