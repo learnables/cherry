@@ -52,6 +52,8 @@ def totensor(array, dtype=None):
         if array.dtype == np.bool_:
             array = array.astype(np.uint8)
         array = th.tensor(array, dtype=dtype)
+        if len(array.shape) == 0:
+            array = array.unsqueeze(0)
         array = array.unsqueeze(0)
     return array
 
