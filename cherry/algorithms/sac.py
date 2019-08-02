@@ -3,7 +3,20 @@
 """
 **Description**
 
-Helper functions for implementing SAC.
+Helper functions for implementing Soft-Actor Critic.
+
+You should update the function approximators according to the following order.
+
+1. Entropy weight update.
+2. Action-value update.
+3. State-value update. (Optional, c.f. below)
+4. Policy update.
+
+Note that most recent implementations of SAC omit step 3. above by using
+the Bellman residual instead of modelling a state-value function.
+For an example of such implementation refer to
+[this link](https://github.com/seba-1511/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py).
+
 """
 
 import torch as th
