@@ -280,7 +280,18 @@ value_loss = ppo.state_value_loss(values,
 
 <h1 id="cherryalgorithmssac">cherry.algorithms.sac</h1>
 <p><strong>Description</strong></p>
-<p>Helper functions for implementing SAC.</p>
+<p>Helper functions for implementing Soft-Actor Critic.</p>
+<p>You should update the function approximators according to the following order.</p>
+<ol>
+<li>Entropy weight update.</li>
+<li>Action-value update.</li>
+<li>State-value update. (Optional, c.f. below)</li>
+<li>Policy update.</li>
+</ol>
+<p>Note that most recent implementations of SAC omit step 3. above by using
+the Bellman residual instead of modelling a state-value function.
+For an example of such implementation refer to
+<a href="https://github.com/seba-1511/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py">this link</a>.</p>
 <h2 id="policy_loss_2">policy_loss</h2>
 <pre><code class="python">policy_loss(log_probs, q_curr, alpha=1.0)
 </code></pre>
