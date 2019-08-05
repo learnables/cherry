@@ -11,6 +11,7 @@ from . import models
 from . import algorithms
 from . import distributions
 from . import plot
+from . import debug
 
 from .experience_replay import ExperienceReplay, Transition
 from .td import discount, temporal_difference
