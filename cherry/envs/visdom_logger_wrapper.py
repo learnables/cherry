@@ -33,12 +33,14 @@ class VisdomLogger(Logger):
                  interval=1000,
                  episode_interval=10,
                  render=True,
-                 title=None
+                 title=None,
+                 Logger=None
                  ):
         super(VisdomLogger, self).__init__(env=env,
                                            interval=interval,
                                            episode_interval=episode_interval,
-                                           title=title)
+                                           title=title,
+                                           Logger=Logger)
         self.ep_actions = []
         self.full_ep_actions = []
         self.ep_renders = []
