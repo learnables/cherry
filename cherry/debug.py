@@ -4,6 +4,7 @@
 General debugging utilities.
 """
 
+import os
 import sys
 import logging
 import traceback
@@ -25,7 +26,7 @@ print_handler.setLevel(logging.INFO)
 logger.addHandler(print_handler)
 
 
-def debug():
+def debug(log_dir='./'):
     """
     Enables some debugging utilities for logging and pdb.
 
@@ -34,6 +35,7 @@ def debug():
     * Automatically dropping into a post-mortem pdb debugger session
     whenever an exception is raised.
     * Enables DEBUG logging to a cherry logging file of the main logger.
+    * Copies all stdout output to the logging file. (Experimental)
 
     **Reference**
 
@@ -49,14 +51,30 @@ def debug():
     global IS_DEBUGGING
     if not IS_DEBUGGING:
         # Enable debugging logging.
+        now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        log_file = os.path.join(log_dir, 'cherry_debug_' + now + '.log')
+        if not os.path.exists(log_dir):
+            os.mkdir(log_dir)
         logger.setLevel(logging.DEBUG)
         debug_fmt = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s \n%(message)s',
                                       datefmt='%Y-%m-%d %H:%M:%S')
-        now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        debug_handler = logging.FileHandler('cherry_debug_' + now + '.log')
+
+        # Experimental: forward stdout/print to log_file too
+        log_file = open(log_file, mode='a', buffering=1, encoding='utf-8')
+        stdout_write = sys.stdout.write
+        def custom_write(*args, **kwargs):
+            stdout_write(*args, **kwargs)
+            log_file.write(*args, **kwargs)
+        global print
+        print = custom_write
+        sys.stdout.write = custom_write
+        debug_handler = logging.StreamHandler(log_file)
+
+        # debug_handler = logging.FileHandler(log_file)
         debug_handler.setFormatter(debug_fmt)
         debug_handler.setLevel(logging.DEBUG)
         logger.addHandler(debug_handler)
+        logger.debug('Debugging started.')
 
         # Enable automatic post-mortem on Exception.
         def info(type, value, tb):
@@ -74,9 +92,10 @@ def debug():
 if __name__ == '__main__':
     logger.debug('debug')
     logger.info('info')
+    debug(log_dir='./logs')
     debug()
-    debug()
-    debug()
-    logger.debug('debug')
     logger.info('info')
+    logger.debug('debug')
+    print('This is from print.')
+    sys.stdout.write('This is from stdout.')
     raise Exception('haha')

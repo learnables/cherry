@@ -110,6 +110,7 @@ venv.bak/
 */**/.DS_Store
 results/*
 videos/*
+logs/*
 examples/videos/*
 benchmarks/wandb/**
 examples/simple_rl/results/**
