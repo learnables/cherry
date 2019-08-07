@@ -4,6 +4,7 @@ from statistics import mean, pstdev
 
 from .base import Wrapper
 
+import sys
 import logging
 
 
@@ -30,8 +31,17 @@ class Logger(Wrapper):
                 title = ''
         self.title = title
         if logger is None:
+            logging.basicConfig(level=logging.WARNING)
             logger = logging.getLogger('cherry')
             logger.setLevel(logging.INFO)
+            logger.propagate = False
+            '''
+            fmt = logging.Formatter(fmt='%(message)s', datefmt='')
+            print_handler = logging.StreamHandler(sys.stdout)
+            print_handler.setFormatter(fmt)
+            print_handler.setLevel(logging.INFO)
+            logger.addHandler(print_handler)
+            '''
         self.logger = logger
 
     def _episodes_length_rewards(self, rewards, dones):
