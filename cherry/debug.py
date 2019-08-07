@@ -55,22 +55,27 @@ def debug(log_dir='./'):
         log_file = os.path.join(log_dir, 'cherry_debug_' + now + '.log')
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
-        logger.setLevel(logging.DEBUG)
-        debug_fmt = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s \n%(message)s',
-                                      datefmt='%Y-%m-%d %H:%M:%S')
 
         # Experimental: forward stdout/print to log_file too
         log_file = open(log_file, mode='a', buffering=1, encoding='utf-8')
         stdout_write = sys.stdout.write
-        def custom_write(*args, **kwargs):
+        stderr_write = sys.stderr.write
+        def custom_stdout_write(*args, **kwargs):
             stdout_write(*args, **kwargs)
             log_file.write(*args, **kwargs)
+        def custom_stderr_write(*args, **kwargs):
+            stderr_write(*args, **kwargs)
+            log_file.write(*args, **kwargs)
         global print
-        print = custom_write
-        sys.stdout.write = custom_write
-        debug_handler = logging.StreamHandler(log_file)
+        print = custom_stdout_write
+        sys.stdout.write = custom_stdout_write
+        sys.stderr.write = custom_stderr_write
 
+        logger.setLevel(logging.DEBUG)
+        debug_fmt = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s \n%(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
         # debug_handler = logging.FileHandler(log_file)
+        debug_handler = logging.StreamHandler(log_file)
         debug_handler.setFormatter(debug_fmt)
         debug_handler.setLevel(logging.DEBUG)
         logger.addHandler(debug_handler)
