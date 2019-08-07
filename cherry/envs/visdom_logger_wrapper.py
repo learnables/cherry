@@ -40,7 +40,7 @@ class VisdomLogger(Logger):
                                            interval=interval,
                                            episode_interval=episode_interval,
                                            title=title,
-                                           Logger=Logger)
+                                           logger=logger)
         self.ep_actions = []
         self.full_ep_actions = []
         self.ep_renders = []
