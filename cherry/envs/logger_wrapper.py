@@ -32,7 +32,6 @@ class Logger(Wrapper):
 
         if logger is None:
             logger = cherry.debug.logger
-
         self.logger = logger
 
     def _episodes_length_rewards(self, rewards, dones):
