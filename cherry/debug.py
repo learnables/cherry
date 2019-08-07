@@ -60,12 +60,15 @@ def debug(log_dir='./'):
         log_file = open(log_file, mode='a', buffering=1, encoding='utf-8')
         stdout_write = sys.stdout.write
         stderr_write = sys.stderr.write
+
         def custom_stdout_write(*args, **kwargs):
             stdout_write(*args, **kwargs)
             log_file.write(*args, **kwargs)
+
         def custom_stderr_write(*args, **kwargs):
             stderr_write(*args, **kwargs)
             log_file.write(*args, **kwargs)
+
         global print
         print = custom_stdout_write
         sys.stdout.write = custom_stdout_write
