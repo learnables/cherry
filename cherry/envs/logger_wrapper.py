@@ -6,6 +6,7 @@ from .base import Wrapper
 
 import cherry
 
+
 class Logger(Wrapper):
 
     """
