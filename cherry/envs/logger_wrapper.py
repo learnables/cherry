@@ -24,24 +24,25 @@ class Logger(Wrapper):
         self.ep_interval = episode_interval
         self.values = {}
         self.values_idx = {}
+
         if title is None:
             if hasattr(env, 'spec') and hasattr(env.spec, 'id'):
                 title = env.spec.id
             else:
                 title = ''
         self.title = title
+
         if logger is None:
-            logging.basicConfig(level=logging.WARNING)
             logger = logging.getLogger('cherry')
             logger.setLevel(logging.INFO)
+            if not logger.hasHandlers():
+                fmt = logging.Formatter(fmt='%(message)s', datefmt='')
+                print_handler = logging.StreamHandler(sys.stdout)
+                print_handler.setFormatter(fmt)
+                print_handler.setLevel(logging.INFO)
+                logger.addHandler(print_handler)
             logger.propagate = False
-            '''
-            fmt = logging.Formatter(fmt='%(message)s', datefmt='')
-            print_handler = logging.StreamHandler(sys.stdout)
-            print_handler.setFormatter(fmt)
-            print_handler.setLevel(logging.INFO)
-            logger.addHandler(print_handler)
-            '''
+    
         self.logger = logger
 
     def _episodes_length_rewards(self, rewards, dones):
