@@ -34,7 +34,7 @@ class VisdomLogger(Logger):
                  episode_interval=10,
                  render=True,
                  title=None,
-                 Logger=None
+                 logger=None
                  ):
         super(VisdomLogger, self).__init__(env=env,
                                            interval=interval,
