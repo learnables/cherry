@@ -49,6 +49,8 @@ generate:
     - cherry.nn.init++
 - docs/cherry.plot.md:
     - cherry.plot++
+- docs/cherry.debug.md:
+    - cherry.debug++
 
 # MkDocs pages configuration. The `<<` operator is sugar added by pydocmd
 # that allows you to use an external Markdown file (eg. your project's README)
@@ -64,6 +66,7 @@ pages:
 - Documentation:
     - cherry: docs/cherry.md
     - cherry.algorithms: docs/cherry.algorithms.md
+    #- cherry.debug: docs/cherry.debug.md
     - cherry.distributions: docs/cherry.distributions.md
     - cherry.envs: docs/cherry.envs.md
     - cherry.models: docs/cherry.models.md

@@ -37,16 +37,24 @@ def debug(log_dir='./'):
     * Enables DEBUG logging to a cherry logging file of the main logger.
     * Copies all stdout output to the logging file. (Experimental)
 
-    **Reference**
+    **References**
 
-    1. http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/
+    1. Automatically start the debugger on an exception (Python recipe), Thomas Heller, 2001,
+        [Link](http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/)
+
+    **Arguments**
+
+    * **log_dir** (str, *optional*, Default: './') - Location to store the log files.
 
     **Example**
 
+    ~~~python
     ch.debug.debug()
     raise Exception('My exception')
     -> raise('My exception')
     (Pdb)
+    ~~~
+
     """
     global IS_DEBUGGING
     if not IS_DEBUGGING:
