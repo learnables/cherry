@@ -4,6 +4,8 @@ from statistics import mean, pstdev
 
 from .base import Wrapper
 
+import cherry
+
 
 class Logger(Wrapper):
 
@@ -11,7 +13,7 @@ class Logger(Wrapper):
     Tracks and prints some common statistics about the environment.
     """
 
-    def __init__(self, env, interval=1000, episode_interval=10, title=None):
+    def __init__(self, env, interval=1000, episode_interval=10, title=None, logger=None):
         super(Logger, self).__init__(env)
         self.num_steps = 0
         self.num_episodes = 0
@@ -21,12 +23,17 @@ class Logger(Wrapper):
         self.ep_interval = episode_interval
         self.values = {}
         self.values_idx = {}
+
         if title is None:
             if hasattr(env, 'spec') and hasattr(env.spec, 'id'):
                 title = env.spec.id
             else:
                 title = ''
         self.title = title
+
+        if logger is None:
+            logger = cherry.debug.logger
+        self.logger = logger
 
     def _episodes_length_rewards(self, rewards, dones):
         episode_rewards = []
@@ -133,7 +140,7 @@ class Logger(Wrapper):
             msg, ep_stats, steps_stats = self.stats()
             info['logger_steps_stats'] = steps_stats
             info['logger_ep_stats'] = ep_stats
-            print(msg)
+            self.logger.info(msg)
         if done:
             self.num_episodes += 1
         return state, reward, done, info

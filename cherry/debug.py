@@ -17,6 +17,7 @@ IS_DEBUGGING = False
 # Sets up general debugger
 logger = logging.getLogger('cherry')
 logger.setLevel(logging.INFO)
+logger.propagate = False
 
 # Handler for normal printing
 fmt = logging.Formatter(fmt='%(message)s', datefmt='')
