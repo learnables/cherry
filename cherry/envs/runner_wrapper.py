@@ -65,8 +65,8 @@ class Runner(Wrapper):
                     elif len(action) == 2 and \
                             self.env.num_envs == 2 and \
                             not isinstance(action[1], dict):
-                                # action[1] is not info but an action
-                                action = (action, )
+                        # action[1] is not info but an action
+                        action = (action, )
 
                 if not skip_unpack:
                     if len(action) == 2:
