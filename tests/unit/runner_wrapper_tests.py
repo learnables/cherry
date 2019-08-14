@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import random
 import unittest
 import numpy as np
@@ -12,6 +13,12 @@ from gym.vector import AsyncVectorEnv
 from gym.envs.unittest import MemorizeDigits
 
 #from dummy_env import Dummy
+
+
+class NullHandler(logging.Handler):
+
+    def emit(self, record):
+        pass
 
 
 NUM_STEPS = 10
@@ -58,14 +65,17 @@ class Dummy(gym.Env):
 class TestRunnerWrapper(unittest.TestCase):
 
     def setUp(self):
-        pass
+        null_handler = NullHandler()
+        self.logger = logging.getLogger('null')
+        self.logger.propagate = False
+        self.logger.addHandler(null_handler)
+
 
     def tearDown(self):
         pass
 
     def test_vec_env(self):
         """
-        TODO:
         - policy return a list of torch vectors
         - policy return a single large tensor
         - policy return (tensor, info)
@@ -79,21 +89,6 @@ class TestRunnerWrapper(unittest.TestCase):
         - Check expected shapes of each property
         - Use AsyncVec vs gym.vector.make
         """
-#        n_envs = 4
-#        def make_env():
-#            env = Dummy()
-#            return env
-#        env_fns = [make_env for _ in range(n_envs)]
-#        env = async_env = AsyncVectorEnv(env_fns)
-##        env = envs.Torch(env)
-#        env = envs.Runner(env)
-#
-#        policy = lambda x: (env.action_space.sample(), {})
-#        replay = env.run(policy, steps=10)
-#
-#        policy = lambda x: env.action_space.sample()
-#        replay = env.run(policy, steps=10)
-
         def test_config(n_envs,
                         base_env,
                         use_torch,
@@ -102,7 +97,6 @@ class TestRunnerWrapper(unittest.TestCase):
             config = 'n_envs' + str(n_envs) + '-base_env' + str(base_env) \
                     + '-torch' + str(use_torch) + '-logger' + str(use_logger) \
                     + '-info' + str(return_info)
-#            print(config)
             if isinstance(base_env, str):
                 env = vec_env = gym.vector.make(base_env, num_envs=n_envs)
             else:
@@ -113,8 +107,7 @@ class TestRunnerWrapper(unittest.TestCase):
                 env = vec_env = AsyncVectorEnv(env_fns)
 
             if use_logger:
-#                env = envs.Logger(env, interval=5)
-                env = envs.Logger(env)
+                env = envs.Logger(env, interval=5, logger=self.logger)
 
             if use_torch:
                 env = envs.Torch(env)
@@ -155,8 +148,6 @@ class TestRunnerWrapper(unittest.TestCase):
             if return_info:
                 policies = replay.policy()
                 self.assertEqual(policies.shape, (NUM_STEPS, ) + action_shape, config)
-
-        test_config(2, Dummy, True, True, True)
 
 
         for return_info in [False, True]:

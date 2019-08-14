@@ -4,7 +4,7 @@ from statistics import mean, pstdev
 
 from .base import Wrapper
 
-import cherry
+import cherry as ch
 
 
 class Logger(Wrapper):
@@ -32,15 +32,23 @@ class Logger(Wrapper):
         self.title = title
 
         if logger is None:
-            logger = cherry.debug.logger
+            logger = ch.debug.logger
         self.logger = logger
 
     def _episodes_length_rewards(self, rewards, dones):
+        """
+        When dealing with array rewards and dones (as for VecEnv) the length
+        and rewards are only computed on the first dimension.
+        (i.e. the first sub-process.)
+        """
         episode_rewards = []
         episode_lengths = []
         accum = 0.0
         length = 0
         for r, d in zip(rewards, dones):
+            if not isinstance(d, bool):
+                d = bool(d.flat[0])
+                r = float(r.flat[0])
             if not d:
                 accum += r
                 length += 1
@@ -58,11 +66,13 @@ class Logger(Wrapper):
         # Find the last episodes
         start = end = count = 0
         for i, d in reversed(list(enumerate(self.all_dones))):
+            if not isinstance(d, bool):
+                d = d.flat[0]
             if d:
                 count += 1
                 if end == 0:
                     end = i
-                if count == self.ep_interval + 1:
+                if count >= self.ep_interval + 1:
                     start = i + 1
         # Compute stats
         rewards = self.all_rewards[start:end]
@@ -138,8 +148,12 @@ class Logger(Wrapper):
         self.num_steps += 1
         if self.interval > 0 and self.num_steps % self.interval == 0:
             msg, ep_stats, steps_stats = self.stats()
-            info['logger_steps_stats'] = steps_stats
-            info['logger_ep_stats'] = ep_stats
+            if isinstance(info, tuple):
+                info[0]['logger_steps_stats'] = steps_stats
+                info[0]['logger_ep_stats'] = ep_stats
+            else:
+                info['logger_steps_stats'] = steps_stats
+                info['logger_ep_stats'] = ep_stats
             self.logger.info(msg)
         if isinstance(done, bool):
             if done:

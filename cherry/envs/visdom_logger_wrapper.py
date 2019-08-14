@@ -130,8 +130,12 @@ class VisdomLogger(Logger):
         state, reward, done, info = super(VisdomLogger, self).step(action, *args, **kwargs)
 
         if self.interval > 0 and self.num_steps % self.interval == 0:
-            self.update_steps_plots(info['logger_steps_stats'])
-            self.update_ep_plots(info['logger_ep_stats'])
+            if isinstance(info, tuple):
+                self.update_steps_plots(info[0]['logger_steps_stats'])
+                self.update_ep_plots(info[0]['logger_ep_stats'])
+            else:
+                self.update_steps_plots(info['logger_steps_stats'])
+                self.update_ep_plots(info['logger_ep_stats'])
 
             if len(self.full_ep_actions) > 0:
                 self.update_ribbon_plot(self.full_ep_actions,
