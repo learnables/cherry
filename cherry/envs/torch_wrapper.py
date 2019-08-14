@@ -23,6 +23,7 @@ class Torch(Wrapper):
 
     def __init__(self, env):
         super(Torch, self).__init__(env)
+        self.is_vectorized = hasattr(self.env, 'num_envs')
 
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
@@ -34,13 +35,28 @@ class Torch(Wrapper):
             return ch.totensor(state)
         return state
 
-    def step(self, action):
+    def _convert_atomic_action(self, action):
         if isinstance(action, th.Tensor):
             action = action.view(-1).data.numpy()
         if isinstance(self.env.action_space, Discrete):
             if not isinstance(action, (int, float)):
                 action = action[0]
             action = int(action)
+        return action
+
+    def _convert_action(self, action):
+        if self.is_vectorized:
+            if isinstance(action, th.Tensor):
+                action = action.split(1, dim=0)
+            elif isinstance(action, np.ndarray):
+                action = action.split(1, axis=0)
+            action = [self._convert_atomic_action(a) for a in action]
+        else:
+            action = self._convert_atomic_action(action)
+        return action
+
+    def step(self, action):
+        action = self._convert_action(action)
         state, reward, done, info = self.env.step(action)
         state = self._convert_state(state)
         return state, reward, done, info

@@ -37,6 +37,8 @@ def totensor(array, dtype=None):
     """
     if dtype is None:
         dtype = th.get_default_dtype()
+    if isinstance(array, (list, tuple)):
+        array = th.cat([totensor(x) for x in array], dim=0)
     if isinstance(array, int):
         array = float(array)
     if isinstance(array, float):

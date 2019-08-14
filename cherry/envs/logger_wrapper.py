@@ -141,6 +141,9 @@ class Logger(Wrapper):
             info['logger_steps_stats'] = steps_stats
             info['logger_ep_stats'] = ep_stats
             self.logger.info(msg)
-        if done:
-            self.num_episodes += 1
+        if isinstance(done, bool):
+            if done:
+                self.num_episodes += 1
+        else:
+            self.num_episodes += sum(done)
         return state, reward, done, info

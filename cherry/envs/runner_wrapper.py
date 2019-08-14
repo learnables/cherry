@@ -3,6 +3,8 @@
 import cherry as ch
 from .base import Wrapper
 
+from collections.abc import Iterable
+
 
 class Runner(Wrapper):
 
@@ -15,6 +17,7 @@ class Runner(Wrapper):
         self.env = env
         self._needs_reset = True
         self._current_state = None
+        self.is_vectorized = hasattr(env, 'num_envs')
 
     def reset(self, *args, **kwargs):
         self._current_state = self.env.reset(*args, **kwargs)
@@ -36,8 +39,13 @@ class Runner(Wrapper):
 
         if steps is None:
             steps = float('inf')
-        if episodes is None:
+            if self.is_vectorized:
+                raise Exception('Can not use episodes with vectorized environments.')
+        elif episodes is None:
             episodes = float('inf')
+        else:
+            msg = 'Either steps or episodes should be set.'
+            raise Exception(msg)
 
         replay = ch.ExperienceReplay()
         collected_episodes = 0
@@ -50,17 +58,28 @@ class Runner(Wrapper):
             info = {}
             action = get_action(self._current_state)
             if isinstance(action, tuple):
-                if len(action) == 2:
-                    info = action[1]
-                    action = action[0]
-                elif len(action) == 1:
-                    action = action[0]
-                else:
-                    msg = 'get_action should return 1 or 2 values.'
-                    raise NotImplementedError(msg)
+                skip_unpack = False
+                if self.is_vectorized:
+                    if len(action) > 2:
+                        skip_unpack = True
+                    elif len(action) == 2 and \
+                         self.env.num_envs == 2 and \
+                         not isinstance(action[1], dict):
+                             # action[1] is not info but an action
+                             action = (action, )
+
+                if not skip_unpack:
+                    if len(action) == 2:
+                        info = action[1]
+                        action = action[0]
+                    elif len(action) == 1:
+                        action = action[0]
+                    else:
+                        msg = 'get_action should return 1 or 2 values.'
+                        raise NotImplementedError(msg)
             old_state = self._current_state
             state, reward, done, _ = self.env.step(action)
-            if done:
+            if not isinstance(done, Iterable) and done:
                 collected_episodes += 1
                 self._needs_reset = True
             replay.append(old_state, action, reward, state, done, **info)
