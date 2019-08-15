@@ -2,6 +2,7 @@
 
 import cherry as ch
 from .base import Wrapper
+from .utils import is_vectorized
 
 from collections.abc import Iterable
 
@@ -10,6 +11,9 @@ class Runner(Wrapper):
 
     """
     Runner wrapper.
+
+    TODO: When is_vectorized and using episodes=n, use the parallel
+    environmnents to sample n episodes, and stack them inside a flat replay.
     """
 
     def __init__(self, env):
@@ -17,7 +21,7 @@ class Runner(Wrapper):
         self.env = env
         self._needs_reset = True
         self._current_state = None
-        self.is_vectorized = hasattr(env, 'num_envs')
+        self.is_vectorized = is_vectorized(env)
 
     def reset(self, *args, **kwargs):
         self._current_state = self.env.reset(*args, **kwargs)
@@ -40,7 +44,7 @@ class Runner(Wrapper):
         if steps is None:
             steps = float('inf')
             if self.is_vectorized:
-                raise Exception('Can not use episodes with vectorized environments.')
+                raise Exception('Can not use episodes with vectorized environments, yet.')
         elif episodes is None:
             episodes = float('inf')
         else:

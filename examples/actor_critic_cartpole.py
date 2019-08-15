@@ -54,7 +54,7 @@ def update(replay, optimizer):
     policy_loss = []
     entropies = []
     value_loss = []
-    mean = lambda a: sum(a) / len(a)
+    mean = lambda a: (sum(a) / len(a)).mean()
 
     # Discount and normalize rewards
     rewards = ch.discount(GAMMA, replay.reward(), replay.done())
@@ -63,8 +63,8 @@ def update(replay, optimizer):
     # Compute losses
     for sars, reward in zip(replay, rewards):
         log_prob = sars.log_prob
-        value = sars.value
-        policy_loss.append(-log_prob * (reward - value.item()))
+        value = sars.value.view(-1).detach()
+        policy_loss.append(-log_prob * (reward - value))
         value_loss.append(F.mse_loss(value, reward.detach()))
 
     # Take optimization step
@@ -91,7 +91,7 @@ def get_action_value(state, policy):
 
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.vector.make('CartPole-v0', num_envs=4)
     env = envs.Logger(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -105,20 +105,9 @@ if __name__ == '__main__':
     running_reward = 10.0
     get_action = lambda state: get_action_value(state, policy)
 
-    for episode in count(1):
+    for episode in range(500):
         # We use the Runner collector, but could've written our own
-        replay = env.run(get_action, episodes=1)
+        replay = env.run(get_action, steps=200)
 
         # Update policy
         update(replay, optimizer)
-
-        # Compute termination criterion
-        running_reward = running_reward * 0.99 + len(replay) * 0.01
-        if episode % 10 == 0:
-            # Should start with 10.41, 12.21, 14.60, then 100:71.30, 200:135.74
-            print(episode, running_reward)
-        if running_reward > env.spec.reward_threshold:
-            print('Solved! Running reward now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward,
-                                                                   len(replay)))
-            break

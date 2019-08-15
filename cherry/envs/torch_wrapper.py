@@ -7,6 +7,7 @@ import cherry as ch
 from gym.spaces import Discrete
 
 from .base import Wrapper
+from .utils import is_vectorized
 
 
 class Torch(Wrapper):
@@ -23,22 +24,23 @@ class Torch(Wrapper):
 
     def __init__(self, env):
         super(Torch, self).__init__(env)
-        self.is_vectorized = hasattr(self.env, 'num_envs')
+        self.is_vectorized = is_vectorized(self)
 
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
-            state = th.Tensor([state])
+            state = ch.totensor(state)
         if isinstance(state, dict):
             state = {k: self._convert_state(state[k]) for k in state}
-            return state
         if isinstance(state, np.ndarray):
-            return ch.totensor(state)
+            state = ch.totensor(state)
+        if self.is_vectorized and isinstance(state, th.Tensor):
+            state = state.squeeze(0)
         return state
 
     def _convert_atomic_action(self, action):
         if isinstance(action, th.Tensor):
             action = action.view(-1).data.numpy()
-        if isinstance(self.env.action_space, Discrete):
+        if self.discrete_action:
             if not isinstance(action, (int, float)):
                 action = action[0]
             action = int(action)

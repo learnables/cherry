@@ -2,7 +2,7 @@
 
 import gym
 
-from .utils import get_space_dimension
+from .utils import get_space_dimension, is_vectorized, is_discrete
 
 
 class Wrapper(gym.Wrapper):
@@ -20,12 +20,20 @@ class Wrapper(gym.Wrapper):
     """
 
     @property
+    def discrete_action(self):
+        return is_discrete(self.action_space)
+
+    @property
+    def discrete_state(self):
+        return is_discrete(self.observation_space)
+
+    @property
     def state_size(self):
-        return get_space_dimension(self.observation_space)
+        return get_space_dimension(self.observation_space, vectorized=False)
 
     @property
     def action_size(self):
-        return get_space_dimension(self.action_space)
+        return get_space_dimension(self.action_space, vectorized=False)
 
     def __getattr__(self, attr):
         if attr in self.__dict__.keys():

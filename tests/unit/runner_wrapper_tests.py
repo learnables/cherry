@@ -36,7 +36,10 @@ class TestRunnerWrapper(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_vec_env(self):
+    def test_vec_episodes(self):
+        pass
+
+    def test_vec_steps(self):
         """
         - policy return a list of torch vectors
         - policy return a single large tensor

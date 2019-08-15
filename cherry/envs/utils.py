@@ -12,21 +12,72 @@ import operator
 from functools import reduce
 from collections import OrderedDict
 
-from gym.spaces import Box, Discrete, Dict
+from gym.spaces import Box, Discrete, Dict, Tuple
 
 
-def get_space_dimension(space):
+def is_vectorized(env):
+    return hasattr(env, 'num_envs')
+
+
+def is_discrete(space, vectorized=False):
     """
-    Returns the number of elements of a space sample, when unrolled.
+    Returns whether a space is discrete.
+
+    **Arguments**
+
+    * **space** - The space.
+    * **vectorized** - Whether to return the discreteness for the
+        vectorized environments (True) or just the discreteness of
+        the underlying environment (False).
     """
     msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete, Dict)), msg
+    assert isinstance(space, (Box, Discrete, Dict, Tuple)), msg
+    if isinstance(space, Discrete):
+        return True
+    if isinstance(space, Box):
+        return False
+    if isinstance(space, Dict):
+        dimensions = {
+            k[0]: is_discrete(k[1]) for k in space.spaces.items()
+        }
+        return OrderedDict(dimensions)
+    if isinstance(space, Tuple):
+        if not vectorized:
+            return is_discrete(space[0])
+        discrete = tuple(
+            is_discrete(s) for s in space
+        )
+        return discrete
+
+
+def get_space_dimension(space, vectorized=False):
+    """
+    Returns the number of elements of a space sample, when unrolled.
+
+    **Arguments**
+
+    * **space** - The space.
+    * **vectorized** - Whether to return the full dimension for vectorized
+        environments (True) or just the dimension for the underlying
+        environment (False).
+    """
+    msg = 'Space type not supported.'
+    assert isinstance(space, (Box, Discrete, Dict, Tuple)), msg
     if isinstance(space, Discrete):
         return space.n
     if isinstance(space, Box):
+        if len(space.shape) > 1 and not vectorized:
+            return reduce(operator.mul, space.shape[1:], 1)
         return reduce(operator.mul, space.shape, 1)
     if isinstance(space, Dict):
         dimensions = {
             k[0]: get_space_dimension(k[1]) for k in space.spaces.items()
         }
         return OrderedDict(dimensions)
+    if isinstance(space, Tuple):
+        if not vectorized:
+            return get_space_dimension(space[0])
+        dimensions = tuple(
+            get_space_dimension(s) for s in space
+        )
+        return dimensions

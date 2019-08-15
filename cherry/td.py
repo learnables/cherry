@@ -56,8 +56,7 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
     discounted = th.zeros_like(rewards)
     length = discounted.size(0)
     for t in reversed(range(length)):
-        if dones[t]:
-            R = th.zeros_like(rewards[0])
+        R = R * (1.0 - dones[t])
         R = rewards[t] + gamma * R
         discounted[t] += R[0]
     return discounted
