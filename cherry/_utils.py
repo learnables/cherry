@@ -16,6 +16,7 @@ def _istensorable(array):
     types = (int,
              float,
              list,
+             tuple,
              np.ndarray,
              np.bool_,
              th.Tensor)
