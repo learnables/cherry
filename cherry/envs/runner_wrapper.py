@@ -73,7 +73,7 @@ class Runner(Wrapper):
         self.env = env
         self._needs_reset = True
         self._current_state = None
-        self.is_vectorized = is_vectorized(env)
+        self.is_vectorized = is_vectorized(env) and env.num_envs > 1
 
     def reset(self, *args, **kwargs):
         self._current_state = self.env.reset(*args, **kwargs)
