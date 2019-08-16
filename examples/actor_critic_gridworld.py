@@ -84,7 +84,7 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('MiniGrid-Empty-6x6-v0')
-    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
+#    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
     env = envs.StateLambda(env, lambda x: x['image'])
     env = envs.VisdomLogger(env, interval=1000)
     env = envs.Torch(env)
