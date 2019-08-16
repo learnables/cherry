@@ -29,11 +29,13 @@ class Wrapper(gym.Wrapper):
 
     @property
     def state_size(self):
-        return get_space_dimension(self.observation_space, vectorized=False)
+        vectorized = not is_vectorized(self)
+        return get_space_dimension(self.observation_space, vectorized=vectorized)
 
     @property
     def action_size(self):
-        return get_space_dimension(self.action_space, vectorized=False)
+        vectorized = not is_vectorized(self)
+        return get_space_dimension(self.action_space, vectorized=vectorized)
 
     def __getattr__(self, attr):
         if attr in self.__dict__.keys():

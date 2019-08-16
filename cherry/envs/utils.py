@@ -38,12 +38,12 @@ def is_discrete(space, vectorized=False):
         return False
     if isinstance(space, Dict):
         dimensions = {
-            k[0]: is_discrete(k[1]) for k in space.spaces.items()
+            k[0]: is_discrete(k[1], vectorized) for k in space.spaces.items()
         }
         return OrderedDict(dimensions)
     if isinstance(space, Tuple):
         if not vectorized:
-            return is_discrete(space[0])
+            return is_discrete(space[0], vectorized)
         discrete = tuple(
             is_discrete(s) for s in space
         )
@@ -71,12 +71,12 @@ def get_space_dimension(space, vectorized=False):
         return reduce(operator.mul, space.shape, 1)
     if isinstance(space, Dict):
         dimensions = {
-            k[0]: get_space_dimension(k[1]) for k in space.spaces.items()
+            k[0]: get_space_dimension(k[1], vectorized) for k in space.spaces.items()
         }
         return OrderedDict(dimensions)
     if isinstance(space, Tuple):
         if not vectorized:
-            return get_space_dimension(space[0])
+            return get_space_dimension(space[0], vectorized)
         dimensions = tuple(
             get_space_dimension(s) for s in space
         )
