@@ -8,7 +8,7 @@
         
         
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>cherry.nn.init - cherry</title>
+        <title>cherry.debug - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -58,7 +58,7 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown active">
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -86,8 +86,8 @@
     <a href="../cherry.nn/">cherry.nn</a>
 </li>
                                     
-<li class="active">
-    <a href="./">cherry.nn.init</a>
+<li >
+    <a href="../cherry.nn.init/">cherry.nn.init</a>
 </li>
                                     
 <li >
@@ -118,16 +118,6 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../cherry.nn/">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li >
-                                <a rel="prev" href="../cherry.optim/">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
                     </ul>
                 </div>
             </div>
@@ -136,59 +126,40 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#cherrynninit">cherry.nn.init</a></li>
-            <li><a href="#robotic_init_">robotic_init_</a></li>
-            <li><a href="#atari_init_">atari_init_</a></li>
+        <li class="main active"><a href="#cherrydebug">cherry.debug</a></li>
+            <li><a href="#debug">debug</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="cherrynninit">cherry.nn.init</h1>
-<h2 id="robotic_init_">robotic_init_</h2>
-<pre><code class="python">robotic_init_(module, gain=None)
+<h1 id="cherrydebug">cherry.debug</h1>
+<p>General debugging utilities.</p>
+<h2 id="debug">debug</h2>
+<pre><code class="python">debug(log_dir='./')
 </code></pre>
 
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py">[Source]</a></p>
-<p><strong>Description</strong></p>
-<p>Default initialization for robotic control.</p>
-<p><strong>Credit</strong></p>
-<p>Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.</p>
+<p>Enables some debugging utilities for logging and pdb.</p>
+<p>Includes:</p>
+<ul>
+<li>Automatically dropping into a post-mortem pdb debugger session
+whenever an exception is raised.</li>
+<li>Enables DEBUG logging to a cherry logging file of the main logger.</li>
+<li>Copies all stdout output to the logging file. (Experimental)</li>
+</ul>
+<p><strong>References</strong></p>
+<ol>
+<li>Automatically start the debugger on an exception (Python recipe), Thomas Heller, 2001,
+    <a href="http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/">Link</a></li>
+</ol>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>module</strong> (nn.Module) - Module to initialize.</li>
-<li><strong>gain</strong> (float, <em>optional</em>, default=sqrt(2.0)) - Gain of orthogonal initialization.</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li>Module, whose weight and bias have been modified in-place.</li>
+<li><strong>log_dir</strong> (str, <em>optional</em>, Default: './') - Location to store the log files.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">linear = nn.Linear(23, 5)
-kostrikov_robotic_(linear)
-</code></pre>
-
-<h2 id="atari_init_">atari_init_</h2>
-<pre><code class="python">atari_init_(module, gain=None)
-</code></pre>
-
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py">[Source]</a></p>
-<p><strong>Description</strong></p>
-<p>Default initialization for Atari environments.</p>
-<p><strong>Credit</strong></p>
-<p>Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>module</strong> (nn.Module) - Module to initialize.</li>
-<li><strong>gain</strong> (float, <em>optional</em>, default=None) - Gain of orthogonal initialization.
-Default is computed for ReLU activation with <code>torch.nn.init.calculate_gain('relu')</code>.</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li>Module, whose weight and bias have been modified in-place.</li>
-</ul>
-<p><strong>Example</strong></p>
-<pre><code class="python">linear = nn.Linear(23, 5)
-atari_init_(linear)
+<pre><code class="python">ch.debug.debug()
+raise Exception('My exception')
+-&gt; raise('My exception')
+(Pdb)
 </code></pre></div>
         </div>
 

@@ -137,6 +137,7 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#cherryenvsutils">cherry.envs.utils</a></li>
+            <li><a href="#is_discrete">is_discrete</a></li>
             <li><a href="#get_space_dimension">get_space_dimension</a></li>
         <li class="main "><a href="#wrapper">Wrapper</a></li>
         <li class="main "><a href="#runner">Runner</a></li>
@@ -162,11 +163,30 @@
 <h1 id="cherryenvsutils">cherry.envs.utils</h1>
 <p><strong>Description</strong></p>
 <p>Helper functions for OpenAI Gym environments.</p>
+<h2 id="is_discrete">is_discrete</h2>
+<pre><code class="python">is_discrete(space, vectorized=False)
+</code></pre>
+
+<p>Returns whether a space is discrete.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>space</strong> - The space.</li>
+<li><strong>vectorized</strong> - Whether to return the discreteness for the
+    vectorized environments (True) or just the discreteness of
+    the underlying environment (False).</li>
+</ul>
 <h2 id="get_space_dimension">get_space_dimension</h2>
-<pre><code class="python">get_space_dimension(space)
+<pre><code class="python">get_space_dimension(space, vectorized=False)
 </code></pre>
 
 <p>Returns the number of elements of a space sample, when unrolled.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>space</strong> - The space.</li>
+<li><strong>vectorized</strong> - Whether to return the full dimension for vectorized
+    environments (True) or just the dimension for the underlying
+    environment (False).</li>
+</ul>
 <h1 id="wrapper">Wrapper</h1>
 <pre><code class="python">Wrapper(self, env)
 </code></pre>
@@ -184,13 +204,15 @@ env.log('asdf', 23)  # Uses log() method from envs.Logger.
 </code></pre>
 
 <p>Runner wrapper.</p>
+<p>TODO: When is_vectorized and using episodes=n, use the parallel
+environmnents to sample n episodes, and stack them inside a flat replay.</p>
 <h2 id="run">run</h2>
 <pre><code class="python">Runner.run(self, get_action, steps=None, episodes=None, render=False)
 </code></pre>
 
 <p>Runner wrapper's run method.</p>
 <h1 id="logger">Logger</h1>
-<pre><code class="python">Logger(self, env, interval=1000, episode_interval=10, title=None)
+<pre><code class="python">Logger(self, env, interval=1000, episode_interval=10, title=None, logger=None)
 </code></pre>
 
 <p>Tracks and prints some common statistics about the environment.</p>
@@ -228,7 +250,7 @@ env.run(get_action, episodes=3, render=True)
 
 <p>Flush all monitor data to disk and close any open rending windows</p>
 <h1 id="visdomlogger">VisdomLogger</h1>
-<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=10, render=True, title=None)
+<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=10, render=True, title=None, logger=None)
 </code></pre>
 
 <p>Enables logging and debug values to Visdom.</p>
