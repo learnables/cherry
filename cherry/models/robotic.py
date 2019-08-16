@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import torch as th
 import torch.nn as nn
+
 from cherry.nn import RoboticLinear
 
 
@@ -98,3 +100,64 @@ class RoboticActor(RoboticMLP):
         else:
             layers = [RoboticLinear(input_size, output_size, gain=1.0)]
         self.layers = nn.Sequential(*layers)
+
+
+class LinearValue(nn.Module):
+
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py)
+
+    **Description**
+
+    A linear state-value function, whose parameters are found by minimizing
+    least-squares.
+
+    **Credit**
+
+    Adapted from Tristan Deleu's implementation.
+
+    **References**
+    
+    1. Duan et al. 2016. “Benchmarking Deep Reinforcement Learning for Continuous Control.”
+    2. [https://github.com/tristandeleu/pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl)
+
+    **Arguments**
+
+    * **inputs_size** (int) - Size of input.
+    * **reg** (float, *optional*, default=1e-5) - Regularization coefficient.
+
+    **Example**
+    ~~~python
+    states = replay.state()
+    rewards = replay.reward()
+    dones = replay.done()
+    returns = ch.td.discount(gamma, rewards, dones)
+    baseline = LinearValue(input_size)
+    baseline.fit(states, returns)
+    next_values = baseline(replay.next_states())
+    ~~~
+    """
+
+    def __init__(self, input_size, reg=1e-5):
+        super(LinearValue, self).__init__()
+        self.linear = nn.Linear(2 * input_size + 4, 1, bias=False)
+        self.reg = reg
+
+    def _features(self, states):
+        length = states.size(0)
+        ones = th.ones(length, 1).to(states.device)
+        al = th.arange(length, dtype=th.float32, device=states.device).view(-1, 1) / 100.0
+        return th.cat([states, states**2, al, al**2, al**3, ones], dim=1)
+
+    def fit(self, states, returns):
+        features = self._features(states)
+        reg = self.reg * th.eye(features.size(1))
+        reg = reg.to(states.device)
+        A = features.t() @ features + reg
+        b = features.t() @ returns
+        coeffs, _ = th.gels(b, A)
+        self.linear.weight.data = coeffs.data.t()
+
+    def forward(self, states):
+        features = self._features(states)
+        return self.linear(features)
