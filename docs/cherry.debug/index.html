@@ -58,7 +58,7 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
@@ -68,6 +68,10 @@
                                     
 <li >
     <a href="../cherry.algorithms/">cherry.algorithms</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">cherry.debug</a>
 </li>
                                     
 <li >
@@ -121,6 +125,16 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
+                            <li >
+                                <a rel="next" href="../cherry.algorithms/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../cherry.distributions/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>
@@ -146,13 +160,15 @@
 <ul>
 <li>Automatically dropping into a post-mortem pdb debugger session
 whenever an exception is raised.</li>
-<li>Enables DEBUG logging to a cherry logging file of the main logger.</li>
+<li>Enables fast DEBUG logging to a logging file via QueueHandler.</li>
 <li>Copies all stdout output to the logging file. (Experimental)</li>
 </ul>
 <p><strong>References</strong></p>
 <ol>
 <li>Automatically start the debugger on an exception (Python recipe), Thomas Heller, 2001,
     <a href="http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/">Link</a></li>
+<li>Dealing with handlers that block, Python Documentation, 2019.
+    <a href="https://docs.python.org/3/howto/logging-cookbook.html#dealing-with-handlers-that-block">Link</a></li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>

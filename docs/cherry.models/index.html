@@ -71,6 +71,10 @@
 </li>
                                     
 <li >
+    <a href="../cherry.debug/">cherry.debug</a>
+</li>
+                                    
+<li >
     <a href="../cherry.distributions/">cherry.distributions</a>
 </li>
                                     
@@ -149,9 +153,9 @@
             <li><a href="#naturefeatures">NatureFeatures</a></li>
             <li><a href="#natureactor">NatureActor</a></li>
             <li><a href="#naturecritic">NatureCritic</a></li>
-        <li class="main "><a href="#cherrymodelsrobotic">cherry.models.robotic</a></li>
-            <li><a href="#roboticmlp">RoboticMLP</a></li>
-            <li><a href="#roboticactor">RoboticActor</a></li>
+        <li class="main "><a href="#cherrymodelsrobotics">cherry.models.robotics</a></li>
+            <li><a href="#roboticsmlp">RoboticsMLP</a></li>
+            <li><a href="#roboticsactor">RoboticsActor</a></li>
             <li><a href="#linearvalue">LinearValue</a></li>
     </ul>
 </div></div>
@@ -319,12 +323,12 @@ action_value = qf(state, action)
 <li><strong>input_size</strong> (int) - Size of input of the fully connected layers</li>
 <li><strong>output_size</strong> (int, <em>optional</em>, default=1) - Size of the value.</li>
 </ul>
-<h1 id="cherrymodelsrobotic">cherry.models.robotic</h1>
-<h2 id="roboticmlp">RoboticMLP</h2>
-<pre><code class="python">RoboticMLP(self, input_size, output_size, layer_sizes=None)
+<h1 id="cherrymodelsrobotics">cherry.models.robotics</h1>
+<h2 id="roboticsmlp">RoboticsMLP</h2>
+<pre><code class="python">RoboticsMLP(self, input_size, output_size, layer_sizes=None)
 </code></pre>
 
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>A multi-layer perceptron with proper initialization for robotic control.</p>
 <p><strong>Credit</strong></p>
@@ -338,16 +342,16 @@ action_value = qf(state, action)
   (Defaults to two hidden layers of 64 units.)</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">target_qf = ch.models.robotic.RoboticMLP(23,
+<pre><code class="python">target_qf = ch.models.robotics.RoboticsMLP(23,
                                          34,
                                          layer_sizes=[32, 32])
 </code></pre>
 
-<h2 id="roboticactor">RoboticActor</h2>
-<pre><code class="python">RoboticActor(self, input_size, output_size, layer_sizes=None)
+<h2 id="roboticsactor">RoboticsActor</h2>
+<pre><code class="python">RoboticsActor(self, input_size, output_size, layer_sizes=None)
 </code></pre>
 
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>A multi-layer perceptron with initialization designed for choosing
 actions in continuous robotic environments.</p>
@@ -362,7 +366,7 @@ actions in continuous robotic environments.</p>
   (Defaults to two hidden layers of 64 units.)</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">policy_mean = ch.models.robotic.Actor(28,
+<pre><code class="python">policy_mean = ch.models.robotics.Actor(28,
                                       8,
                                       layer_sizes=[64, 32, 16])
 </code></pre>
@@ -371,7 +375,7 @@ actions in continuous robotic environments.</p>
 <pre><code class="python">LinearValue(self, input_size, reg=1e-05)
 </code></pre>
 
-<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py">[Source]</a></p>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>A linear state-value function, whose parameters are found by minimizing
 least-squares.</p>
