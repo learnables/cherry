@@ -4,10 +4,10 @@ import torch.nn as nn
 import cherry as ch
 
 
-class RoboticLinear(nn.Linear):
+class RoboticsLinear(nn.Linear):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/Robotic_layers.py)
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/robotics_layers.py)
 
     **Description**
 
@@ -20,7 +20,7 @@ class RoboticLinear(nn.Linear):
     **Arguments**
 
 
-    * **gain** (float, *optional*) - Gain factor passed to `kostrikov_robotic_` initialization.
+    * **gain** (float, *optional*) - Gain factor passed to `kostrikov_robotics_` initialization.
     * This class extends `nn.Linear` and supports all of its arguments.
 
     **Example**
@@ -34,5 +34,5 @@ class RoboticLinear(nn.Linear):
 
     def __init__(self, *args, **kwargs):
         gain = kwargs.pop('gain', None)
-        super(RoboticLinear, self).__init__(*args, **kwargs)
-        ch.nn.init.robotic_init_(self, gain=gain)
+        super(RoboticsLinear, self).__init__(*args, **kwargs)
+        ch.nn.init.robotics_init_(self, gain=gain)

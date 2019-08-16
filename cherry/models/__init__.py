@@ -2,5 +2,5 @@
 
 from .utils import polyak_average, RandomPolicy
 from . import atari
-from . import robotic
+from . import robotics
 from . import tabular

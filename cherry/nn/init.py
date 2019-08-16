@@ -5,7 +5,7 @@ import numpy as np
 import torch.nn as nn
 
 
-def robotic_init_(module, gain=None):
+def robotics_init_(module, gain=None):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py)
 
@@ -30,7 +30,7 @@ def robotic_init_(module, gain=None):
 
     ~~~python
     linear = nn.Linear(23, 5)
-    kostrikov_robotic_(linear)
+    kostrikov_robotics_(linear)
     ~~~
 
     """

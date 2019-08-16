@@ -44,10 +44,10 @@ th.manual_seed(SEED)
 class ActorCriticNet(nn.Module):
     def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.actor = models.robotic.RoboticActor(env.state_size,
+        self.actor = models.robotics.RoboticsActor(env.state_size,
                                                  env.action_size,
                                                  layer_sizes=[64, 64])
-        self.critic = models.robotic.RoboticMLP(env.state_size, 1)
+        self.critic = models.robotics.RoboticsMLP(env.state_size, 1)
 
         self.action_dist = dist.ActionDistribution(env,
                                                    use_probs=False,

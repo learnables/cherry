@@ -42,9 +42,9 @@ generate:
     - cherry.models.utils++
     - cherry.models.tabular++
     - cherry.models.atari++
-    - cherry.models.robotic++
+    - cherry.models.robotics++
 - docs/cherry.nn.md:
-    - cherry.nn.RoboticLinear
+    - cherry.nn.RoboticsLinear
 - docs/cherry.nn.init.md:
     - cherry.nn.init++
 - docs/cherry.plot.md:

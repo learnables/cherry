@@ -3,13 +3,13 @@
 import torch as th
 import torch.nn as nn
 
-from cherry.nn import RoboticLinear
+from cherry.nn import RoboticsLinear
 
 
-class RoboticMLP(nn.Module):
+class RoboticsMLP(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py)
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
 
     **Description**
 
@@ -29,35 +29,35 @@ class RoboticMLP(nn.Module):
 
     **Example**
     ~~~python
-    target_qf = ch.models.robotic.RoboticMLP(23,
+    target_qf = ch.models.robotics.RoboticsMLP(23,
                                              34,
                                              layer_sizes=[32, 32])
     ~~~
     """
 
     def __init__(self, input_size, output_size, layer_sizes=None):
-        super(RoboticMLP, self).__init__()
+        super(RoboticsMLP, self).__init__()
         if layer_sizes is None:
             layer_sizes = [64, 64]
         if len(layer_sizes) > 0:
-            layers = [RoboticLinear(input_size, layer_sizes[0]),
+            layers = [RoboticsLinear(input_size, layer_sizes[0]),
                       nn.Tanh()]
             for in_, out_ in zip(layer_sizes[:-1], layer_sizes[1:]):
-                layers.append(RoboticLinear(in_, out_))
+                layers.append(RoboticsLinear(in_, out_))
                 layers.append(nn.Tanh())
-            layers.append(RoboticLinear(layer_sizes[-1], output_size))
+            layers.append(RoboticsLinear(layer_sizes[-1], output_size))
         else:
-            layers = [RoboticLinear(input_size, output_size)]
+            layers = [RoboticsLinear(input_size, output_size)]
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
         return self.layers(x)
 
 
-class RoboticActor(RoboticMLP):
+class RoboticsActor(RoboticsMLP):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py)
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
 
     **Description**
 
@@ -78,34 +78,34 @@ class RoboticActor(RoboticMLP):
 
     **Example**
     ~~~python
-    policy_mean = ch.models.robotic.Actor(28,
+    policy_mean = ch.models.robotics.Actor(28,
                                           8,
                                           layer_sizes=[64, 32, 16])
     ~~~
     """
 
     def __init__(self, input_size, output_size, layer_sizes=None):
-        super(RoboticMLP, self).__init__()
+        super(RoboticsMLP, self).__init__()
         if layer_sizes is None:
             layer_sizes = [64, 64]
         if len(layer_sizes) > 0:
-            layers = [RoboticLinear(input_size, layer_sizes[0]),
+            layers = [RoboticsLinear(input_size, layer_sizes[0]),
                       nn.Tanh()]
             for in_, out_ in zip(layer_sizes[:-1], layer_sizes[1:]):
-                layers.append(RoboticLinear(in_, out_))
+                layers.append(RoboticsLinear(in_, out_))
                 layers.append(nn.Tanh())
-            layers.append(RoboticLinear(layer_sizes[-1],
+            layers.append(RoboticsLinear(layer_sizes[-1],
                                         output_size,
                                         gain=1.0))
         else:
-            layers = [RoboticLinear(input_size, output_size, gain=1.0)]
+            layers = [RoboticsLinear(input_size, output_size, gain=1.0)]
         self.layers = nn.Sequential(*layers)
 
 
 class LinearValue(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotic.py)
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
 
     **Description**
 
