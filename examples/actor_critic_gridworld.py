@@ -42,7 +42,7 @@ class ActorCriticNet(nn.Module):
         self.distribution = distributions.ActionDistribution(env)
 
     def forward(self, x):
-        x = x['image'].view(-1)
+        x = x.view(-1)
         x = F.relu(self.affine1(x))
         action_scores = self.action_head(x)
         action_mass = self.distribution(F.log_softmax(action_scores, dim=0))
@@ -84,8 +84,9 @@ def get_action_value(state, policy):
 
 if __name__ == '__main__':
     env = gym.make('MiniGrid-Empty-6x6-v0')
-#    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
-    env = envs.Logger(env, interval=1000)
+    env = gym.make('MiniGrid-LavaCrossingS9N1-v0')
+    env = envs.StateLambda(env, lambda x: x['image'])
+    env = envs.VisdomLogger(env, interval=1000)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
@@ -105,9 +106,9 @@ if __name__ == '__main__':
             RENDER = True
 
         # Compute termination criterion
-        running_reward = running_reward * 0.99 + len(replay) * 0.01
-        if running_reward > env.spec.reward_threshold:
-            print('Solved! Running reward now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward,
-                                                                   len(replay)))
-            break
+        #running_reward = running_reward * 0.99 + len(replay) * 0.01
+        #if running_reward > env.spec.reward_threshold:
+        #    print('Solved! Running reward now {} and '
+        #          'the last episode runs to {} time steps!'.format(running_reward,
+        #                                                           len(replay)))
+        #    break
