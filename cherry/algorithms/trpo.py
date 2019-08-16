@@ -52,7 +52,7 @@ def policy_loss(new_log_probs, old_log_probs, advantages):
     ~~~
     """
     msg = 'log_probs and advantages must have equal size.'
-    assert new_log_probs.size() == old_log_probs == advantages.size(), msg
+    assert new_log_probs.size() == old_log_probs.size() == advantages.size(), msg
     ratio = th.exp(new_log_probs - old_log_probs)
     return - th.mean(ratio * advantages)
 

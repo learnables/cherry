@@ -7,6 +7,7 @@ from cherry.algorithms import trpo
 
 H_SIZE = 10
 NUM_TRIALS = 10
+BSZ = 10
 
 
 def close(a, b, eps=1e-5):
@@ -20,6 +21,19 @@ class TestTRPOAlgorithms(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def test_trpo_policy_loss(self):
+
+        for shape in [(1, BSZ), (BSZ, 1), (BSZ, )]:
+            new_log_probs = th.randn(BSZ)
+            old_log_probs = th.randn(BSZ)
+            advantages = th.randn(BSZ)
+            ref = trpo.policy_loss(new_log_probs, old_log_probs, advantages)
+            loss = trpo.policy_loss(new_log_probs.view(*shape),
+                                    old_log_probs.view(*shape),
+                                    advantages.view(*shape))
+            self.assertAlmostEqual(loss.item(), ref.item())
+
 
     def test_trpo_hvp(self):
         for _ in range(NUM_TRIALS):
