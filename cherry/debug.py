@@ -9,6 +9,9 @@ import sys
 import logging
 import traceback
 import pdb
+import queue
+
+from logging import handlers
 from datetime import datetime
 
 IS_DEBUGGING = False
@@ -35,13 +38,15 @@ def debug(log_dir='./'):
 
     * Automatically dropping into a post-mortem pdb debugger session
     whenever an exception is raised.
-    * Enables DEBUG logging to a cherry logging file of the main logger.
+    * Enables fast DEBUG logging to a logging file via QueueHandler.
     * Copies all stdout output to the logging file. (Experimental)
 
     **References**
 
     1. Automatically start the debugger on an exception (Python recipe), Thomas Heller, 2001,
         [Link](http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/)
+    2. Dealing with handlers that block, Python Documentation, 2019.
+        [Link](https://docs.python.org/3/howto/logging-cookbook.html#dealing-with-handlers-that-block)
 
     **Arguments**
 
@@ -78,19 +83,27 @@ def debug(log_dir='./'):
             stderr_write(*args, **kwargs)
             log_file.write(*args, **kwargs)
 
+        def custom_newline_stdout(*args, **kwargs):
+            custom_stdout_write(*args, **kwargs)
+            custom_stdout_write('\n')
+
         global print
-        print = custom_stdout_write
+        print = custom_newline_stdout
         sys.stdout.write = custom_stdout_write
         sys.stderr.write = custom_stderr_write
 
+        # Log to file using queue handler and listener
         logger.setLevel(logging.DEBUG)
+        debug_queue = queue.Queue(-1)
+        queue_handler = handlers.QueueHandler(debug_queue)
+        logger.addHandler(queue_handler)
         debug_fmt = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s \n%(message)s',
                                       datefmt='%Y-%m-%d %H:%M:%S')
-        # debug_handler = logging.FileHandler(log_file)
         debug_handler = logging.StreamHandler(log_file)
         debug_handler.setFormatter(debug_fmt)
         debug_handler.setLevel(logging.DEBUG)
-        logger.addHandler(debug_handler)
+        queue_listener = handlers.QueueListener(debug_queue, debug_handler)
+        queue_listener.start()
         logger.debug('Debugging started.')
 
         # Enable automatic post-mortem on Exception.
@@ -107,12 +120,16 @@ def debug(log_dir='./'):
 
 
 if __name__ == '__main__':
+    print('This is from print.')
+    print('This is from print.')
+    sys.stdout.write('This is from stdout.')
     logger.debug('debug')
     logger.info('info')
     debug(log_dir='./logs')
     debug()
     logger.info('info')
     logger.debug('debug')
+    print('This is from print.')
     print('This is from print.')
     sys.stdout.write('This is from stdout.')
     raise Exception('haha')
