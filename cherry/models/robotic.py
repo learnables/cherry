@@ -117,7 +117,7 @@ class LinearValue(nn.Module):
     Adapted from Tristan Deleu's implementation.
 
     **References**
-    
+
     1. Duan et al. 2016. “Benchmarking Deep Reinforcement Learning for Continuous Control.”
     2. [https://github.com/tristandeleu/pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl)
 
