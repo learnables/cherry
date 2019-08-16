@@ -11,6 +11,52 @@ from torch import autograd
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
 
 
+def policy_loss(new_log_probs, old_log_probs, advantages):
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py)
+
+    **Description**
+
+    The policy loss for Trust-Region Policy Optimization.
+
+    This is also known as the surrogate loss.
+
+    **References**
+
+    1. Schulman et al. 2015. “Trust Region Policy Optimization.” ICML 2015.
+
+    **Arguments**
+
+    * **new_log_probs** (tensor) - The log-density of actions from the target policy.
+    * **old_log_probs** (tensor) - The log-density of actions from the behaviour policy.
+    * **advantages** (tensor) - Advantage of the actions.
+
+    **Returns**
+
+    * (tensor) - The policy loss for the given arguments.
+
+    **Example**
+
+    ~~~python
+    advantage = ch.pg.generalized_advantage(GAMMA,
+                                            TAU,
+                                            replay.reward(),
+                                            replay.done(),
+                                            replay.value(),
+                                            next_state_value)
+    new_densities = policy(replay.state())
+    new_logprobs = new_densities.log_prob(replay.action())
+    loss = policy_loss(new_logprobs,
+                       replay.logprob().detach(),
+                       advantage.detach())
+    ~~~
+    """
+    msg = 'log_probs and advantages must have equal size.'
+    assert new_log_probs.size() == old_log_probs == advantages.size(), msg
+    ratio = th.exp(new_log_probs - old_log_probs)
+    return - th.mean(ratio * advantages)
+
+
 def hessian_vector_product(loss, parameters, damping=1e-5):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py)

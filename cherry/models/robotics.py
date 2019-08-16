@@ -95,8 +95,8 @@ class RoboticsActor(RoboticsMLP):
                 layers.append(RoboticsLinear(in_, out_))
                 layers.append(nn.Tanh())
             layers.append(RoboticsLinear(layer_sizes[-1],
-                                        output_size,
-                                        gain=1.0))
+                                         output_size,
+                                         gain=1.0))
         else:
             layers = [RoboticsLinear(input_size, output_size, gain=1.0)]
         self.layers = nn.Sequential(*layers)
