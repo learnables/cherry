@@ -44,10 +44,10 @@ PPO_STEPS = 2048
 class ActorCriticNet(nn.Module):
     def __init__(self, env):
         super(ActorCriticNet, self).__init__()
-        self.actor = models.control.Actor(env.state_size,
+        self.actor = models.robotic.Actor(env.state_size,
                                           env.action_size,
                                           layer_sizes=[64, 64])
-        self.critic = models.control.ControlMLP(env.state_size, 1)
+        self.critic = models.robotic.RoboticMLP(env.state_size, 1)
 
         self.action_dist = distributions.ActionDistribution(env,
                                                             use_probs=False,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .init import kostrikov_control_
+from .init import robotic_init_
 
-from .control_layers import ControlLinear
+from .robotic_layers import RoboticLinear
 from .epsilon_greedy import EpsilonGreedy
