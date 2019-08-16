@@ -66,7 +66,7 @@ pages:
 - Documentation:
     - cherry: docs/cherry.md
     - cherry.algorithms: docs/cherry.algorithms.md
-    #- cherry.debug: docs/cherry.debug.md
+    - cherry.debug: docs/cherry.debug.md
     - cherry.distributions: docs/cherry.distributions.md
     - cherry.envs: docs/cherry.envs.md
     - cherry.models: docs/cherry.models.md
