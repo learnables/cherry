@@ -9,7 +9,7 @@ Recall that TRPO strives to solve the following objective:
 
 $$
 \\max_\\theta \\quad \\mathbb{E}\\left[ \\frac{\\pi_\\theta}{\\pi_\\text{old}} \\cdot A  \\right] \\\\
-\\text{subject to} \\quad \\mathbb{E}\\left[ \\text{KL}(\\pi_\\text{old} \\vert \\vert \\pi_\\theta) \\leq \\delta \\right].
+\\text{subject to} \\quad D_\\text{KL}(\\pi_\\text{old} \\vert \\vert \\pi_\\theta) \\leq \\delta.
 $$
 
 
@@ -87,15 +87,6 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
     Note that parameters and the argument of the callable can be tensors
     or list of tensors.
 
-    TODO: The reshaping (if arguments are lists) is not efficiently implemented.
-          (It requires a copy) A good idea would be to have
-          vector_to_shapes(vec, shapes) or similar.
-
-    NOTE: We can not compute the grads with a vector version of the parameters,
-          since that vector (created within the function) will be a different
-          tree that is was not used in the computation of the loss.
-          (i.e. you get 'One of the differentiated tensors was not used.')
-
     **References**
 
     1. Pearlmutter, B. A. 1994. “Fast Exact Multiplication by the Hessian.” Neural Computation.
@@ -126,6 +117,16 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
     grad_loss = parameters_to_vector(grad_loss)
 
     def hvp(other):
+        """
+        TODO: The reshaping (if arguments are lists) is not efficiently implemented.
+              (It requires a copy) A good idea would be to have
+              vector_to_shapes(vec, shapes) or similar.
+
+        NOTE: We can not compute the grads with a vector version of the parameters,
+              since that vector (created within the function) will be a different
+              tree that is was not used in the computation of the loss.
+              (i.e. you get 'One of the differentiated tensors was not used.')
+        """
         shape = None
         if not isinstance(other, th.Tensor):
             shape = [th.zeros_like(o) for o in other]
@@ -150,13 +151,14 @@ def conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-8):
 
     **Description**
 
-    Computes x = A^{-1}b using the conjugate gradient algorithm.
+    Computes \\(x = A^{-1}b\\) using the conjugate gradient algorithm.
 
     **References**
 
-    1. Nocedal and Wright. 2006. Numerical Optimization, 2nd edition. Springer.
-    2. [https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py](https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py)
-    3. [https://github.com/tristandeleu/pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl)
+    1. Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.
+    2. John Schulman. 2015. "Implementation of TRPO and related algorithms". GitHub.
+        [Link](https://github.com/joschu/modular_rl/blob/master/modular_rl/trpo.py#L122)
+    3. Kai Arulkumaran. 2019. "Basic versions of agents from Spinning Up in Deep RL written in PyTorch". GitHub. [Link](https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py)
 
     **Arguments**
 
