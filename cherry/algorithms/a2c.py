@@ -8,7 +8,7 @@ Helper functions for implementing A2C.
 A2C simply computes the gradient of the policy as follows:
 
 $$
-\\mathbb{E} \\left[ (Q(s, a) - V(s)) \cdot \\nabla_\\theta \\log \\pi_\\theta (a \\vert s) \\right].
+\\mathbb{E} \\left[ (Q(s, a) - V(s)) \\cdot \\nabla_\\theta \\log \\pi_\\theta (a \\vert s) \\right].
 $$
 """
 
