@@ -5,14 +5,15 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        
-        
+        <meta name="author" content="Seb Arnold">
+        <link rel="canonical" href="http://cherry-rl.net/docs/cherry.algorithms/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
         <title>cherry.algorithms - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -22,7 +23,16 @@
         <script src="../../js/jquery-1.10.2.min.js" defer></script>
         <script src="../../js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script>hljs.initHighlightingOnLoad();</script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-68693545-3', 'seba-1511.github.com');
+            ga('send', 'pageview');
+        </script> 
     </head>
 
     <body>
@@ -149,8 +159,12 @@
         <li class="main "><a href="#cherryalgorithmsppo">cherry.algorithms.ppo</a></li>
             <li><a href="#policy_loss_1">policy_loss</a></li>
             <li><a href="#state_value_loss_1">state_value_loss</a></li>
-        <li class="main "><a href="#cherryalgorithmssac">cherry.algorithms.sac</a></li>
+        <li class="main "><a href="#cherryalgorithmstrpo">cherry.algorithms.trpo</a></li>
             <li><a href="#policy_loss_2">policy_loss</a></li>
+            <li><a href="#hessian_vector_product">hessian_vector_product</a></li>
+            <li><a href="#conjugate_gradient">conjugate_gradient</a></li>
+        <li class="main "><a href="#cherryalgorithmssac">cherry.algorithms.sac</a></li>
+            <li><a href="#policy_loss_3">policy_loss</a></li>
             <li><a href="#action_value_loss">action_value_loss</a></li>
             <li><a href="#state_value_loss_2">state_value_loss</a></li>
             <li><a href="#entropy_weight_loss">entropy_weight_loss</a></li>
@@ -161,6 +175,12 @@
 <h1 id="cherryalgorithmsa2c">cherry.algorithms.a2c</h1>
 <p><strong>Description</strong></p>
 <p>Helper functions for implementing A2C.</p>
+<p>A2C simply computes the gradient of the policy as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+\mathbb{E} \left[ (Q(s, a) - V(s)) \cdot \nabla_\theta \log \pi_\theta (a \vert s) \right].
+</script>
+</p>
 <h2 id="policy_loss">policy_loss</h2>
 <pre><code class="python">policy_loss(log_probs, advantages)
 </code></pre>
@@ -210,8 +230,8 @@ loss = a2c.policy_loss(log_probs, advantages)
 <li>(tensor) - The value loss for the given arguments.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">values = replay.value
-rewards = replay.reward
+<pre><code class="python">values = replay.value()
+rewards = replay.reward()
 loss = a2c.state_value_loss(values, rewards)
 </code></pre>
 
@@ -285,6 +305,117 @@ value_loss = ppo.state_value_loss(values,
                                   clip=0.2)
 </code></pre>
 
+<h1 id="cherryalgorithmstrpo">cherry.algorithms.trpo</h1>
+<p><strong>Description</strong></p>
+<p>Helper functions for implementing Trust-Region Policy Optimization.</p>
+<p>Recall that TRPO strives to solve the following objective:</p>
+<p>
+<script type="math/tex; mode=display">
+\max_\theta \quad \mathbb{E}\left[ \frac{\pi_\theta}{\pi_\text{old}} \cdot A  \right] \\
+\text{subject to} \quad \mathbb{E}\left[ \text{KL}(\pi_\text{old} \vert \vert \pi_\theta) \leq \delta \right].
+</script>
+</p>
+<h2 id="policy_loss_2">policy_loss</h2>
+<pre><code class="python">policy_loss(new_log_probs, old_log_probs, advantages)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>The policy loss for Trust-Region Policy Optimization.</p>
+<p>This is also known as the surrogate loss.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Schulman et al. 2015. “Trust Region Policy Optimization.” ICML 2015.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>new_log_probs</strong> (tensor) - The log-density of actions from the target policy.</li>
+<li><strong>old_log_probs</strong> (tensor) - The log-density of actions from the behaviour policy.</li>
+<li><strong>advantages</strong> (tensor) - Advantage of the actions.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">advantage = ch.pg.generalized_advantage(GAMMA,
+                                        TAU,
+                                        replay.reward(),
+                                        replay.done(),
+                                        replay.value(),
+                                        next_state_value)
+new_densities = policy(replay.state())
+new_logprobs = new_densities.log_prob(replay.action())
+loss = policy_loss(new_logprobs,
+                   replay.logprob().detach(),
+                   advantage.detach())
+</code></pre>
+
+<h2 id="hessian_vector_product">hessian_vector_product</h2>
+<pre><code class="python">hessian_vector_product(loss, parameters, damping=1e-05)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Returns a callable that computes the product of the Hessian of loss
+(w.r.t. parameters) with another vector, using Pearlmutter's trick.</p>
+<p>Note that parameters and the argument of the callable can be tensors
+or list of tensors.</p>
+<p>TODO: The reshaping (if arguments are lists) is not efficiently implemented.
+      (It requires a copy) A good idea would be to have
+      vector_to_shapes(vec, shapes) or similar.</p>
+<p>NOTE: We can not compute the grads with a vector version of the parameters,
+      since that vector (created within the function) will be a different
+      tree that is was not used in the computation of the loss.
+      (i.e. you get 'One of the differentiated tensors was not used.')</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Pearlmutter, B. A. 1994. “Fast Exact Multiplication by the Hessian.” Neural Computation.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>loss</strong> (tensor) - The loss of which to compute the Hessian.</li>
+<li><strong>parameters</strong> (tensor or list) - The tensors to take the gradient with respect to.</li>
+<li><strong>damping</strong> (float, <em>optional</em>, default=1e-5) - Damping of the Hessian-vector product.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><strong>hvp(other)</strong> (callable) - A function to compute the Hessian-vector product,
+    given a vector or list <code>other</code>.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">pass
+</code></pre>
+
+<h2 id="conjugate_gradient">conjugate_gradient</h2>
+<pre><code class="python">conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-08)
+</code></pre>
+
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Computes x = A^{-1}b using the conjugate gradient algorithm.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Nocedal and Wright. 2006. Numerical Optimization, 2nd edition. Springer.</li>
+<li><a href="https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py">https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py</a></li>
+<li><a href="https://github.com/tristandeleu/pytorch-maml-rl">https://github.com/tristandeleu/pytorch-maml-rl</a></li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>Ax</strong> (callable) - Given a vector x, computes A@x.</li>
+<li><strong>b</strong> (tensor or list) - The reference vector.</li>
+<li><strong>num_iterations</strong> (int, <em>optional</em>, default=10) - Number of conjugate gradient iterations.</li>
+<li><strong>tol</strong> (float, <em>optional</em>, default=1e-10) - Tolerance for proposed solution.</li>
+<li><strong>eps</strong> (float, <em>optional</em>, default=1e-8) - Numerical stability constant.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><strong>x</strong> (tensor or list) - The solution to Ax = b, as a list if b is a list else a tensor.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="python">pass
+</code></pre>
+
 <h1 id="cherryalgorithmssac">cherry.algorithms.sac</h1>
 <p><strong>Description</strong></p>
 <p>Helper functions for implementing Soft-Actor Critic.</p>
@@ -299,7 +430,7 @@ value_loss = ppo.state_value_loss(values,
 the Bellman residual instead of modelling a state-value function.
 For an example of such implementation refer to
 <a href="https://github.com/seba-1511/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py">this link</a>.</p>
-<h2 id="policy_loss_2">policy_loss</h2>
+<h2 id="policy_loss_3">policy_loss</h2>
 <pre><code class="python">policy_loss(log_probs, q_curr, alpha=1.0)
 </code></pre>
 
@@ -335,14 +466,17 @@ loss = policy_loss(log_probs, q_curr, alpha=0.1)
 </code></pre>
 
 <h2 id="action_value_loss">action_value_loss</h2>
-<pre><code class="python">action_value_loss(q_old, v_next, rewards, dones, gamma)
+<pre><code class="python">action_value_loss(value, next_value, rewards, dones, gamma)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
 <p><strong>Description</strong></p>
 <p>The action-value loss of the Soft Actor-Critic.</p>
-<p>For a given transition, the Q-values and V-values are recomputed on the actual transition data.
-The we should not back-propagate through the V-values, and often use a target network for them.</p>
+<p><code>value</code> should be the value of the current state-action pair, estimated via the Q-function.
+<code>next_value</code> is the expected value of the next state; it can be estimated via a V-function,
+or alternatively by computing the Q-value of the next observed state-action pair.
+In the latter case, make sure that the action is sampled according to the current policy,
+not the one used to gather the data.</p>
 <p><strong>References</strong></p>
 <ol>
 <li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
@@ -350,8 +484,8 @@ The we should not back-propagate through the V-values, and often use a target ne
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>q_old</strong> (tensor) - Action values of the actual transition.</li>
-<li><strong>v_next</strong> (tensor) - State values of the resulting state.</li>
+<li><strong>value</strong> (tensor) - Action values of the actual transition.</li>
+<li><strong>next_value</strong> (tensor) - State values of the resulting state.</li>
 <li><strong>rewards</strong> (tensor) - Observed rewards of the transition.</li>
 <li><strong>dones</strong> (tensor) - Which states were terminal.</li>
 <li><strong>gamma</strong> (float) - Discount factor.</li>
@@ -361,17 +495,17 @@ The we should not back-propagate through the V-values, and often use a target ne
 <li>(tensor) - The policy loss for the given arguments.</li>
 </ul>
 <p><strong>Example</strong></p>
-<pre><code class="python">q_old = qf(batch.state(), batch.action().detach())
-v_next = targe_vf(batch.next_state())
-loss = action_value_loss(q_old,
-                         v_next,
+<pre><code class="python">value = qf(batch.state(), batch.action().detach())
+next_value = targe_vf(batch.next_state())
+loss = action_value_loss(value,
+                         next_value,
                          batch.reward(),
                          batch.done(),
                          gamma=0.99)
 </code></pre>
 
 <h2 id="state_value_loss_2">state_value_loss</h2>
-<pre><code class="python">state_value_loss(v_curr, log_probs, q_curr, alpha=1.0)
+<pre><code class="python">state_value_loss(v_value, log_probs, q_value, alpha=1.0)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py">[Source]</a></p>
@@ -386,9 +520,9 @@ action values, and log-densities are computed using the current value functions 
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>v_curr</strong> (tensor) - State values for some observed states.</li>
+<li><strong>v_value</strong> (tensor) - State values for some observed states.</li>
 <li><strong>log_probs</strong> (tensor) - Log-density of actions sampled from the current policy.</li>
-<li><strong>q_curr</strong> (tensor) - Action values of the actions for the current policy.</li>
+<li><strong>q_value</strong> (tensor) - Action values of the actions for the current policy.</li>
 <li><strong>alpha</strong> (float, <em>optional</em>, default=1.0) - Entropy weight.</li>
 </ul>
 <p><strong>Returns</strong></p>
@@ -399,11 +533,11 @@ action values, and log-densities are computed using the current value functions 
 <pre><code class="python">densities = policy(batch.state())
 actions = densities.sample()
 log_probs = densities.log_prob(actions)
-q_curr = qf(batch.state(), actions)
-v_curr = vf(batch.state())
-loss = state_value_loss(v_curr,
+q_value = qf(batch.state(), actions)
+v_value = vf(batch.state())
+loss = state_value_loss(v_value,
                         log_probs,
-                        q_curr,
+                        q_value,
                         alpha=0.1)
 </code></pre>
 
@@ -451,6 +585,8 @@ loss = entropy_weight_loss(alpha.log(),
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../../js/base.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js" defer></script>
         <script src="../../search/main.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">

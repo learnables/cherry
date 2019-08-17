@@ -5,14 +5,15 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        
-        
+        <meta name="author" content="Seb Arnold">
+        <link rel="canonical" href="http://cherry-rl.net/docs/cherry.envs/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
         <title>cherry.envs - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -22,7 +23,16 @@
         <script src="../../js/jquery-1.10.2.min.js" defer></script>
         <script src="../../js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
+        <script>hljs.initHighlightingOnLoad();</script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-68693545-3', 'seba-1511.github.com');
+            ga('send', 'pageview');
+        </script> 
     </head>
 
     <body>
@@ -195,7 +205,7 @@
     environment (False).</li>
 </ul>
 <h1 id="wrapper">Wrapper</h1>
-<pre><code class="python">Wrapper(self, env)
+<pre><code class="python">Wrapper(env)
 </code></pre>
 
 <p>This class allows to chain Environment Wrappers while still being able to
@@ -207,24 +217,24 @@ env = envs.Runner(env)
 env.log('asdf', 23)  # Uses log() method from envs.Logger.
 </code></pre>
 <h1 id="runner">Runner</h1>
-<pre><code class="python">Runner(self, env)
+<pre><code class="python">Runner(env)
 </code></pre>
 
 <p>Runner wrapper.</p>
 <p>TODO: When is_vectorized and using episodes=n, use the parallel
 environmnents to sample n episodes, and stack them inside a flat replay.</p>
 <h2 id="run">run</h2>
-<pre><code class="python">Runner.run(self, get_action, steps=None, episodes=None, render=False)
+<pre><code class="python">Runner.run(get_action, steps=None, episodes=None, render=False)
 </code></pre>
 
 <p>Runner wrapper's run method.</p>
 <h1 id="logger">Logger</h1>
-<pre><code class="python">Logger(self, env, interval=1000, episode_interval=10, title=None, logger=None)
+<pre><code class="python">Logger(env, interval=1000, episode_interval=10, title=None, logger=None)
 </code></pre>
 
 <p>Tracks and prints some common statistics about the environment.</p>
 <h1 id="recorder">Recorder</h1>
-<pre><code class="python">Recorder(self, env, directory='./videos/', format='gif', suffix=None)
+<pre><code class="python">Recorder(env, directory='./videos/', format='gif', suffix=None)
 </code></pre>
 
 <p><a href="">[Source]</a></p>
@@ -252,12 +262,17 @@ env.run(get_action, episodes=3, render=True)
 </code></pre>
 
 <h2 id="close">close</h2>
-<pre><code class="python">Recorder.close(self)
+<pre><code class="python">Recorder.close()
 </code></pre>
 
 <p>Flush all monitor data to disk and close any open rending windows</p>
 <h1 id="visdomlogger">VisdomLogger</h1>
-<pre><code class="python">VisdomLogger(self, env, interval=1000, episode_interval=10, render=True, title=None, logger=None)
+<pre><code class="python">VisdomLogger(env,
+             interval=1000,
+             episode_interval=10,
+             render=True,
+             title=None,
+             logger=None)
 </code></pre>
 
 <p>Enables logging and debug values to Visdom.</p>
@@ -267,7 +282,7 @@ env.run(get_action, episodes=3, render=True)
 <li>interval: (int) Update frequency for episodes.</li>
 </ul>
 <h1 id="torch">Torch</h1>
-<pre><code class="python">Torch(self, env)
+<pre><code class="python">Torch(env)
 </code></pre>
 
 <p>This wrapper converts
@@ -277,7 +292,13 @@ env.run(get_action, episodes=3, render=True)
     action = Categorical(Tensor([1, 2, 3])).sample()
     env.step(action)</p>
 <h1 id="normalizer">Normalizer</h1>
-<pre><code class="python">Normalizer(self, env, states=True, rewards=True, clip_states=10.0, clip_rewards=10.0, gamma=0.99, eps=1e-08)
+<pre><code class="python">Normalizer(env,
+           states=True,
+           rewards=True,
+           clip_states=10.0,
+           clip_rewards=10.0,
+           gamma=0.99,
+           eps=1e-08)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/normalizer_wrapper.py">[Source]</a></p>
@@ -308,40 +329,40 @@ env = cherry.envs.Normalizer(env,
 </code></pre>
 
 <h1 id="rewardclipper">RewardClipper</h1>
-<pre><code class="python">RewardClipper(self, env)
+<pre><code class="python">RewardClipper(env)
 </code></pre>
 
 <h2 id="reward">reward</h2>
-<pre><code class="python">RewardClipper.reward(self, reward)
+<pre><code class="python">RewardClipper.reward(reward)
 </code></pre>
 
 <p>Bin reward to {+1, 0, -1} by its sign.</p>
 <h1 id="monitor">Monitor</h1>
-<pre><code class="python">Monitor(self, env, directory, *args, **kwargs)
+<pre><code class="python">Monitor(env, directory, *args, **kwargs)
 </code></pre>
 
 <p>Sugar coating on top of Gym's Monitor.</p>
 <h1 id="openaiatari">OpenAIAtari</h1>
-<pre><code class="python">OpenAIAtari(self, env)
+<pre><code class="python">OpenAIAtari(env)
 </code></pre>
 
 <h1 id="addtimestep">AddTimestep</h1>
-<pre><code class="python">AddTimestep(self, env=None)
+<pre><code class="python">AddTimestep(env=None)
 </code></pre>
 
 <p>Adds a timestep information to the state input.</p>
 <p>Modified from Ilya Kostrikov's implementation:</p>
 <p>https://github.com/ikostrikov/pytorch-a2c-ppo-acktr/</p>
 <h1 id="statelambda">StateLambda</h1>
-<pre><code class="python">StateLambda(self, env, fn)
+<pre><code class="python">StateLambda(env, fn)
 </code></pre>
 
 <h1 id="actionlambda">ActionLambda</h1>
-<pre><code class="python">ActionLambda(self, env, fn)
+<pre><code class="python">ActionLambda(env, fn)
 </code></pre>
 
 <h1 id="actionspacescaler">ActionSpaceScaler</h1>
-<pre><code class="python">ActionSpaceScaler(self, env, clip=1.0)
+<pre><code class="python">ActionSpaceScaler(env, clip=1.0)
 </code></pre>
 
 <p>Scales the action space to be in the range (-clip, clip).</p>
@@ -358,6 +379,8 @@ https://github.com/vitchyr/rlkit/blob/master/rlkit/envs/wrappers.py#L41</p></div
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../../js/base.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js" defer></script>
         <script src="../../search/main.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
