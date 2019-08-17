@@ -69,7 +69,7 @@ def state_value_loss(values, rewards):
 
     **References**
 
-    1. A3C paper
+    1. Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.” arXiv [cs.LG].
 
     **Arguments**
 
