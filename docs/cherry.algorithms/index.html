@@ -312,7 +312,7 @@ value_loss = ppo.state_value_loss(values,
 <p>
 <script type="math/tex; mode=display">
 \max_\theta \quad \mathbb{E}\left[ \frac{\pi_\theta}{\pi_\text{old}} \cdot A  \right] \\
-\text{subject to} \quad \mathbb{E}\left[ \text{KL}(\pi_\text{old} \vert \vert \pi_\theta) \leq \delta \right].
+\text{subject to} \quad D_\text{KL}(\pi_\text{old} \vert \vert \pi_\theta) \leq \delta.
 </script>
 </p>
 <h2 id="policy_loss_2">policy_loss</h2>
@@ -361,13 +361,6 @@ loss = policy_loss(new_logprobs,
 (w.r.t. parameters) with another vector, using Pearlmutter's trick.</p>
 <p>Note that parameters and the argument of the callable can be tensors
 or list of tensors.</p>
-<p>TODO: The reshaping (if arguments are lists) is not efficiently implemented.
-      (It requires a copy) A good idea would be to have
-      vector_to_shapes(vec, shapes) or similar.</p>
-<p>NOTE: We can not compute the grads with a vector version of the parameters,
-      since that vector (created within the function) will be a different
-      tree that is was not used in the computation of the loss.
-      (i.e. you get 'One of the differentiated tensors was not used.')</p>
 <p><strong>References</strong></p>
 <ol>
 <li>Pearlmutter, B. A. 1994. “Fast Exact Multiplication by the Hessian.” Neural Computation.</li>
@@ -393,12 +386,13 @@ or list of tensors.</p>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
 <p><strong>Description</strong></p>
-<p>Computes x = A^{-1}b using the conjugate gradient algorithm.</p>
+<p>Computes <script type="math/tex">x = A^{-1}b</script> using the conjugate gradient algorithm.</p>
 <p><strong>References</strong></p>
 <ol>
-<li>Nocedal and Wright. 2006. Numerical Optimization, 2nd edition. Springer.</li>
-<li><a href="https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py">https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py</a></li>
-<li><a href="https://github.com/tristandeleu/pytorch-maml-rl">https://github.com/tristandeleu/pytorch-maml-rl</a></li>
+<li>Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.</li>
+<li>John Schulman. 2015. "Implementation of TRPO and related algorithms". GitHub.
+    <a href="https://github.com/joschu/modular_rl/blob/master/modular_rl/trpo.py#L122">Link</a></li>
+<li>Kai Arulkumaran. 2019. "Basic versions of agents from Spinning Up in Deep RL written in PyTorch". GitHub. <a href="https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py">Link</a></li>
 </ol>
 <p><strong>Arguments</strong></p>
 <ul>
