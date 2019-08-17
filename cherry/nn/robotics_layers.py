@@ -20,7 +20,7 @@ class RoboticsLinear(nn.Linear):
     **Arguments**
 
 
-    * **gain** (float, *optional*) - Gain factor passed to `kostrikov_robotics_` initialization.
+    * **gain** (float, *optional*) - Gain factor passed to `robotics_init_` initialization.
     * This class extends `nn.Linear` and supports all of its arguments.
 
     **Example**
