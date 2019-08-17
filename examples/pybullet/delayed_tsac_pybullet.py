@@ -122,7 +122,7 @@ def update(env,
     # Entropy weight loss
     if USE_AUTOMATIC_ENTROPY_TUNING:
         alpha_loss = sac.entropy_weight_loss(log_alpha,
-                                             log_probs,
+                                             log_probs.detach(),
                                              target_entropy)
         alpha_optimizer.zero_grad()
         alpha_loss.backward()
@@ -142,20 +142,20 @@ def update(env,
     next_actions, next_log_probs = density.rsample_and_log_prob()
     next_log_probs = log_probs.sum(dim=1, keepdim=True)
 
-    target_q_values = th.min(  target_qf1(batch.next_state(), next_actions),
-                               target_qf2(batch.next_state(), next_actions)   ) - alpha * next_log_probs
+    target_q_values = th.min(target_qf1(batch.next_state(), next_actions),
+                             target_qf2(batch.next_state(), next_actions)) - alpha * next_log_probs
 
-    critic_qf1_loss = sac.action_value_loss(  qf1_estimate, 
-                                       target_q_values, 
-                                       batch.reward(), 
-                                       batch.done(),
-                                       DISCOUNT_FACTOR  )
+    critic_qf1_loss = sac.action_value_loss(qf1_estimate, 
+                                            target_q_values.detach(),
+                                            batch.reward(),
+                                            batch.done(),
+                                            DISCOUNT_FACTOR)
 
-    critic_qf2_loss = sac.action_value_loss(  qf2_estimate,
-                                       target_q_values, 
-                                       batch.reward(),
-                                       batch.done(),
-                                       DISCOUNT_FACTOR  )
+    critic_qf2_loss = sac.action_value_loss(qf2_estimate,
+                                            target_q_values.detach(),
+                                            batch.reward(),
+                                            batch.done(),
+                                            DISCOUNT_FACTOR)
 
     
     # Log debugging values

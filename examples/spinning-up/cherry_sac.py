@@ -176,12 +176,12 @@ def main(env='Pendulum-v0'):
                                    old_actions.detach()
                                    ).view(-1, 1)
             qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
-                                                         v_next,
+                                                         v_next.detach(),
                                                          rewards,
                                                          dones,
                                                          DISCOUNT)
             qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
-                                                         v_next,
+                                                         v_next.detach(),
                                                          rewards,
                                                          dones,
                                                          DISCOUNT)
@@ -195,8 +195,8 @@ def main(env='Pendulum-v0'):
             # Update V-function by one step of gradient descent
             v_pred = value_critic(batch.state()).view(-1, 1)
             vloss = ch.algorithms.sac.state_value_loss(v_pred,
-                                                       log_probs,
-                                                       q_values,
+                                                       log_probs.detach(),
+                                                       q_values.detach(),
                                                        alpha=ENTROPY_WEIGHT)
             value_critic_optimiser.zero_grad()
             vloss.backward()

@@ -21,6 +21,7 @@ For an example of such implementation refer to
 
 import torch as th
 from torch.nn import functional as F
+from cherry import debug
 
 
 def policy_loss(log_probs, q_curr, alpha=1.0):
@@ -68,7 +69,7 @@ def policy_loss(log_probs, q_curr, alpha=1.0):
     return th.mean(alpha * log_probs - q_curr)
 
 
-def action_value_loss(q_old, v_next, rewards, dones, gamma):
+def action_value_loss(value, next_value, rewards, dones, gamma):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
 
@@ -76,8 +77,11 @@ def action_value_loss(q_old, v_next, rewards, dones, gamma):
 
     The action-value loss of the Soft Actor-Critic.
 
-    For a given transition, the Q-values and V-values are recomputed on the actual transition data.
-    The we should not back-propagate through the V-values, and often use a target network for them.
+    `value` should be the value of the current state-action pair, estimated via the Q-function.
+    `next_value` is the expected value of the next state; it can be estimated via a V-function,
+    or alternatively by computing the Q-value of the next observed state-action pair.
+    In the latter case, make sure that the action is sampled according to the current policy,
+    not the one used to gather the data.
 
     **References**
 
@@ -86,8 +90,8 @@ def action_value_loss(q_old, v_next, rewards, dones, gamma):
 
     **Arguments**
 
-    * **q_old** (tensor) - Action values of the actual transition.
-    * **v_next** (tensor) - State values of the resulting state.
+    * **value** (tensor) - Action values of the actual transition.
+    * **next_value** (tensor) - State values of the resulting state.
     * **rewards** (tensor) - Observed rewards of the transition.
     * **dones** (tensor) - Which states were terminal.
     * **gamma** (float) - Discount factor.
@@ -99,23 +103,30 @@ def action_value_loss(q_old, v_next, rewards, dones, gamma):
     **Example**
 
     ~~~python
-    q_old = qf(batch.state(), batch.action().detach())
-    v_next = targe_vf(batch.next_state())
-    loss = action_value_loss(q_old,
-                             v_next,
+    value = qf(batch.state(), batch.action().detach())
+    next_value = targe_vf(batch.next_state())
+    loss = action_value_loss(value,
+                             next_value,
                              batch.reward(),
                              batch.done(),
                              gamma=0.99)
     ~~~
 
     """
-    msg = 'v_next, rewards, and dones must have equal size.'
-    assert rewards.size() == dones.size() == v_next.size(), msg
-    q_target = rewards + (1.0 - dones) * gamma * v_next
-    return F.mse_loss(q_old, q_target.detach())
+    msg = 'next_value, rewards, and dones must have equal size.'
+    assert rewards.size() == dones.size() == next_value.size(), msg
+    if debug.IS_DEBUGGING:
+        if rewards.requires_grad:
+            debug.logger.warning('SAC:action_value_loss: rewards.requires_grad is True.')
+        if next_value.requires_grad:
+            debug.logger.warning('SAC:action_value_loss: next_value.requires_grad is True.')
+        if not value.requires_grad:
+            debug.logger.warning('SAC:action_value_loss: value.requires_grad is False.')
+    q_target = rewards + (1.0 - dones) * gamma * next_value
+    return F.mse_loss(value, q_target)
 
 
-def state_value_loss(v_curr, log_probs, q_curr, alpha=1.0):
+def state_value_loss(v_value, log_probs, q_value, alpha=1.0):
     """
     [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
 
@@ -133,9 +144,9 @@ def state_value_loss(v_curr, log_probs, q_curr, alpha=1.0):
 
     **Arguments**
 
-    * **v_curr** (tensor) - State values for some observed states.
+    * **v_value** (tensor) - State values for some observed states.
     * **log_probs** (tensor) - Log-density of actions sampled from the current policy.
-    * **q_curr** (tensor) - Action values of the actions for the current policy.
+    * **q_value** (tensor) - Action values of the actions for the current policy.
     * **alpha** (float, *optional*, default=1.0) - Entropy weight.
 
     **Returns**
@@ -148,19 +159,26 @@ def state_value_loss(v_curr, log_probs, q_curr, alpha=1.0):
     densities = policy(batch.state())
     actions = densities.sample()
     log_probs = densities.log_prob(actions)
-    q_curr = qf(batch.state(), actions)
-    v_curr = vf(batch.state())
-    loss = state_value_loss(v_curr,
+    q_value = qf(batch.state(), actions)
+    v_value = vf(batch.state())
+    loss = state_value_loss(v_value,
                             log_probs,
-                            q_curr,
+                            q_value,
                             alpha=0.1)
     ~~~
 
     """
-    msg = 'v_curr, q_curr, and log_probs must have equal size.'
-    assert v_curr.size() == q_curr.size() == log_probs.size(), msg
-    v_target = q_curr - alpha * log_probs
-    return F.mse_loss(v_curr, v_target.detach())
+    msg = 'v_value, q_value, and log_probs must have equal size.'
+    assert v_value.size() == q_value.size() == log_probs.size(), msg
+    if debug.IS_DEBUGGING:
+        if log_probs.requires_grad:
+            debug.logger.warning('SAC:state_value_loss: log_probs.requires_grad is True.')
+        if q_value.requires_grad:
+            debug.logger.warning('SAC:state_value_loss: q_value.requires_grad is True.')
+        if not v_value.requires_grad:
+            debug.logger.warning('SAC:state_value_loss: v_value.requires_grad is False.')
+    v_target = q_value - alpha * log_probs
+    return F.mse_loss(v_value, v_target)
 
 
 def entropy_weight_loss(log_alpha, log_probs, target_entropy):
@@ -202,5 +220,12 @@ def entropy_weight_loss(log_alpha, log_probs, target_entropy):
     ~~~
 
     """
-    loss = -(log_alpha * (log_probs + target_entropy).detach())
+    msg = 'v_value, q_value, and log_probs must have equal size.'
+    assert log_alpha.size() == log_probs.size(), msg
+    if debug.IS_DEBUGGING:
+        if log_probs.requires_grad:
+            debug.logger.warning('SAC:entropy_weight_loss: log_probs.requires_grad is True.')
+        if not log_alpha.requires_grad:
+            debug.logger.warning('SAC:entropy_weight_loss: log_alpha.requires_grad is False.')
+    loss = -(log_alpha * (log_probs + target_entropy))
     return loss.mean()

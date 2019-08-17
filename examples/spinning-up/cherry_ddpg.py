@@ -121,7 +121,7 @@ def main(env='Pendulum-v0'):
                                         ).view(-1, 1)
             values = critic(batch.state(), batch.action()).view(-1, 1)
             value_loss = ch.algorithms.ddpg.state_value_loss(values,
-                                                             next_values,
+                                                             next_values.detach(),
                                                              batch.reward(),
                                                              batch.done(),
                                                              DISCOUNT)

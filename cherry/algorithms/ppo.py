@@ -7,6 +7,7 @@ Helper functions for implementing PPO.
 """
 
 import torch as th
+from cherry import debug
 
 
 def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
@@ -52,6 +53,13 @@ def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
     msg = 'new_log_probs, old_log_probs and advantages must have equal size.'
     assert new_log_probs.size() == old_log_probs.size() == advantages.size(),\
         msg
+    if debug.IS_DEBUGGING:
+        if old_log_probs.requires_grad:
+            debug.logger.warning('PPO:policy_loss: old_log_probs.requires_grad is True.')
+        if advantages.requires_grad:
+            debug.logger.warning('PPO:policy_loss: advantages.requires_grad is True.')
+        if not new_log_probs.requires_grad:
+            debug.logger.warning('PPO:policy_loss: new_log_probs.requires_grad is False.')
     ratios = th.exp(new_log_probs - old_log_probs)
     obj = ratios * advantages
     obj_clip = ratios.clamp(1.0 - clip, 1.0 + clip) * advantages
@@ -93,6 +101,13 @@ def state_value_loss(new_values, old_values, rewards, clip=0.1):
     """
     msg = 'new_values, old_values, and rewards must have equal size.'
     assert new_values.size() == old_values.size() == rewards.size(), msg
+    if debug.IS_DEBUGGING:
+        if old_values.requires_grad:
+            debug.logger.warning('PPO:state_value_loss: old_values.requires_grad is True.')
+        if rewards.requires_grad:
+            debug.logger.warning('PPO:state_value_loss: rewards.requires_grad is True.')
+        if not new_values.requires_grad:
+            debug.logger.warning('PPO:state_value_loss: new_values.requires_grad is False.')
     loss = (rewards - new_values)**2
     clipped_values = old_values + (new_values - old_values).clamp(-clip, clip)
     clipped_loss = (rewards - clipped_values)**2

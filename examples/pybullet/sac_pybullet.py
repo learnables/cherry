@@ -115,7 +115,7 @@ def update(env,
     # Entropy weight loss
     if USE_AUTOMATIC_ENTROPY_TUNING:
         alpha_loss = sac.entropy_weight_loss(log_alpha,
-                                             log_probs,
+                                             log_probs.detach(),
                                              target_entropy)
         alpha_opt.zero_grad()
         alpha_loss.backward()
@@ -129,7 +129,7 @@ def update(env,
     q_old_pred = qf(batch.state(), batch.action().detach())
     v_next = target_vf(batch.next_state())
     qf_loss = sac.action_value_loss(q_old_pred,
-                                    v_next,
+                                    v_next.detach(),
                                     batch.reward(),
                                     batch.done(),
                                     GAMMA)
@@ -137,7 +137,7 @@ def update(env,
     # VF loss
     v_pred = vf(batch.state())
     q_values = qf(batch.state(), actions)
-    vf_loss = sac.state_value_loss(v_pred, log_probs, q_values, alpha)
+    vf_loss = sac.state_value_loss(v_pred, log_probs.detach(), q_values.detach(), alpha)
 
     # Policy loss
     policy_loss = sac.policy_loss(log_probs, q_values, alpha)

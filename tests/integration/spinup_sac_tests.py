@@ -278,12 +278,12 @@ def train_cherry():
             q_old_pred1 = critic_1(batch.state(), batch.action().detach()).view(-1, 1)
             q_old_pred2 = critic_2(batch.state(), batch.action().detach()).view(-1, 1)
             qloss1 = ch.algorithms.sac.action_value_loss(q_old_pred1,
-                                                         v_next,
+                                                         v_next.detach(),
                                                          batch.reward(),
                                                          batch.done(),
                                                          DISCOUNT)
             qloss2 = ch.algorithms.sac.action_value_loss(q_old_pred2,
-                                                         v_next,
+                                                         v_next.detach(),
                                                          batch.reward(),
                                                          batch.done(),
                                                          DISCOUNT)
@@ -298,8 +298,8 @@ def train_cherry():
             # Update V-function by one step of gradient descent
             v_pred = value_critic(batch.state()).view(-1, 1)
             vloss = ch.algorithms.sac.state_value_loss(v_pred,
-                                                       log_probs,
-                                                       q_values,
+                                                       log_probs.detach(),
+                                                       q_values.detach(),
                                                        alpha=ENTROPY_WEIGHT)
             value_critic_optimiser.zero_grad()
             vloss.backward()

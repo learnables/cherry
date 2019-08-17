@@ -17,6 +17,7 @@ generate:
 - docs/cherry.algorithms.md:
     - cherry.algorithms.a2c++
     - cherry.algorithms.ppo++
+    - cherry.algorithms.trpo++
     - cherry.algorithms.sac++
 - docs/cherry.envs.md:
     - cherry.envs.utils++

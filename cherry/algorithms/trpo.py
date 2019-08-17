@@ -10,6 +10,8 @@ import torch as th
 from torch import autograd
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
 
+from cherry import debug
+
 
 def policy_loss(new_log_probs, old_log_probs, advantages):
     """
@@ -53,6 +55,13 @@ def policy_loss(new_log_probs, old_log_probs, advantages):
     """
     msg = 'log_probs and advantages must have equal size.'
     assert new_log_probs.size() == old_log_probs.size() == advantages.size(), msg
+    if debug.IS_DEBUGGING:
+        if old_log_probs.requires_grad:
+            debug.logger.warning('TRPO:policy_loss: old_log_probs.requires_grad is True.')
+        if advantages.requires_grad:
+            debug.logger.warning('TRPO:policy_loss: advantages.requires_grad is True.')
+        if not new_log_probs.requires_grad:
+            debug.logger.warning('TRPO:policy_loss: new_log_probs.requires_grad is False.')
     ratio = th.exp(new_log_probs - old_log_probs)
     return - th.mean(ratio * advantages)
 

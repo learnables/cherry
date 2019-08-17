@@ -7,6 +7,7 @@ Helper functions for implementing A2C.
 """
 
 import torch as th
+from cherry import debug
 
 
 def policy_loss(log_probs, advantages):
@@ -42,6 +43,11 @@ def policy_loss(log_probs, advantages):
     """
     msg = 'log_probs and advantages must have equal size.'
     assert log_probs.size() == advantages.size(), msg
+    if debug.IS_DEBUGGING:
+        if advantages.requires_grad:
+            debug.logger.warning('A2C:policy_loss: advantages.requires_grad is True.')
+        if not log_probs.requires_grad:
+            debug.logger.warning('A2C:policy_loss: log_probs.requires_grad is False.')
     return -th.mean(log_probs * advantages)
 
 
@@ -71,11 +77,16 @@ def state_value_loss(values, rewards):
     **Example**
 
     ~~~python
-    values = replay.value
-    rewards = replay.reward
+    values = replay.value()
+    rewards = replay.reward()
     loss = a2c.state_value_loss(values, rewards)
     ~~~
     """
     msg = 'values and rewards must have equal size.'
     assert values.size() == rewards.size(), msg
+    if debug.IS_DEBUGGING:
+        if rewards.requires_grad:
+            debug.logger.warning('A2C:state_value_loss: rewards.requires_grad is True.')
+        if not values.requires_grad:
+            debug.logger.warning('A2C:state_value_loss: values.requires_grad is False.')
     return (rewards - values).pow(2).mean()
