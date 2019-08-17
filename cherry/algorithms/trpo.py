@@ -3,7 +3,16 @@
 """
 **Description**
 
-Helper functions for implementing TRPO.
+Helper functions for implementing Trust-Region Policy Optimization.
+
+Recall that TRPO strives to solve the following objective:
+
+$$
+\\max_\\theta \\quad \\mathbb{E}\\left[ \\frac{\\pi_\\theta}{\\pi_\\text{old}} \\cdot A  \\right] \\\\
+\\text{subject to} \\quad \\mathbb{E}\\left[ \\text{KL}(\pi_\\text{old} \\vert \\vert \\pi_\\theta) \\leq \\delta \\right].
+$$
+
+
 """
 
 import torch as th

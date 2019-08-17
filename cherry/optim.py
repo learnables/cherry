@@ -51,7 +51,7 @@ class Distributed(Optimizer):
 
     """
 
-    def __init__(self, params=required, opt=required, sync=None):
+    def __init__(self, params, opt, sync=None):
         self.world_size = dist.get_world_size()
         self.rank = dist.get_rank()
         self.opt = opt
