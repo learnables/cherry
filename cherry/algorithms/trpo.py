@@ -153,12 +153,14 @@ def conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-8):
 
     Computes \\(x = A^{-1}b\\) using the conjugate gradient algorithm.
 
+    **Credit**
+
+    Adapted from Kai Arulkumaran's implementation, with additions inspired from John Schulman's implementation.
+
     **References**
 
     1. Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.
-    2. John Schulman. 2015. "Implementation of TRPO and related algorithms". GitHub.
-        [Link](https://github.com/joschu/modular_rl/blob/master/modular_rl/trpo.py#L122)
-    3. Kai Arulkumaran. 2019. "Basic versions of agents from Spinning Up in Deep RL written in PyTorch". GitHub. [Link](https://github.com/Kaixhin/spinning-up-basic/blob/master/trpo.py)
+    2. Shewchuk et al. 1994. “An Introduction to the Conjugate Gradient Method without the Agonizing Pain.” CMU.
 
     **Arguments**
 
