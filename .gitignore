@@ -115,6 +115,7 @@ examples/videos/*
 benchmarks/wandb/**
 examples/simple_rl/results/**
 examples/bsuite/logs/**
+examples/bsuite/figs/**
 
 # ignore .idea 
 *.idea
