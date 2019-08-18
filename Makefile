@@ -74,7 +74,7 @@ tabular-q:
 # bsuite
 
 bsuite:
-	python examples/bsuite/random_bsuite.py
+	python examples/bsuite/trpo_v_random.py
 
 
 # Admin
