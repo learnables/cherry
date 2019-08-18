@@ -175,13 +175,11 @@ def make_plots():
 
     # Generate general plots
     radar_fig = summary_analysis.bsuite_radar_plot(bsuite_summary, sweep_vars)
+    radar_fig.savefig(PLOTS_PATH + 'radar_fig.png', bbox_inches='tight')
     bar_fig = summary_analysis.bsuite_bar_plot(bsuite_score, sweep_vars)
+    bar_fig.save(PLOTS_PATH + 'bar_fig.png')
     compare_bar_fig = summary_analysis.bsuite_bar_plot_compare(bsuite_score,
                                                                sweep_vars)
-
-    radar_fig.tight_layout(pad=0.0, w_pad=0.0, h_pad=-10.0)
-    radar_fig.savefig(PLOTS_PATH + 'radar_fig.png', bbox_inches='tight')
-    bar_fig.save(PLOTS_PATH + 'bar_fig.png')
     compare_bar_fig.save(PLOTS_PATH + 'compare_bar_fig.png')
 
     # Generate specific analyses

@@ -6,6 +6,7 @@ The examples in this folder demonstrate how to interface cherry with DeepMind's 
 
 * cherry: `pip install cherry-rl`
 * bsuite: `pip install git+git://github.com/deepmind/bsuite.git`
+* tqdm: `pip install tqdm`
 
 ## Examples Descriptions
 
