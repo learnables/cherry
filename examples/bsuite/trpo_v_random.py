@@ -205,7 +205,7 @@ def make_plots():
 
     # Robustness to reward scaling
     from bsuite.experiments.bandit_scale import analysis as bandit_scale_analysis
-    bandit_scale_df = df[df.bsuite_env == 'bandit_scale'].copy()
+    bandit_scale_df = data_frame[data_frame.bsuite_env == 'bandit_scale'].copy()
     bandit_scale_overall = summary_analysis.plot_single_experiment(bsuite_score, 'bandit_scale', sweep_vars)
     bandit_scale_overall.save(PLOTS_PATH + 'bandits_scale_overall.png')
     bandit_scale_avg = bandit_scale_analysis.plot_average(bandit_scale_df, sweep_vars)
