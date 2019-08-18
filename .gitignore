@@ -114,6 +114,7 @@ logs/*
 examples/videos/*
 benchmarks/wandb/**
 examples/simple_rl/results/**
+examples/bsuite/logs/**
 
 # ignore .idea 
 *.idea
