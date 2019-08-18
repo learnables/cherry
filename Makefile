@@ -71,6 +71,10 @@ tabular-s:
 tabular-q:
 	python examples/tabular/q_learning.py
 
+# bsuite
+
+bsuite:
+	python examples/bsuite/random_bsuite.py
 
 
 # Admin

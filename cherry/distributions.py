@@ -102,7 +102,6 @@ class ActionDistribution(nn.Module):
 
     def __init__(self, env, logstd=None, use_probs=False, reparam=False):
         super(ActionDistribution, self).__init__()
-        self.env = env
         self.use_probs = use_probs
         self.reparam = reparam
         self.is_discrete = env.discrete_action
