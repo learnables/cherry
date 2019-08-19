@@ -150,6 +150,8 @@ class Normalizer(Wrapper):
             self.ret_rms.update(self.ret)
             std = np.sqrt(self.ret_rms.var + self.eps)
             reward = np.clip(reward / std, -self.cliprew, self.cliprew)[0, 0]
-        if done:
+        if self.is_vectorized:
+            self.ret = self.ret * (1.0 - done)
+        else:
             self.ret = self.ret * 0.0
         return state, reward, done, info
