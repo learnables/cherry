@@ -22,10 +22,6 @@ class Torch(Wrapper):
         env.step(action)
     """
 
-    def __init__(self, env):
-        super(Torch, self).__init__(env)
-        self.is_vectorized = is_vectorized(self)
-
     def _convert_state(self, state):
         if isinstance(state, (float, int)):
             state = ch.totensor(state)

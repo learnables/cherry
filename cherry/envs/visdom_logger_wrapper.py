@@ -150,21 +150,22 @@ class VisdomLogger(Logger):
                 except Exception:
                     pass
 
-        # Should record ?
-        if self.num_episodes % self.ep_interval == 0:
-            if self.discrete_actions:
-                action = ch.onehot(action, dim=self.action_size)[0]
-            self.ep_actions.append(action)
-            if self.render and self.can_record:
-                frame = self.env.render(mode='rgb_array')
-                self.ep_renders.append(frame)
+        if not self.is_vectorized:
+            # Should record ?
+            if self.num_episodes % self.ep_interval == 0:
+                if self.discrete_actions:
+                    action = ch.onehot(action, dim=self.action_size)[0]
+                self.ep_actions.append(action)
+                if self.render and self.can_record:
+                    frame = self.env.render(mode='rgb_array')
+                    self.ep_renders.append(frame)
 
-        # Done recording ?
-        if done and (self.num_episodes - 1) % self.ep_interval == 0:
-            self.full_ep_actions = self.ep_actions
-            self.ep_actions = []
-            self.full_ep_renders = self.ep_renders
-            self.ep_renders = []
+            # Done recording ?
+            if done and (self.num_episodes - 1) % self.ep_interval == 0:
+                self.full_ep_actions = self.ep_actions
+                self.ep_actions = []
+                self.full_ep_renders = self.ep_renders
+                self.ep_renders = []
 
         return state, reward, done, info
 

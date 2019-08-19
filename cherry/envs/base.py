@@ -20,6 +20,10 @@ class Wrapper(gym.Wrapper):
     """
 
     @property
+    def is_vectorized(self):
+        return is_vectorized(self)
+
+    @property
     def discrete_action(self):
         return is_discrete(self.action_space)
 
