@@ -16,7 +16,7 @@ from gym.spaces import Box, Discrete, Dict, Tuple
 
 
 def is_vectorized(env):
-    return hasattr(env, 'num_envs')
+    return hasattr(env, 'num_envs') and env.num_envs > 1
 
 
 def is_discrete(space, vectorized=False):
