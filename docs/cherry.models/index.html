@@ -5,15 +5,14 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <meta name="author" content="Seb Arnold">
-        <link rel="canonical" href="http://cherry-rl.net/docs/cherry.models/">
+        
+        
         <link rel="shortcut icon" href="../../img/favicon.ico">
         <title>cherry.models - cherry</title>
         <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <link href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" rel="stylesheet">
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -23,16 +22,7 @@
         <script src="../../js/jquery-1.10.2.min.js" defer></script>
         <script src="../../js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-            ga('create', 'UA-68693545-3', 'seba-1511.github.com');
-            ga('send', 'pageview');
-        </script> 
+        <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
@@ -173,7 +163,7 @@
 
 <h1 id="cherrymodelsutils">cherry.models.utils</h1>
 <h2 id="randompolicy">RandomPolicy</h2>
-<pre><code class="python">RandomPolicy(env, *args, **kwargs)
+<pre><code class="python">RandomPolicy(self, env, *args, **kwargs)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py">[Source]</a></p>
@@ -216,7 +206,7 @@ ch.models.polyak_average(target_qf, qf, alpha=0.9)
 
 <h1 id="cherrymodelstabular">cherry.models.tabular</h1>
 <h2 id="statevaluefunction">StateValueFunction</h2>
-<pre><code class="python">StateValueFunction(state_size, init=None)
+<pre><code class="python">StateValueFunction(self, state_size, init=None)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py">[Source]</a></p>
@@ -243,7 +233,7 @@ state_value = vf(state)
 </code></pre>
 
 <h2 id="actionvaluefunction">ActionValueFunction</h2>
-<pre><code class="python">ActionValueFunction(state_size, action_size, init=None)
+<pre><code class="python">ActionValueFunction(self, state_size, action_size, init=None)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py">[Source]</a></p>
@@ -275,7 +265,7 @@ action_value = qf(state, action)
 
 <h1 id="cherrymodelsatari">cherry.models.atari</h1>
 <h2 id="naturefeatures">NatureFeatures</h2>
-<pre><code class="python">NatureFeatures(input_size=4, hidden_size=512)
+<pre><code class="python">NatureFeatures(self, input_size=4, hidden_size=512)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py">[Source]</a></p>
@@ -296,7 +286,7 @@ action_value = qf(state, action)
   representation.</li>
 </ul>
 <h2 id="natureactor">NatureActor</h2>
-<pre><code class="python">NatureActor(input_size, output_size)
+<pre><code class="python">NatureActor(self, input_size, output_size)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py">[Source]</a></p>
@@ -315,7 +305,7 @@ action_value = qf(state, action)
 <li><strong>output_size</strong> (int) - Size of the action space.</li>
 </ul>
 <h2 id="naturecritic">NatureCritic</h2>
-<pre><code class="python">NatureCritic(input_size, output_size=1)
+<pre><code class="python">NatureCritic(self, input_size, output_size=1)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py">[Source]</a></p>
@@ -335,7 +325,7 @@ action_value = qf(state, action)
 </ul>
 <h1 id="cherrymodelsrobotics">cherry.models.robotics</h1>
 <h2 id="roboticsmlp">RoboticsMLP</h2>
-<pre><code class="python">RoboticsMLP(input_size, output_size, layer_sizes=None)
+<pre><code class="python">RoboticsMLP(self, input_size, output_size, layer_sizes=None)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
@@ -358,7 +348,7 @@ action_value = qf(state, action)
 </code></pre>
 
 <h2 id="roboticsactor">RoboticsActor</h2>
-<pre><code class="python">RoboticsActor(input_size, output_size, layer_sizes=None)
+<pre><code class="python">RoboticsActor(self, input_size, output_size, layer_sizes=None)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
@@ -382,7 +372,7 @@ actions in continuous robotic environments.</p>
 </code></pre>
 
 <h2 id="linearvalue">LinearValue</h2>
-<pre><code class="python">LinearValue(input_size, reg=1e-05)
+<pre><code class="python">LinearValue(self, input_size, reg=1e-05)
 </code></pre>
 
 <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py">[Source]</a></p>
@@ -421,8 +411,6 @@ next_values = baseline(replay.next_states())
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
         <script src="../../js/base.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js" defer></script>
         <script src="../../search/main.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
