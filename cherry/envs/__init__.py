@@ -11,6 +11,8 @@ from .timestep_wrapper import AddTimestep
 from .monitor_wrapper import Monitor
 from .recorder_wrapper import Recorder
 from .normalizer_wrapper import Normalizer
+from .state_normalizer_wrapper import StateNormalizer
+from .reward_normalizer_wrapper import RewardNormalizer
 from .state_lambda_wrapper import StateLambda
 from .action_lambda_wrapper import ActionLambda
 from .action_space_scaler_wrapper import ActionSpaceScaler
