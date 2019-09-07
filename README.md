@@ -1,4 +1,4 @@
-<p align="center"><img src="https://seba-1511.github.io/cherry/assets/img/cherry_full.png" height="150px" /></p>
+<p align="center"><img src="https://cherry-rl.net/assets/img/cherry_full.png" height="150px" /></p>
 
 --------------------------------------------------------------------------------
 
