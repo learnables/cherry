@@ -220,8 +220,6 @@ def entropy_weight_loss(log_alpha, log_probs, target_entropy):
     ~~~
 
     """
-    msg = 'v_value, q_value, and log_probs must have equal size.'
-    assert log_alpha.size() == log_probs.size(), msg
     if debug.IS_DEBUGGING:
         if log_probs.requires_grad:
             debug.logger.warning('SAC:entropy_weight_loss: log_probs.requires_grad is True.')
