@@ -28,6 +28,8 @@ generate:
     - cherry.envs.visdom_logger_wrapper.VisdomLogger++
     - cherry.envs.torch_wrapper.Torch++
     - cherry.envs.normalizer_wrapper.Normalizer++
+    - cherry.envs.state_normalizer_wrapper.StateNormalizer++
+    - cherry.envs.reward_normalizer_wrapper.RewardNormalizer++
     - cherry.envs.reward_clipper_wrapper.RewardClipper++
     - cherry.envs.monitor_wrapper.Monitor++
     - cherry.envs.openai_atari_wrapper.OpenAIAtari++
@@ -77,8 +79,8 @@ pages:
     - cherry.pg: docs/cherry.pg.md
     - cherry.plot: docs/cherry.plot.md
     - cherry.td: docs/cherry.td.md
-- Examples: https://github.com/seba-1511/cherry/tree/master/examples 
-- GitHub: https://github.com/seba-1511/cherry/
+- Examples: https://github.com/learnables/cherry/tree/master/examples 
+- GitHub: https://github.com/learnables/cherry/
 
 # These options all show off their default values. You don't have to add
 # them to your configuration if you're fine with the default.
@@ -87,7 +89,7 @@ gens_dir: _build/pydocmd     # This will end up as the MkDocs 'docs_dir'
 site_dir: _build/site
 site_url: http://cherry-rl.net
 site_author: Seb Arnold
-google_analytics: ['UA-68693545-3', 'seba-1511.github.com']
+google_analytics: ['UA-68693545-3', 'learnables.github.com']
 theme:
     name: mkdocs
     custom_dir: 'cherry_theme/'

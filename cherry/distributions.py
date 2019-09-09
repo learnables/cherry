@@ -104,7 +104,7 @@ class ActionDistribution(nn.Module):
         super(ActionDistribution, self).__init__()
         self.use_probs = use_probs
         self.reparam = reparam
-        self.is_discrete = env.discrete_action
+        self.is_discrete = ch.envs.is_discrete(env.action_space)
         if not self.is_discrete:
             if logstd is None:
                 action_size = ch.envs.get_space_dimension(env.action_space)

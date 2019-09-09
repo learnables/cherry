@@ -25,9 +25,16 @@ class ActionSpaceScaler(Wrapper):
     def reset(self, *args, **kwargs):
         return self.env.reset(*args, **kwargs)
 
-    def step(self, action):
+    def _normalize(self, action):
         lb = self.env.action_space.low
         ub = self.env.action_space.high
         scaled_action = lb + (action + self.clip) * 0.5 * (ub - lb)
         scaled_action = np.clip(scaled_action, lb, ub)
-        return self.env.step(scaled_action)
+        return scaled_action
+
+    def step(self, action):
+        if self.is_vectorized:
+            action = [self._normalize(a) for a in action]
+        else:
+            action = self._normalize(action)
+        return self.env.step(action)
