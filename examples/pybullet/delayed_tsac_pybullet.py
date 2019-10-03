@@ -4,11 +4,13 @@
 An implementation of Soft Actor-Critic.
 """
 
+from OpenGL import GLU
 import copy
 import random
 import numpy as np
 import gym
 import pybullet_envs
+import roboschool
 
 import torch as th
 import torch.nn as nn
@@ -23,7 +25,7 @@ from cherry.algorithms import sac
 SEED = 42
 RENDER = False
 BATCH_SIZE = 256
-TOTAL_STEPS = 1000000
+TOTAL_STEPS = 100000000
 MIN_REPLAY = 1000
 REPLAY_SIZE = 1000000
 
@@ -260,4 +262,5 @@ if __name__ == '__main__':
     env_name = 'AntBulletEnv-v0'
     env_name = 'HalfCheetahBulletEnv-v0'
     #env_name = 'MinitaurTrottingEnv-v0'
+    env_name = 'RoboschoolAtlasForwardWalk-v1'
     main(env_name)
