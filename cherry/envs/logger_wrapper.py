@@ -148,7 +148,7 @@ class Logger(Wrapper):
         self.num_steps += 1
         if self.interval > 0 and self.num_steps % self.interval == 0:
             msg, ep_stats, steps_stats = self.stats()
-            if isinstance(info, tuple):
+            if self.is_vectorized:
                 info[0]['logger_steps_stats'] = steps_stats
                 info[0]['logger_ep_stats'] = ep_stats
             else:
