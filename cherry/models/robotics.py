@@ -155,7 +155,10 @@ class LinearValue(nn.Module):
         reg = reg.to(states.device)
         A = features.t() @ features + reg
         b = features.t() @ returns
-        coeffs, _ = th.gels(b, A)
+        if hasattr(th, 'lstsq'):  # Required for torch < 1.3.0
+            coeffs, _ = th.lstsq(b, A)
+        else:
+            coeffs, _ = th.gels(b, A)
         self.linear.weight.data = coeffs.data.t()
 
     def forward(self, states):
