@@ -19,4 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Actor-critic integration test being to finicky.
-* `cherry.onehot` support for numpy's float and integer types.
+* `cherry.onehot` support for numpy's float and integer types. (thanks @ngoby)
