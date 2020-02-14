@@ -75,6 +75,10 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 pip install cherry-rl
 ```
 
+## Changelog
+
+A human-readable changelog is available in the [CHANGELOG.md](CHANGELOG.md) file.
+
 ## Documentation
 
 Documentation and tutorials are available on cherry’s website: [http://cherry-rl.net](http://cherry-rl.net).
