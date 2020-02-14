@@ -40,7 +40,7 @@ before_install: |
     # A manual check that the correct version of Python is running.
     python --version
   fi
-  pip install -U pip && pip install --progress-bar off torch==${TORCH} pillow==6.2.2
+  pip install -U pip && pip install --progress-bar off torch==${TORCH}
 
 install:
   - pip install -U pip && pip install --progress-bar off -r requirements.txt && pip install pycodestyle
