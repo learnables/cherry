@@ -29,7 +29,7 @@ class Torch(Wrapper):
             state = {k: self._convert_state(state[k]) for k in state}
         if isinstance(state, np.ndarray):
             state = ch.totensor(state)
-        if self.is_vectorized and isinstance(state, th.Tensor):
+        if isinstance(state, th.Tensor):
             state = state.squeeze(0)
         return state
 

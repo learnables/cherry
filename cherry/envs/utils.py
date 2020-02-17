@@ -75,9 +75,4 @@ def get_space_dimension(space, vectorized=False):
         }
         return OrderedDict(dimensions)
     if isinstance(space, Tuple):
-        if not vectorized:
-            return get_space_dimension(space[0], vectorized)
-        dimensions = tuple(
-            get_space_dimension(s) for s in space
-        )
-        return dimensions
+        return get_space_dimension(space[0])
