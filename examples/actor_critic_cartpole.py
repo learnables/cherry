@@ -29,9 +29,8 @@ class A2C(torch.nn.Module):
         value_loss = []
         entropy_loss = []
 
-        # Discount and normalize rewards
+        # Discount rewards
         rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done())
-        rewards = cherry.normalize(rewards)
 
         # Value function error (MSE)
         value_loss_fn = torch.nn.MSELoss()
@@ -107,11 +106,11 @@ if __name__ == '__main__':
 
     running_reward = 10
     for episode in count(1):
-        replay = env.run(lambda state: policy.select_action(state), episodes=1)
+        replay = env.run(lambda state: policy.select_action(state), steps=5)
         policy.learn_step(replay, optimizer)
 
         running_reward = running_reward * 0.99 + replay.reward().sum() * 0.01
-        
+        if episode % 10 == 0: print('Running reward: {}'.format(running_reward))
         if running_reward > 190.0:
             print('Solved! Running reward now {} and '
                   'the last episode runs to {} time steps!'.format(running_reward,
