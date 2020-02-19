@@ -106,13 +106,19 @@ if __name__ == '__main__':
     env = gym.vector.make('CartPole-v0', num_envs=NUM_ENVS)
     env = cherry.envs.Logger(env, interval=1000)
     env = cherry.envs.Torch(env)
-    env = cherry.envs.Runner(env)
 
     policy = A2CPolicy(env.state_size, env.action_size, NUM_ENVS)
-    optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
-
-    for step in range(0, TRAIN_STEPS):
-        replay = env.run(lambda state: policy.select_action(state), steps=STEPS)
+    optimizer = torch.optim.RMSprop(policy.parameters(), lr=7e-4, eps=1e-5, alpha=0.99)
+    
+    state = env.reset()
+    for train_step in range(0, TRAIN_STEPS):
+        replay = cherry.ExperienceReplay()
+        for step in range(0, STEPS):
+            action, info = policy.select_action(state)
+            new_state, reward, done, _ = env.step(action)
+            replay.append(state, action, reward, new_state, done, **info)
+            state = new_state
+            
         policy.learn_step(replay, optimizer)
     
     env = gym.make('CartPole-v0')
