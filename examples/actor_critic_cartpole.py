@@ -5,16 +5,21 @@ import cherry
 import gym
 import numpy as np
 from itertools import count
+import statistics
 
-SEED = 42
+NUM_ENVS = 4
+STEPS = 5
+TRAIN_STEPS = int(1e4)
 
 class A2C(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, num_envs):
         super(A2C, self).__init__()
         
+        self.num_envs = num_envs
         self.gamma = 0.99
-        self.vf_coef = 0.5
+        self.vf_coef = 0.25
         self.ent_coef = 0.01
+        self.max_clip_norm = 0.5
 
     def select_action(self, state):
         probs, value = self(state)
@@ -32,40 +37,43 @@ class A2C(torch.nn.Module):
         # Discount rewards
         rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done())
 
-        # Value function error (MSE)
-        value_loss_fn = torch.nn.MSELoss()
         for sars, reward in zip(replay, rewards):
-            log_prob = sars.log_prob
-            value = sars.value
-            entropy = sars.entropy
+            log_prob = sars.log_prob.view(self.num_envs, -1)
+            value = sars.value.view(self.num_envs, -1)
+            entropy = sars.entropy.view(self.num_envs, -1)
+            reward = reward.view(self.num_envs, -1)
 
             # Compute advantage
-            advantage = reward - value.squeeze(0)
+            advantage = reward - value
             
             # Compute policy gradient loss
             # (advantage.detach() because you do not have to backward on the advantage path) 
             policy_loss.append(-log_prob * advantage.detach())
             # Compute value estimation loss
-            value_loss.append(value_loss_fn(value.squeeze(0), reward))
+            value_loss.append((reward - value)**2)
             # Compute entropy loss
             entropy_loss.append(entropy)
         
-        # Compute means over the accumulated errors
-        policy_loss = torch.stack(policy_loss).mean()
+
+        # Compute means over accumulated errors
         value_loss = torch.stack(value_loss).mean()
+        policy_loss = torch.stack(policy_loss).mean()
         entropy_loss = torch.stack(entropy_loss).mean()
 
         # Take an optimization step
         optimizer.zero_grad()
         loss = policy_loss + self.vf_coef * value_loss - self.ent_coef * entropy_loss
         loss.backward()
+        # Clip gradients
+        torch.nn.utils.clip_grad_norm_(self.parameters(), self.max_clip_norm)
         optimizer.step()
 
 
 
+
 class A2CPolicy(A2C):
-    def __init__(self, state_size, action_size):
-        super(A2CPolicy, self).__init__()
+    def __init__(self, state_size, action_size, num_envs):
+        super(A2CPolicy, self).__init__(num_envs)
         self.state_size = state_size
         self.action_size = action_size
         self.n_hidden = 128
@@ -95,27 +103,20 @@ class A2CPolicy(A2C):
         return self.action_head(self.net(x)), self.value_head(self.net(x))
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.vector.make('CartPole-v0', num_envs=NUM_ENVS)
     env = cherry.envs.Logger(env, interval=1000)
     env = cherry.envs.Torch(env)
     env = cherry.envs.Runner(env)
-    env.seed(SEED)
 
-    policy = A2CPolicy(env.state_size, env.action_size)
+    policy = A2CPolicy(env.state_size, env.action_size, NUM_ENVS)
     optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
 
-    running_reward = 10
-    for episode in count(1):
-        replay = env.run(lambda state: policy.select_action(state), steps=5)
+    for step in range(0, TRAIN_STEPS):
+        replay = env.run(lambda state: policy.select_action(state), steps=STEPS)
         policy.learn_step(replay, optimizer)
-
-        running_reward = running_reward * 0.99 + replay.reward().sum() * 0.01
-        if episode % 10 == 0: print('Running reward: {}'.format(running_reward))
-        if running_reward > 190.0:
-            print('Solved! Running reward now {} and '
-                  'the last episode runs to {} time steps!'.format(running_reward,
-                                                                   len(replay)))
-            break
     
+    env = gym.make('CartPole-v0')
+    env = cherry.envs.Torch(env)
+    env = cherry.envs.Runner(env)    
     while True:
         env.run(lambda state: policy.select_action(state), episodes=1, render=True)
