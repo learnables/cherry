@@ -34,8 +34,12 @@ class A2C(torch.nn.Module):
         value_loss = []
         entropy_loss = []
 
-        # Discount rewards
-        rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done())
+        # Discount rewards boostraping them from the last estimated value
+        last_action, last_value = self(replay.state()[0,:,:])
+        # Boostrap from zero if it is a terminal state
+        last_value = last_value*(1 - replay.done()[0])
+
+        rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done(), last_value)
 
         for sars, reward in zip(replay, rewards):
             log_prob = sars.log_prob.view(self.num_envs, -1)
