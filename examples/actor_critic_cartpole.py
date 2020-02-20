@@ -35,9 +35,9 @@ class A2C(torch.nn.Module):
         entropy_loss = []
 
         # Discount rewards boostraping them from the last estimated value
-        last_action, last_value = self(replay.state()[0,:,:])
+        last_action, last_value = self(replay.state()[-1,:,:])
         # Boostrap from zero if it is a terminal state
-        last_value = last_value*(1 - replay.done()[0])
+        last_value = last_value*(1 - replay.done()[-1])
 
         rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done(), last_value)
 
