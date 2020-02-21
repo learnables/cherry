@@ -7,7 +7,7 @@ import numpy as np
 from itertools import count
 import statistics
 
-NUM_ENVS = 4
+NUM_ENVS = 6
 STEPS = 5
 TRAIN_STEPS = int(1e4)
 
@@ -37,10 +37,9 @@ class A2C(torch.nn.Module):
         # Discount rewards boostraping them from the last estimated value
         last_action, last_value = self(replay.state()[-1,:,:])
         # Boostrap from zero if it is a terminal state
-        last_value = (last_value*(1 - replay.done()[-1])).detach()
+        last_value = (last_value[:, 0]*(1 - replay.done()[-1])).detach()
 
         rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done(), last_value)
-
         for sars, reward in zip(replay, rewards):
             log_prob = sars.log_prob.view(self.num_envs, -1)
             value = sars.value.view(self.num_envs, -1)
