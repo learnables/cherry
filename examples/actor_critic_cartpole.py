@@ -34,8 +34,8 @@ class A2C(torch.nn.Module):
         value_loss = []
         entropy_loss = []
 
-        # Discount rewards boostraping them from the last estimated value
-        last_action, last_value = self(replay.state()[-1,:,:])
+        # Discount rewards and boostrap them with the estimation from the next state
+        last_action, last_value = self(replay.next_state()[-1,:,:])
         # Boostrap from zero if it is a terminal state
         last_value = (last_value[:, 0]*(1 - replay.done()[-1]))
 
