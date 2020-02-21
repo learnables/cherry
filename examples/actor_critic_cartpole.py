@@ -37,7 +37,7 @@ class A2C(torch.nn.Module):
         # Discount rewards boostraping them from the last estimated value
         last_action, last_value = self(replay.state()[-1,:,:])
         # Boostrap from zero if it is a terminal state
-        last_value = (last_value[:, 0]*(1 - replay.done()[-1])).detach()
+        last_value = (last_value[:, 0]*(1 - replay.done()[-1]))
 
         rewards = cherry.td.discount(self.gamma, replay.reward(), replay.done(), last_value)
         for sars, reward in zip(replay, rewards):

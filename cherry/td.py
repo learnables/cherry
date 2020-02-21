@@ -52,7 +52,7 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
     msg = 'dones and rewards must have equal length.'
     assert rewards.size(0) == dones.size(0), msg
-    R = th.zeros_like(rewards[0]) + bootstrap
+    R = th.zeros_like(rewards) + bootstrap
     discounted = th.zeros_like(rewards)
     length = discounted.size(0)
     for t in reversed(range(length)):
