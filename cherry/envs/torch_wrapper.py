@@ -29,7 +29,9 @@ class Torch(Wrapper):
             state = {k: self._convert_state(state[k]) for k in state}
         if isinstance(state, np.ndarray):
             state = ch.totensor(state)
-        if self.is_vectorized and isinstance(state, th.Tensor):
+        # we need to check for num_envs because self.is_vectorized returns
+        # False when the num_envs=1, but the state still needs squeezing.
+        if hasattr(self, 'num_envs') and isinstance(state, th.Tensor):
             state = state.squeeze(0)
         return state
 
