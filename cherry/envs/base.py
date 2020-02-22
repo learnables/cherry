@@ -33,13 +33,21 @@ class Wrapper(gym.Wrapper):
 
     @property
     def state_size(self):
-        vectorized = not is_vectorized(self)
-        return get_space_dimension(self.observation_space, vectorized=vectorized)
+        """
+        The (flattened) size of a single state.
+        """
+        # Since we want the underlying dimension, vec_dim=False
+        return get_space_dimension(self.observation_space,
+                                   vectorized_dims=False)
 
     @property
     def action_size(self):
-        vectorized = not is_vectorized(self)
-        return get_space_dimension(self.action_space, vectorized=vectorized)
+        """
+        The number of dimensions of a single action.
+        """
+        # Since we want the underlying dimension, vec_dim=False
+        return get_space_dimension(self.action_space,
+                                   vectorized_dims=False)
 
     def __getattr__(self, attr):
         if attr in self.__dict__.keys():

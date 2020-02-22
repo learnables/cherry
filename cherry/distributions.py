@@ -107,7 +107,8 @@ class ActionDistribution(nn.Module):
         self.is_discrete = ch.envs.is_discrete(env.action_space)
         if not self.is_discrete:
             if logstd is None:
-                action_size = ch.envs.get_space_dimension(env.action_space)
+                action_size = ch.envs.get_space_dimension(env.action_space,
+                                                          vectorized_dims=False)
                 logstd = nn.Parameter(th.zeros(action_size))
             if isinstance(logstd, (float, int)):
                 logstd = nn.Parameter(th.Tensor([logstd]))
