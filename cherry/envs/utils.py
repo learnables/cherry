@@ -50,14 +50,14 @@ def is_discrete(space, vectorized=False):
         return discrete
 
 
-def get_space_dimension(space, vectorized=False):
+def get_space_dimension(space, vectorized_dims=False):
     """
     Returns the number of elements of a space sample, when unrolled.
 
     **Arguments**
 
     * **space** - The space.
-    * **vectorized** - Whether to return the full dimension for vectorized
+    * **vectorized_dims** - Whether to return the full dimension for vectorized
         environments (True) or just the dimension for the underlying
         environment (False).
     """
@@ -66,17 +66,17 @@ def get_space_dimension(space, vectorized=False):
     if isinstance(space, Discrete):
         return space.n
     if isinstance(space, Box):
-        if len(space.shape) > 1 and not vectorized:
+        if len(space.shape) > 1 and not vectorized_dims:
             return reduce(operator.mul, space.shape[1:], 1)
         return reduce(operator.mul, space.shape, 1)
     if isinstance(space, Dict):
         dimensions = {
-            k[0]: get_space_dimension(k[1], vectorized) for k in space.spaces.items()
+            k[0]: get_space_dimension(k[1], vectorized_dims) for k in space.spaces.items()
         }
         return OrderedDict(dimensions)
     if isinstance(space, Tuple):
-        if not vectorized:
-            return get_space_dimension(space[0], vectorized)
+        if not vectorized_dims:
+            return get_space_dimension(space[0], vectorized_dims)
         dimensions = tuple(
             get_space_dimension(s) for s in space
         )
