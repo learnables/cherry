@@ -19,5 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Bugfix when using `td.discount` with replays coming from vectorized environments (@galatolofederico) 
+* env.action_size and env.state_size when the number of vectorized environments is 1. (thanks @galatolofederico)
 * Actor-critic integration test being to finicky.
 * `cherry.onehot` support for numpy's float and integer types. (thanks @ngoby)
