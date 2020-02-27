@@ -9,6 +9,8 @@ GAMMA = 0.5
 TAU = 0.9
 NUM_SAMPLES = 10
 VECTOR_SIZE = 5
+TIME_STEPS = 10
+NUM_ENVS = 4
 
 """
 TODO: Should test each method to make sure that they properly handle different
@@ -61,6 +63,52 @@ class TestRewards(unittest.TestCase):
 
     def tearDown(self):
         pass
+    
+
+    def test_vectorized_discount(self):
+        state = th.randn(TIME_STEPS, NUM_ENVS, VECTOR_SIZE)
+        action = th.randn(TIME_STEPS, NUM_ENVS)
+        reward = th.randn(TIME_STEPS, NUM_ENVS)
+        boostrap = th.randn(NUM_ENVS)
+        done = th.zeros_like(reward)
+        for i in list(reversed(range(TIME_STEPS)))[:4]:
+            done[i,i%NUM_ENVS] = 1
+        
+
+        # Computing the discounted rewards
+        # as non-vectorized environment
+        nonvec_discounted_rewards = []
+        for i in range(NUM_ENVS):
+            replay = ch.ExperienceReplay()
+            for t in range(TIME_STEPS):
+                replay.append(
+                    state[t, i, :], action[t, i], 
+                    reward[t, i], state[t, i, :], done[t, i]
+                )
+            nonvec_discounted_rewards.append(
+                ch.td.discount(
+                    GAMMA, replay.reward(), replay.done(), boostrap[i]
+                )
+            )
+        # Computing the discounted rewards
+        # as vectorized environment
+        replay = ch.ExperienceReplay()
+        for t in range(TIME_STEPS):
+            replay.append(
+                state[t, :, :], action[t, :], 
+                reward[t, :], state[t, :, :], done[t, :]
+            )        
+        vec_discounted_rewards = ch.td.discount(
+            GAMMA, replay.reward(), replay.done(), boostrap
+        )
+
+        for i in range(NUM_ENVS):
+            assert th.all(
+                    nonvec_discounted_rewards[i][:, 0] 
+                    == 
+                    vec_discounted_rewards[:, i],
+                )
+
 
     def test_discount(self):
         vector = th.randn(VECTOR_SIZE)
