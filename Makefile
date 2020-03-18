@@ -20,7 +20,7 @@ dist-a2c:
 	OMP_NUM_THREADS=1 \
 	MKL_NUM_THREADS=1 \
 	python -m torch.distributed.launch \
-	          --nproc_per_node=16 \
+	          --nproc_per_node=6 \
 		    examples/atari/dist_a2c_atari.py
 
 a2c:
@@ -102,6 +102,14 @@ docs:
 docs-deploy:
 	cd docs && pydocmd gh-deploy
 
+# https://dev.to/neshaz/a-tutorial-for-tagging-releases-in-git-147e
+release:
+	echo 'Do not forget to bump the CHANGELOG.md'
+	echo 'Tagging v'$(shell python -c 'print(open("cherry/_version.py").read()[15:-2])')
+	sleep 3
+	git tag -a v$(shell python -c 'print(open("cherry/_version.py").read()[15:-2])')
+	git push origin --tags
+
 publish:
-	python setup.py sdist
-	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+	python setup.py sdist  # Create package
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*  # Push to PyPI

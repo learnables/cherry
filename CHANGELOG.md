@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## v0.1.3
+
+### Added
+
 * A CHANGELOG.md file.
 
 ### Changed
