@@ -37,7 +37,7 @@ class Torch(Wrapper):
 
     def _convert_atomic_action(self, action):
         if isinstance(action, th.Tensor):
-            action = action.view(-1).data.numpy()
+            action = action.view(-1).cpu().detach().numpy()
         if self.discrete_action:
             if not isinstance(action, (int, float)):
                 action = action[0]
