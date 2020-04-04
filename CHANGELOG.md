@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* fix bug in `torch_wrapper` when use GPU by callling Tensor.cpu().detach().numpy() to convert CUDA tensor to numpy.(@walkacross)
 * Bugfix when using `td.discount` with replays coming from vectorized environments (@galatolofederico) 
 * env.action_size and env.state_size when the number of vectorized environments is 1. (thanks @galatolofederico)
 * Actor-critic integration test being to finicky.

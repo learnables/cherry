@@ -15,8 +15,8 @@ import time
 DISCOUNT = 0.99
 EPSILON = 0.05
 HIDDEN_SIZE = 32
-LEARNING_RATE = 0.001
-MAX_STEPS = 500
+LEARNING_RATE = 0.01
+MAX_STEPS = 7000
 BATCH_SIZE = 2048
 TRACE_DECAY = 0.97
 SEED = 42
@@ -33,6 +33,12 @@ if USE_CUDA and torch.cuda.is_available():
     device = torch.device('cuda')
 else:
     device = torch.device('cpu')
+
+
+def weights_init(m):
+    if isinstance(m, nn.Linear):
+        nn.init.xavier_normal_(m.weight.data)
+
 
 class Actor(nn.Module):
     def __init__(self, hidden_size, stochastic=True, layer_norm=False):
@@ -102,8 +108,12 @@ class ActorCritic(nn.Module):
 
 def main(env='Pendulum-v0'):
     agent = ActorCritic(HIDDEN_SIZE).to(device)
-    actor_optimiser = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
-    critic_optimiser = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
+    agent.apply(weights_init)
+    
+    actor_optimizer = optim.Adam(agent.actor.parameters(), lr=LEARNING_RATE)
+    critic_optimizer = optim.Adam(agent.critic.parameters(), lr=LEARNING_RATE)
+    actor_scheduler = torch.optim.lr_scheduler.StepLR(actor_optimizer, step_size=2000, gamma=0.5)
+    critic_scheduler = torch.optim.lr_scheduler.StepLR(critic_optimizer, step_size=2000, gamma=0.5)
     replay = ch.ExperienceReplay()
 
     env = gym.make(env)
@@ -120,18 +130,18 @@ def main(env='Pendulum-v0'):
         replay += env.run(get_action, episodes=1)
 
         if len(replay) >= BATCH_SIZE:
-            batch = replay.sample(BATCH_SIZE).to(device)
-            
+            #batch = replay.sample(BATCH_SIZE).to(device)
+            batch = replay.to(device)
             with torch.no_grad():
                 advantages = pg.generalized_advantage(DISCOUNT,
                                                       TRACE_DECAY,
-                                                      batch.reward(),
+                                                      batch.reward()/100.0,
                                                       batch.done(),
                                                       batch.value(),
                                                       torch.zeros(1).to(device))
                 advantages = ch.normalize(advantages, epsilon=1e-8)
                 returns = td.discount(DISCOUNT,
-                                      batch.reward(),
+                                      batch.reward()/100.,
                                       batch.done())
                 old_log_probs = batch.log_prob()
 
@@ -150,16 +160,21 @@ def main(env='Pendulum-v0'):
                                                             old_log_probs,
                                                             advantages,
                                                             clip=PPO_CLIP_RATIO)
-                actor_optimiser.zero_grad()
+                actor_optimizer.zero_grad()
                 policy_loss.backward()
-                actor_optimiser.step()
+                #nn.utils.clip_grad_norm_(agent.actor.parameters(), 1.0)
+                actor_optimizer.step()
 
                 # Fit value function by regression on mean-squared error
                 value_loss = ch.algorithms.a2c.state_value_loss(new_values,
                                                                 returns)
-                critic_optimiser.zero_grad()
+                critic_optimizer.zero_grad()
                 value_loss.backward()
-                critic_optimiser.step()
+                #nn.utils.clip_grad_norm_(agent.critic.parameters(), 1.0)
+                critic_optimizer.step()
+            
+            actor_scheduler.step()
+            critic_scheduler.step()
 
             replay.empty()
 
