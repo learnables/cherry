@@ -135,13 +135,13 @@ def main(env='Pendulum-v0'):
             with torch.no_grad():
                 advantages = pg.generalized_advantage(DISCOUNT,
                                                       TRACE_DECAY,
-                                                      batch.reward()/100.0,
+                                                      batch.reward(),
                                                       batch.done(),
                                                       batch.value(),
                                                       torch.zeros(1).to(device))
                 advantages = ch.normalize(advantages, epsilon=1e-8)
                 returns = td.discount(DISCOUNT,
-                                      batch.reward()/100.,
+                                      batch.reward(),
                                       batch.done())
                 old_log_probs = batch.log_prob()
 
