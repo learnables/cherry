@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Support for more recent versions of PyTorch and new `_parse_to` behavior (thanks @ManifoldFR)
+
 ## v0.1.3
 
 ### Added

@@ -119,3 +119,6 @@ examples/bsuite/figs/**
 
 # ignore .idea 
 *.idea
+
+# ignore .vscode
+.vscode

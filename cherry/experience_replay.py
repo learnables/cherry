@@ -110,7 +110,7 @@ class Transition(object):
         ~~~
 
         """
-        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        device, dtype, non_blocking, *_ = th._C._nn._parse_to(*args, **kwargs)
         return self._apply(lambda t: t.to(device, dtype if t.is_floating_point() else None, non_blocking), device)
 
     def half(self):
@@ -410,7 +410,7 @@ class ExperienceReplay(list):
         ~~~
 
         """
-        device, dtype, non_blocking = th._C._nn._parse_to(*args, **kwargs)
+        device, dtype, non_blocking, *_ = th._C._nn._parse_to(*args, **kwargs)
         storage = [sars.to(*args, **kwargs) for sars in self._storage]
         return ExperienceReplay(storage, device=device)
 
