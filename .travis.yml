@@ -17,6 +17,7 @@ env:
     - 'TORCH=1.2.0'
     - 'TORCH=1.3.0'
     - 'TORCH=1.4.0'
+    - 'TORCH=1.5.0'
 
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
