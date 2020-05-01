@@ -61,4 +61,4 @@ def polyak_average(source, target, alpha):
     ~~~
     """
     for s, t in zip(source.parameters(), target.parameters()):
-        s.data.mul_(alpha).add_(1.0 - alpha, t.data)
+        s.data.mul_(alpha).add_(t.data, alpha=1.0 - alpha)

@@ -94,6 +94,8 @@ class SoftActor(nn.Module):
         policy_log_std = torch.clamp(policy_log_std, min=self.log_std_min, max=self.log_std_max)
         policy = TanhNormal(policy_mean, policy_log_std.exp())
         return policy
+
+
 class Critic(nn.Module):
         def __init__(self, hidden_size, state_action=False, layer_norm=False):
                 super().__init__()
@@ -181,7 +183,7 @@ def train_spinup():
             policy = actor(batch['state'])
             action = policy.rsample()
             weighted_sample_entropy = ENTROPY_WEIGHT * policy.log_prob(action).sum(dim=1)
-            y_v = torch.min(critic_1(batch['state'], action.detach()), critic_2(batch['state'], action.detach())) - weighted_sample_entropy.detach()
+            y_v = torch.min(critic_1(batch['state'], action), critic_2(batch['state'], action)).detach() - weighted_sample_entropy.detach()
 
             # Update Q-functions by one step of gradient descent
             value_loss = (critic_1(batch['state'], batch['action']) - y_q).pow(2).mean() + (critic_2(batch['state'], batch['action']) - y_q).pow(2).mean()
@@ -343,6 +345,7 @@ class TestSpinningUpSAC(unittest.TestCase):
         torch.set_default_dtype(torch.float32)
 
     def test_sac(self):
+        torch.autograd.set_detect_anomaly(True)
         cherry = train_cherry()
         spinup = train_spinup()
 

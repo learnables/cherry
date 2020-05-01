@@ -226,6 +226,7 @@ def get_action_value(state, policy):
 class TestActorCritic(unittest.TestCase):
 
     def test_training(self):
+
         """
         Issue: Depending on the computer architecture,
         PyTorch will represent floating numbers differently differently.

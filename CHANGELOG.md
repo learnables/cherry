@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
 
 ### Added
@@ -14,7 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Support for more recent versions of PyTorch and new `_parse_to` behavior (thanks @ManifoldFR)
+
+## v0.14
+
+### Fixed
+
+* Support for torch 1.5 and new `_parse_to` behavior in ExperienceReplay. (thanks @ManifoldFR)
+
 
 ## v0.1.3
 
