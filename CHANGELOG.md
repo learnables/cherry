@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Fixes return value of StateNormalizer and RewardNormalizer wrappers.
+
 
 ## v0.1.4
 
