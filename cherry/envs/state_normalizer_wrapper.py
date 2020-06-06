@@ -59,6 +59,7 @@ class StateNormalizer(Wrapper):
     def _state_normalize(self, state):
         self._state_mean = self.beta * self._state_mean + (1.0 - self.beta) * state
         self._state_var = self.beta * self._state_var + (1.0 - self.beta) * np.square(state, self._state_mean)
+        return (state - self._state_mean) / (np.sqrt(self._state_var) + self.eps)
 
     def reset(self, *args, **kwargs):
         state = self.env.reset(*args, **kwargs)
