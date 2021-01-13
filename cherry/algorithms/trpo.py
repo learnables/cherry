@@ -114,7 +114,8 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
                               parameters,
                               create_graph=True,
                               retain_graph=True)
-    grad_loss = parameters_to_vector(grad_loss)
+#    grad_loss = parameters_to_vector(grad_loss)
+    grad_loss = th.cat([g.reshape(-1) for g in grad_loss], dim=0)
 
     def hvp(other):
         """
@@ -135,7 +136,8 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
         hessian_prod = autograd.grad(grad_prod,
                                      parameters,
                                      retain_graph=True)
-        hessian_prod = parameters_to_vector(hessian_prod)
+#        hessian_prod = parameters_to_vector(hessian_prod)
+        hessian_prod = th.cat([hp.reshape(-1) for hp in hessian_prod], dim=0)
         hessian_prod = hessian_prod + damping * other
         if shape is not None:
             vector_to_parameters(hessian_prod, shape)
