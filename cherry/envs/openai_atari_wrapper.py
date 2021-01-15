@@ -313,7 +313,7 @@ class TransposeImage(Wrapper, gym.ObservationWrapper):
         self.observation_space = spaces.Box(
             self.observation_space.low[0, 0, 0],
             self.observation_space.high[0, 0, 0],
-            [obs_shape[2], obs_shape[1], obs_shape[0]],
+            [obs_shape[-1], obs_shape[0], obs_shape[1]],
             dtype=self.observation_space.dtype)
 
     def observation(self, observation):
@@ -328,13 +328,13 @@ class OpenAIAtari(Wrapper):
         env = wrap_deepmind(env,
                             episode_life=True,
                             clip_rewards=True,
-                            frame_stack=False,
+                            frame_stack=True,
                             scale=False,
                             )
-        obs_shape = env.observation_space.shape
-        if len(obs_shape) == 3:
-            env = TransposeImage(env)
-        env = FrameStack(env, 4)
+#        obs_shape = env.observation_space.shape
+#        if len(obs_shape) == 3:
+        env = TransposeImage(env)
+        # env = FrameStack(env, 4)
         super(OpenAIAtari, self).__init__(env)
 
     def step(self, action):

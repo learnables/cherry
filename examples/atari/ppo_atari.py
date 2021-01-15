@@ -62,7 +62,8 @@ def update(replay, optimizer, policy, env, lr_schedule):
                                           replay.value(),
                                           next_state_value)
 
-    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
+    advantages = advantages.view(-1, 1)
+#    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
 #    rewards = [a + v for a, v in zip(advantages, replay.value())]
     rewards = advantages + replay.value()
 
@@ -70,9 +71,9 @@ def update(replay, optimizer, policy, env, lr_schedule):
 #                          replay.reward(),
 #                          replay.done(),
 #                          bootstrap=next_state_value)
-    rewards = rewards.detach()
-    advantages = rewards.detach() - replay.value().detach()
-    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
+#    rewards = rewards.detach()
+#    advantages = rewards.detach() - replay.value().detach()
+#    advantages = ch.utils.normalize(advantages, epsilon=1e-5).view(-1, 1)
 
     for i, sars in enumerate(replay):
         sars.reward = rewards[i].detach()
@@ -90,11 +91,13 @@ def update(replay, optimizer, policy, env, lr_schedule):
         masses, values = policy(batch.state())
 
         # Compute losses
+        advs = ch.normalize(batch.advantage(), epsilon=1e-8)
         new_log_probs = masses.log_prob(batch.action()).sum(-1, keepdim=True)
         entropy = masses.entropy().sum(-1).mean()
         policy_loss = ppo.policy_loss(new_log_probs,
                                       batch.log_prob(),
-                                      batch.advantage(),
+#                                      batch.advantage(),
+                                      advs,
                                       clip=PPO_CLIP)
         value_loss = ppo.state_value_loss(values,
                                           batch.value().detach(),
@@ -138,13 +141,14 @@ def main(env='PongNoFrameskip-v4'):
     th.manual_seed(SEED)
 
     env = gym.make(env)
+    env = gym.wrappers.RecordEpisodeStatistics(env)
     env = envs.OpenAIAtari(env)
-    env = envs.Logger(env, interval=PPO_STEPS)
+    env = envs.VisdomLogger(env, title='Cherry PPO', interval=PPO_STEPS)
     env = envs.Torch(env)
     env = envs.Runner(env)
     env.seed(SEED)
 
-    policy = NatureCNN(env).to('cuda:0')
+    policy = NatureCNN(env)
     optimizer = optim.Adam(policy.parameters(), lr=LR, eps=1e-5)
     num_updates = TOTAL_STEPS // PPO_STEPS + 1
     lr_schedule = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: 1 - epoch/num_updates)
@@ -153,12 +157,10 @@ def main(env='PongNoFrameskip-v4'):
     for epoch in range(num_updates):
         policy.cpu()
         replay = env.run(get_action, steps=PPO_STEPS, render=RENDER)
-        replay = replay.cuda()
-        policy.cuda()
         update(replay, optimizer, policy, env, lr_schedule)
 
 
 if __name__ == '__main__':
     env_name = 'PongNoFrameskip-v4'
-#    env_name = 'BreakoutNoFrameskip-v4'
+    env_name = 'BreakoutNoFrameskip-v4'
     main(env_name)
