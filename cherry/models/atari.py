@@ -39,18 +39,20 @@ class NatureFeatures(nn.Sequential):
       (Stacked frames in original implementation.)
     * **output_size** (int, *optional*, default=512) - Size of the output
       representation.
+    * **hidden_size** (int, *optional*, default=1568) - Size of the representation
+      after the convolutional layers
     """
 
-    def __init__(self, input_size=4, hidden_size=512):
+    def __init__(self, input_size=4, output_size=512, hidden_size=64*7*7):
         super(NatureFeatures, self).__init__(
             atari_init_(nn.Conv2d(input_size, 32, 8, stride=4, padding=0)),
             nn.ReLU(),
             atari_init_(nn.Conv2d(32, 64, 4, stride=2, padding=0)),
             nn.ReLU(),
-            atari_init_(nn.Conv2d(64, 32, 3, stride=1, padding=0)),
+            atari_init_(nn.Conv2d(64, 64, 3, stride=1, padding=0)),
             nn.ReLU(),
             Flatten(),
-            atari_init_(nn.Linear(32 * 7 * 7, hidden_size)),
+            atari_init_(nn.Linear(hidden_size, output_size)),
             nn.ReLU()
         )
 

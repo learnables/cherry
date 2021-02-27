@@ -12,14 +12,14 @@ $$
 \\text{subject to} \\quad D_\\text{KL}(\\pi_\\text{old} \\vert \\vert \\pi_\\theta) \\leq \\delta.
 $$
 
-
 """
 
 import torch as th
 from torch import autograd
-from torch.nn.utils import parameters_to_vector, vector_to_parameters
+from torch.nn.utils import vector_to_parameters
 
 from cherry import debug
+from cherry._utils import _parameters_to_vector
 
 
 def policy_loss(new_log_probs, old_log_probs, advantages):
@@ -114,7 +114,7 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
                               parameters,
                               create_graph=True,
                               retain_graph=True)
-    grad_loss = parameters_to_vector(grad_loss)
+    grad_loss = _parameters_to_vector(grad_loss)
 
     def hvp(other):
         """
@@ -130,12 +130,12 @@ def hessian_vector_product(loss, parameters, damping=1e-5):
         shape = None
         if not isinstance(other, th.Tensor):
             shape = [th.zeros_like(o) for o in other]
-            other = parameters_to_vector(other)
+            other = _parameters_to_vector(other)
         grad_prod = th.dot(grad_loss, other)
         hessian_prod = autograd.grad(grad_prod,
                                      parameters,
                                      retain_graph=True)
-        hessian_prod = parameters_to_vector(hessian_prod)
+        hessian_prod = _parameters_to_vector(hessian_prod)
         hessian_prod = hessian_prod + damping * other
         if shape is not None:
             vector_to_parameters(hessian_prod, shape)
@@ -183,7 +183,7 @@ def conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-8):
     shape = None
     if not isinstance(b, th.Tensor):
         shape = [th.zeros_like(b_i) for b_i in b]
-        b = parameters_to_vector(b)
+        b = _parameters_to_vector(b)
     x = th.zeros_like(b)
     r = b
     p = r

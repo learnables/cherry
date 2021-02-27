@@ -25,6 +25,19 @@ def _istensorable(array):
     return False
 
 
+def _parameters_to_vector(parameters):
+    """
+    This fix is required for pytorch >= 1.6.0, due to the change
+    in memory format promotion rule.
+    For more info, check:
+    * https://github.com/pytorch/pytorch/pull/37968
+    * https://github.com/pytorch/pytorch/releases/tag/v1.6.0
+      and search "Note: BC-breaking memory format changes"
+    """
+    parameters = [p.contiguous() for p in parameters]
+    return th.nn.utils.parameters_to_vector(parameters)
+
+
 def _min_size(tensor):
     """
     [[Source]]()

@@ -5,6 +5,7 @@ from statistics import mean, pstdev
 from .base import Wrapper
 
 import cherry as ch
+import numpy as np
 
 
 class Logger(Wrapper):
@@ -155,9 +156,10 @@ class Logger(Wrapper):
                 info['logger_steps_stats'] = steps_stats
                 info['logger_ep_stats'] = ep_stats
             self.logger.info(msg)
-        if isinstance(done, bool):
+        if isinstance(done, (bool, np.bool_)):
             if done:
                 self.num_episodes += 1
         else:
+            __import__('pdb').set_trace()
             self.num_episodes += sum(done)
         return state, reward, done, info
