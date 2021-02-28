@@ -49,18 +49,18 @@ class Transition(object):
                  done,
                  device=None,
                  **infos):
-        self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
+        self._fields = ['state', 'action', 'reward', 'next_state', 'done']
         values = [state, action, reward, next_state, done]
-        for key, val in zip(self.__fields, values):
-            setattr(self, key, val.reshape(1, *_min_size(val)))
+        for key, val in zip(self._fields, values):
+            setattr(self, key, val)
         info_keys = infos.keys()
-        self.__fields += info_keys
+        self._fields += info_keys
         for key in info_keys:
             setattr(self, key, infos[key])
         self.device = device
 
     def __str__(self):
-        string = 'Transition(' + ', '.join(self.__fields)
+        string = 'Transition(' + ', '.join(self._fields)
         if self.device is not None:
             string += ', device=\'' + str(self.device) + '\''
         string += ')'
@@ -79,7 +79,7 @@ class Transition(object):
         if device is None:
             device = self.device
         new_transition = {'device': device}
-        for field in self.__fields:
+        for field in self._fields:
             value = getattr(self, field)
             if isinstance(value, th.Tensor):
                 new_transition[field] = fn(value)
@@ -300,6 +300,7 @@ class ExperienceReplay(list):
         for key in infos:
             if _istensorable(infos[key]):
                 infos[key] = ch.totensor(infos[key])
+#        num_envs = state.shape[0]
         sars = Transition(ch.totensor(state),
                           ch.totensor(action),
                           ch.totensor(reward),
