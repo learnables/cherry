@@ -52,7 +52,7 @@ class Transition(object):
         self.__fields = ['state', 'action', 'reward', 'next_state', 'done']
         values = [state, action, reward, next_state, done]
         for key, val in zip(self.__fields, values):
-            setattr(self, key, val)
+            setattr(self, key, val.reshape(1, *_min_size(val)))
         info_keys = infos.keys()
         self.__fields += info_keys
         for key in info_keys:

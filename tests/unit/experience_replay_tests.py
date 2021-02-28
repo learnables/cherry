@@ -294,12 +294,12 @@ class TestExperienceReplay(unittest.TestCase):
         self.assertEqual(len(replay), len(self.replay))
 
         for cr, sr in zip(replay, self.replay):
-            self.assertTrue(cr.state is sr.state)
-            self.assertTrue(cr.action is sr.action)
-            self.assertTrue(cr.next_state is sr.next_state)
-            self.assertTrue(cr.reward is sr.reward)
-            self.assertTrue(cr.vector is sr.vector)
-            self.assertTrue(cr.vector is sr.vector)
+            self.assertTrue(close(cr.state, sr.state))
+            self.assertTrue(close(cr.action, sr.action))
+            self.assertTrue(close(cr.next_state, sr.next_state))
+            self.assertTrue(close(cr.reward, sr.reward))
+            self.assertTrue(close(cr.vector, sr.vector))
+            self.assertTrue(close(cr.vector, sr.vector))
 
         # Test cuda
         if th.cuda.is_available():

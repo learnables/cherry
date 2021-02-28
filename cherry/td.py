@@ -48,7 +48,7 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
     """
     rewards = _reshape_helper(rewards)
-    dones = _reshape_helper(dones)
+    dones = _reshape_helper(dones).reshape_as(rewards)
 
     msg = 'dones and rewards must have equal length.'
     assert rewards.size(0) == dones.size(0), msg
@@ -96,10 +96,10 @@ def temporal_difference(gamma, rewards, dones, values, next_values):
     ~~~
     """
 
-    rewards = _reshape_helper(rewards)
-    dones = _reshape_helper(dones)
     values = _reshape_helper(values)
     next_values = _reshape_helper(next_values)
+    rewards = _reshape_helper(rewards).reshape_as(values)
+    dones = _reshape_helper(dones).reshape_as(values)
 
     not_dones = 1.0 - dones
     return rewards + gamma * not_dones * next_values - values
