@@ -7,6 +7,7 @@ Utilities to implement temporal difference algorithms.
 """
 
 import torch as th
+import cherry as ch
 
 from cherry._utils import _reshape_helper
 
@@ -52,6 +53,10 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
     msg = 'dones and rewards must have equal length.'
     assert rewards.size(0) == dones.size(0), msg
+
+    if not isinstance(bootstrap, (int, float)):
+        bootstrap = ch.totensor(bootstrap).reshape_as(rewards[0].unsqueeze(0))
+
     R = th.zeros_like(rewards) + bootstrap
     discounted = th.zeros_like(rewards)
     length = discounted.size(0)

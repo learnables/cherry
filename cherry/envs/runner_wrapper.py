@@ -102,7 +102,7 @@ class Runner(Wrapper):
             msg = 'Either steps or episodes should be set.'
             raise Exception(msg)
 
-        replay = ch.ExperienceReplay()
+        replay = ch.ExperienceReplay(vectorized=self.is_vectorized)
         collected_episodes = 0
         collected_steps = 0
         while True:

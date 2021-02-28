@@ -23,16 +23,10 @@ class Torch(Wrapper):
     """
 
     def _convert_state(self, state):
-        if isinstance(state, (float, int)):
-            state = ch.totensor(state)
         if isinstance(state, dict):
             state = {k: self._convert_state(state[k]) for k in state}
-        if isinstance(state, np.ndarray):
+        else:
             state = ch.totensor(state)
-        # we need to check for num_envs because self.is_vectorized returns
-        # False when the num_envs=1, but the state still needs squeezing.
-        if hasattr(self, 'num_envs') and isinstance(state, th.Tensor):
-            state = state.squeeze(0)
         return state
 
     def _convert_atomic_action(self, action):
