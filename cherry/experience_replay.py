@@ -438,7 +438,6 @@ class ExperienceReplay(list):
                 flat_replay.append(**transition)
         return flat_replay
 
-
     def cpu(self):
         return self.to('cpu')
 
