@@ -212,7 +212,7 @@ class ExperienceReplay(list):
         if self.device is not None:
             string += ', device=\'' + str(self.device) + '\''
         if self.vectorized:
-            string += ', vectorized=\'' + str(self.device) + '\''
+            string += ', vectorized=\'' + str(self.vectorized) + '\''
         string += ')'
         return string
 
@@ -427,7 +427,7 @@ class ExperienceReplay(list):
         """
         if not self.vectorized:
             return self
-        flat_replay = ch.ExperienceReplay(vectorized=False)
+        flat_replay = ch.ExperienceReplay(device=self.device, vectorized=False)
         for sars in self._storage:
             for i in range(sars.done.shape[0]):
                 transition = {

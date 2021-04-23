@@ -4,10 +4,7 @@ import numpy as np
 import torch as th
 import cherry as ch
 
-from gym.spaces import Discrete
-
 from .base import Wrapper
-from .utils import is_vectorized
 
 
 class Torch(Wrapper):
