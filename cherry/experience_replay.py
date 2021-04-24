@@ -78,6 +78,19 @@ class Transition(object):
     def __repr__(self):
         return str(self)
 
+    def __getstate__(self):
+        state = {
+            key: getattr(self, key) for key in self._fields
+        }
+        return state
+
+    def __setstate__(self, state):
+        self._fields = ['state', 'action', 'reward', 'next_state', 'done']
+        for key, value in state.items():
+            setattr(self, key, value)
+            if key not in self._fields:
+                self._fields.append(key)
+
     def cpu(self):
         return self.to('cpu')
 
@@ -201,6 +214,18 @@ class ExperienceReplay(list):
         true_size = _min_size(values[0])
         return th.cat(values, dim=0).view(len(values), *true_size)
 
+    def __getstate__(self):
+        return {
+            'storage': self._storage,
+            'vectorized': self.vectorized,
+            'device': self.device,
+        }
+
+    def __setstate__(self, state):
+        self._storage = state['storage']
+        self.vectorized = state['vectorized']
+        self.device = state['device']
+
     def __getslice__(self, i, j):
         return self.__getitem__(slice(i, j))
 
@@ -261,7 +286,8 @@ class ExperienceReplay(list):
         replay.save('my_replay_file.pt')
         ~~~
         """
-        th.save(self._storage, path)
+        state = self.__getstate__()
+        th.save(state, path)
 
     def load(self, path):
         """
@@ -278,7 +304,8 @@ class ExperienceReplay(list):
         replay.load('my_replay_file.pt')
         ~~~
         """
-        self._storage = th.load(path)
+        state = th.load(path)
+        self.__setstate__(state)
 
     def append(self,
                state=None,
