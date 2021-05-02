@@ -371,10 +371,10 @@ class TestExperienceReplay(unittest.TestCase):
 
     def test_flatten(self):
         def original_flatten(replay):  # slow but correct
-            if not self.vectorized:
-                return self
-            flat_replay = ch.ExperienceReplay(device=self.device, vectorized=False)
-            for sars in self._storage:
+            if not replay.vectorized:
+                return replay
+            flat_replay = ch.ExperienceReplay(device=replay.device, vectorized=False)
+            for sars in replay._storage:
                 for i in range(sars.done.shape[0]):
                     transition = {
                         field: getattr(sars, field)[i] for field in sars._fields
