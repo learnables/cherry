@@ -418,7 +418,11 @@ class ExperienceReplay(list):
 
         # Fill the sample
         storage = [self[idx] for idx in indices]
-        return ExperienceReplay(storage, vectorized=self.vectorized)
+        return ExperienceReplay(
+            storage=storage,
+            device=self.device,
+            vectorized=self.vectorized,
+        )
 
     def empty(self):
         """
@@ -455,15 +459,23 @@ class ExperienceReplay(list):
         if not self.vectorized:
             return self
         flat_replay = ch.ExperienceReplay(device=self.device, vectorized=False)
+        storage = []
         for sars in self._storage:
-            for i in range(sars.done.shape[0]):
-                transition = {
-                    field: getattr(sars, field)[i] for field in sars._fields
-                }
-                # need to add dimension back because of indexing above.
-                transition = {k: v.unsqueeze(0) if ch._utils._istensorable(v) else v for k, v in transition.items()}
-                flat_replay.append(**transition)
-        return flat_replay
+            vec_num = sars.done.shape[0]
+            transitions = [{} for _ in range(vec_num)]
+            for field in sars._fields:
+                values = getattr(sars, field)
+                if isinstance(values, th.Tensor):
+                    values = values.chunk(vec_num, dim=0)
+                for trans, val in zip(transitions, values):
+                    trans[field] = val
+            transitions = [ch.Transition(**trans) for trans in transitions]
+            storage += transitions
+        return ch.ExperienceReplay(
+            storage=storage,
+            device=self.device,
+            vectorized=False,
+        )
 
     def cpu(self):
         return self.to('cpu')
