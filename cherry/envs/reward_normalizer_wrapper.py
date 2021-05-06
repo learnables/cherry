@@ -2,6 +2,7 @@
 
 import numpy as np
 from .base import Wrapper
+from .utils import num_envs
 
 
 class RewardNormalizer(Wrapper):
@@ -39,15 +40,16 @@ class RewardNormalizer(Wrapper):
         super(RewardNormalizer, self).__init__(env)
         self.beta = beta
         self.eps = eps
+        nenvs = num_envs(self.env)
         if statistics is not None and 'mean' in statistics:
             self._reward_mean = np.copy(statistics['mean'])
         else:
-            self._reward_mean = np.zeros(1)
+            self._reward_mean = np.zeros(nenvs)
 
         if statistics is not None and 'var' in statistics:
             self._reward_var = np.copy(statistics['var'])
         else:
-            self._reward_var = np.ones(1)
+            self._reward_var = np.ones(nenvs)
 
     @property
     def statistics(self):
