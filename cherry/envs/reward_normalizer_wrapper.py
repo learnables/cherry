@@ -61,10 +61,6 @@ class RewardNormalizer(Wrapper):
         self._reward_var = self.beta * self._reward_var + (1.0 - self.beta) * np.square(reward - self._reward_mean)
         return (reward - self._reward_mean) / (np.sqrt(self._reward_var) + self.eps)
 
-    def reset(self, *args, **kwargs):
-        reward = self.env.reset(*args, **kwargs)
-        return self._reward_normalize(reward)
-
     def step(self, *args, **kwargs):
         state, reward, done, infos = self.env.step(*args, **kwargs)
         return state, self._reward_normalize(reward), done, infos
