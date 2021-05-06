@@ -42,12 +42,12 @@ class RewardNormalizer(Wrapper):
         if statistics is not None and 'mean' in statistics:
             self._reward_mean = np.copy(statistics['mean'])
         else:
-            self._reward_mean = np.zeros(self.observation_space.shape)
+            self._reward_mean = np.zeros(1)
 
         if statistics is not None and 'var' in statistics:
             self._reward_var = np.copy(statistics['var'])
         else:
-            self._reward_var = np.ones(self.observation_space.shape)
+            self._reward_var = np.ones(1)
 
     @property
     def statistics(self):
