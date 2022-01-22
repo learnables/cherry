@@ -203,7 +203,7 @@ class VisdomLogger(Logger):
         num_logs = len(self.all_rewards) // self.interval
         update = 'replace' if num_logs <= 1 else 'append'
         for key in stats:
-            if key is not 'num_episodes':
+            if key != 'num_episodes':
                 x_values = np.zeros((1,)) + num_logs
                 y_values = np.array([np.mean(stats[key])])
                 self.visdom.line(X=x_values,
