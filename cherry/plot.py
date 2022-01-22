@@ -111,7 +111,7 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
 
     for i in range(len(x_after)):
         # Compute current EMA value based on the value of previous time step
-        if(i != 0):
+        if not i == 0:
             y_after[i] = alpha * y_after[i-1]
             y_count[i] = alpha * y_count[i-1]
 
