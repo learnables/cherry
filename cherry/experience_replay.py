@@ -51,15 +51,20 @@ class Transition(object):
                  done,
                  device=None,
                  **infos):
-        self._fields = ['state', 'action', 'reward', 'next_state', 'done']
+        super(Transition, self).__setattr__('device', device)
+        super(Transition, self).__setattr__(
+            '_fields',
+            ['state', 'action', 'reward', 'next_state', 'done']
+        )
         values = [state, action, reward, next_state, done]
         for key, val in zip(self._fields, values):
-            setattr(self, key, val)
-        info_keys = infos.keys()
-        self._fields += info_keys
-        for key in info_keys:
-            setattr(self, key, infos[key])
-        self.device = device
+            super(Transition, self).__setattr__(key, val)
+
+        if infos:
+            info_keys = infos.keys()
+            self._fields += info_keys
+            for key in info_keys:
+                setattr(self, key, infos[key])
 
     def __setattr__(self, name, value):
         if name not in self._reserved_names:
