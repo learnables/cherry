@@ -273,7 +273,11 @@ class ExperienceReplay(list):
     def __getitem__(self, key):
         value = self._storage[key]
         if isinstance(key, slice):
-            return ExperienceReplay(value, device=self.device, vectorized=self.vectorized)
+            return ExperienceReplay(
+                storage=value,
+                device=self.device,
+                vectorized=self.vectorized,
+            )
         return value
 
     def save(self, path):
