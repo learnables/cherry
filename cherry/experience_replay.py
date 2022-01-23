@@ -216,8 +216,10 @@ class ExperienceReplay(list):
         except AttributeError:
             msg = 'Attribute ' + name + ' not in replay.'
             raise AttributeError(msg)
-        true_size = _min_size(values[0])
-        return th.cat(values, dim=0).view(len(values), *true_size)
+        if values:
+            true_size = _min_size(values[0])
+            return th.cat(values, dim=0).view(len(values), *true_size)
+        return th.empty(0)
 
     def __getstate__(self):
         return {
@@ -370,7 +372,7 @@ class ExperienceReplay(list):
         )
         self._storage.append(sars.to(self.device))
 
-    def sample(self, size=1, contiguous=False, episodes=False):
+    def sample(self, size=1, contiguous=False, episodes=False, nsteps=1, discount=1.0):
         """
         Samples from the Experience replay.
 
@@ -381,6 +383,8 @@ class ExperienceReplay(list):
           contiguous transitions.
         * **episodes** (bool, *optional*, default=False) - Sample full
           episodes, instead of transitions.
+        * **nsteps** (int, *optional*, default=1) - Steps to compute the n-steps returns.
+        * **discount** (float, *optional*, default=1.0) - Discount for n-steps returns.
 
         **Return**
 
@@ -395,13 +399,19 @@ class ExperienceReplay(list):
             assert not self.vectorized, 'Cannot sample episodes from vectorized replay yet.'
             if size > 1 and not contiguous:
                 replay = ExperienceReplay()
-                return sum([self.sample(1, episodes=True) for _ in range(size)], replay)
+                return sum([self.sample(
+                    size=1,
+                    episodes=True,
+                    contiguous=False,
+                    nsteps=nsteps,
+                    discount=discount,
+                ) for _ in range(size)], replay)
             else:  # Sample 'size' contiguous episodes
-                num_episodes = self.done().sum().int().item()
-                end = random.randint(size-1, num_episodes-size)
+                dones = self.done()
+                num_episodes = dones.sum().int().item()
+                end = random.randint(0, num_episodes-size)
                 # Find idx of the end-th done
                 count = 0
-                dones = self.done()
                 for idx, d in reversed(list(enumerate(dones))):
                     if bool(d):
                         if count >= end:
@@ -426,7 +436,44 @@ class ExperienceReplay(list):
                 indices = [random.randint(0, length) for _ in range(size)]
 
         # Fill the sample
-        storage = [self[idx] for idx in indices]
+        if nsteps == 1:
+            storage = [self[idx] for idx in indices]
+        else:
+            assert not self.vectorized, \
+                'Cannot sample n-steps with vectorized replays yet.'
+            assert nsteps > 0, 'Invalid nsteps < 1.'
+            # TODO: These two loops are quite slow.
+            enum_steps = list(range(1, nsteps))
+            replay_size = len(self)
+            for idx, index in enumerate(indices):
+                sars = self._storage[index]
+                state = sars.state
+                action = sars.action
+                next_state = sars.next_state
+                done = sars.done
+                reward = sars.reward
+                for i in enum_steps:
+                    j = i + index
+                    if done or j >= replay_size:
+                        break
+                    next_sars = self._storage[j]
+                    reward = reward + discount**i * next_sars.reward
+                    done = next_sars.done
+                    next_state = next_sars.next_state
+                new_sars = Transition(
+                    state=state,
+                    action=action,
+                    reward=reward,
+                    next_state=next_state,
+                    done=done,
+                )
+                for field in sars._fields[5:]:
+                    super(Transition, new_sars).__setattr__(
+                        field,
+                        getattr(sars, field),
+                    )
+                indices[idx] = new_sars
+            storage = indices
         return ExperienceReplay(
             storage=storage,
             device=self.device,
