@@ -202,3 +202,80 @@ def conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-8):
         vector_to_parameters(x, shape)
         x = shape
     return x
+
+
+def line_search(
+    params_init,
+    params_update,
+    model,
+    stop_criterion,
+    initial_stepsize=1.0,
+    backtrack_factor=0.5,
+    max_iterations=15,
+):
+    """
+    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py)
+
+    **Description**
+
+    Computes line-search for model parameters given a parameter update and a stopping criterion.
+
+    **Credit**
+
+    Adapted from Kai Arulkumaran's implementation, with additions inspired from John Schulman's implementation.
+
+    **References**
+
+    1. Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.
+
+    **Arguments**
+
+    * **params_init** (tensor or iteratble) - Initial parameter values.
+    * **params_update** (tensor or iteratble) - Update direction.
+    * **model** (Module) - The model to be updated.
+    * **stop_criterion** (callable) - Given a model, decided whether to stop the line-search.
+    * **initial_stepsize** (float, *optional*, default=1.0) - Initial stepsize of search.
+    * **backtrack_factor** (float, *optional*, default=0.5) - Backtracking factor.
+    * **max_iterations** (int, *optional*, default=15) - Max number of backtracking iterations.
+
+    **Returns**
+
+    * **new_model** (Module) - The updated model if line-search is successful, else the model with initial parameter values.
+
+    **Example**
+
+    ~~~python
+    def ls_criterion(new_policy):
+        new_density = new_policy(states)
+        new_kl = kl_divergence(old_density, new_densityl).mean()
+        new_loss = - qvalue(new_density.sample()).mean()
+        return new_loss < policy_loss and new_kl < max_kl
+
+    with torch.no_grad():
+        policy = trpo.line_search(
+            params_init=policy.parameters(),
+            params_update=step,
+            model=policy,
+            criterion=ls_criterion
+        )
+    ~~~
+    """
+    # preprocess inputs
+    if not isinstance(params_init, th.Tensor):
+        params_init = _parameters_to_vector(params_init)
+    if not isinstance(params_update, th.Tensor):
+        params_update = _parameters_to_vector(params_update)
+
+    # line-search on stepsize
+    for iteration in range(max_iterations):
+        stepsize = initial_stepsize * backtrack_factor**iteration
+        vector_to_parameters(
+            params_init - stepsize * params_update,
+            model.parameters(),
+        )
+        if stop_criterion(model):
+            return model
+
+    # search failed
+    vector_to_parameters(params_init, model.parameters())
+    return model
