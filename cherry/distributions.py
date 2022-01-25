@@ -11,11 +11,47 @@ import torch as th
 import torch.nn as nn
 import cherry as ch
 
-from torch.distributions import (Categorical,
-                                 Normal,
-                                 Distribution)
+from torch.distributions import Distribution
 
 from gym.spaces import Discrete
+
+
+class Categorical(th.distributions.Categorical):
+
+    """
+    Inspired from Kostrikov, returns samples and log_probs with the right shapes.
+    Includes a mode() method for deterministic sampling.
+    """
+
+    def sample(self):
+        samples = super(Categorical, self).sample()
+        return samples.unsqueeze(-1)
+
+    def log_prob(self, x):
+        log_prob = super(Categorical, self).log_prob(x.reshape(-1))
+        return log_prob.reshape_as(x)
+
+    def mode(self):
+        return self.probs.argmax(dim=-1, keepdim=True)
+
+
+class Normal(th.distributions.Normal):
+
+    """
+    Inspired from Kostrikov, returns samples and log_probs with the right shapes.
+    Includes a mode() method for deterministic sampling.
+    """
+
+    def log_prob(self, x):
+        log_prob = super(Normal, self).log_prob(x)
+        return log_prob.sum(-1, keepdim=True)
+
+    def entropy(self):
+        entropy = super(Normal, self).entropy().sum(dim=-1, keepdim=True)
+        return entropy
+
+    def mode(self):
+        return self.mean
 
 
 class Reparameterization(object):

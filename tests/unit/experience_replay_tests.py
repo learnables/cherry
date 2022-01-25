@@ -166,7 +166,8 @@ class TestExperienceReplay(unittest.TestCase):
                 total_episodes = self.replay.done().sum().int().item()
                 for num_episodes in [total_episodes, total_episodes//2, 1]:
                     sample = self.replay.sample(size=num_episodes,
-                                                episodes=True)
+                                                episodes=True,
+                                                contiguous=True)
                     num_sampled_episodes = sample.done().sum().int().item()
                     self.assertEqual(num_sampled_episodes, num_episodes)
                     for i, sars in enumerate(sample[:-1]):
@@ -432,6 +433,62 @@ class TestExperienceReplay(unittest.TestCase):
                             val1.device == val2.device,
                             'flatten device misatch',
                         )
+
+    def test_nsteps(self):
+        episode_length = 10
+        num_episodes = 20
+        tensor = th.ones(10)
+        replay = ch.ExperienceReplay()
+        for i in range(1, 1+(num_episodes * episode_length)):
+            replay.append(
+                state=tensor * i,
+                action=tensor * i,
+                reward=i,
+                next_state=tensor * i,
+                done=bool(i % episode_length == 0),
+                extra1=tensor + 1,
+                extra2=tensor + 2,
+                extra3=tensor + 3,
+                idx=i-1,
+            )
+        for bsz in [0, 1, 16]:
+            for nsteps in [1, 3, 15]:
+                for contiguous in [False, True]:
+                    for episodes in [False, True]:
+                        for discount in [0.0, 0.5, 1.0, 1]:
+                            batch = replay.sample(
+                                size=bsz,
+                                contiguous=contiguous,
+                                episodes=episodes,
+                                nsteps=nsteps,
+                                discount=discount,
+                            )
+
+                            # test basic things
+                            length = bsz * episode_length if episodes else bsz
+                            self.assertEqual(len(batch), length)
+                            if episodes:
+                                num_eps = sum([replay[sars.idx.int().item()].done for sars in batch])
+                                self.assertEqual(bsz, num_eps)
+                            for i, sars in enumerate(batch):
+                                self.assertTrue(close(sars.extra1, tensor+1))
+                                self.assertTrue(close(sars.extra2, tensor+2))
+                                self.assertTrue(close(sars.extra3, tensor+3))
+                                if contiguous and i < length - 1:
+                                    self.assertTrue(batch[i].idx + 1 == batch[i+1].idx)
+
+                            # test next_state, done, discounting works
+                            for sars in batch:
+                                idx = sars.idx.int().item()
+                                sars_reward = 0.0
+                                for n in range(nsteps):
+                                    next_sars = replay[idx+n]
+                                    sars_reward = sars_reward + discount**n * next_sars.reward.item()
+                                    if next_sars.done:
+                                        break
+                                self.assertTrue(close(sars.next_state, next_sars.next_state))
+                                self.assertTrue(close(sars.done, next_sars.done))
+                                self.assertTrue(close(sars.reward, sars_reward))
 
 
 if __name__ == '__main__':
