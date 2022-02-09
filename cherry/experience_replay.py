@@ -54,9 +54,9 @@ class Transition(object):
         super(Transition, self).__setattr__('device', device)
         super(Transition, self).__setattr__(
             '_fields',
-            ['state', 'action', 'reward', 'next_state', 'done']
+            ['state', 'action', 'reward', 'next_state', 'done', 'device']
         )
-        values = [state, action, reward, next_state, done]
+        values = [state, action, reward, next_state, done, device]
         for key, val in zip(self._fields, values):
             super(Transition, self).__setattr__(key, val)
 
