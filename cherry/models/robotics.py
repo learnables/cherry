@@ -155,7 +155,9 @@ class LinearValue(nn.Module):
         reg = reg.to(states.device)
         A = features.t() @ features + reg
         b = features.t() @ returns
-        if hasattr(th, 'lstsq'):  # Required for torch < 1.3.0
+        if hasattr(th, 'linalg') and hasattr(th.linalg, 'lstsq'):
+            coeffs = th.linalg.lstsq(A, b).solution
+        elif hasattr(th, 'lstsq'):  # Required for torch < 1.3.0
             coeffs, _ = th.lstsq(b, A)
         else:
             coeffs, _ = th.gels(b, A)
