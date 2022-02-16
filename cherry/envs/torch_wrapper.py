@@ -19,7 +19,7 @@ class Torch(Wrapper):
         env.step(action)
     """
 
-    def __init__(self, env, device='cpu', env_device='cpu'):
+    def __init__(self, env, device=None, env_device=None):
         super(Torch, self).__init__(env)
         self.device = device
         self.env_device = env_device
@@ -33,7 +33,8 @@ class Torch(Wrapper):
 
     def _convert_atomic_action(self, action):
         if isinstance(action, th.Tensor):
-            action = action.to(self.env_device)
+            if self.env_device is not None:
+                action = action.to(self.env_device)
             action = action.view(-1).cpu().detach().numpy()
         if self.discrete_action:
             if not isinstance(action, (int, float)):
@@ -56,13 +57,15 @@ class Torch(Wrapper):
         action = self._convert_action(action)
         state, reward, done, info = self.env.step(action)
         state = self._convert_state(state)
-        state = state.to(self.device)
+        if self.device is not None:
+            state = state.to(self.device)
         return state, reward, done, info
 
     def reset(self, *args, **kwargs):
         state = self.env.reset(*args, **kwargs)
         state = self._convert_state(state)
-        state = state.to(self.device)
+        if self.device is not None:
+            state = state.to(self.device)
         return state
 
     def seed(self, *args, **kwargs):
