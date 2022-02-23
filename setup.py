@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from encodings import utf_8
 import re
 from setuptools import (
     setup,
@@ -22,7 +23,7 @@ setup(
     packages=find_packages(),
     version=VERSION,
     description='PyTorch Reinforcement Learning Framework for Researchers',
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='UTF-8').read(),
     long_description_content_type='text/markdown',
     author='Seb Arnold',
     author_email='smr.arnold@gmail.com',
