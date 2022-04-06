@@ -2,9 +2,9 @@
 
 import re
 from setuptools import (
-        setup,
-        find_packages,
-        )
+    setup,
+    find_packages,
+)
 
 # Parses version number: https://stackoverflow.com/a/7071358
 VERSIONFILE = 'cherry/_version.py'
@@ -35,5 +35,6 @@ setup(
         'numpy>=1.15.4',
         'gym>=0.10.9',
         'torch>=1.0.0',
+        'dotmap',
     ],
 )

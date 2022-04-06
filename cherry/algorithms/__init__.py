@@ -6,3 +6,7 @@ from . import a2c
 from . import sac
 from . import ddpg
 from . import trpo
+from . import drq
+
+from .sac import SAC
+from .drq import DrQ
