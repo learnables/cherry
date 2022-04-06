@@ -273,7 +273,7 @@ class SAC(AlgorithmArguments):
         self,
         replay,
         policy,
-        qvalue,
+        action_value,
         target_value,
         log_alpha,
         target_entropy,
@@ -331,7 +331,7 @@ class SAC(AlgorithmArguments):
         # Update Q-function
         if update_value:
             actions = batch.action()
-            qf1_estimate, qf2_estimate = qvalue.twin_values(
+            qf1_estimate, qf2_estimate = action_value.twin(
                 states,
                 actions.detach(),
             )
@@ -388,7 +388,7 @@ class SAC(AlgorithmArguments):
                 states = features(states).detach()
             density = policy(states)
             new_actions, log_probs = SAC.actions_log_probs(density)
-            q_values = qvalue(states, new_actions)
+            q_values = action_value(states, new_actions)
             policy_loss = SAC.policy_loss(log_probs, q_values, alpha.detach())
 
             policy_optimizer.zero_grad()
@@ -402,7 +402,7 @@ class SAC(AlgorithmArguments):
         if update_target:
             cherry.models.polyak_average(
                 source=target_value,
-                target=qvalue,
+                target=action_value,
                 alpha=config.target_polyak_weight,
             )
             if features is not None:

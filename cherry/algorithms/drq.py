@@ -3,10 +3,9 @@
 import torch
 import cherry
 import dataclasses
-import dotmap
 
-from .sac import SAC
 from .arguments import AlgorithmArguments
+from .sac import SAC
 
 
 @dataclasses.dataclass
@@ -30,20 +29,20 @@ class DrQ(AlgorithmArguments):
     use_automatic_entropy_tuning: bool = True
     policy_delay: int = 2
     target_delay: int = 2
-    target_polyak_weight: float = 0.01
+    target_polyak_weight: float = 0.995
 
     def update(
         self,
         replay,
         policy,
-        qvalue,
-        target_qvalue,
+        action_value,
+        target_action_value,
         features,
         target_features,
         log_alpha,
         target_entropy,
         policy_optimizer,
-        qvalue_optimizer,
+        action_value_optimizer,
         features_optimizer,
         alpha_optimizer,
         update_policy=True,
@@ -54,7 +53,7 @@ class DrQ(AlgorithmArguments):
         device=None,
         **kwargs,
     ):
-        stats = dotmap.DotMap()
+        stats = {}
 
         # unwrap hyper-parameters
         config = self.unpack_config(self, kwargs)
@@ -100,11 +99,11 @@ class DrQ(AlgorithmArguments):
         # Update Q-function
         if update_value:
             actions = batch.action()
-            qf1_estimate, qf2_estimate = qvalue.twin_values(
+            qf1_estimate, qf2_estimate = action_value.twin(
                 states,
                 actions.detach(),
             )
-            aug_qf1_estimate, aug_qf2_estimate = qvalue.twin_values(
+            aug_qf1_estimate, aug_qf2_estimate = action_value.twin(
                 aug_states,
                 actions.detach(),
             )
@@ -172,10 +171,10 @@ class DrQ(AlgorithmArguments):
             value_loss += (aug_critic_qf1_loss + aug_critic_qf2_loss) / 2.0
 
             # Update Critic Networks
-            qvalue_optimizer.zero_grad()
+            action_value_optimizer.zero_grad()
             features_optimizer.zero_grad()
             value_loss.backward()
-            qvalue_optimizer.step()
+            action_value_optimizer.step()
             features_optimizer.step()
 
             stats['drq/qf_loss1'] = critic_qf1_loss.item()
@@ -191,7 +190,7 @@ class DrQ(AlgorithmArguments):
                 states = features(states).detach()
             density = policy(states)
             new_actions, log_probs = SAC.actions_log_probs(density)
-            q_values = qvalue(states, new_actions)
+            q_values = action_value(states, new_actions)
             policy_loss = SAC.policy_loss(log_probs, q_values, alpha.detach())
 
             policy_optimizer.zero_grad()
@@ -204,8 +203,8 @@ class DrQ(AlgorithmArguments):
         # Move target approximator parameters towards critic
         if update_target:
             cherry.models.polyak_average(
-                source=target_qvalue,
-                target=qvalue,
+                source=target_action_value,
+                target=action_value,
                 alpha=config.target_polyak_weight,
             )
             if features is not None:
