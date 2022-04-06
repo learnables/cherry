@@ -14,7 +14,7 @@ from gym.vector import AsyncVectorEnv
 from memorize_digits import MemorizeDigits
 from dummy_env import Dummy
 
-gym.registration.register(
+gym.envs.registration.register(
     id="MemorizeDigits-v0",
     entry_point="memorize_digits:MemorizeDigits",
     reward_threshold=20,
