@@ -25,7 +25,7 @@ class TestBaseWrapper(unittest.TestCase):
         pass
 
     def test_sizes(self):
-        for env_name in ['CartPole-v0', 'Pendulum-v0']:
+        for env_name in ['CartPole-v1', 'Pendulum-v1']:
             ref_env = gym.make(env_name)
             cherry_env = cherry.envs.Torch(ref_env)
 

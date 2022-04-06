@@ -10,9 +10,15 @@ import cherry.envs as envs
 
 import gym
 from gym.vector import AsyncVectorEnv
-from gym.envs.unittest import MemorizeDigits
 
+from memorize_digits import MemorizeDigits
 from dummy_env import Dummy
+
+gym.registration.register(
+    id="MemorizeDigits-v0",
+    entry_point="memorize_digits:MemorizeDigits",
+    reward_threshold=20,
+)
 
 
 NUM_STEPS = 10
