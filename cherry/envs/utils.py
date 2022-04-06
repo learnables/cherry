@@ -8,11 +8,12 @@ Helper functions for OpenAI Gym environments.
 
 
 import operator
+import numpy as np
 
 from functools import reduce
 from collections import OrderedDict
 
-from gym.spaces import Box, Discrete, Dict, Tuple
+from gym.spaces import Box, Discrete, Dict, Tuple, MultiDiscrete
 
 
 def num_envs(env):
@@ -41,8 +42,8 @@ def is_discrete(space, vectorized=False):
         the underlying environment (False).
     """
     msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete, Dict, Tuple)), msg
-    if isinstance(space, Discrete):
+    assert isinstance(space, (Box, Discrete, Dict, Tuple, MultiDiscrete)), msg
+    if isinstance(space, (Discrete, MultiDiscrete)):
         return True
     if isinstance(space, Box):
         return False
@@ -72,9 +73,13 @@ def get_space_dimension(space, vectorized_dims=False):
         environment (False).
     """
     msg = 'Space type not supported.'
-    assert isinstance(space, (Box, Discrete, Dict, Tuple)), msg
+    assert isinstance(space, (Box, Discrete, Dict, Tuple, MultiDiscrete)), msg
     if isinstance(space, Discrete):
         return space.n
+    if isinstance(space, MultiDiscrete):
+        if vectorized_dims:
+            return reduce(operator.mul, space.nvec, 1)
+        return int(space.nvec[0])
     if isinstance(space, Box):
         if len(space.shape) > 1 and not vectorized_dims:
             return reduce(operator.mul, space.shape[1:], 1)

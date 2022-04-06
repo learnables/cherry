@@ -54,7 +54,7 @@ class Transition(object):
         super(Transition, self).__setattr__('device', device)
         super(Transition, self).__setattr__(
             '_fields',
-            ['state', 'action', 'reward', 'next_state', 'done', 'device']
+            ['state', 'action', 'reward', 'next_state', 'done']
         )
         values = [state, action, reward, next_state, done, device]
         for key, val in zip(self._fields, values):
@@ -87,6 +87,7 @@ class Transition(object):
         state = {
             key: getattr(self, key) for key in self._fields
         }
+        state['device'] = self.device
         return state
 
     def __setstate__(self, state):
@@ -95,6 +96,7 @@ class Transition(object):
             setattr(self, key, value)
             if key not in self._fields:
                 self._fields.append(key)
+        self.device = state['device']
 
     def cpu(self):
         return self.to('cpu')
