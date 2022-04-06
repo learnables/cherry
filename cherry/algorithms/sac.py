@@ -25,11 +25,24 @@ import cherry
 import dotmap
 
 from cherry import debug
-from cherry.algoriths import AlgorithmsArguments
+from .arguments import AlgorithmArguments
 
 
 @dataclasses.dataclass
-class SAC(AlgorithmsArguments):
+class SAC(AlgorithmArguments):
+
+    """
+    <a href="" class="source-link">[Source]</a>
+
+    ## Description
+    ## Arguments
+
+    * `batch_size` (int) - The number of samples to get from the replay.
+
+    ## Example
+    ~~~python
+    ~~~
+    """
 
     batch_size: int = 512
     discount: float = 0.99

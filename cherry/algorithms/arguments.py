@@ -3,31 +3,25 @@
 import dataclasses
 import dotmap
 
-from collections import Mapping
 
+class AlgorithmArguments:
 
-@dataclasses.dataclass
-class AlgorithmArguments(Mapping):
-
-    # *** Turns AlgorithmArguments instances into dataclasses **
-
-    def __len__(self):
-        return len(dataclasses.fields(self))
-
-    def __iter__(self):
-        for field in dataclasses.fields(self):
-            yield field.name
-
-    def __getitem__(self, item):
-        return self.__dict__[item]
+    """
+    Utility functions to work with dataclass algorithms.
+    """
 
     @staticmethod
     def unpack_config(obj, config):
         """
         Returns a DotMap, picking parameters first from config
         and if not present from obj.
+
+        ## Arguments
+
+        * `obj` (dataclass) - Algorithm to help fill missing values in config.
+        * `config` (dict) - Partial configuration to get values from.
         """
         args = dotmap.DotMap()
-        for name in obj:
-            args[name] = config.get(name, obj[name])
+        for field in dataclasses.fields(obj):
+            args[field.name] = config.get(field.name, getattr(obj, field.name))
         return args

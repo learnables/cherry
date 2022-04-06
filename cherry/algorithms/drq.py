@@ -5,11 +5,25 @@ import cherry
 import dataclasses
 import dotmap
 
-from cherry.algorithms import AlgorithmArguments, SAC
+from .sac import SAC
+from .arguments import AlgorithmArguments
 
 
 @dataclasses.dataclass
 class DrQ(AlgorithmArguments):
+
+    """
+    <a href="" class="source-link">[Source]</a>
+
+    ## Description
+    ## Arguments
+
+    * `batch_size` (int) - The number of samples to get from the replay.
+
+    ## Example
+    ~~~python
+    ~~~
+    """
 
     batch_size: int = 512
     discount: float = 0.99
@@ -18,25 +32,20 @@ class DrQ(AlgorithmArguments):
     target_delay: int = 2
     target_polyak_weight: float = 0.01
 
-    def policy_loss(log_probs, q_curr, alpha=1.0):
-        pass
-
     def update(
         self,
-
-        replay=None,
-        policy=None,
-        qvalue=None,
-        target_qvalue=None,
-        features=None,
-        target_features=None,
-        log_alpha=None,
-        target_entropy=None,
-        policy_optimizer=None,
-        qvalue_optimizer=None,
-        features_optimizer=None,
-        alpha_optimizer=None,
-
+        replay,
+        policy,
+        qvalue,
+        target_qvalue,
+        features,
+        target_features,
+        log_alpha,
+        target_entropy,
+        policy_optimizer,
+        qvalue_optimizer,
+        features_optimizer,
+        alpha_optimizer,
         update_policy=True,
         update_target=False,
         update_value=True,
@@ -51,7 +60,7 @@ class DrQ(AlgorithmArguments):
         config = self.unpack_config(self, kwargs)
 
         if augmentation_transform is None:
-            augmentation_transform = RandomShiftsAug()
+            augmentation_transform = RandomShiftsAug(4)
 
         # Sample mini-batch
         batch = replay.sample(config.batch_size)
@@ -250,10 +259,3 @@ class RandomShiftsAug(torch.nn.Module):
             grid,
             padding_mode='zeros',
             align_corners=False)
-
-
-if __name__ == "__main__":
-    import dataclasses
-    drq = DrQ()
-    drq.update()
-    print(dataclasses.is_dataclass(drq))
