@@ -7,11 +7,11 @@ import subprocess
 import tempfile
 
 from gym import error
-from gym.utils import closer
 from gym.wrappers.monitoring import video_recorder as GymVideoRecorder
 from datetime import datetime
 
 from .base import Wrapper
+from .closer import Closer
 
 
 def touch(path):
@@ -319,4 +319,4 @@ class Recorder(Wrapper):
         return self.output_files
 
 
-recorder_closer = closer.Closer()
+recorder_closer = Closer()
