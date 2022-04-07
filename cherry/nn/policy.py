@@ -31,9 +31,6 @@ class Policy(torch.nn.Module):
 
     """
 
-    def __init__(self):
-        super(Policy, self).__init__()
-
     def log_prob(self, state, action):
         density = self(state)
         return density.log_prob(action)
