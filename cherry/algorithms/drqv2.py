@@ -32,7 +32,7 @@ class DrQv2(AlgorithmArguments):
     target_delay: int = 1
     target_polyak_weight: float = 0.995
     nsteps: int = 1
-    std_decay: float = 0.0  # decent value: 0.9999954
+    std_decay: float = 0.0  # decent value: 0.99997
     min_std: float = 0.1
 
     def update(
@@ -121,9 +121,5 @@ class DrQv2(AlgorithmArguments):
                 target=action_value,
                 alpha=config.target_polyak_weight,
             )
-
-        # reduce std of policy if necessary
-        if config.std_decay > 0.0 and hasattr(policy, 'std'):
-            policy.std = max(config.min_std, config.std_decay * policy.std)
 
         return stats
