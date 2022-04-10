@@ -95,7 +95,7 @@ class ActorCritic(nn.Module):
 
 class Env():
     def __init__(self):
-        self._env = gym.make('Pendulum-v0')
+        self._env = gym.make('Pendulum-v1')
         self._env.seed(SEED)
 
     def reset(self):
@@ -194,7 +194,7 @@ def train_cherry():
     np.random.seed(SEED)
     torch.manual_seed(SEED)
 
-    env = gym.make('Pendulum-v0')
+    env = gym.make('Pendulum-v1')
     env.seed(SEED)
     env = envs.Torch(env)
     env = envs.Runner(env)

@@ -377,6 +377,9 @@ class TestExperienceReplay(unittest.TestCase):
             flat_replay = ch.ExperienceReplay(device=replay.device, vectorized=False)
             for sars in replay._storage:
                 for i in range(sars.done.shape[0]):
+                    for field in sars._fields:
+                        if getattr(sars, field) is None:
+                            __import__('pdb').set_trace()
                     transition = {
                         field: getattr(sars, field)[i] for field in sars._fields
                     }

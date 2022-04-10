@@ -96,11 +96,15 @@ tests:
 	python -W ignore -m unittest discover -s 'tests/' -p '*_tests.py' -v
 	make lint
 
-docs:
-	cd docs && pydocmd build && pydocmd serve
+predocs:
+	cp ./README.md docs/index.md
+	cp ./CHANGELOG.md docs/changelog.md
 
-docs-deploy:
-	cd docs && pydocmd gh-deploy
+docs: predocs
+	mkdocs serve
+
+docs-deploy: predocs
+	mkdocs gh-deploy
 
 # https://dev.to/neshaz/a-tutorial-for-tagging-releases-in-git-147e
 release:

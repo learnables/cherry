@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# -*- coding=utf-8 -*-
 
 import torch
 
@@ -30,9 +30,6 @@ class Policy(torch.nn.Module):
     ~~~
 
     """
-
-    def __init__(self):
-        super(Policy, self).__init__()
 
     def log_prob(self, state, action):
         density = self(state)
