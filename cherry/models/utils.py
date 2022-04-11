@@ -6,17 +6,14 @@ from torch import nn
 class RandomPolicy(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Policy that randomly samples actions from the environment action space.
 
-    **Arguments**
+    ## Example
 
-    * **env** (Environment) - Environment from which to sample actions.
-
-    **Example**
     ~~~python
     policy = ch.models.RandomPolicy(env)
     env = envs.Runner(env)
@@ -25,6 +22,11 @@ class RandomPolicy(nn.Module):
     """
 
     def __init__(self, env, *args, **kwargs):
+        """
+        ## Arguments
+
+        * `env` (Environment) - Environment from which to sample actions.
+        """
         super(RandomPolicy, self).__init__()
         self.env = env
 
@@ -34,26 +36,27 @@ class RandomPolicy(nn.Module):
 
 def polyak_average(source, target, alpha):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Shifts the parameters of source towards those of target.
 
     Note: the parameter `alpha` indicates the convex combination weight of the source.
     (i.e. the old parameters are kept at a rate of `alpha`.)
 
-    **References**
+    ## References
 
     1. Polyak, B., and A. Juditsky. 1992. “Acceleration of Stochastic Approximation by Averaging.”
 
-    **Arguments**
+    ## Arguments
 
-    * **source** (nn.Module) - The module to be shifted.
-    * **target** (nn.Module) - The module indicating the shift direction.
-    * **alpha** (float) - Strength of the shift.
+    * `source` (Module) - The module to be shifted.
+    * `target` (Module) - The module indicating the shift direction.
+    * `alpha` (float) - Strength of the shift.
 
-    **Example**
+    ## Example
+
     ~~~python
     target_qf = nn.Linear(23, 34)
     qf = nn.Linear(23, 34)
