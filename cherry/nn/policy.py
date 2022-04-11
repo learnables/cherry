@@ -35,6 +35,18 @@ class Policy(torch.nn.Module):
 
     """
 
+    def forward(self, state):
+        """
+        ## Description
+
+        Should return a `Distribution` instance correspoinding to the policy density for `state`.
+
+        ## Arguments
+
+        * `state` (Tensor) - State where the policy should be computed.
+        """
+        raise NotADirectoryError
+
     def log_prob(self, state, action):
         """
         ## Description

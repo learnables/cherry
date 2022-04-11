@@ -12,7 +12,6 @@
 ::: cherry.nn.ActionValue
     selection:
       members:
-        - __init__
         - forward
         - all_action_values
 
@@ -27,23 +26,18 @@
     selection:
       members:
         - __init__
-        - forward
 
 ::: cherry.nn.EpsilonGreedy
     selection:
       members:
         - __init__
-        - forward
 
 ::: cherry.nn.MLP
     selection:
       members:
         - __init__
-        - forward
 
 ::: cherry.nn.Lambda
     selection:
       members:
         - __init__
-        - forward
-

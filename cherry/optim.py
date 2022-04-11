@@ -7,16 +7,16 @@ Optimization utilities for scalable, high-performance reinforcement learning.
 """
 
 import torch.distributed as dist
-from torch.optim.optimizer import Optimizer, required
+from torch.optim.optimizer import Optimizer
 
 
 class Distributed(Optimizer):
 
     """
 
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/optim.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/optim.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Synchronizes the gradients of a model across replicas.
 
@@ -28,18 +28,11 @@ class Distributed(Optimizer):
     If `sync is None`, this never happens except upon initialization of the
     class.
 
-    **Arguments**
-
-    * **params** (iterable) - Iterable of parameters.
-    * **opt** (Optimizer) - The optimizer to wrap and synchronize.
-    * **sync** (int, *optional*, default=None) - Parameter
-      synchronization frequency.
-
-    **References**
+    ## References
 
     1. Zinkevich et al. 2010. “Parallelized Stochastic Gradient Descent.”
 
-    **Example**
+    ## Example
 
     ~~~python
     opt = optim.Adam(model.parameters())
@@ -52,6 +45,13 @@ class Distributed(Optimizer):
     """
 
     def __init__(self, params, opt, sync=None):
+        """
+        ## Arguments
+
+        * `params` (iterable) - Iterable of parameters.
+        * `opt` (Optimizer) - The optimizer to wrap and synchronize.
+        * `sync` (int, *optional*, default=None) - Parameter synchronization frequency.
+        """
         self.world_size = dist.get_world_size()
         self.rank = dist.get_rank()
         self.opt = opt
@@ -63,14 +63,13 @@ class Distributed(Optimizer):
 
     def sync_parameters(self, root=0):
         """
-        **Description**
+        ## Description
 
         Broadcasts all parameters of root to all other replicas.
 
-        **Arguments**
+        ## Arguments
 
-        * **root** (int, *optional*, default=0) - Rank of root replica.
-
+        * `root` (int, *optional*, default=0) - Rank of root replica.
         """
         if self.world_size > 1:
             for group in self.param_groups:

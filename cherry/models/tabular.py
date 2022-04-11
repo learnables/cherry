@@ -51,6 +51,15 @@ class StateValueFunction(nn.Module):
                 init(self.values)
 
     def forward(self, state):
+        """
+        ## Description
+
+        Returns the state value of a one-hot encoded state.
+
+        ## Arguments
+
+        * `state` (Tensor) - State to be evaluated.
+        """
         return state.view(-1, self.state_size) @ self.values
 
 
@@ -105,6 +114,16 @@ class ActionValueFunction(cherry.nn.ActionValue):
                 init(self.values)
 
     def forward(self, state, action=None):
+        """
+        ## Description
+
+        Returns the action value of a one-hot encoded state and one-hot encoded action.
+
+        ## Arguments
+
+        * `state` (Tensor) - State to be evaluated.
+        * `action` (Tensor) - Action to be evaluated.
+        """
         action_values = (state @ self.values).view(-1, self.action_size)
         if action is None:
             return action_values

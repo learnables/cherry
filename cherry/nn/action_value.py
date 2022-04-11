@@ -30,9 +30,35 @@ class ActionValue(torch.nn.Module):
     """
 
     def forward(self, state, action):
+        """
+        ## Description
+
+        Returns the scalar value for taking action `action` in state `state`.
+
+        ## Arguments
+
+        * `state` (Tensor) - State to be evaluated.
+        * `action` (Tensor) - Action to be evaluated.
+        """
         raise NotImplementedError
 
     def all_action_values(self, state):
+        """
+        ## Description
+
+        Given a state, returns the value of all possible actions.
+
+        Useful when implementing variants of DQN.
+
+        ## Arguments
+
+        * `state` (Tensor) -  State to be evaluated. Shape: (batch_size, state_dim)
+        * `action` (Tensor) - Action to be evaluated. Shape: (batch_size, action_dim)
+
+        ## Returns
+
+        * `value` (Tensor) - Value of taking `action` in `state`. Shape: (batch_size, 1)
+        """
         raise NotImplementedError
 
 
@@ -40,16 +66,57 @@ class Twin(ActionValue):
 
     """
     <a href="https://github.com/learnables/cherry/blob/master/cherry/nn/action_value.py" class="source-link">[Source]</a>
+
+    ## Description
+
+    Helper class to implement Twin action-value functions as described in [1].
+
+    ## References
+
+    1. Fujimoto et al., "Addressing Function Approximation Error in Actor-Critic Methods". ICML 2018.
+
+    ## Example
+
+    ~~~python
+    qvalue = Twin(QValue(), QValue())
+    values = qvalue(states, actions)
+    values1, values1 = qvalue.twin(states, actions)
+    ~~~
     """
 
     def __init__(self, *action_values):
+        """
+        ## Arguments
+
+        * `qvalue1, qvalue2, ...` (ActionValue) - Action value functions.
+        """
         super(Twin, self).__init__()
         self.action_values = torch.nn.ModuleList(action_values)
 
     def twin(self, state, action):
+        """
+        ## Description
+
+        Returns the values of each individual value function wrapped by this class.
+
+        ## Arguments
+
+        * `state` (Tensor) - State to be evaluated.
+        * `action` (Tensor) - Action to be evaluated.
+        """
         return [qf(state, action) for qf in self.action_values]
 
     def forward(self, state, action):
+        """
+        ## Description
+
+        Returns the minimum value computed by the individual value functions wrapped by this class.
+
+        ## Arguments
+
+        * `state` (Tensor) - The state to evaluate.
+        * `action` (Tensor) - The action to evaluate.
+        """
         return torch.minimum(*self.twin(state, action))
 
     def all_action_values(self, state):

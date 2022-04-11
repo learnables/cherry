@@ -179,6 +179,15 @@ class LinearValue(nn.Module):
             coeffs, _ = th.gels(b, A)
         self.linear.weight.data = coeffs.data.t()
 
-    def forward(self, states):
-        features = self._features(states)
+    def forward(self, state):
+        """
+        ## Description
+
+        Computes the value of a state using the linear function approximator.
+
+        ## Arguments
+
+        * `state` (Tensor) - The state to evaluate.
+        """
+        features = self._features(state)
         return self.linear(features)
