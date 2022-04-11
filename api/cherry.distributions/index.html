@@ -1,0 +1,1403 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+        <link rel="canonical" href="http://learnables.github.io/cherry/api/cherry.distributions/">
+      
+      
+        <meta name="author" content="Séb Arnold">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicons/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>cherry.distributions - cherry</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700%7CUbuntu+Mono&display=fallback">
+        <style>body,input{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-68693545-3", "seba-1511.github.com")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#cherrydistributions" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="http://learnables.github.io/cherry/" title="cherry" aria-label="cherry" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="../../assets/images/cherry.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              cherry
+            </span>
+            <span class="md-header-nav__topic">
+              
+                cherry.distributions
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="http://learnables.github.io/cherry/" title="cherry" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="../../assets/images/cherry.png" width="48" height="48">
+      
+    </a>
+    cherry
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/getting_started/" title="Getting Started with Cherry" class="md-nav__link">
+      Getting Started with Cherry
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry/" title="cherry" class="md-nav__link">
+      cherry
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.algorithms/" title="cherry.algorithms" class="md-nav__link">
+      cherry.algorithms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.debug/" title="cherry.debug" class="md-nav__link">
+      cherry.debug
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        cherry.distributions
+      </label>
+    
+    <a href="./" title="cherry.distributions" class="md-nav__link md-nav__link--active">
+      cherry.distributions
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Categorical" class="md-nav__link">
+    Categorical
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Categorical.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Normal" class="md-nav__link">
+    Normal
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Normal.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal" class="md-nav__link">
+    TanhNormal
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.mean" class="md-nav__link">
+    mean()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.rsample_and_log_prob" class="md-nav__link">
+    rsample_and_log_prob()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.sample_and_log_prob" class="md-nav__link">
+    sample_and_log_prob()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Reparameterization" class="md-nav__link">
+    Reparameterization
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Reparameterization.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.ActionDistribution" class="md-nav__link">
+    ActionDistribution
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.ActionDistribution.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.envs/" title="cherry.envs" class="md-nav__link">
+      cherry.envs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.models/" title="cherry.models" class="md-nav__link">
+      cherry.models
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn/" title="cherry.nn" class="md-nav__link">
+      cherry.nn
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn.init/" title="cherry.nn.init" class="md-nav__link">
+      cherry.nn.init
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.optim/" title="cherry.optim" class="md-nav__link">
+      cherry.optim
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.pg/" title="cherry.pg" class="md-nav__link">
+      cherry.pg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.plot/" title="cherry.plot" class="md-nav__link">
+      cherry.plot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.td/" title="cherry.td" class="md-nav__link">
+      cherry.td
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.wrappers/" title="cherry.wrappers" class="md-nav__link">
+      cherry.wrappers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/tree/master/examples" title="Examples" class="md-nav__link">
+      Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/" title="GitHub" class="md-nav__link">
+      GitHub
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Categorical" class="md-nav__link">
+    Categorical
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Categorical.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Normal" class="md-nav__link">
+    Normal
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Normal.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal" class="md-nav__link">
+    TanhNormal
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.mean" class="md-nav__link">
+    mean()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.mode" class="md-nav__link">
+    mode()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.rsample_and_log_prob" class="md-nav__link">
+    rsample_and_log_prob()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.TanhNormal.sample_and_log_prob" class="md-nav__link">
+    sample_and_log_prob()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.Reparameterization" class="md-nav__link">
+    Reparameterization
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.Reparameterization.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.distributions.ActionDistribution" class="md-nav__link">
+    ActionDistribution
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.distributions.ActionDistribution.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="cherrydistributions">cherry.distributions<a class="headerlink" href="#cherrydistributions" title="Permanent link">&para;</a></h1>
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.distributions.Categorical" class="doc doc-heading">
+        <code>
+cherry.distributions.Categorical            (<span title="torch.distributions.categorical.Categorical">Categorical</span>)
+        </code>
+
+
+
+<a href="#cherry.distributions.Categorical" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.distributions.Categorical--description">Description<a class="headerlink" href="#cherry.distributions.Categorical--description" title="Permanent link">&para;</a></h5>
+<p>Similar to <code>torch.nn.Categorical</code>, but reshapes tensors of N
+samples into (N, 1)-shaped tensors.</p>
+<h5 id="cherry.distributions.Categorical--arguments">Arguments<a class="headerlink" href="#cherry.distributions.Categorical--arguments" title="Permanent link">&para;</a></h5>
+<p>Identical to <code>torch.distribution.Categorical</code>.</p>
+<h5 id="cherry.distributions.Categorical--example">Example<a class="headerlink" href="#cherry.distributions.Categorical--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">dist</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">action_size</span><span class="p">))</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># shape: bsz x 1</span>
+<span class="n">log_probs</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>  <span class="c1"># shape: bsz x 1</span>
+<span class="n">deterministic_action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.Categorical.mode" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.Categorical.mode" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.Categorical.mode--description">Description<a class="headerlink" href="#cherry.distributions.Categorical.mode--description" title="Permanent link">&para;</a></h6>
+<p>Returns the model of normal distribution (ie, argmax over probabilities).</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.distributions.Normal" class="doc doc-heading">
+        <code>
+cherry.distributions.Normal            (<span title="torch.distributions.normal.Normal">Normal</span>)
+        </code>
+
+
+
+<a href="#cherry.distributions.Normal" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.distributions.Normal--description">Description<a class="headerlink" href="#cherry.distributions.Normal--description" title="Permanent link">&para;</a></h5>
+<p>Similar to PyTorch's <code>Independent(Normal(loc, std))</code>: when computing log-densities or the entropy,
+we sum over the last dimension.</p>
+<p>This is typically used to compute log-probabilities of N-dimensional actions
+sampled from a multivariate Gaussian with diagional covariance.</p>
+<h5 id="cherry.distributions.Normal--arguments">Arguments<a class="headerlink" href="#cherry.distributions.Normal--arguments" title="Permanent link">&para;</a></h5>
+<p>Identical to <code>torch.distribution.Normal</code>.</p>
+<h5 id="cherry.distributions.Normal--example">Example<a class="headerlink" href="#cherry.distributions.Normal--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">normal</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">action_size</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">action_size</span><span class="p">))</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="n">normal</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+<span class="n">log_probs</span> <span class="o">=</span> <span class="n">normal</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>  <span class="c1"># shape: bsz x 1</span>
+<span class="n">entropies</span> <span class="o">=</span> <span class="n">normal</span><span class="o">.</span><span class="n">entropy</span><span class="p">()</span>  <span class="c1"># shape: bsz x 1</span>
+<span class="n">deterministic_action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.Normal.mode" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.Normal.mode" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.Normal.mode--description">Description<a class="headerlink" href="#cherry.distributions.Normal.mode--description" title="Permanent link">&para;</a></h6>
+<p>Returns the model of normal distribution (ie, its mean).</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.distributions.TanhNormal" class="doc doc-heading">
+        <code>
+cherry.distributions.TanhNormal            (<span title="torch.distributions.distribution.Distribution">Distribution</span>)
+        </code>
+
+
+
+<a href="#cherry.distributions.TanhNormal" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.distributions.TanhNormal--description">Description<a class="headerlink" href="#cherry.distributions.TanhNormal--description" title="Permanent link">&para;</a></h5>
+<p>Implements a Normal distribution followed by a Tanh, often used with the Soft Actor-Critic.</p>
+<p>This implementation also exposes <code>sample_and_log_prob</code> and <code>rsample_and_log_prob</code>,
+which returns both samples and log-densities.
+The log-densities are computed using the pre-activation values for numerical stability.</p>
+<h5 id="cherry.distributions.TanhNormal--references">References<a class="headerlink" href="#cherry.distributions.TanhNormal--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
+<li>Vitchyr Pong's <a href="https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py">RLkit</a>.</li>
+</ol>
+<p><strong>Example</strong>
+<div class="highlight"><pre><span></span><code><span class="n">mean</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">std</span> <span class="o">=</span> <span class="n">th</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">dist</span> <span class="o">=</span> <span class="n">TanhNormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">rsample</span><span class="p">()</span>
+<span class="n">logprobs</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>  <span class="c1"># Numerically unstable :(</span>
+<span class="n">samples</span><span class="p">,</span> <span class="n">logprobs</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">rsample_and_log_prob</span><span class="p">()</span>  <span class="c1"># Stable :)</span>
+</code></pre></div></p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.TanhNormal.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normal_mean</span><span class="p">,</span> <span class="n">normal_std</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.distributions.TanhNormal.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.TanhNormal.__init__--arguments">Arguments<a class="headerlink" href="#cherry.distributions.TanhNormal.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>normal_mean</code> (tensor) - Mean of the Normal distribution.</li>
+<li><code>normal_std</code> (tensor) - Standard deviation of the Normal distribution.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.TanhNormal.mean" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.TanhNormal.mean" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.TanhNormal.mean--description">Description<a class="headerlink" href="#cherry.distributions.TanhNormal.mean--description" title="Permanent link">&para;</a></h6>
+<p>Returns the mean of the TanhDistribution (ie, tan(normal.mean)).</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.TanhNormal.mode" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.TanhNormal.mode" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.TanhNormal.mode--description">Description<a class="headerlink" href="#cherry.distributions.TanhNormal.mode--description" title="Permanent link">&para;</a></h6>
+<p>Returns the mode of the TanhDistribution (ie, its mean).</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.TanhNormal.rsample_and_log_prob" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">rsample_and_log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.TanhNormal.rsample_and_log_prob" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.TanhNormal.rsample_and_log_prob--description">Description<a class="headerlink" href="#cherry.distributions.TanhNormal.rsample_and_log_prob--description" title="Permanent link">&para;</a></h6>
+<p>Similar to <code>sample_and_log_prob</code> but with reparameterized samples.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.TanhNormal.sample_and_log_prob" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sample_and_log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#cherry.distributions.TanhNormal.sample_and_log_prob" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.TanhNormal.sample_and_log_prob--description">Description<a class="headerlink" href="#cherry.distributions.TanhNormal.sample_and_log_prob--description" title="Permanent link">&para;</a></h6>
+<p>Samples from the TanhNormal and computes the log-density of the
+samples in a numerically stable way.</p>
+<h6 id="cherry.distributions.TanhNormal.sample_and_log_prob--returns">Returns<a class="headerlink" href="#cherry.distributions.TanhNormal.sample_and_log_prob--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>value</code> (tensor) - samples from the TanhNormal.</li>
+<li><code>log_prob</code> (tensor) - log-probabilities of the samples.</li>
+</ul>
+<h6 id="cherry.distributions.TanhNormal.sample_and_log_prob--example">Example<a class="headerlink" href="#cherry.distributions.TanhNormal.sample_and_log_prob--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">tanh_normal</span> <span class="o">=</span> <span class="n">TanhNormal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">action_size</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">bsz</span><span class="p">,</span> <span class="n">action_size</span><span class="p">))</span>
+<span class="n">actions</span><span class="p">,</span> <span class="n">log_probs</span> <span class="o">=</span> <span class="n">tanh_normal</span><span class="o">.</span><span class="n">sample_and_log_prob</span><span class="p">()</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.distributions.Reparameterization" class="doc doc-heading">
+        <code>
+cherry.distributions.Reparameterization        </code>
+
+
+
+<a href="#cherry.distributions.Reparameterization" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.distributions.Reparameterization--description">Description<a class="headerlink" href="#cherry.distributions.Reparameterization--description" title="Permanent link">&para;</a></h5>
+<p>Unifies interface for distributions that support <code>rsample</code> and those that do not.</p>
+<p>When calling <code>sample()</code>, this class checks whether <code>density</code> has a <code>rsample()</code> member,
+and defaults to call <code>sample()</code> if it does not.</p>
+<h5 id="cherry.distributions.Reparameterization--references">References<a class="headerlink" href="#cherry.distributions.Reparameterization--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Kingma and Welling. 2013. “Auto-Encoding Variational Bayes.” arXiv [stat.ML].</li>
+</ol>
+<h5 id="cherry.distributions.Reparameterization--example">Example<a class="headerlink" href="#cherry.distributions.Reparameterization--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">density</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+<span class="n">reparam</span> <span class="o">=</span> <span class="n">Reparameterization</span><span class="p">(</span><span class="n">density</span><span class="p">)</span>
+<span class="n">sample</span> <span class="o">=</span> <span class="n">reparam</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>  <span class="c1"># Uses Normal.rsample()</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.Reparameterization.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">density</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.distributions.Reparameterization.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.Reparameterization.__init__--arguments">Arguments<a class="headerlink" href="#cherry.distributions.Reparameterization.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>density</code> (Distribution) - The distribution to wrap.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.distributions.ActionDistribution" class="doc doc-heading">
+        <code>
+cherry.distributions.ActionDistribution            (<span title="torch.nn.modules.module.Module">Module</span>)
+        </code>
+
+
+
+<a href="#cherry.distributions.ActionDistribution" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.distributions.ActionDistribution--description">Description<a class="headerlink" href="#cherry.distributions.ActionDistribution--description" title="Permanent link">&para;</a></h5>
+<p>A helper module to automatically choose the proper policy distribution,
+based on the Gym environment <code>action_space</code>.</p>
+<p>For <code>Discrete</code> action spaces, it uses a <code>Categorical</code> distribution, otherwise
+it uses a <code>Normal</code> which uses a diagonal covariance matrix.</p>
+<p>This class enables to write single version policy body that will be compatible
+with a variety of environments.</p>
+<h5 id="cherry.distributions.ActionDistribution--example">Example<a class="headerlink" href="#cherry.distributions.ActionDistribution--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;CartPole-v1&#39;</span><span class="p">)</span>
+<span class="n">action_dist</span> <span class="o">=</span> <span class="n">ActionDistribution</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.distributions.ActionDistribution.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">logstd</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_probs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">reparam</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.distributions.ActionDistribution.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.distributions.ActionDistribution.__init__--arguments">Arguments<a class="headerlink" href="#cherry.distributions.ActionDistribution.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>env</code> (Environment) - Gym environment for which actions will be sampled.</li>
+<li><code>logstd</code> (float/tensor, <em>optional</em>, default=0) - The log standard deviation for the <code>Normal</code> distribution.</li>
+<li><code>use_probs</code> (bool, <em>optional</em>, default=False) - Whether to use probabilities or logits for the <code>Categorical</code> case.</li>
+<li><code>reparam</code> (bool, <em>optional</em>, default=False) - Whether to use reparameterization in the <code>Normal</code> case.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../cherry.debug/" title="cherry.debug" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                cherry.debug
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../cherry.envs/" title="cherry.envs" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                cherry.envs
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/seba-1511" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/seba1511" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+      <a href="https://github.com/learnables/cherry/issues/new" target="_blank" rel="noopener" title="bug" class="md-footer-social__link fa fa-bug"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.2.3",url:{base:"../.."}})</script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js"></script>
+      
+    
+  </body>
+</html>
