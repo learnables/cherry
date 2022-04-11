@@ -18,3 +18,14 @@ from .state_normalizer_wrapper import StateNormalizer
 from .reward_normalizer_wrapper import RewardNormalizer
 from .state_lambda_wrapper import StateLambda
 from .action_lambda_wrapper import ActionLambda
+
+# monkey-patch old functionalities
+import cherry
+
+setattr(cherry.envs, 'Wrapper', Wrapper)
+setattr(cherry.envs, 'Runner', Runner)
+setattr(cherry.envs, 'Torch', Torch)
+setattr(cherry.envs, 'AddTimestep', AddTimestep)
+setattr(cherry.envs, 'VisdomLogger', VisdomLogger)
+setattr(cherry.envs, 'ActionSpaceScaler', ActionSpaceScaler)
+setattr(cherry.envs, 'Logger', Logger)
