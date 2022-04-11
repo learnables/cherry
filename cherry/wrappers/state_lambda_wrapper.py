@@ -2,7 +2,7 @@
 
 from gym import ObservationWrapper
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class StateLambda(Wrapper, ObservationWrapper):

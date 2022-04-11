@@ -6,7 +6,7 @@ import gym
 from gym import spaces
 from collections import deque
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 try:
     import cv2

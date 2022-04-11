@@ -19,6 +19,7 @@ nav:
     - cherry.pg: api/cherry.pg.md
     - cherry.plot: api/cherry.plot.md
     - cherry.td: api/cherry.td.md
+    - cherry.wrappers: api/cherry.wrappers.md
   - Changelog: changelog.md
   - Examples: https://github.com/learnables/cherry/tree/master/examples
   - GitHub: https://github.com/learnables/cherry/

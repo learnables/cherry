@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class StateNormalizer(Wrapper):

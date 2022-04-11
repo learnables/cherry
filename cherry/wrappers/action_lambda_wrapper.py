@@ -2,7 +2,7 @@
 
 from gym import ActionWrapper
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class ActionLambda(Wrapper, ActionWrapper):

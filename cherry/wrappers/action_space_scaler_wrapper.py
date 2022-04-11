@@ -3,7 +3,7 @@
 import gym
 import numpy as np
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class ActionSpaceScaler(Wrapper):

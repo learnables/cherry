@@ -2,20 +2,18 @@
 
 import cherry as ch
 from cherry._utils import _min_size, _istensorable
-from .base import Wrapper
-from .utils import is_vectorized
+from cherry.envs.utils import is_vectorized
+from .base_wrapper import Wrapper
 
 from collections.abc import Iterable
 
 
 def flatten_episodes(replay, episodes, num_workers):
-    """
-    TODO: This implementation is not efficient.
+    #  TODO: This implementation is not efficient.
 
-    NOTE: Additional info (other than a transition's default fields) is simply copied.
-    To know from which worker the data was gathered, you can access sars.runner_id
-    TODO: This is not great. What is the best behaviour with infos here ?
-    """
+    #  NOTE: Additional info (other than a transition's default fields) is simply copied.
+    #  To know from which worker the data was gathered, you can access sars.runner_id
+    #  TODO: This is not great. What is the best behaviour with infos here ?
     flat_replay = ch.ExperienceReplay()
     worker_replays = [ch.ExperienceReplay() for w in range(num_workers)]
     flat_episodes = 0
@@ -62,11 +60,25 @@ def flatten_episodes(replay, episodes, num_workers):
 class Runner(Wrapper):
 
     """
-    Runner wrapper.
+    <a href="" class="source-link">[Source]</a>
 
-    TODO: When is_vectorized and using episodes=n, use the parallel
-    environmnents to sample n episodes, and stack them inside a flat replay.
+    ## Description
+
+    Helps collect transitions, given a `get_action` function.
+
+    ## Example
+
+    ~~~python
+    env = MyEnv()
+    env = Runner(env)
+    replay = env.run(lambda x: policy(x), steps=100)
+    # or
+    replay = env.run(lambda x: policy(x), episodes=5)
+    ~~~
+
     """
+    #  TODO: When is_vectorized and using episodes=n, use the parallel
+    #  environmnents to sample n episodes, and stack them inside a flat replay.
 
     def __init__(self, env):
         super(Runner, self).__init__(env)
@@ -89,7 +101,18 @@ class Runner(Wrapper):
             episodes=None,
             render=False):
         """
+        ## Description
+
         Runner wrapper's run method.
+
+        !!! info
+            Either use the `steps` OR the `episodes` argument.
+
+        ## Arguments
+
+        * `get_action` (function) - Given a state, returns the action to be taken.
+        * `steps` (int, *optional*, default=None) - The number of steps to be collected.
+        * `episodes` (int, *optional*, default=None) - The number of episodes to be collected.
         """
 
         if steps is None:
