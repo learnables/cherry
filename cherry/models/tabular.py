@@ -104,7 +104,7 @@ class ActionValueFunction(cherry.nn.ActionValue):
         """
         super(ActionValueFunction, self).__init__()
         self.values = nn.Parameter(torch.zeros((state_size, action_size),
-                                            requires_grad=True))
+                                   requires_grad=True))
         self.state_size = state_size
         self.action_size = action_size
         if init is not None:

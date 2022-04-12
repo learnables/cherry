@@ -286,7 +286,7 @@ class TanhNormal(Distribution):
         samples in a numerically stable way.
 
         ## Returns
-        
+
         * `value` (tensor) - samples from the TanhNormal.
         * `log_prob` (tensor) - log-probabilities of the samples.
 

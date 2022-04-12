@@ -6,7 +6,6 @@ mkdocs-bootswatch==1.0
 mkdocs-material==4.6.3
 mkdocstrings==0.18.0
 mkdocstrings-python-legacy==0.2.2
-pytkdocs_tweaks
 python-markdown-math==0.6
 markdown-katex==202112.1034
 pycodestyle>=2.3.1

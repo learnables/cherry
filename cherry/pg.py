@@ -13,13 +13,13 @@ from cherry._utils import _reshape_helper
 
 
 def generalized_advantage(
-        gamma,
-        tau,
-        rewards,
-        dones,
-        values,
-        next_value,
-    ):
+    gamma,
+    tau,
+    rewards,
+    dones,
+    values,
+    next_value,
+):
     """
     ## Description
 

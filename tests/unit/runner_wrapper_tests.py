@@ -107,7 +107,7 @@ class TestRunnerWrapper(unittest.TestCase):
         for return_info in [False, True]:
             for use_logger in [False, True]:
                 for use_torch in [False, True]:
-                    for base_env in [Dummy, MemorizeDigits, 'MemorizeDigits-v0', 'CartPole-v0']:
+                    for base_env in [Dummy, MemorizeDigits, 'MemorizeDigits-v0', 'CartPole-v1']:
                         for n_envs in [2, 4]:
                             for n_episodes in [1, 2, 3, 4]:
                                 for retry in [False, True]:
