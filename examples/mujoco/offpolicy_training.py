@@ -18,7 +18,7 @@ class MLPPolicy(cherry.nn.Policy):
             input_size=state_size,
             output_size=action_size,
             hidden_sizes=[256, 256],
-            activation=torch.nn.Tanh,
+            activation=torch.nn.GELU,
         )
         self.std = 0.1
         self.action_distribution = cherry.distributions.TanhNormal
@@ -37,7 +37,7 @@ class MLPActionValue(cherry.nn.StateValue):
             input_size=state_size + action_size,
             output_size=1,
             hidden_sizes=[256, 256],
-            activation=torch.nn.Tanh,
+            activation=torch.nn.GELU,
         )
 
     def forward(self, state, action):
@@ -124,9 +124,10 @@ def main(args):
                 target_action_value=target_qvalue,
                 policy_optimizer=policy_opt,
                 action_value_optimizer=qvalue_opt,
+                update_policy=(update % 2 == 0),
                 device=device,
             )
-            policy.std *= 0.99997
+            policy.std *= args.std_decay
         stats.update(update_stats)
         stats['update/iteration'] = iteration
 
@@ -154,7 +155,8 @@ if __name__ == "__main__":
         algorithm: str = 'td3'
         num_iterations: int = 1000000
         warmup_steps: int = 10000
-        batch_size: int = 100
+        batch_size: int = 128
+        std_decay: float = 0.999997
         update_interval: int = 50
         learning_rate: float = 1e-3
         evaluation_frequency: int = 100
