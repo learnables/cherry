@@ -269,7 +269,7 @@ class SAC(AlgorithmArguments):
             log_probs = log_probs.sum(dim=-1, keepdim=True)
         return sampled_actions, log_probs
 
-    def udpate(
+    def update(
         self,
         replay,
         policy,

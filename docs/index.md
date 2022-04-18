@@ -13,6 +13,18 @@ So if you don't like a specific tool, you don’t need to use it.
 
 **Features**
 
+Cherry extends PyTorch with only a handful of new core concepts.
+
+* PyTorch Modules for reinforcement learning: 
+    * `cherry.nn.Policy`:
+    * `cherry.nn.ActionValue`:
+    * `cherry.nn.StateValue`: 
+* Data structures for reinforcement learning:
+    * `cherry.Transition`:
+    * `cherry.ExperienceReplay`: 
+
+Cherry also includes additional features, to help implement existing and new RL algorithms.
+
 * Pythonic and low-level interface *à la* Pytorch.
 * Support for tabular (!) and function approximation algorithms.
 * Various OpenAI Gym environment wrappers.
