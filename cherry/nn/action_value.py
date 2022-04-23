@@ -29,31 +29,18 @@ class ActionValue(torch.nn.Module):
     ~~~
     """
 
-    def forward(self, state, action):
+    def forward(self, state, action=None):
         """
         ## Description
 
         Returns the scalar value for taking action `action` in state `state`.
 
+        If `action` is not given, should return the value for all actions (useful for DQN-like architectures).
+
         ## Arguments
 
         * `state` (Tensor) - State to be evaluated.
-        * `action` (Tensor) - Action to be evaluated.
-        """
-        raise NotImplementedError
-
-    def all_action_values(self, state):
-        """
-        ## Description
-
-        Given a state, returns the value of all possible actions.
-
-        Useful when implementing variants of DQN.
-
-        ## Arguments
-
-        * `state` (Tensor) -  State to be evaluated. Shape: (batch_size, state_dim)
-        * `action` (Tensor) - Action to be evaluated. Shape: (batch_size, action_dim)
+        * `action` (Tensor, *optional*, default=None) - Action to be evaluated.
 
         ## Returns
 
