@@ -29,7 +29,7 @@ class MLPPolicy(cherry.nn.Policy):
         return self.action_distribution(mean, std)
 
 
-class MLPActionValue(cherry.nn.StateValue):
+class MLPActionValue(cherry.nn.ActionValue):
 
     def __init__(self, state_size, action_size):
         super(MLPActionValue, self).__init__()
@@ -96,15 +96,21 @@ def main(args):
 
     # train
     ep_reward = 0.0
-    warmup_policy = lambda s: env.action_space.sample()
-    replay = env.run(warmup_policy, steps=args.warmup_steps).to(device, non_blocking=True)
-    for iteration in tqdm.trange(args.warmup_steps, args.num_iterations, args.update_interval):
+    replay = env.run(
+        lambda s: env.action_space.sample(),
+        steps=1000,
+    ).to(device, non_blocking=True)
+    for iteration in tqdm.trange(1000, args.num_iterations, args.update_interval):
 
         stats = {}
 
         # collect data
+        if iteration < args.warmup_steps:
+            behavior_policy = lambda s: env.action_space.sample()
+        else:
+            behavior_policy = lambda s: policy.act(s)
         iter_replay = env.run(
-            lambda s: policy.act(s),
+            behavior_policy,
             steps=args.update_interval,
         )
         for sars in iter_replay:
@@ -133,13 +139,13 @@ def main(args):
 
         # evaluate policy
         if iteration % args.evaluation_frequency == 0:
-            eval_policy = lambda s: policy.act(s, deterministic=True)
             eval_env.reset()
             eval_replay = eval_env.run(
-                eval_policy,
+                lambda s: policy.act(s, deterministic=True),
                 episodes=args.evaluation_episodes,
             )
-            stats['eval/rewards'] = eval_replay.reward().sum().mul(1./args.evaluation_episodes)
+            eval_rewards = eval_replay.reward().sum().item()
+            stats['eval/rewards'] = eval_rewards / args.evaluation_episodes
             stats['eval/iteration'] = iteration
 
         # log to wandb
@@ -150,13 +156,13 @@ if __name__ == "__main__":
 
     class OffPolicyArguments:
 
-        #  env: str = 'HalfCheetah-v3'
-        env: str = 'Ant-v3'
+        env: str = 'HalfCheetah-v3'
+        #  env: str = 'Ant-v3'
         algorithm: str = 'td3'
         num_iterations: int = 1000000
         warmup_steps: int = 10000
         batch_size: int = 128
-        std_decay: float = 0.999997
+        std_decay: float = 0.99997
         update_interval: int = 50
         learning_rate: float = 1e-3
         evaluation_frequency: int = 100
