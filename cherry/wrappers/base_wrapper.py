@@ -2,38 +2,62 @@
 
 import gym
 
-from .utils import get_space_dimension, is_vectorized, is_discrete
+from cherry.envs.utils import get_space_dimension, is_vectorized, is_discrete
 
 
 class Wrapper(gym.Wrapper):
 
     """
+    <a href="" class="source-link">[Source]</a>
+
+    ## Description
+
     This class allows to chain Environment Wrappers while still being able to
     access the properties of wrapped wrappers.
 
-    Example:
+    ## Example
 
-        env = gym.make('MyEnv-v0')
-        env = envs.Logger(env)
-        env = envs.Runner(env)
-        env.log('asdf', 23)  # Uses log() method from envs.Logger.
+    ~~~python
+    env = gym.make('MyEnv-v0')
+    env = cherry.wrappers.Logger(env)
+    env = cherry.wrappers.Runner(env)
+    env.log('asdf', 23)  # Uses log() method from cherry.wrappers.Logger.
+    ~~~
+
     """
 
     @property
     def is_vectorized(self):
+        """
+        ## Description
+
+        Returns whether the env is vectorized or not.
+        """
         return is_vectorized(self)
 
     @property
     def discrete_action(self):
+        """
+        ## Description
+
+        Returns whether the env is vectorized or not.
+        """
         return is_discrete(self.action_space)
 
     @property
     def discrete_state(self):
+        """
+        ## Description
+
+        Returns whether the env is vectorized or not.
+        """
         return is_discrete(self.observation_space)
 
     @property
     def state_size(self):
         """
+        ## Description
+
         The (flattened) size of a single state.
         """
         # Since we want the underlying dimension, vec_dim=False
@@ -43,6 +67,8 @@ class Wrapper(gym.Wrapper):
     @property
     def action_size(self):
         """
+        ## Description
+
         The number of dimensions of a single action.
         """
         # Since we want the underlying dimension, vec_dim=False

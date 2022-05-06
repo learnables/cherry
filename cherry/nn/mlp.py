@@ -5,6 +5,20 @@ import torch
 
 class MLP(torch.nn.Sequential):
 
+    """
+    <a href="" class="source-link">[Source]</a>
+
+    ## Description
+
+    Implements a simple multi-layer perceptron.
+
+    ## Example
+
+    ~~~python
+    net = MLP(128, 1, [1024, 1024], activation=torch.nn.GELU)
+    ~~~
+    """
+
     def _linear(self, input_size, output_size, bias):
         linear = torch.nn.Linear(input_size, output_size, bias=bias)
         gain = torch.nn.init.calculate_gain('relu')
@@ -20,6 +34,15 @@ class MLP(torch.nn.Sequential):
         activation=None,
         bias=True,
     ):
+        """
+        ## Arguments
+
+        * `input_size` (int) - Input size of the MLP.
+        * `output_size` (int) - Number of output units.
+        * `hidden_sizes` (list of int) - Each int is the number of hidden units of a layer.
+        * `activation` (callable) - Activation function to use for the MLP.
+        * `bias` (bool, *optional*, default=True) - Whether the MLP uses bias terms.
+        """
         if activation is None:
             activation = torch.nn.ReLU
         if isinstance(hidden_sizes, int):

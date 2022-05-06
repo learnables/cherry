@@ -6,11 +6,15 @@ import torch
 class Policy(torch.nn.Module):
 
     """
-    [[Source]](https://github.com/learnables/cherry/blob/master/cherry/nn/policy.py)
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/nn/policy.py" class="source-link">[Source]</a>
 
-    Boilerplate Module to represent policies.
+    Abstract Module to represent policies.
 
-    **Example**
+    Subclassing this module helps retain a unified API across codebases,
+    and also automatically defines some helper functions
+    (you only need that `forward` returns a `Distribution` instance).
+
+    ## Example
 
     ~~~python
     class RandomPolicy(Policy):
@@ -31,11 +35,46 @@ class Policy(torch.nn.Module):
 
     """
 
+    def forward(self, state):
+        """
+        ## Description
+
+        Should return a `Distribution` instance correspoinding to the policy density for `state`.
+
+        ## Arguments
+
+        * `state` (Tensor) - State where the policy should be computed.
+        """
+        raise NotADirectoryError
+
     def log_prob(self, state, action):
+        """
+        ## Description
+
+        Computes the log probability of `action` given `state`, according to the policy.
+
+        ## Arguments
+
+        * `state` (Tensor) - A tensor of states.
+        * `action` (Tensor) - The actions of which to compute the log probability.
+        """
         density = self(state)
         return density.log_prob(action)
 
     def act(self, state, deterministic=False):
+        """
+        ## Description
+
+        Given a state, samples an action from the policy.
+
+        If `deterministic=True`, the action is the model of the policy distribution.
+
+        ## Arguments
+
+        * `state` (Tensor) - State to take an action in.
+        * `deterministic` (bool, *optional*, default=False) - Where the action is sampled (`False`)
+            or the mode of the policy (`True`).
+        """
         density = self(state)
         if deterministic:
             return density.mode()

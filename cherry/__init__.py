@@ -5,6 +5,7 @@ from ._version import __version__
 from . import td
 from . import pg
 from . import envs
+from . import wrappers
 from . import optim
 from . import nn
 from . import models

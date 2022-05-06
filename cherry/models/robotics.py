@@ -9,25 +9,18 @@ from cherry.nn import RoboticsLinear
 class RoboticsMLP(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     A multi-layer perceptron with proper initialization for robotic control.
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
 
-    **Arguments**
+    ## Example
 
-    * **inputs_size** (int) - Size of input.
-    * **output_size** (int) - Size of output.
-    * **layer_sizes** (list, *optional*, default=None) - A list of ints,
-      each indicating the size of a hidden layer.
-      (Defaults to two hidden layers of 64 units.)
-
-    **Example**
     ~~~python
     target_qf = ch.models.robotics.RoboticsMLP(23,
                                              34,
@@ -36,6 +29,15 @@ class RoboticsMLP(nn.Module):
     """
 
     def __init__(self, input_size, output_size, layer_sizes=None):
+        """
+        ## Arguments
+
+        * `inputs_size` (int) - Size of input.
+        * `output_size` (int) - Size of output.
+        * `layer_sizes` (list, *optional*, default=None) - A list of ints,
+          each indicating the size of a hidden layer.
+          (Defaults to two hidden layers of 64 units.)
+        """
         super(RoboticsMLP, self).__init__()
         if layer_sizes is None:
             layer_sizes = [64, 64]
@@ -57,26 +59,19 @@ class RoboticsMLP(nn.Module):
 class RoboticsActor(RoboticsMLP):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     A multi-layer perceptron with initialization designed for choosing
     actions in continuous robotic environments.
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
 
-    **Arguments**
+    ## Example
 
-    * **inputs_size** (int) - Size of input.
-    * **output_size** (int) - Size of action size.
-    * **layer_sizes** (list, *optional*, default=None) - A list of ints,
-      each indicating the size of a hidden layer.
-      (Defaults to two hidden layers of 64 units.)
-
-    **Example**
     ~~~python
     policy_mean = ch.models.robotics.Actor(28,
                                           8,
@@ -85,6 +80,15 @@ class RoboticsActor(RoboticsMLP):
     """
 
     def __init__(self, input_size, output_size, layer_sizes=None):
+        """
+        ## Arguments
+
+        * `inputs_size` (int) - Size of input.
+        * `output_size` (int) - Size of action size.
+        * `layer_sizes` (list, *optional*, default=None) - A list of ints,
+          each indicating the size of a hidden layer.
+          (Defaults to two hidden layers of 64 units.)
+        """
         super(RoboticsMLP, self).__init__()
         if layer_sizes is None:
             layer_sizes = [64, 64]
@@ -105,28 +109,24 @@ class RoboticsActor(RoboticsMLP):
 class LinearValue(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     A linear state-value function, whose parameters are found by minimizing
     least-squares.
 
-    **Credit**
+    ## Credit
 
     Adapted from Tristan Deleu's implementation.
 
-    **References**
+    ## References
 
     1. Duan et al. 2016. “Benchmarking Deep Reinforcement Learning for Continuous Control.”
     2. [https://github.com/tristandeleu/pytorch-maml-rl](https://github.com/tristandeleu/pytorch-maml-rl)
 
-    **Arguments**
+    ## Example
 
-    * **inputs_size** (int) - Size of input.
-    * **reg** (float, *optional*, default=1e-5) - Regularization coefficient.
-
-    **Example**
     ~~~python
     states = replay.state()
     rewards = replay.reward()
@@ -139,6 +139,12 @@ class LinearValue(nn.Module):
     """
 
     def __init__(self, input_size, reg=1e-5):
+        """
+        ## Arguments
+
+        * `inputs_size` (int) - Size of input.
+        * `reg` (float, *optional*, default=1e-5) - Regularization coefficient.
+        """
         super(LinearValue, self).__init__()
         self.linear = nn.Linear(2 * input_size + 4, 1, bias=False)
         self.reg = reg
@@ -150,6 +156,16 @@ class LinearValue(nn.Module):
         return th.cat([states, states**2, al, al**2, al**3, ones], dim=1)
 
     def fit(self, states, returns):
+        """
+        ## Description
+
+        Fits the parameters of the linear model by the method of least-squares.
+
+        ## Arguments
+
+        * `states` (tensor) - States collected with the policy to evaluate.
+        * `returns` (tensor) - Returns associated with those states (ie, discounted rewards).
+        """
         features = self._features(states)
         reg = self.reg * th.eye(features.size(1))
         reg = reg.to(states.device)
@@ -163,6 +179,15 @@ class LinearValue(nn.Module):
             coeffs, _ = th.gels(b, A)
         self.linear.weight.data = coeffs.data.t()
 
-    def forward(self, states):
-        features = self._features(states)
+    def forward(self, state):
+        """
+        ## Description
+
+        Computes the value of a state using the linear function approximator.
+
+        ## Arguments
+
+        * `state` (Tensor) - The state to evaluate.
+        """
+        features = self._features(state)
         return self.linear(features)

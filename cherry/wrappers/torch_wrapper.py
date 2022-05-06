@@ -4,7 +4,7 @@ import numpy as np
 import torch as th
 import cherry as ch
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class Torch(Wrapper):

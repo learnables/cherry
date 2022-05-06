@@ -2,7 +2,7 @@
 
 from statistics import mean, pstdev
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 import cherry as ch
 import numpy as np

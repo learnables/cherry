@@ -13,14 +13,29 @@ import cherry as ch
 
 from torch.distributions import Distribution
 
-from gym.spaces import Discrete
-
 
 class Categorical(th.distributions.Categorical):
 
     """
-    Inspired from Kostrikov, returns samples and log_probs with the right shapes.
-    Includes a mode() method for deterministic sampling.
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a>
+
+    ## Description
+
+    Similar to `torch.nn.Categorical`, but reshapes tensors of N
+    samples into (N, 1)-shaped tensors.
+
+    ## Arguments
+
+    Identical to `torch.distribution.Categorical`.
+
+    ## Example
+
+    ~~~python
+    dist = Categorical(logits=torch.randn(bsz, action_size))
+    actions = dist.sample()  # shape: bsz x 1
+    log_probs = dist.log_prob(actions)  # shape: bsz x 1
+    deterministic_action = action.mode()
+    ~~~
     """
 
     def sample(self):
@@ -32,14 +47,40 @@ class Categorical(th.distributions.Categorical):
         return log_prob.reshape_as(x)
 
     def mode(self):
+        """
+        ## Description
+
+        Returns the model of normal distribution (ie, argmax over probabilities).
+        """
         return self.probs.argmax(dim=-1, keepdim=True)
 
 
 class Normal(th.distributions.Normal):
 
     """
-    Inspired from Kostrikov, returns samples and log_probs with the right shapes.
-    Includes a mode() method for deterministic sampling.
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a>
+
+    ## Description
+
+    Similar to PyTorch's `Independent(Normal(loc, std))`: when computing log-densities or the entropy,
+    we sum over the last dimension.
+
+    This is typically used to compute log-probabilities of N-dimensional actions
+    sampled from a multivariate Gaussian with diagional covariance.
+
+    ## Arguments
+
+    Identical to `torch.distribution.Normal`.
+
+    ## Example
+
+    ~~~python
+    normal = Normal(torch.zeros(bsz, action_size), torch.ones(bsz, action_size))
+    actions = normal.sample()
+    log_probs = normal.log_prob(actions)  # shape: bsz x 1
+    entropies = normal.entropy()  # shape: bsz x 1
+    deterministic_action = action.mode()
+    ~~~
     """
 
     def log_prob(self, x):
@@ -51,30 +92,31 @@ class Normal(th.distributions.Normal):
         return entropy
 
     def mode(self):
+        """
+        ## Description
+
+        Returns the model of normal distribution (ie, its mean).
+        """
         return self.mean
 
 
 class Reparameterization(object):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Unifies interface for distributions that support `rsample` and those that do not.
 
     When calling `sample()`, this class checks whether `density` has a `rsample()` member,
     and defaults to call `sample()` if it does not.
 
-    **References**
+    ## References
 
     1. Kingma and Welling. 2013. “Auto-Encoding Variational Bayes.” arXiv [stat.ML].
 
-    **Arguments**
-
-    * **density** (Distribution) - The distribution to wrap.
-
-    **Example**
+    ## Example
 
     ~~~python
     density = Normal(mean, std)
@@ -85,6 +127,11 @@ class Reparameterization(object):
     """
 
     def __init__(self, density):
+        """
+        ## Arguments
+
+        * `density` (Distribution) - The distribution to wrap.
+        """
         self.density = density
 
     def sample(self, *args, **kwargs):
@@ -104,9 +151,9 @@ class Reparameterization(object):
 
 class ActionDistribution(nn.Module):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     A helper module to automatically choose the proper policy distribution,
     based on the Gym environment `action_space`.
@@ -117,17 +164,7 @@ class ActionDistribution(nn.Module):
     This class enables to write single version policy body that will be compatible
     with a variety of environments.
 
-    **Arguments**
-
-    * **env** (Environment) - Gym environment for which actions will be sampled.
-    * **logstd** (float/tensor, *optional*, default=0) - The log standard
-    deviation for the `Normal` distribution.
-    * **use_probs** (bool, *optional*, default=False) - Whether to use probabilities or logits
-    for the `Categorical` case.
-    * **reparam** (bool, *optional*, default=False) - Whether to use reparameterization in the
-    `Normal` case.
-
-    **Example**
+    ## Example
 
     ~~~python
     env = gym.make('CartPole-v1')
@@ -137,6 +174,14 @@ class ActionDistribution(nn.Module):
     """
 
     def __init__(self, env, logstd=None, use_probs=False, reparam=False):
+        """
+        ## Arguments
+
+        * `env` (Environment) - Gym environment for which actions will be sampled.
+        * `logstd` (float/tensor, *optional*, default=0) - The log standard deviation for the `Normal` distribution.
+        * `use_probs` (bool, *optional*, default=False) - Whether to use probabilities or logits for the `Categorical` case.
+        * `reparam` (bool, *optional*, default=False) - Whether to use reparameterization in the `Normal` case.
+        """
         super(ActionDistribution, self).__init__()
         self.use_probs = use_probs
         self.reparam = reparam
@@ -165,9 +210,9 @@ class ActionDistribution(nn.Module):
 class TanhNormal(Distribution):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Implements a Normal distribution followed by a Tanh, often used with the Soft Actor-Critic.
 
@@ -175,20 +220,11 @@ class TanhNormal(Distribution):
     which returns both samples and log-densities.
     The log-densities are computed using the pre-activation values for numerical stability.
 
-    **Credit**
-
-    Adapted from Vitchyr Pong's RLkit:
-    https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py
-
-    **References**
+    ## References
 
     1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
     2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
-
-    **Arguments**
-
-    * **normal_mean** (tensor) - Mean of the Normal distribution.
-    * **normal_std** (tensor) - Standard deviation of the Normal distribution.
+    3. Vitchyr Pong's [RLkit](https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py).
 
     **Example**
     ~~~python
@@ -203,6 +239,12 @@ class TanhNormal(Distribution):
     """
 
     def __init__(self, normal_mean, normal_std):
+        """
+        ## Arguments
+
+        * `normal_mean` (tensor) - Mean of the Normal distribution.
+        * `normal_std` (tensor) - Standard deviation of the Normal distribution.
+        """
         self.normal_mean = normal_mean
         self.normal_std = normal_std
         self.normal = Normal(normal_mean, normal_std)
@@ -221,12 +263,40 @@ class TanhNormal(Distribution):
         return th.tanh(z)
 
     def mean(self):
+        """
+        ## Description
+
+        Returns the mean of the TanhDistribution (ie, tan(normal.mean)).
+        """
         return th.tanh(self.normal.mean)
 
     def mode(self):
+        """
+        ## Description
+
+        Returns the mode of the TanhDistribution (ie, its mean).
+        """
         return self.mean()
 
     def sample_and_log_prob(self):
+        """
+        ## Description
+
+        Samples from the TanhNormal and computes the log-density of the
+        samples in a numerically stable way.
+
+        ## Returns
+
+        * `value` (tensor) - samples from the TanhNormal.
+        * `log_prob` (tensor) - log-probabilities of the samples.
+
+        ## Example
+
+        ~~~python
+        tanh_normal = TanhNormal(torch.zeros(bsz, action_size), torch.ones(bsz, action_size))
+        actions, log_probs = tanh_normal.sample_and_log_prob()
+        ~~~
+        """
         z = self.normal.sample().detach()
         value = th.tanh(z)
         offset = th.log1p(-value**2 + 1e-6)
@@ -234,6 +304,11 @@ class TanhNormal(Distribution):
         return value, log_prob
 
     def rsample_and_log_prob(self):
+        """
+        ## Description
+
+        Similar to `sample_and_log_prob` but with reparameterized samples.
+        """
         z = self.normal.rsample()
         value = th.tanh(z)
         offset = th.log1p(-value**2 + 1e-6)

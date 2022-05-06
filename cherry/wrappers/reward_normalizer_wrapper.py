@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from .base import Wrapper
-from .utils import num_envs
+
+from cherry.envs.utils import num_envs
+from .base_wrapper import Wrapper
 
 
 class RewardNormalizer(Wrapper):

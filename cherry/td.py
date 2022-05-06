@@ -14,28 +14,28 @@ from cherry._utils import _reshape_helper
 
 def discount(gamma, rewards, dones, bootstrap=0.0):
     """
-    **Description**
+    ## Description
 
     Discounts rewards at an rate of gamma.
 
-    **References**
+    ## References
 
     1. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
-    **Arguments**
+    ## Arguments
 
-    * **gamma** (float) - Discount factor.
-    * **rewards** (tensor) - Tensor of rewards.
-    * **dones** (tensor) - Tensor indicating episode termination.
+    * `gamma` (float) - Discount factor.
+    * `rewards` (tensor) - Tensor of rewards.
+    * `dones` (tensor) - Tensor indicating episode termination.
       Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.
-    * **bootstrap** (float, *optional*, default=0.0) - Bootstrap the last
+    * `bootstrap` (float, *optional*, default=0.0) - Bootstrap the last
       reward with this value.
 
-    **Returns**
+    ## Returns
 
     * tensor - Tensor of discounted rewards.
 
-    **Example**
+    ## Example
 
     ~~~python
     rewards = th.ones(23, 1) * 8
@@ -69,26 +69,26 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
 def temporal_difference(gamma, rewards, dones, values, next_values):
     """
-    **Description**
+    ## Description
 
     Returns the temporal difference residual.
 
-    **Reference**
+    ## Reference
 
     1. Sutton, Richard S. 1988. “Learning to Predict by the Methods of Temporal Differences.” Machine Learning 3 (1): 9–44.
     2. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
-    **Arguments**
+    ## Arguments
 
-    * **gamma** (float) - Discount factor.
-    * **rewards** (tensor) - Tensor of rewards.
-    * **dones** (tensor) - Tensor indicating episode termination.
+    * `gamma` (float) - Discount factor.
+    * `rewards` (tensor) - Tensor of rewards.
+    * `dones` (tensor) - Tensor indicating episode termination.
       Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.
-    * **values** (tensor) - Values for the states producing the rewards.
-    * **next_values** (tensor) - Values of the state obtained after the
+    * `values` (tensor) - Values for the states producing the rewards.
+    * `next_values` (tensor) - Values of the state obtained after the
       transition from the state used to compute the last value in `values`.
 
-    **Example**
+    ## Example
 
     ~~~python
     values = vf(replay.states())

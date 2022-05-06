@@ -6,7 +6,7 @@ import cherry as ch
 
 from gym.spaces import Discrete
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 from .logger_wrapper import Logger
 
 try:

@@ -7,23 +7,17 @@ import cherry as ch
 class RoboticsLinear(nn.Linear):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/robotics_layers.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/robotics_layers.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Akin to `nn.Linear`, but with proper initialization for robotic control.
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
 
-    **Arguments**
-
-
-    * **gain** (float, *optional*) - Gain factor passed to `robotics_init_` initialization.
-    * This class extends `nn.Linear` and supports all of its arguments.
-
-    **Example**
+    ## Example
 
     ~~~python
     linear = ch.nn.Linear(23, 5, bias=True)
@@ -33,6 +27,12 @@ class RoboticsLinear(nn.Linear):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        ## Arguments
+
+        * `gain` (float, *optional*) - Gain factor passed to `robotics_init_` initialization.
+        * This class extends `nn.Linear` and supports all of its arguments.
+        """
         gain = kwargs.pop('gain', None)
         super(RoboticsLinear, self).__init__(*args, **kwargs)
         ch.nn.init.robotics_init_(self, gain=gain)

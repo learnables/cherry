@@ -10,7 +10,7 @@ from gym import error
 from gym.wrappers.monitoring import video_recorder as GymVideoRecorder
 from datetime import datetime
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 from .closer import Closer
 
 

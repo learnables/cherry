@@ -32,6 +32,10 @@ logger.addHandler(print_handler)
 
 def debug(log_dir='./'):
     """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/debug.py" class="source-link">[Source]</a>
+
+    ## Description
+
     Enables some debugging utilities for logging and pdb.
 
     Includes:
@@ -41,18 +45,18 @@ def debug(log_dir='./'):
     * Enables fast DEBUG logging to a logging file via QueueHandler.
     * Copies all stdout output to the logging file. (Experimental)
 
-    **References**
+    ## References
 
     1. Automatically start the debugger on an exception (Python recipe), Thomas Heller, 2001,
         [Link](http://code.activestate.com/recipes/65287-automatically-start-the-debugger-on-an-exception/)
     2. Dealing with handlers that block, Python Documentation, 2019.
         [Link](https://docs.python.org/3/howto/logging-cookbook.html#dealing-with-handlers-that-block)
 
-    **Arguments**
+    ## Arguments
 
-    * **log_dir** (str, *optional*, Default: './') - Location to store the log files.
+    * `log_dir` (str, *optional*, Default: './') - Location to store the log files.
 
-    **Example**
+    ## Example
 
     ~~~python
     ch.debug.debug()

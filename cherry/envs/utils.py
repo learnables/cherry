@@ -17,6 +17,15 @@ from gym.spaces import Box, Discrete, Dict, Tuple, MultiDiscrete
 
 
 def num_envs(env):
+    """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/utils.py" class="source-link">[Source]</a>
+
+    ## Description
+
+    Heuristic that returns the number of parallel workers in a vectorized environment.
+
+    Warning: functionality is experimental, mostly tested with `gym.vector`.
+    """
     if hasattr(env, 'num_envs'):
         return env.num_envs
     if hasattr(env, 'envs'):
@@ -27,17 +36,30 @@ def num_envs(env):
 
 
 def is_vectorized(env):
+    """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/utils.py" class="source-link">[Source]</a>
+
+    ## Description
+
+    Heuristic that returns whether an environment is vectorized or not.
+
+    Warning: functionality is experimental, mostly tested with `gym.vector`.
+    """
     return num_envs(env) > 1
 
 
 def is_discrete(space, vectorized=False):
     """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/utils.py" class="source-link">[Source]</a>
+
+    ## Description
+
     Returns whether a space is discrete.
 
-    **Arguments**
+    ## Arguments
 
-    * **space** - The space.
-    * **vectorized** - Whether to return the discreteness for the
+    * `space` - The space.
+    * `vectorized` - Whether to return the discreteness for the
         vectorized environments (True) or just the discreteness of
         the underlying environment (False).
     """
@@ -63,12 +85,16 @@ def is_discrete(space, vectorized=False):
 
 def get_space_dimension(space, vectorized_dims=False):
     """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/envs/utils.py" class="source-link">[Source]</a>
+
+    ## Description
+
     Returns the number of elements of a space sample, when unrolled.
 
-    **Arguments**
+    ## Arguments
 
-    * **space** - The space.
-    * **vectorized_dims** - Whether to return the full dimension for vectorized
+    * `space` - The space.
+    * `vectorized_dims` - Whether to return the full dimension for vectorized
         environments (True) or just the dimension for the underlying
         environment (False).
     """

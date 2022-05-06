@@ -12,6 +12,8 @@ from . import drq
 from . import drqv2
 
 # classes
+from .ppo import PPO
+from .td3 import TD3
 from .sac import SAC
 from .drq import DrQ
 from .drqv2 import DrQv2

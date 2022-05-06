@@ -5,7 +5,7 @@ import numpy as np
 from gym import ObservationWrapper
 from gym.spaces import Box
 
-from .base import Wrapper
+from .base_wrapper import Wrapper
 
 
 class AddTimestep(Wrapper, ObservationWrapper):
