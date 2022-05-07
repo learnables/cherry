@@ -2,13 +2,27 @@
 
 import dataclasses
 import dotmap
+import collections
 
 
-class AlgorithmArguments:
+class AlgorithmArguments(collections.abc.Mapping):
 
     """
     Utility functions to work with dataclass algorithms.
     """
+
+    # turns algorithm arguments into a mapping
+    def __len__(self):
+        return len(dataclasses.fields(self))
+
+    # turns algorithm arguments into a mapping
+    def __iter__(self):
+        for field in dataclasses.fields(self):
+            yield field.name
+
+    # turns algorithm arguments into a mapping
+    def __getitem__(self, item):
+        return self.__dict__[item]
 
     @staticmethod
     def unpack_config(obj, config):
