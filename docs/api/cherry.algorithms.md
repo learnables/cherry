@@ -3,45 +3,45 @@
 
 ::: cherry.algorithms.a2c
 
-::: cherry.algorithms.ppo
-
 ::: cherry.algorithms.trpo
-
-::: cherry.algorithms.sac
-
-::: cherry.algorithms.DrQ
-    selection:
-      members:
-        - __init__
-        - update
 
 ::: cherry.algorithms.PPO
     selection:
       members:
         - __init__
         - update
+        - state_value_loss
+        - policy_loss
 
 ::: cherry.algorithms.TD3
     selection:
       members:
         - __init__
         - update
+        - action_value_loss
+        - policy_loss
 
 ::: cherry.algorithms.SAC
     selection:
       members:
         - __init__
         - update
+        - action_value_loss
+        - policy_loss
 
 ::: cherry.algorithms.DrQ
     selection:
       members:
         - __init__
         - update
+        - action_value_loss
+        - policy_loss
 
 ::: cherry.algorithms.DrQv2
     selection:
       members:
         - __init__
         - update
+        - action_value_loss
+        - policy_loss
 
