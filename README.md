@@ -1,4 +1,4 @@
-<p align="center"><img src="http://cherry-rl.net/assets/img/cherry_full.png" height="150px" /></p>
+<p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="150px" /></p>
 
 --------------------------------------------------------------------------------
 
