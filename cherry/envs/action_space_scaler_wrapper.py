@@ -28,7 +28,7 @@ class ActionSpaceScaler(Wrapper):
     def _normalize(self, action):
         lb = self.env.action_space.low
         ub = self.env.action_space.high
-        scaled_action = lb + (action + self.clip) * 0.5 * (ub - lb)
+        scaled_action = lb + (action + self.clip) / (2 * self.clip) * (ub - lb)
         scaled_action = np.clip(scaled_action, lb, ub)
         return scaled_action
 
