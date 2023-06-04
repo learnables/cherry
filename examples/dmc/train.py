@@ -2,11 +2,8 @@
 
 """
 File: train.py
-Author: Seb Arnold - seba1511.net
-Email: smr.arnold@gmail.com
 Description:
-The high-level training script for DM-Control experiments,
-with the training loop more similar to spinning-up.
+The high-level training script for DM-Control experiments.
 """
 
 import os
@@ -56,39 +53,20 @@ def main(args):
         )
 
     # Instantiate the task(s)
-    taskset = DMCTasks(
-        domain_name=args.tasks.domain_name,
-        task_name=args.tasks.task_name,
-        seed=args.tasks.seed,
-        img_size=args.tasks.img_size,
-        action_repeat=args.tasks.action_repeat,
-        frame_stack=args.tasks.frame_stack,
-        time_aware=args.tasks.time_aware,
-        goal_observable=args.tasks.goal_observable,
-        scale_rewards=args.tasks.scale_rewards,
-        normalize_rewards=args.tasks.normalize_rewards,
-        max_horizon=args.tasks.max_horizon,
-        camera_views=args.tasks.camera_views,
-        grayscale=args.tasks.grayscale,
-        vision_states=args.tasks.vision_states,
-        num_envs=1,
-    )
+    taskset = DMCTasks(**args.tasks)
     task = taskset.make()
     test_task = taskset.make(taskset.sample(
-        num_envs=1,
         scale_rewards=1.0,
         normalize_rewards=False,
     ))
-    __import__('pdb').set_trace()
     if isinstance(test_task, cherry.envs.Runner):
         test_task = test_task.env
 
     # Instantiate the learning agent
     if args.tasks.vision_states:
-        observation_shape = task.observation_space.shape
-        obs_channels = observation_shape[0]
+        __import__('pdb').set_trace()
         features = DMCFeatures(
-            input_size=obs_channels,
+            input_size=task.observation_space.shape[0],
             output_size=args.features.output_size,
             activation=args.features.activation,
             device=device,
@@ -98,123 +76,10 @@ def main(args):
         )
         features.load_weights()
         features.to(device)
-        if args.options.spectral_features == 'projector':
-            features.projector = torch.nn.utils.spectral_norm(features.projector)
-        if args.options.progressive_features == 'ancestral':
-            ancest_args = flatten_config(args.ancest)
-            features.convolutions = Ancestral(
-                features.convolutions,
-                device=device,
-                **ancest_args,
-            )
-            features.projector = Ancestral(
-                features.projector,
-                device=device,
-                **ancest_args,
-            )
-            for p in features.convolutions.ancestral_parameters():
-                p.requires_grad = True
-            for p in features.projector.ancestral_parameters():
-                p.requires_grad = True
-        elif args.options.progressive_features == 'twin':
-            twin = lambda module: ml.MetaModule(
-                module,
-                transforms={
-                    torch.nn.Conv2d: lambda conv: ml.TwinLayer(
-                        module=conv,
-                        alpha=args.options.progressive_alpha,
-                        reinit=args.options.progressive_reinit,
-                    ),
-                    torch.nn.Linear: lambda linear: ml.TwinLayer(
-                        module=linear,
-                        alpha=args.options.progressive_alpha,
-                        reinit=args.options.progressive_reinit,
-                    ),
-                },
-                freeze_module=True,
-            )
-            features.convolutions = twin(features.convolutions)
-            features.projector = twin(features.projector)
-            features.to(device)
-        elif 'varnish' in args.options.progressive_features:
-            if args.options.progressive_features == 'varnish':
-                features.convolutions = varnish.varnish(features.convolutions)
-                features.projector = varnish.varnish(features.projector)
-            elif args.options.progressive_features == 'log_varnish':
-                features.convolutions = varnish.log_varnish(features.convolutions)
-                features.projector = varnish.log_varnish(features.projector)
-            elif args.options.progressive_features == 'bias_varnish':
-                features.convolutions = varnish.bias_varnish(features.convolutions)
-                features.projector = varnish.bias_varnish(features.projector)
-            elif args.options.progressive_features == 'bias_log_varnish':
-                features.convolutions = varnish.bias_log_varnish(features.convolutions)
-                features.projector = varnish.bias_log_varnish(features.projector)
-            elif args.options.progressive_features[-1] in '0123456789':
-                for upto in range(int(args.options.progressive_features[-1])):
-                    features.convolutions[upto] = varnish.varnish(features.convolutions[upto])
-                    # don't varnish projector with Varnish-Upto
-            features.to(device)
-        elif 'log_scale' in args.options.progressive_features:
-            if args.options.progressive_features == 'log_scale':
-                features.convolutions = varnish.log_scale(features.convolutions)
-                features.projector = varnish.log_scale(features.projector)
-            elif args.options.progressive_features[-1] in '0123456789':
-                for upto in range(int(args.options.progressive_features[-1])):
-                    features.convolutions[upto] = varnish.log_scale(features.convolutions[upto])
-                    # don't varnish projector with Varnish-Upto
-            features.to(device)
-        elif args.options.progressive_features == 'sb-adapter':
-            adapter = lambda module: ml.MetaModule(
-                module,
-                transforms={
-                    torch.nn.Conv2d: lambda conv: torch.nn.Sequential(
-                        conv,
-                        ScaleBias(shape=(conv.weight.shape[0], 1, 1)),
-                    ),
-                    torch.nn.Linear: lambda linear: torch.nn.Sequential(
-                        linear,
-                        EyeLinear(linear.weight.shape[0]),
-                    ),
-                },
-                freeze_module=True,
-            )
-            features.convolutions = adapter(features.convolutions)
-            features.projector = adapter(features.projector)
-            features.to(device)
-        elif args.options.progressive_features == True or \
-             args.options.progressive_features == 'progressive':
-            prog_args = flatten_config(args.prog)
-            features.convolutions = Progressive(
-                features.convolutions,
-                device=device,
-                **prog_args,
-            )
-            features.projector = Progressive(
-                features.projector,
-                device=device,
-                **prog_args,
-            )
-            for p in features.convolutions.progressive_parameters():
-                p.requires_grad = True
-            for p in features.projector.progressive_parameters():
-                p.requires_grad = True
         feature_size = args.features.output_size
     else:
         features = l2l.nn.Lambda(lambda x: x)
         feature_size = task.state_size
-
-    if args.features.freeze_upto > 0:
-        convolutions = features.convolutions
-        if 'varnish' in args.options.progressive_features or \
-           'log_scale' in args.options.progressive_features or \
-           'bias_varnish' in args.options.progressive_features or \
-           'bias_log_varnish' in args.options.progressive_features:
-            convolutions = convolutions.wrapped_module
-        # convolutions = [conv, relu, conv, relu, conv, relu, conv]
-        convolutions = convolutions[:args.features.freeze_upto]
-        for p in convolutions.parameters():
-            p.detach_()
-            p.requires_grad_(False)
 
     encoder = target_encoder = encoder_optimizer = None
     policy = DMCPolicy(
@@ -245,146 +110,22 @@ def main(args):
         device=device,
     )
     target_entropy = - task.action_size
-    need_unfreezing = args.options.unfreeze_after > 1 \
-                      and args.options.unfreeze != '' \
-                      and (args.features.freeze or not (args.options.progressive_features == '' and args.options.progressive_features == 'none'))
 
     # Instantiate the learning algorithm
     if args.options.algorithm == 'sac':
-        algorithm_update = SAC(
+        algorithm_update = cherry.algorithms.SAC(
             batch_size=args.sac.batch_size,
             target_polyak_weight=args.sac.target_polyak_weight,
         )
     elif args.options.algorithm == 'drq':
-        algorithm_update = DrQ(
-            batch_size=args.drq.batch_size,
-            target_polyak_weight=args.drq.target_polyak_weight,
-        )
-    elif args.options.algorithm == 'drqf':
-        algorithm_update = DrQFast(
-            batch_size=args.drq.batch_size,
-            target_polyak_weight=args.drq.target_polyak_weight,
-            num_iters=args.drqv2f.num_iters,
-            nsteps=args.drqv2f.nsteps,
-            use_automatic_entropy_tuning=args.drqv2f.use_automatic_entropy_tuning,
-        )
-    elif args.options.algorithm == 'drqv2':
-        algorithm_update = DrQv2(
+        algorithm_update = cherry.algorithms.DrQ(
             batch_size=args.drq.batch_size,
             target_polyak_weight=args.drq.target_polyak_weight,
         )
     elif args.options.algorithm == 'drqv2f':
-        algorithm_update = DrQv2Fast(**args.drqv2f)
+        algorithm_update = cherry.algorithms.DrQv2(**args.drqv2)
         if args.drqv2f.std_decay > 0.0:
             policy.std = 1.0
-    elif args.options.algorithm == 'drqv2fssl':
-        algorithm_update = DrQv2FastSSL(**args.drqv2fssl)
-        if args.drqv2fssl.std_decay > 0.0:
-            policy.std = 1.0
-        encoder = moco_clr.EncoderProjector(
-            features=features,
-            size=feature_size,
-            project=True,
-        )
-        encoder.to(device)
-        target_encoder = moco_clr.EncoderProjector(
-            features=copy.deepcopy(features),
-            size=feature_size,
-            project=False,
-        )
-        target_encoder.to(device)
-    elif args.options.algorithm == 'drqv2fpissl':
-        algorithm_update = DrQv2FastPiSSL(**args.drqv2fpissl)
-        if args.drqv2fpissl.std_decay > 0.0:
-            policy.std = 1.0
-        if algorithm_update.formulation == 'curl-ema':
-            encoder = moco_clr.EncoderProjector(
-                features=copy.deepcopy(features),
-                size=feature_size,
-                project=True,
-                projector_layers=1,
-            )
-        else:
-            encoder = PiSSLEncoder(
-                size=feature_size,
-                project=True,
-                projector_layers=args.drqv2fpissl.projector_layers,
-            )
-        encoder.to(device)
-    elif args.options.algorithm == 'drqv2fspr':
-        algorithm_update = DrQv2FastSPR(**args.drqv2fspr)
-        if args.drqv2fspr.std_decay > 0.0:
-            policy.std = 1.0
-        encoder = SPREncoder(
-            state_size=feature_size,
-            action_size=task.action_size,
-            features=features,
-            projector=PiSSLEncoder(size=feature_size, project=True, projector_layers=1),
-            predictor=PiSSLEncoder(size=feature_size, project=True, projector_layers=1),
-        )
-        encoder.to(device)
-    elif args.options.algorithm == 'sacssl':
-        algorithm_update = SACSSL(**args.sacssl)
-        encoder = moco_clr.EncoderProjector(
-            features=features,
-            size=feature_size,
-            project=True,
-        )
-        encoder.to(device)
-        target_encoder = moco_clr.EncoderProjector(
-            features=copy.deepcopy(features),
-            size=feature_size,
-            project=False,
-        )
-        target_encoder.to(device)
-    elif args.options.algorithm == 'drqv3f':
-        algorithm_update = DrQv3Fast(**args.drqv2f)
-        if args.drqv2f.std_decay > 0.0:
-            policy.std = 1.0
-    elif args.options.algorithm == 'drqnpgf':
-        algorithm_update = DrQNPGFast(**args.drqv2f)
-    elif args.options.algorithm == 'drq2npgf':
-        algorithm_update = DrQv2NPGFast(**args.drqv2f)
-        if args.drqv2f.std_decay > 0.0:
-            policy.std = 1.0
-    elif args.options.algorithm == 'drqnpg':
-        algorithm_update = DrQNPG(
-            batch_size=args.drq.batch_size,
-            target_polyak_weight=args.drq.target_polyak_weight,
-            policy_algorithm=args.drqnpg.policy_algorithm,
-            num_iters=args.drqnpg.num_iters,
-        )
-    elif args.options.algorithm == 'drqnpg2':
-        algorithm_update = DrQNPG2(
-            batch_size=args.drq.batch_size,
-            target_polyak_weight=args.drq.target_polyak_weight,
-            policy_algorithm=args.drqnpg.policy_algorithm,
-            num_iters=args.drqnpg.num_iters,
-        )
-    elif args.options.algorithm == 'lstdq':
-        algorithm_update = LSTDQ(**args.lstdq)
-        if args.lstdq.features == 'none' or args.lstdq.features == '':
-            lstdq_input_size = task.action_size + feature_size
-            lstdq_features = lambda x: x
-        elif args.lstdq.features == 'rbf':
-            lstdq_input_size = args.lstdq.num_features
-            lstdq_features = rbf.RBF(
-                in_features=task.action_size + feature_size,
-                out_features=lstdq_input_size,
-                basis_func=rbf.linear,
-            )
-        elif args.lstdq.features == 'rks':
-            lstdq_input_size = args.lstdq.num_features
-            lstdq_features = RBFSampler(
-                input_size=task.action_size + feature_size,
-                output_size=lstdq_input_size,
-            )
-        qvalue = LSTDQValue(
-            input_size=lstdq_input_size,
-            features=lstdq_features,
-        )
-        qvalue.to(device)
-        qtarget = copy.deepcopy(qvalue)
 
     # Checkpointing
     best_rewards = - float('inf')
@@ -413,14 +154,6 @@ def main(args):
     replay = task.run(random_policy, steps=warmup_steps).to('cpu')
     for sars in replay:
         sars.done.mul_(0.0)
-
-    # Add a feature normalizer
-    if args.options.feature_normalizer == 'warmup':
-        features.fit_normalizer(replay, 'warmup')
-    elif args.options.feature_normalizer == 'l2':
-        features.fit_normalizer(replay, 'l2')
-    elif args.options.feature_normalizer == 'layernorm':
-        features.fit_normalizer(replay, 'layernorm')
 
     # instantiate optimizers
     features_optimizer = torch.optim.Adam(
@@ -543,26 +276,6 @@ def main(args):
                     checkpoint(iteration=step, rewards=test_rewards)
                     best_rewards = test_rewards
 
-        # unfreeze if necessary
-        if args.options.unfreeze_after <= step and need_unfreezing:
-            need_unfreezing = False
-            print('Unfrozen at', step)
-            # unfreeze features
-            if args.options.unfreeze == 'unfreeze':
-                features.unfreeze_weights()
-            elif args.options.unfreeze == 'varnish':
-                features.unfreeze_weights()
-                features.convolutions = varnish.varnish(features.convolutions)
-                features.projector = varnish.varnish(features.projector)
-                features.to(device)
-            target_features = copy.deepcopy(features)
-
-            # reinit features optimizer
-            features_optimizer = torch.optim.Adam(
-                list(features.parameters()) + [torch.empty(1, requires_grad=True)],  # to circumvent "empty param list for states"
-                lr=args.options.features_learning_rate,
-                eps=args.options.features_adam_eps,
-            )
 
     # Save results to wandb
     with torch.no_grad():

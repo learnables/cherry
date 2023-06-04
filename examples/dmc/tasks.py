@@ -40,7 +40,7 @@ DMC_TASKLIST = [
 
 
 @dataclasses.dataclass
-class DMCTasks(ms.EnvFactory):
+class DMCTasks(ms.EnvFactory, cherry.algorithms.arguments.AlgorithmArguments):
 
     """
     Utility class to instantiate a DMC environment.
@@ -96,8 +96,8 @@ class DMCTasks(ms.EnvFactory):
                         'time_aware not compatible w/ vision'
                     env = gym.wrappers.TimeAwareObservation(env)
                 if config.frame_stack > 0:
-                    env = FrameStack(config.env, k=config.frame_stack)
-                if config.rank == 0:
+                    env = FrameStack(env, k=config.frame_stack)
+                if rank == 0:
                     env = cherry.wrappers.Logger(env, interval=1000)
                 env = gym.wrappers.TransformReward(
                     env=env,

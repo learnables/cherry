@@ -1,6 +1,5 @@
 GPU=0
-GL=osmesa
-# GL=egl
+GL=egl # or osmesa
 
 all: drq
 
@@ -10,7 +9,7 @@ drq:
 	CUDA_VISIBLE_DEVICES=$(GPU) \
 	MUJOCO_GL=$(GL) \
 	python train.py \
-		--tasks.vision_states=0 \
+		--tasks.vision_states=1 \
 		--options.seed=1234
 
 sac:
