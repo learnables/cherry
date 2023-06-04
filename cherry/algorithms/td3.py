@@ -51,7 +51,11 @@ class TD3(AlgorithmArguments):
         config = self.unpack_config(self, kwargs)
 
         # fetch batch
-        batch = replay.sample(config.batch_size, nsteps=config.nsteps, discount=config.discount)
+        batch = replay.sample(
+            config.batch_size,
+            nsteps=config.nsteps,
+            discount=config.discount,
+        )
         states = batch.state().to(device, non_blocking=True).float()
         next_states = batch.next_state().to(device, non_blocking=True).float()
         actions = batch.action().to(device, non_blocking=True)
