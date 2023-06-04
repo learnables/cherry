@@ -5,7 +5,6 @@ import dataclasses
 import torch
 import cherry
 import learn2learn as l2l
-import torchvision as tv
 
 
 def dmc_initialization(module):
@@ -22,33 +21,8 @@ def dmc_initialization(module):
             module.bias.data.fill_(0.0)
 
 
-class FeaturesNormalizer(torch.nn.Module):
-
-    def __init__(self, device):
-        super(FeaturesNormalizer, self).__init__()
-        self.mean = torch.zeros(1)
-        self.std = torch.ones(1)
-        self.to(device)
-
-    def forward(self, x):
-        x = (x - self.mean) / self.std
-        return x
-
-    def fit(self, features, replay):
-        with torch.no_grad():
-            bsz = 32
-            device = features.device
-            X = []
-            for i in range(len(replay) // bsz):
-                states = replay[i*bsz:(i+1)*bsz].state().to(device)
-                X.append(features(states).cpu())
-            X = torch.cat(X, dim=0)
-            self.mean = X.mean(dim=0, keepdims=True).to(features.device)
-            self.std = X.std(dim=0, keepdims=True).to(features.device)
-
-
 @dataclasses.dataclass
-class DMCFeaturesArguments:
+class DMCFeaturesArguments(cherry.algorithms.AlgorithmArguments):
 
     input_size: int = 9
     output_size: int = 50
@@ -56,10 +30,8 @@ class DMCFeaturesArguments:
     num_filters: int = 32
     conv_output_size: int = 35
     activation: str = 'relu'
-    backbone: str = 'dmc'
     weight_path: str = ''
     freeze: bool = False
-    freeze_upto: int = 0
 
 
 class DMCFeatures(torch.nn.Module):
@@ -76,10 +48,9 @@ class DMCFeatures(torch.nn.Module):
         num_filters=DMCFeaturesArguments.num_filters,
         conv_output_size=DMCFeaturesArguments.conv_output_size,
         activation=DMCFeaturesArguments.activation,
-        backbone=DMCFeaturesArguments.backbone,
-        device=None,
         weight_path=DMCFeaturesArguments.weight_path,
         freeze=DMCFeaturesArguments.freeze,
+        device=None,
     ):
         super(DMCFeatures, self).__init__()
         self.device = device
@@ -96,54 +67,31 @@ class DMCFeatures(torch.nn.Module):
         else:
             raise 'Unsupported activation'
 
-        if backbone == 'dmc':
-            convolutions = [
-                torch.nn.Conv2d(input_size, num_filters, 3, stride=2),
-            ]
-            for _ in range(num_layers - 1):
-                convolutions.append(activation())
-                conv = torch.nn.Conv2d(
-                    num_filters,
-                    num_filters,
-                    kernel_size=3,
-                    stride=1,
-                )
-                convolutions.append(conv)
-            self.convolutions = torch.nn.Sequential(*convolutions)
-            self.convolutions.apply(dmc_initialization)
-            proj_input_size = num_filters * conv_output_size**2
-        elif backbone == 'resnet12':
-            convolutions = l2l.vision.models.ResNet12(
-                output_size=1,
-                channels=input_size,
+        # convolutions
+        convolutions = [
+            torch.nn.Conv2d(input_size, num_filters, 3, stride=2),
+        ]
+        for _ in range(num_layers - 1):
+            convolutions.append(activation())
+            conv = torch.nn.Conv2d(
+                num_filters,
+                num_filters,
+                kernel_size=3,
+                stride=1,
             )
-            self.convolutions = convolutions.features
-            proj_input_size = 640  # Assumes x = (b, c, 84, 84)
-        elif 'resnet18' in backbone:
-            pretrained = '-pre' in backbone
-            convolutions = tv.models.resnet18(pretrained=pretrained)
-            convolutions = torch.nn.Sequential(  # Assumes x = (b, c, 84, 84)
-                l2l.nn.Lambda(lambda x: x.reshape(-1, 3, 84, 84)),
-                convolutions.conv1,
-                convolutions.bn1,
-                convolutions.relu,
-                convolutions.maxpool,
-                convolutions.layer1,
-                convolutions.layer2,
-                convolutions.layer3,
-                convolutions.layer4,
-                convolutions.avgpool,
-                l2l.nn.Lambda(lambda x: torch.flatten(x, 1).reshape(-1, 512*input_size // 3))
-            )
-            self.convolutions = convolutions
-            proj_input_size = 512 * 3
-        else:
-            raise 'Unknown backbone'
+            convolutions.append(conv)
+        self.convolutions = torch.nn.Sequential(*convolutions)
+        self.convolutions.apply(dmc_initialization)
+
+        # projector
+        proj_input_size = num_filters * conv_output_size**2
         self.projector = torch.nn.Linear(
             proj_input_size,
             output_size,
         )
         self.projector.apply(dmc_initialization)
+
+        # (optional) load / freeze weights
         self.load_weights()
         if self.freeze:
             self.freeze_weights()
@@ -156,7 +104,7 @@ class DMCFeatures(torch.nn.Module):
             archive = torch.load(weight_path)
             try:
                 self.load_state_dict(archive)
-            except:
+            except Exception:
                 self.load_state_dict(archive['features'])
             self.to(self.device)
 
@@ -169,19 +117,6 @@ class DMCFeatures(torch.nn.Module):
         for p in self.parameters():
             p.requires_grad = True
 
-    def fit_normalizer(self, replay, normalizer='warmup'):
-        if normalizer == 'warmup':
-            self.normalizer = FeaturesNormalizer(device=self.device)
-            self.normalizer.fit(self, replay)
-        elif normalizer == 'layernorm':
-            self.normalizer = torch.nn.LayerNorm(self.output_size)
-            self.normalizer.to(self.device)
-        elif normalizer == 'l2':
-            self.normalizer = lambda x: 2.0 * x / x.norm(p=2, dim=1, keepdim=True)
-        else:
-            raise 'Unknown normalizer'
-        self.use_normalizer = True
-
     def forward(self, x):
         if self.device is not None:
             x = x.to(self.device, non_blocking=True)
@@ -191,53 +126,7 @@ class DMCFeatures(torch.nn.Module):
         x = self.convolutions(x)
         x = x.view(x.size(0), -1)
         x = self.projector(x)
-        if self.use_normalizer:
-            x = self.normalizer(x)
         return x
-
-
-class CherryMLP(torch.nn.Module):
-
-    def __init__(
-        self,
-        input_size,
-        output_size,
-        hidden_size=300,
-        num_hidden=2,
-        activation='relu',
-        device=None,
-        init_w=3e-3,
-        **kwargs,
-    ):
-        super(CherryMLP, self).__init__()
-        layer_sizes = [hidden_size, ] * num_hidden
-        self.layers = torch.nn.ModuleList()
-        self.device = device
-        if activation == 'relu':
-            self.act = torch.nn.ReLU()
-        elif activation == 'gelu':
-            self.act = torch.nn.GeLU()
-        else:
-            raise 'Unsupported activation'
-
-        in_size = input_size
-        for next_size in layer_sizes:
-            fc = torch.nn.Linear(in_size, next_size)
-            self.layers.append(fc)
-            in_size = next_size
-
-        self.last_fc = torch.nn.Linear(in_size, output_size)
-        self.last_fc.weight.data.uniform_(-init_w, init_w)
-        self.last_fc.bias.data.uniform_(-init_w, init_w)
-
-    def forward(self, *args, **kwargs):
-        h = torch.cat(args, dim=-1)
-        if self.device is not None:
-            h = h.to(self.device)
-        for fc in self.layers:
-            h = self.act(fc(h))
-        output = self.last_fc(h)
-        return output
 
 
 class DMCMLP(torch.nn.Module):
@@ -281,12 +170,11 @@ class DMCMLP(torch.nn.Module):
 
 
 @dataclasses.dataclass
-class DMCPolicyArguments:
+class DMCPolicyArguments(cherry.algorithms.AlgorithmArguments):
 
     input_size: int = 50
     activation: str = 'relu'
-    projector_size: int = 0
-    mlp_type: str = 'cherry'  # values: cherry, dmc
+    projector_size: int = 0  # 0 means no projector
     mlp_hidden: int = 2
     weight_path: str = ''
 
@@ -302,10 +190,9 @@ class DMCPolicy(cherry.nn.Policy):
         input_size=DMCPolicyArguments.input_size,
         activation=DMCPolicyArguments.activation,
         projector_size=DMCPolicyArguments.projector_size,
-        mlp_type=DMCPolicyArguments.mlp_type,
         mlp_hidden=DMCPolicyArguments.mlp_hidden,
-        device=None,
         weight_path=DMCPolicyArguments.weight_path,
+        device=None,
     ):
         super(DMCPolicy, self).__init__()
 
@@ -313,7 +200,6 @@ class DMCPolicy(cherry.nn.Policy):
         self.input_size = input_size
         self.activation = activation
         self.projector_size = projector_size
-        self.mlp_type = mlp_type
         self.mlp_hidden = mlp_hidden
         self.weight_path = weight_path
         self.std = None
@@ -330,13 +216,12 @@ class DMCPolicy(cherry.nn.Policy):
             self.projector.apply(dmc_initialization)
             policy_input_size = self.projector_size
 
-        mlp = DMCMLP if self.mlp_type == 'dmc' else CherryMLP
-        self.actor = mlp(
+        self.actor = DMCMLP(
             input_size=policy_input_size,
             output_size=2 * env.action_size,
             activation=self.activation,
             num_hidden=self.mlp_hidden,
-            init_w=1e-3,  # only for cherry MLP class
+            device=self.device,
         )
         self.distribution = cherry.distributions.TanhNormal
 
@@ -348,7 +233,7 @@ class DMCPolicy(cherry.nn.Policy):
             archive = torch.load(weight_path)
             try:
                 self.load_state_dict(archive)
-            except:
+            except Exception:
                 self.load_state_dict(archive['policy'])
             self.to(self.device)
 
@@ -360,8 +245,6 @@ class DMCPolicy(cherry.nn.Policy):
         if self.std is None:
             # clip log_std to [-10., 2]
             log_std = log_std.clamp(-10.0, 2.0)
-            #  log_std = torch.tanh(log_std)
-            #  log_std = -10. + 0.5 * (2. - (-10.)) * (log_std + 1)
             density = self.distribution(mean, log_std.exp())
         else:
             density = self.distribution(
@@ -371,7 +254,7 @@ class DMCPolicy(cherry.nn.Policy):
         return density
 
 
-class DMCQValue(torch.nn.Module):
+class DMCActionValue(cherry.nn.ActionValue):
 
     """A Q value function for DMC tasks."""
 
@@ -383,18 +266,16 @@ class DMCQValue(torch.nn.Module):
         input_size=DMCPolicyArguments.input_size,
         activation=DMCPolicyArguments.activation,
         projector_size=DMCPolicyArguments.projector_size,
-        mlp_type=DMCPolicyArguments.mlp_type,
         mlp_hidden=DMCPolicyArguments.mlp_hidden,
-        device=None,
         weight_path=DMCPolicyArguments.weight_path,
+        device=None,
     ):
-        super(DMCQValue, self).__init__()
+        super(DMCActionValue, self).__init__()
 
         self.device = device
         self.input_size = input_size
         self.activation = activation
         self.projector_size = projector_size
-        self.mlp_type = mlp_type
         self.mlp_hidden = mlp_hidden
         self.weight_path = weight_path
 
@@ -411,14 +292,13 @@ class DMCQValue(torch.nn.Module):
             self.projector.apply(dmc_initialization)
 
         action_size = env.action_size
-        mlp = DMCMLP if self.mlp_type == 'dmc' else CherryMLP
-        self.q1 = mlp(
+        self.q1 = DMCMLP(
             input_size=state_input_size + action_size,
             output_size=1,
             num_hidden=self.mlp_hidden,
             activation=self.activation,
         )
-        self.q2 = mlp(
+        self.q2 = DMCMLP(
             input_size=state_input_size + action_size,
             output_size=1,
             num_hidden=self.mlp_hidden,
@@ -433,7 +313,7 @@ class DMCQValue(torch.nn.Module):
             archive = torch.load(weight_path)
             try:
                 self.load_state_dict(archive)
-            except:
+            except Exception:
                 self.load_state_dict(archive['qvalue'])
             self.to(self.device)
 
@@ -441,10 +321,10 @@ class DMCQValue(torch.nn.Module):
         if self.device is not None:
             state = state.to(self.device)
             action = action.to(self.device)
-        qf1, qf2 = self.twin_values(state, action)
+        qf1, qf2 = self.twin(state, action)
         return torch.min(qf1, qf2)
 
-    def twin_values(self, state, action):
+    def twin(self, state, action):
         if self.device is not None:
             state = state.to(self.device)
             action = action.to(self.device)

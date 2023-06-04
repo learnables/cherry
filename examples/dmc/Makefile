@@ -9,7 +9,12 @@ drq:
 	CUDA_VISIBLE_DEVICES=$(GPU) \
 	MUJOCO_GL=$(GL) \
 	python train.py \
+		--options.algorithm='drq' \
 		--tasks.vision_states=1 \
+		--drq.target_polyak_weight=0.995 \
+		--drq.batch_size=512 \
+		--policy.projector_size=50 \
+		--qvalue.projector_size=50 \
 		--options.seed=1234
 
 sac:

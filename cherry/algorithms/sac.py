@@ -274,12 +274,12 @@ class SAC(AlgorithmArguments):
         replay,
         policy,
         action_value,
-        target_value,
+        target_action_value,
         log_alpha,
         target_entropy,
         policy_optimizer,
         features_optimizer,
-        value_optimizer,
+        action_value_optimizer,
         alpha_optimizer,
         features=None,
         target_features=None,
@@ -346,7 +346,7 @@ class SAC(AlgorithmArguments):
                     target_next_states = target_features(target_next_states)
                 next_density = policy(next_states)
                 next_actions, next_log_probs = SAC.actions_log_probs(next_density)
-                target_q_values = target_value(target_next_states, next_actions) \
+                target_q_values = target_action_value(target_next_states, next_actions) \
                     - alpha * next_log_probs
 
             rewards = batch.reward().reshape(target_q_values.shape)
@@ -369,10 +369,10 @@ class SAC(AlgorithmArguments):
             value_loss = (critic_qf1_loss + critic_qf2_loss) / 2.0
 
             # Update Critic Networks
-            value_optimizer.zero_grad()
+            action_value_optimizer.zero_grad()
             features_optimizer.zero_grad()
             value_loss.backward()
-            value_optimizer.step()
+            action_value_optimizer.step()
             features_optimizer.step()
 
             stats['sac/qf_loss1'] = critic_qf1_loss.item()
@@ -401,7 +401,7 @@ class SAC(AlgorithmArguments):
         # Move target approximator parameters towards critic
         if update_target:
             cherry.models.polyak_average(
-                source=target_value,
+                source=target_action_value,
                 target=action_value,
                 alpha=config.target_polyak_weight,
             )

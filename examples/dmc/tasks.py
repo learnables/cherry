@@ -40,7 +40,7 @@ DMC_TASKLIST = [
 
 
 @dataclasses.dataclass
-class DMCTasks(ms.EnvFactory, cherry.algorithms.arguments.AlgorithmArguments):
+class DMCTasks(ms.EnvFactory, cherry.algorithms.AlgorithmArguments):
 
     """
     Utility class to instantiate a DMC environment.

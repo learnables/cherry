@@ -128,9 +128,9 @@ class DrQ(AlgorithmArguments):
                 aug_next_density = policy(aug_next_states)
                 aug_next_actions, aug_next_log_probs = SAC.actions_log_probs(aug_next_density)
 
-                target_q_values = target_value(target_next_states, next_actions) \
+                target_q_values = target_action_value(target_next_states, next_actions) \
                     - alpha * next_log_probs
-                aug_target_q_values = target_value(aug_target_next_states, aug_next_actions) \
+                aug_target_q_values = target_action_value(aug_target_next_states, aug_next_actions) \
                     - alpha * aug_next_log_probs
                 target_q = 0.5 * (target_q_values + aug_target_q_values)
 

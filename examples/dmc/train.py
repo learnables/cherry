@@ -18,7 +18,7 @@ import learn2learn as l2l
 import simple_parsing as sp
 import tqdm
 
-from models import DMCPolicy, DMCQValue, DMCFeatures
+from models import DMCPolicy, DMCActionValue, DMCFeatures
 from tasks import DMCTasks
 from utils import flatten_config, evaluate_policy, set_lr
 
@@ -43,7 +43,8 @@ def main(args):
         device = 'cuda'
 
     if args.options.log_wandb:
-        tags = None if args.options.tags == '' else args.options.tags.split(',')
+        tags = None if args.options.tags == '' else args.options.tags.split(
+            ',')
         tags = [t for t in tags if not t == '']
         wandb.init(
             project='cherry-dmc',
@@ -64,42 +65,28 @@ def main(args):
 
     # Instantiate the learning agent
     if args.tasks.vision_states:
-        __import__('pdb').set_trace()
+        args.features.input_size = task.observation_space.shape[0]
         features = DMCFeatures(
-            input_size=task.observation_space.shape[0],
-            output_size=args.features.output_size,
-            activation=args.features.activation,
             device=device,
-            weight_path=args.features.weight_path,
-            backbone=args.features.backbone,
-            freeze=args.features.freeze,
+            **args.features,
         )
-        features.load_weights()
         features.to(device)
         feature_size = args.features.output_size
     else:
         features = l2l.nn.Lambda(lambda x: x)
         feature_size = task.state_size
 
-    encoder = target_encoder = encoder_optimizer = None
+    args.policy.input_size = feature_size
     policy = DMCPolicy(
         env=task,
-        input_size=feature_size,
-        activation=args.policy.activation,
-        projector_size=args.policy.projector_size,
-        mlp_type=args.policy.mlp_type,
-        mlp_hidden=args.policy.mlp_hidden,
         device=device,
+        **args.policy,
     )
     policy.to(device)
-    qvalue = DMCQValue(
+    qvalue = DMCActionValue(
         env=task,
-        input_size=feature_size,
-        activation=args.qvalue.activation,
-        projector_size=args.qvalue.projector_size,
-        mlp_type=args.qvalue.mlp_type,
-        mlp_hidden=args.qvalue.mlp_hidden,
         device=device,
+        **args.qvalue,
     )
     qvalue.to(device)
     qtarget = copy.deepcopy(qvalue)
@@ -113,111 +100,73 @@ def main(args):
 
     # Instantiate the learning algorithm
     if args.options.algorithm == 'sac':
-        algorithm_update = cherry.algorithms.SAC(
-            batch_size=args.sac.batch_size,
-            target_polyak_weight=args.sac.target_polyak_weight,
-        )
+        algorithm = cherry.algorithms.SAC(**args.sac)
     elif args.options.algorithm == 'drq':
-        algorithm_update = cherry.algorithms.DrQ(
-            batch_size=args.drq.batch_size,
-            target_polyak_weight=args.drq.target_polyak_weight,
-        )
-    elif args.options.algorithm == 'drqv2f':
-        algorithm_update = cherry.algorithms.DrQv2(**args.drqv2)
-        if args.drqv2f.std_decay > 0.0:
+        algorithm = cherry.algorithms.DrQ(**args.drq)
+    elif args.options.algorithm == 'drqv2':
+        algorithm = cherry.algorithms.DrQv2(**args.drqv2)
+        if args.drqv2.std_decay > 0.0:
             policy.std = 1.0
 
     # Checkpointing
     best_rewards = - float('inf')
+
     def checkpoint(iteration, rewards, save_wandb=False):
-        run_id = wandb.run.id if args.options.log_wandb else 0
-        archive = {
-            'policy': copy.deepcopy(policy).cpu().state_dict(),
-            'features': copy.deepcopy(features).cpu().state_dict(),
-            'qvalue': copy.deepcopy(qvalue).cpu().state_dict(),
-            'qtarget': copy.deepcopy(qtarget).cpu().state_dict(),
-            'iteration': iteration,
-            'config': flatten_config(args),
-        }
-        archive_path = f'saved_models/dmc_rl/vision{args.tasks.vision_states}/{args.tasks.domain_name}-{args.tasks.task_name}/'
-        archive_name = f'{run_id}_test{rewards:.2f}_lr{args.options.learning_rate}_{args.options.tags}_seed{args.options.seed}.pth'
-        os.makedirs(archive_path, exist_ok=True)
-        archive_full_path = os.path.join(archive_path, archive_name)
-        torch.save(archive, archive_full_path)
-        if save_wandb and args.options.log_wandb:
-            wandb.save(archive_full_path)
+        if rewards > best_rewards:
+            run_id = wandb.run.id if args.options.log_wandb else 0
+            archive = {
+                'policy': copy.deepcopy(policy).cpu().state_dict(),
+                'features': copy.deepcopy(features).cpu().state_dict(),
+                'qvalue': copy.deepcopy(qvalue).cpu().state_dict(),
+                'qtarget': copy.deepcopy(qtarget).cpu().state_dict(),
+                'iteration': iteration,
+                'config': flatten_config(args),
+            }
+            archive_path = f'saved_models/{args.tasks.domain_name}-{args.tasks.task_name}/{args.options.algorithm}/'
+            archive_name = f'{run_id}_test{rewards:.2f}.pth'
+            os.makedirs(archive_path, exist_ok=True)
+            archive_full_path = os.path.join(archive_path, archive_name)
+            torch.save(archive, archive_full_path)
+            if save_wandb and args.options.log_wandb:
+                wandb.save(archive_full_path)
             print('Weights saved in:', archive_full_path)
 
     # Warmup phase
-    random_policy = lambda state: task.action_space.sample()
-    warmup_steps = args.options.warmup
-    replay = task.run(random_policy, steps=warmup_steps).to('cpu')
-    for sars in replay:
+    def random_policy(state): return task.action_space.sample()
+    replay = task.run(random_policy, steps=args.options.warmup).to('cpu')
+    for sars in replay:  # no absorbing state
         sars.done.mul_(0.0)
 
     # instantiate optimizers
     features_optimizer = torch.optim.Adam(
         params=set(
-            list(features.parameters()) \
-                + [torch.empty(1, requires_grad=True)]  # to circumvent "empty param list for states"
+            list(features.parameters())
+            # to circumvent "empty param list for states"
+            + [torch.empty(1, requires_grad=True)]
         ),
         lr=args.options.features_learning_rate,
-        eps=args.options.features_adam_eps,
     )
-    if encoder is not None:
-        encoder_optimizer = torch.optim.Adam(
-            encoder.parameters(),
-            lr=args.options.features_learning_rate,
-            eps=args.options.features_adam_eps,
-        )
     policy_optimizer = torch.optim.Adam(
         policy.parameters(),
         lr=args.options.learning_rate,
-        eps=args.options.adam_eps,
     )
     value_optimizer = torch.optim.Adam(
         qvalue.parameters(),
         lr=args.options.learning_rate,
-        eps=args.options.adam_eps,
     )
     alpha_optimizer = torch.optim.Adam(
         [log_alpha],
         lr=args.options.learning_rate,
-        eps=args.options.adam_eps,
     )
-
-    # Warmup heads
-    set_lr(features_optimizer, 0.0)
-    for update in range(args.options.warmup_updates):
-        stats = algorithm_update(
-            replay=replay,
-            policy=policy,
-            features=features,
-            qvalue=qvalue,
-            encoder=encoder,
-            target_encoder=target_encoder,
-            target_value=qtarget,
-            target_features=target_features,
-            log_alpha=log_alpha,
-            target_entropy=target_entropy,
-            policy_optimizer=policy_optimizer,
-            features_optimizer=features_optimizer,
-            value_optimizer=value_optimizer,
-            alpha_optimizer=alpha_optimizer,
-            update_policy=False,
-            update_target=True,
-            device=device,
-        )
-    set_lr(features_optimizer, args.options.features_learning_rate)
 
     # Learning phase
-    behaviour_policy = lambda x: policy.act(features(x))
-    test_policy = lambda x: policy.act(
+    def behaviour_policy(x): return policy.act(features(x))
+
+    def test_policy(x): return policy.act(
         features(x),
-        deterministic=args.options.eval_deter,
+        deterministic=args.options.deterministic_eval,
     )
-    total_steps = args.options.num_updates
-    for step in tqdm.trange(warmup_steps, total_steps):
+    for step in tqdm.trange(args.options.warmup, args.options.num_updates):
 
         true_step = step
 
@@ -233,35 +182,29 @@ def main(args):
         if true_step % args.options.update_freq == 0:
 
             for update in range(args.options.update_freq):
-                update_policy = (true_step + update) % args.sac.policy_delay == 0
-                update_target = (true_step + update) % args.sac.target_delay == 0
-                stats = algorithm_update(
+                stats = algorithm.update(
                     replay=replay,
                     policy=policy,
                     features=features,
-                    qvalue=qvalue,
-                    target_value=qtarget,
+                    action_value=qvalue,
+                    target_action_value=qtarget,
                     target_features=target_features,
-                    encoder=encoder,
-                    target_encoder=target_encoder,
                     log_alpha=log_alpha,
                     target_entropy=target_entropy,
                     policy_optimizer=policy_optimizer,
                     features_optimizer=features_optimizer,
-                    value_optimizer=value_optimizer,
+                    action_value_optimizer=value_optimizer,
                     alpha_optimizer=alpha_optimizer,
-                    encoder_optimizer=encoder_optimizer,
-                    update_policy=update_policy,
-                    update_target=update_target,
+                    update_target=True,
                     device=device,
                 )
 
                 if args.options.log_wandb:
                     stats['rl_step'] = true_step + update
                     wandb.log(stats)
+        true_step += args.tasks.num_envs
 
         # test
-        true_step += args.tasks.num_envs
         if true_step % args.options.eval_freq == 0:
             with torch.no_grad():
                 test_rewards = evaluate_policy(
@@ -272,10 +215,9 @@ def main(args):
                     render=true_step % args.options.render_freq == 0,
                     log_wandb=args.options.log_wandb,
                 )
+                best_rewards = max(test_rewards, best_rewards)
                 if true_step % args.options.checkpoint_freq == 0:
                     checkpoint(iteration=step, rewards=test_rewards)
-                    best_rewards = test_rewards
-
 
     # Save results to wandb
     with torch.no_grad():
@@ -288,14 +230,6 @@ def main(args):
             log_wandb=args.options.log_wandb,
         )
     checkpoint(iteration=step, rewards=test_rewards, save_wandb=True)
-    if args.options.save_final_replay:
-        replay.to('cpu')
-        run_id = wandb.run.id if args.options.log_wandb else 0
-        replay_path = f'saved_replays/dmc_rl/vision{args.tasks.vision_states}/{args.tasks.domain_name}-{args.tasks.task_name}/'
-        replay_name = f'{run_id}_test{test_rewards:.2f}_lr{args.options.learning_rate}_{args.options.tags}_seed{args.options.seed}.pth'
-        os.makedirs(replay_path, exist_ok=True)
-        replay_full_path = os.path.join(replay_path, replay_name)
-        replay.save(replay_full_path)
 
 
 if __name__ == "__main__":
@@ -308,11 +242,10 @@ if __name__ == "__main__":
     @dataclasses.dataclass
     class TrainOptions:
 
-        num_updates: int = 1000000  # Number of algorithm updates.
-        warmup: int = 1000  # Length of warmup phase.
-        warmup_updates: int = 0
+        num_updates: int = 500000  # Number of algorithm updates.
+        warmup: int = 5000  # Length of warmup phase.
         replay_size: int = 100000
-        learning_rate: float = 1e-3
+        learning_rate: float = 3e-3
         features_learning_rate: float = 3e-4
         log_alpha: float = 0.0
         render: bool = False
@@ -320,7 +253,7 @@ if __name__ == "__main__":
         eval_freq: int = 1000
         checkpoint_freq: int = 1000000
         render_freq: int = 1000000
-        eval_deter: bool = False
+        deterministic_eval: bool = False
         cuda: bool = True
         log_wandb: bool = False
         debug: bool = False
@@ -332,10 +265,10 @@ if __name__ == "__main__":
     parser.add_arguments(TrainOptions, dest='options')
     parser.add_arguments(DMCFeatures.args, dest='features')
     parser.add_arguments(DMCPolicy.args, dest='policy')
-    parser.add_arguments(DMCQValue.args, dest='qvalue')
+    parser.add_arguments(DMCActionValue.args, dest='qvalue')
     parser.add_arguments(DMCTasks, dest='tasks')
     parser.add_arguments(cherry.algorithms.SAC, dest='sac')
     parser.add_arguments(cherry.algorithms.DrQ, dest='drq')
-    parser.add_arguments(cherry.algorithms.DrQv2, dest='drqv2f')
+    parser.add_arguments(cherry.algorithms.DrQv2, dest='drqv2')
     args = parser.parse_args()
     main(args)
