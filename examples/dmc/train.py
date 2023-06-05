@@ -20,7 +20,7 @@ import tqdm
 
 from models import DMCPolicy, DMCActionValue, DMCFeatures
 from tasks import DMCTasks
-from utils import flatten_config, evaluate_policy, set_lr
+from utils import flatten_config, evaluate_policy
 
 
 def main(args):
@@ -43,13 +43,9 @@ def main(args):
         device = 'cuda'
 
     if args.options.log_wandb:
-        tags = None if args.options.tags == '' else args.options.tags.split(
-            ',')
-        tags = [t for t in tags if not t == '']
         wandb.init(
             project='cherry-dmc',
-            name=args.tasks.domain_name+'-'+args.tasks.task_name,
-            tags=tags,
+            name=args.tasks.domain_name+'-'+args.tasks.task_name + '-' + args.options.algorithm,
             config=flatten_config(args),
         )
 
@@ -83,6 +79,7 @@ def main(args):
         **args.policy,
     )
     policy.to(device)
+    args.qvalue.input_size = feature_size
     qvalue = DMCActionValue(
         env=task,
         device=device,
@@ -257,7 +254,6 @@ if __name__ == "__main__":
         cuda: bool = True
         log_wandb: bool = False
         debug: bool = False
-        tags: str = ''
         algorithm: str = 'sac'
         seed: int = 1234
 

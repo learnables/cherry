@@ -1,6 +1,5 @@
 # -*- coding=utf-8 -*-
 
-import torch
 import dataclasses
 import argparse
 import gym
@@ -8,6 +7,7 @@ import numpy as np
 import wandb
 
 from collections import deque
+
 
 def set_lr(optimizer, lr):
     for param_group in optimizer.param_groups:
@@ -69,10 +69,10 @@ def flatten_config(args, prefix=None):
         return flat_args
     elif dataclasses.is_dataclass(args):
         keys = dataclasses.fields(args)
-        getvalue = lambda x: getattr(args, x.name)
+        def getvalue(x): return getattr(args, x.name)
     elif isinstance(args, dict):
         keys = args.keys()
-        getvalue = lambda x: args[x]
+        def getvalue(x): return args[x]
     else:
         raise 'Unknown args'
     for key in keys:
