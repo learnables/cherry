@@ -2,12 +2,12 @@
 entity: arnolds
 project: cherry-dmc-benchmarks
 program: train.py
-name: cartpole-swingup-vision
+name: hopper-stand-vision
 command: 
     - python
     - ${program}
-    - --tasks.domain_name=cartpole
-    - --tasks.task_name=swingup
+    - --tasks.domain_name=hopper
+    - --tasks.task_name=stand
     - --tasks.vision_states=1
     - --policy.projector_size=50
     - --qvalue.projector_size=50

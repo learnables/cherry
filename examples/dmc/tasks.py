@@ -1,10 +1,5 @@
 # -*- coding=utf-8 -*-
 
-"""
-TODO:
-    - Rewrite with metaschool.
-"""
-
 import gym
 import torch
 import cherry
