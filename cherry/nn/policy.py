@@ -45,7 +45,7 @@ class Policy(torch.nn.Module):
 
         * `state` (Tensor) - State where the policy should be computed.
         """
-        raise NotADirectoryError
+        raise NotImplementedError
 
     def log_prob(self, state, action):
         """

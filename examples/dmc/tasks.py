@@ -92,8 +92,6 @@ class DMCTasks(ms.EnvFactory, cherry.algorithms.AlgorithmArguments):
                     env = gym.wrappers.TimeAwareObservation(env)
                 if config.frame_stack > 0:
                     env = FrameStack(env, k=config.frame_stack)
-                if rank == 0:
-                    env = cherry.wrappers.Logger(env, interval=1000)
                 env = gym.wrappers.TransformReward(
                     env=env,
                     f=lambda r: r / config.scale_rewards,
