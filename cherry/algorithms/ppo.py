@@ -62,18 +62,22 @@ class PPO(AlgorithmArguments):
         **Example**
 
         ~~~python
-        advantage = ch.pg.generalized_advantage(GAMMA,
-                                                TAU,
-                                                replay.reward(),
-                                                replay.done(),
-                                                replay.value(),
-                                                next_state_value)
+        advantage = ch.pg.generalized_advantage(
+            GAMMA,
+            TAU,
+            replay.reward(),
+            replay.done(),
+            replay.value(),
+            next_state_value,
+        )
         new_densities = policy(replay.state())
         new_logprobs = new_densities.log_prob(replay.action())
-        loss = policy_loss(new_logprobs,
-                           replay.logprob().detach(),
-                           advantage.detach(),
-                           clip=0.2)
+        loss = policy_loss(
+            new_logprobs,
+            replay.logprob().detach(),
+            advantage.detach(),
+            clip=0.2,
+        )
         ~~~
         """
         msg = 'new_log_probs, old_log_probs and advantages must have equal size.'

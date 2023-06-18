@@ -1,9 +1,24 @@
 
 # cherry.algorithms
 
-::: cherry.algorithms.a2c
+::: cherry.algorithms.AlgorithmArguments
+    selection:
+      members:
+        - __init__
 
-::: cherry.algorithms.trpo
+::: cherry.algorithms.A2C
+    selection:
+      members:
+        - state_value_loss
+        - policy_loss
+
+::: cherry.algorithms.TRPO
+    selection:
+      members:
+        - policy_loss
+        - hessian_vector_product
+        - conjugate_gradient
+        - line_search
 
 ::: cherry.algorithms.PPO
     selection:
@@ -44,4 +59,3 @@
         - update
         - action_value_loss
         - policy_loss
-
