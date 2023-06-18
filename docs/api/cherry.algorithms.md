@@ -12,13 +12,26 @@
         - state_value_loss
         - policy_loss
 
-::: cherry.algorithms.TRPO
+::: cherry.algorithms.DDPG
     selection:
       members:
+        - state_value_loss
+
+::: cherry.algorithms.DrQ
+    selection:
+      members:
+        - __init__
+        - update
+        - action_value_loss
         - policy_loss
-        - hessian_vector_product
-        - conjugate_gradient
-        - line_search
+
+::: cherry.algorithms.DrQv2
+    selection:
+      members:
+        - __init__
+        - update
+        - action_value_loss
+        - policy_loss
 
 ::: cherry.algorithms.PPO
     selection:
@@ -36,23 +49,15 @@
         - action_value_loss
         - policy_loss
 
+::: cherry.algorithms.TRPO
+    selection:
+      members:
+        - policy_loss
+        - hessian_vector_product
+        - conjugate_gradient
+        - line_search
+
 ::: cherry.algorithms.SAC
-    selection:
-      members:
-        - __init__
-        - update
-        - action_value_loss
-        - policy_loss
-
-::: cherry.algorithms.DrQ
-    selection:
-      members:
-        - __init__
-        - update
-        - action_value_loss
-        - policy_loss
-
-::: cherry.algorithms.DrQv2
     selection:
       members:
         - __init__

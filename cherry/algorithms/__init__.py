@@ -14,6 +14,7 @@ from . import drqv2
 # classes
 from .a2c import A2C
 from .trpo import TRPO
+from .ddpg import DDPG
 from .ppo import PPO
 from .td3 import TD3
 from .sac import SAC

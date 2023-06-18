@@ -27,7 +27,6 @@ class TRPO(AlgorithmArguments):
 
     """
 
-
     @staticmethod
     def policy_loss(new_log_probs, old_log_probs, advantages):
         """

@@ -11,7 +11,7 @@ from .arguments import AlgorithmArguments
 class A2C(AlgorithmArguments):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py)
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/a2c.py" class="source-link">[Source]</a>
 
     ## Description
 
@@ -28,8 +28,6 @@ class A2C(AlgorithmArguments):
     @staticmethod
     def policy_loss(log_probs, advantages):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py)
-
         ## Description
 
         The policy loss of the Advantage Actor-Critic.
@@ -70,8 +68,6 @@ class A2C(AlgorithmArguments):
     @staticmethod
     def state_value_loss(values, rewards):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py)
-
         ## Description
 
         The state-value loss of the Advantage Actor-Critic.
