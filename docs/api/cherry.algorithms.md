@@ -46,8 +46,6 @@
       members:
         - __init__
         - update
-        - action_value_loss
-        - policy_loss
 
 ::: cherry.algorithms.TRPO
     selection:

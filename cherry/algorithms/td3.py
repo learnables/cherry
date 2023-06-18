@@ -11,16 +11,39 @@ from .arguments import AlgorithmArguments
 class TD3(AlgorithmArguments):
 
     """
-    <a href="" class="source-link">[Source]</a>
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/td3.py" class="source-link">[Source]</a>
 
     ## Description
+
+    Utilities to implement TD3 from [1].
+
+    The main idea behind TD3 is to extend DDPG with *twin* action value functions.
+    Namely, the action values are computed with:
+
+    $$
+    \\min_{i=1, 2} Q_i(s_t, \\pi(s_t) + \\epsilon),
+    $$
+
+    where \(\\pi\) is a deterministic policy and \(\\epsilon\) is (typically) sampled from a Gaussian distribution.
+    See [cherry.nn.Twin](/api/cherry.nn/#cherry.nn.action_value.Twin) to easily implement such twin Q-functions.
+
+    The authors also suggest to delay the updates to the policy.
+    This simply boils down to applying 1 policy update every N times the action value function is updated.
+    This implementation also supports delaying updates to the action value and its target network.
+
+    ## References
+
+    1. Fujimoto et al., "Addressing Function Approximation Error in Actor-Critic Methods", ICML 2018.
+
     ## Arguments
 
-    * `batch_size` (int) - The number of samples to get from the replay.
+    * `batch_size` (int, *optional*, default=512) - Number of samples to get from the replay.
+    * `discount` (float, *optional*, default=0.99) - Discount factor.
+    * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
+    * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
+    * `nsteps` (int, *optional*, default=1) - Number of bootstrapping steps to compute the target values.
 
-    ## Example
-    ~~~python
-    ~~~
     """
 
     batch_size: int = 512
@@ -44,6 +67,26 @@ class TD3(AlgorithmArguments):
         device=None,
         **kwargs,
     ):
+
+        """
+        ## Description
+
+        Implements a single TD3 update.
+
+        ## Arguments
+
+        * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
+        * `policy` (cherry.nn.Policy) - Policy to optimize.
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `target_action_value` (cherry.nn.ActionValue) - Target action value.
+        * `policy_optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
+        * `action_value_optimizer` (torch.optim.Optimizer) - Optimizer for the `action_value`.
+        * `update_policy` (bool, *optional*, default=True) - Whether to update the policy.
+        * `update_target` (bool, *optional*, default=True) - Whether to update the action value target network.
+        * `update_value` (bool, *optional*, default=True) - Whether to update the action value.
+        * `device` (torch.device) - The device used to compute the update.
+
+        """
         # Log debugging values
         stats = {}
 
