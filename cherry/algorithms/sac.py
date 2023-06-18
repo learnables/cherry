@@ -322,8 +322,8 @@ class SAC(AlgorithmArguments):
                 alpha_optimizer.step()
                 alpha = log_alpha.exp()
             else:
-                alpha = torch.ones(1)
-                alpha_loss = torch.zeros(1)
+                alpha = torch.ones(1, device=device)
+                alpha_loss = torch.zeros(1, device=device)
 
             stats['sac/alpha_loss'] = alpha_loss.item()
             stats['sac/alpha_value'] = alpha.item()

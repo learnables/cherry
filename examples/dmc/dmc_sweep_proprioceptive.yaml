@@ -2,12 +2,12 @@
 entity: arnolds
 project: cherry-dmc-benchmarks
 program: train.py
-name: hopper-stand-proprio
+name: cheetah-run-proprio
 command: 
     - python
     - ${program}
-    - --tasks.domain_name=hopper
-    - --tasks.task_name=stand
+    - --tasks.domain_name=cheetah
+    - --tasks.task_name=run
     - --tasks.vision_states=0
     - --policy.projector_size=50
     - --qvalue.projector_size=50

@@ -45,7 +45,9 @@ def main(args):
     if args.options.log_wandb:
         wandb.init(
             project='cherry-dmc',
-            name=args.tasks.domain_name+'-'+args.tasks.task_name + '-' + args.options.algorithm,
+            name=args.tasks.domain_name + '-'
+                    + args.tasks.task_name + '-'
+                    + args.options.algorithm,
             config=flatten_config(args),
         )
 
@@ -105,29 +107,6 @@ def main(args):
         if args.drqv2.std_decay > 0.0:
             policy.std = 1.0
 
-    # Checkpointing
-    best_rewards = - float('inf')
-
-    def checkpoint(iteration, rewards, save_wandb=False):
-        if rewards > best_rewards:
-            run_id = wandb.run.id if args.options.log_wandb else 0
-            archive = {
-                'policy': copy.deepcopy(policy).cpu().state_dict(),
-                'features': copy.deepcopy(features).cpu().state_dict(),
-                'qvalue': copy.deepcopy(qvalue).cpu().state_dict(),
-                'qtarget': copy.deepcopy(qtarget).cpu().state_dict(),
-                'iteration': iteration,
-                'config': flatten_config(args),
-            }
-            archive_path = f'saved_models/{args.tasks.domain_name}-{args.tasks.task_name}/{args.options.algorithm}/'
-            archive_name = f'{run_id}_test{rewards:.2f}.pth'
-            os.makedirs(archive_path, exist_ok=True)
-            archive_full_path = os.path.join(archive_path, archive_name)
-            torch.save(archive, archive_full_path)
-            if save_wandb and args.options.log_wandb:
-                wandb.save(archive_full_path)
-            print('Weights saved in:', archive_full_path)
-
     # Warmup phase
     def random_policy(state): return task.action_space.sample()
     replay = task.run(random_policy, steps=args.options.warmup).to('cpu')
@@ -163,70 +142,75 @@ def main(args):
         features(x),
         deterministic=args.options.deterministic_eval,
     )
-    for step in tqdm.trange(args.options.warmup, args.options.num_updates):
-
-        true_step = step
+    for step in tqdm.trange(
+        args.options.warmup,
+        args.options.num_updates,
+        args.options.update_freq,
+    ):
 
         # collect data
         with torch.no_grad():
-            step_replay = task.run(behaviour_policy, steps=1).to('cpu')
+            step_replay = task.run(
+                get_action=behaviour_policy,
+                steps=args.options.update_freq,
+            ).to('cpu')
             for sars in step_replay:
                 sars.done.mul_(0.0)
             replay += step_replay
             replay = replay[-args.options.replay_size:]
 
         # update
-        if true_step % args.options.update_freq == 0:
+        for update in range(args.options.update_freq):
+            stats = algorithm.update(
+                replay=replay,
+                policy=policy,
+                features=features,
+                action_value=qvalue,
+                target_action_value=qtarget,
+                target_features=target_features,
+                log_alpha=log_alpha,
+                target_entropy=target_entropy,
+                policy_optimizer=policy_optimizer,
+                features_optimizer=features_optimizer,
+                action_value_optimizer=value_optimizer,
+                alpha_optimizer=alpha_optimizer,
+                update_target=True,
+                device=device,
+            )
 
-            for update in range(args.options.update_freq):
-                stats = algorithm.update(
-                    replay=replay,
-                    policy=policy,
-                    features=features,
-                    action_value=qvalue,
-                    target_action_value=qtarget,
-                    target_features=target_features,
-                    log_alpha=log_alpha,
-                    target_entropy=target_entropy,
-                    policy_optimizer=policy_optimizer,
-                    features_optimizer=features_optimizer,
-                    action_value_optimizer=value_optimizer,
-                    alpha_optimizer=alpha_optimizer,
-                    update_target=True,
-                    device=device,
-                )
-
-                if args.options.log_wandb:
-                    stats['rl_step'] = true_step + update
-                    wandb.log(stats)
-        true_step += args.tasks.num_envs
+            if args.options.log_wandb:
+                stats['rl_step'] = step + update
+                wandb.log(stats)
 
         # test
-        if true_step % args.options.eval_freq == 0:
+        if step % args.options.eval_freq == 0:
             with torch.no_grad():
-                test_rewards = evaluate_policy(
+                evaluate_policy(
                     env=test_task,
                     policy=test_policy,
                     num_episodes=10,
-                    step=true_step,
-                    render=true_step % args.options.render_freq == 0,
+                    step=step,
+                    render=step % args.options.render_freq == 0,
                     log_wandb=args.options.log_wandb,
                 )
-                best_rewards = max(test_rewards, best_rewards)
-                if true_step % args.options.checkpoint_freq == 0:
-                    checkpoint(iteration=step, rewards=test_rewards)
+
+        # decay DrQv2's std
+        if policy.std is not None:
+            policy.std = max(
+                args.drqv2.std_decay * policy.std,
+                args.drqv2.min_std,
+            )
 
     # Save results to wandb
     with torch.no_grad():
-        test_rewards = evaluate_policy(
+        evaluate_policy(
             env=test_task,
             policy=test_policy,
             num_episodes=10,
-            step=true_step,
-            render=true_step % args.options.render_freq == 0,
+            step=args.options.num_updates,
+            render=True,
             log_wandb=args.options.log_wandb,
         )
-    checkpoint(iteration=step, rewards=test_rewards, save_wandb=True)
 
 
 if __name__ == "__main__":
@@ -242,13 +226,12 @@ if __name__ == "__main__":
         num_updates: int = 500000  # Number of algorithm updates.
         warmup: int = 5000  # Length of warmup phase.
         replay_size: int = 100000
-        learning_rate: float = 3e-3
+        learning_rate: float = 3e-4
         features_learning_rate: float = 3e-4
         log_alpha: float = 0.0
         render: bool = False
         update_freq: int = 50
         eval_freq: int = 1000
-        checkpoint_freq: int = 1000000
         render_freq: int = 1000000
         deterministic_eval: bool = False
         cuda: bool = True

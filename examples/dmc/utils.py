@@ -23,11 +23,9 @@ def evaluate_policy(
     log_wandb=False,
 ):
     test_rewards = 0.0
-    success_rate = 0.0
     video = []
     for episode in range(num_episodes):
         ep_reward = 0.0
-        ep_success_rate = 0.0
         state = env.reset()
         while True:
             if episode == 0 and render:
@@ -37,19 +35,14 @@ def evaluate_policy(
             action = policy(state)
             state, reward, done, info = env.step(action)
             ep_reward += reward
-            if 'success' in info:
-                ep_success_rate = max(ep_success_rate, info['success'])
             if done:
                 break
         test_rewards += ep_reward
-        success_rate += ep_success_rate
     test_rewards /= float(num_episodes)
-    success_rate /= float(num_episodes)
 
     if log_wandb:
         stats = {
             'test_rewards': test_rewards,
-            'success_rate': success_rate,
         }
         if render:
             video = np.concatenate(video, 0)
