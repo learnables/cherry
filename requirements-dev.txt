@@ -1,6 +1,7 @@
 pygments
 pymdown-extensions
 twine
+gym<=0.21.0
 mkdocs==1.2.3
 mkdocs-bootswatch==1.0
 mkdocs-material==4.6.3
