@@ -40,8 +40,8 @@ class A2C(AlgorithmArguments):
 
         ## Arguments
 
-        * **log_probs** (tensor) - Log-density of the selected actions.
-        * **advantages** (tensor) - Advantage of the action-state pairs.
+        * `log_probs` (tensor) - Log-density of the selected actions.
+        * `advantages` (tensor) - Advantage of the action-state pairs.
 
         ## Returns
 
@@ -80,8 +80,8 @@ class A2C(AlgorithmArguments):
 
         ## Arguments
 
-        * **values** (tensor) - Predicted values for some states.
-        * **rewards** (tensor) - Observed rewards for those states.
+        * `values` (tensor) - Predicted values for some states.
+        * `rewards` (tensor) - Observed rewards for those states.
 
         ## Returns
 

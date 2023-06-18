@@ -44,9 +44,9 @@ class TRPO(AlgorithmArguments):
 
         ## Arguments
 
-        * **new_log_probs** (tensor) - The log-density of actions from the target policy.
-        * **old_log_probs** (tensor) - The log-density of actions from the behaviour policy.
-        * **advantages** (tensor) - Advantage of the actions.
+        * `new_log_probs` (tensor) - The log-density of actions from the target policy.
+        * `old_log_probs` (tensor) - The log-density of actions from the behaviour policy.
+        * `advantages` (tensor) - Advantage of the actions.
 
         ## Returns
 
@@ -100,20 +100,14 @@ class TRPO(AlgorithmArguments):
 
         ## Arguments
 
-        * **loss** (tensor) - The loss of which to compute the Hessian.
-        * **parameters** (tensor or list) - The tensors to take the gradient with respect to.
-        * **damping** (float, *optional*, default=1e-5) - Damping of the Hessian-vector product.
+        * `loss` (tensor) - The loss of which to compute the Hessian.
+        * `parameters` (tensor or list) - The tensors to take the gradient with respect to.
+        * `damping` (float, *optional*, default=1e-5) - Damping of the Hessian-vector product.
 
         ## Returns
 
-        * **hvp(other)** (callable) - A function to compute the Hessian-vector product,
+        * `hvp(other)` (callable) - A function to compute the Hessian-vector product,
             given a vector or list `other`.
-
-        ## Example
-
-        ~~~python
-        pass
-        ~~~
         """
         if not isinstance(parameters, torch.Tensor):
             parameters = list(parameters)
@@ -172,21 +166,15 @@ class TRPO(AlgorithmArguments):
 
         ## Arguments
 
-        * **Ax** (callable) - Given a vector x, computes A@x.
-        * **b** (tensor or list) - The reference vector.
-        * **num_iterations** (int, *optional*, default=10) - Number of conjugate gradient iterations.
-        * **tol** (float, *optional*, default=1e-10) - Tolerance for proposed solution.
-        * **eps** (float, *optional*, default=1e-8) - Numerical stability constant.
+        * `Ax` (callable) - Given a vector x, computes A@x.
+        * `b` (tensor or list) - The reference vector.
+        * `num_iterations` (int, *optional*, default=10) - Number of conjugate gradient iterations.
+        * `tol` (float, *optional*, default=1e-10) - Tolerance for proposed solution.
+        * `eps` (float, *optional*, default=1e-8) - Numerical stability constant.
 
         ## Returns
 
-        * **x** (tensor or list) - The solution to Ax = b, as a list if b is a list else a tensor.
-
-        ## Example
-
-        ~~~python
-        pass
-        ~~~
+        * `x` (tensor or list) - The solution to Ax = b, as a list if b is a list else a tensor.
         """
         shape = None
         if not isinstance(b, torch.Tensor):
@@ -239,17 +227,17 @@ class TRPO(AlgorithmArguments):
 
         ## Arguments
 
-        * **params_init** (tensor or iteratble) - Initial parameter values.
-        * **params_update** (tensor or iteratble) - Update direction.
-        * **model** (Module) - The model to be updated.
-        * **stop_criterion** (callable) - Given a model, decided whether to stop the line-search.
-        * **initial_stepsize** (float, *optional*, default=1.0) - Initial stepsize of search.
-        * **backtrack_factor** (float, *optional*, default=0.5) - Backtracking factor.
-        * **max_iterations** (int, *optional*, default=15) - Max number of backtracking iterations.
+        * `params_init` (tensor or iteratble) - Initial parameter values.
+        * `params_update` (tensor or iteratble) - Update direction.
+        * `model` (Module) - The model to be updated.
+        * `stop_criterion` (callable) - Given a model, decided whether to stop the line-search.
+        * `initial_stepsize` (float, *optional*, default=1.0) - Initial stepsize of search.
+        * `backtrack_factor` (float, *optional*, default=0.5) - Backtracking factor.
+        * `max_iterations` (int, *optional*, default=15) - Max number of backtracking iterations.
 
         ## Returns
 
-        * **new_model** (Module) - The updated model if line-search is successful, else the model with initial parameter values.
+        * `new_model` (Module) - The updated model if line-search is successful, else the model with initial parameter values.
 
         ## Example
 

@@ -1,24 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-**Description**
-
-Helper functions for implementing Soft-Actor Critic.
-
-You should update the function approximators according to the following order.
-
-1. Entropy weight update.
-2. Action-value update.
-3. State-value update. (Optional, c.f. below)
-4. Policy update.
-
-Note that most recent implementations of SAC omit step 3. above by using
-the Bellman residual instead of modelling a state-value function.
-For an example of such implementation refer to
-[this link](https://github.com/seba-1511/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py).
-
-"""
-
 import dataclasses
 import torch
 import cherry
@@ -32,16 +13,37 @@ from .arguments import AlgorithmArguments
 class SAC(AlgorithmArguments):
 
     """
-    <a href="" class="source-link">[Source]</a>
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/sac.py" class="source-link">[Source]</a>
 
     ## Description
+
+    Utilities to implement SAC from [1].
+
+    The `update()` function updates the function approximators in the following order:
+
+    1. Entropy weight update.
+    2. Action-value update.
+    3. State-value update. (Optional, c.f. below)
+    4. Policy update.
+
+    Note that most recent implementations of SAC omit step 3. above by using
+    the Bellman residual instead of modelling a state-value function.
+    For an example of such implementation refer to
+    [this link](https://github.com/learnables/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py).
+
+    ## References
+
+    1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
+    2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+
     ## Arguments
 
-    * `batch_size` (int) - The number of samples to get from the replay.
-
-    ## Example
-    ~~~python
-    ~~~
+    * `batch_size` (int, *optional*, default=512) - Number of samples to get from the replay.
+    * `discount` (float, *optional*, default=0.99) - Discount factor.
+    * `use_automatic_entropy_tuning` (bool, *optional*, default=True) - Whether to optimize the entropy weight \(\\alpha\).
+    * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
+    * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
     """
 
     batch_size: int = 512
@@ -54,9 +56,7 @@ class SAC(AlgorithmArguments):
     @staticmethod
     def policy_loss(log_probs, q_curr, alpha=1.0):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
-
-        **Description**
+        ## Description
 
         The policy loss of the Soft Actor-Critic.
 
@@ -66,22 +66,17 @@ class SAC(AlgorithmArguments):
         This is often avoided by either using a target Q function, or by zero-ing out the gradients
         of the Q function parameters.
 
-        **References**
+        ## Arguments
 
-        1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
-        2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+        * `log_probs` (tensor) - Log-density of the selected actions.
+        * `q_curr` (tensor) - Q-values of state-action pairs.
+        * `alpha` (float, *optional*, default=1.0) - Entropy weight.
 
-        **Arguments**
-
-        * **log_probs** (tensor) - Log-density of the selected actions.
-        * **q_curr** (tensor) - Q-values of state-action pairs.
-        * **alpha** (float, *optional*, default=1.0) - Entropy weight.
-
-        **Returns**
+        ## Returns
 
         * (tensor) - The policy loss for the given arguments.
 
-        **Example**
+        ## Example
 
         ~~~python
         densities = policy(batch.state())
@@ -99,9 +94,7 @@ class SAC(AlgorithmArguments):
     @staticmethod
     def action_value_loss(value, next_value, rewards, dones, gamma):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
-
-        **Description**
+        ## Description
 
         The action-value loss of the Soft Actor-Critic.
 
@@ -111,24 +104,19 @@ class SAC(AlgorithmArguments):
         In the latter case, make sure that the action is sampled according to the current policy,
         not the one used to gather the data.
 
-        **References**
+        ## Arguments
 
-        1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
-        2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+        * `value` (tensor) - Action values of the actual transition.
+        * `next_value` (tensor) - State values of the resulting state.
+        * `rewards` (tensor) - Observed rewards of the transition.
+        * `dones` (tensor) - Which states were terminal.
+        * `gamma` (float) - Discount factor.
 
-        **Arguments**
-
-        * **value** (tensor) - Action values of the actual transition.
-        * **next_value** (tensor) - State values of the resulting state.
-        * **rewards** (tensor) - Observed rewards of the transition.
-        * **dones** (tensor) - Which states were terminal.
-        * **gamma** (float) - Discount factor.
-
-        **Returns**
+        ## Returns
 
         * (tensor) - The policy loss for the given arguments.
 
-        **Example**
+        ## Example
 
         ~~~python
         value = qf(batch.state(), batch.action().detach())
@@ -156,32 +144,25 @@ class SAC(AlgorithmArguments):
     @staticmethod
     def state_value_loss(v_value, log_probs, q_value, alpha=1.0):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
-
-        **Description**
+        ## Description
 
         The state-value loss of the Soft Actor-Critic.
 
         This update is computed "on-policy": states are sampled from a replay but the state values,
         action values, and log-densities are computed using the current value functions and policy.
 
-        **References**
+        ## Arguments
 
-        1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
-        2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+        * `v_value` (tensor) - State values for some observed states.
+        * `log_probs` (tensor) - Log-density of actions sampled from the current policy.
+        * `q_value` (tensor) - Action values of the actions for the current policy.
+        * `alpha` (float, *optional*, default=1.0) - Entropy weight.
 
-        **Arguments**
-
-        * **v_value** (tensor) - State values for some observed states.
-        * **log_probs** (tensor) - Log-density of actions sampled from the current policy.
-        * **q_value** (tensor) - Action values of the actions for the current policy.
-        * **alpha** (float, *optional*, default=1.0) - Entropy weight.
-
-        **Returns**
+        ## Returns
 
         * (tensor) - The state value loss for the given arguments.
 
-        **Example**
+        ## Example
 
         ~~~python
         densities = policy(batch.state())
@@ -211,9 +192,7 @@ class SAC(AlgorithmArguments):
     @staticmethod
     def entropy_weight_loss(log_alpha, log_probs, target_entropy):
         """
-        [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/sac.py)
-
-        **Description**
+        ## Description
 
         Loss of the entropy weight, to automatically tune it.
 
@@ -221,21 +200,17 @@ class SAC(AlgorithmArguments):
         However, a popular heuristic for TanhNormal policies is to use the negative of the action-space
         dimensionality. (e.g. -4 when operating the voltage of a quad-rotor.)
 
-        **References**
+        ## Arguments
 
-        1. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+        * `log_alpha` (tensor) - Log of the entropy weight.
+        * `log_probs` (tensor) - Log-density of policy actions.
+        * `target_entropy` (float) - Target of the entropy value.
 
-        **Arguments**
-
-        * **log_alpha** (tensor) - Log of the entropy weight.
-        * **log_probs** (tensor) - Log-density of policy actions.
-        * **target_entropy** (float) - Target of the entropy value.
-
-        **Returns**
+        ## Returns
 
         * (tensor) - The state value loss for the given arguments.
 
-        **Example**
+        ## Example
 
         ~~~python
         densities = policy(batch.state())
@@ -290,6 +265,33 @@ class SAC(AlgorithmArguments):
         device=None,
         **kwargs,
     ):
+        """
+        ## Description
+
+        Implements a single SAC update.
+
+        ## Arguments
+
+        * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
+        * `policy` (cherry.nn.Policy) - Policy to optimize.
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `target_action_value` (cherry.nn.ActionValue) - Target action value.
+        * `log_alpha` (torch.Tensor) - SAC's (log) entropy weight.
+        * `target_entropy` (torch.Tensor) - SAC's target for the policy entropy (typically \(\\vert\\mathcal{A}\\vert\)).
+        * `policy_optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
+        * `action_value_optimizer` (torch.optim.Optimizer) - Optimizer for the `action_value`.
+        * `features_optimizer` (torch.optim.Optimizer) - Optimizer for the `features`.
+        * `alpha_optimizer` (torch.optim.Optimizer) - Optimizer for `log_alpha`.
+        * `features` (torch.nn.Module, *optional*, default=None) - Feature extractor for the policy and action value.
+        * `target_features` (torch.nn.Module, *optional*, default=None) - Feature extractor for the target action value.
+        * `update_policy` (bool, *optional*, default=True) - Whether to update the policy.
+        * `update_target` (bool, *optional*, default=False) - Whether to update the action value target network.
+        * `update_value` (bool, *optional*, default=True) - Whether to update the action value.
+        * `update_entropy` (bool, *optional*, default=True) - Whether to update the entropy weight.
+        * `device` (torch.device) - The device used to compute the update.
+        """
+
+
         # Log debugging values
         stats = dotmap.DotMap()
 

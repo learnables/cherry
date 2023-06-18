@@ -35,11 +35,11 @@ class DDPG(AlgorithmArguments):
 
         ## Arguments
 
-        * **values** (tensor) - State values for timestep t.
-        * **next_values** (tensor) - State values for timestep t+1.
-        * **rewards** (tensor) - Vector of rewards for timestep t.
-        * **dones** (tensor) - Termination flag.
-        * **gamma** (float) - Discount factor.
+        * `values` (tensor) - State values for timestep t.
+        * `next_values` (tensor) - State values for timestep t+1.
+        * `rewards` (tensor) - Vector of rewards for timestep t.
+        * `dones` (tensor) - Termination flag.
+        * `gamma` (float) - Discount factor.
 
         ## Returns
 
