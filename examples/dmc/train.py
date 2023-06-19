@@ -208,7 +208,7 @@ def main(args):
             policy=test_policy,
             num_episodes=10,
             step=args.options.num_updates,
-            render=True,
+            render=False,
             log_wandb=args.options.log_wandb,
         )
 

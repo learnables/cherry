@@ -26,10 +26,10 @@ metric:
   goal: maximize
 parameters:
   options.seed:
-      values: [1234]
+      values: [101, 102, 103, 104, 105]
   options.algorithm:
       values: [sac]
   options.learning_rate:
-      values: [1e-3, 6e-4, 3e-4, 1e-4]
+      values: [3e-4]
   options.log_alpha:
-      values: [-2.0, -1.0, -0.5, 0.0]
+      values: [-10.0]

@@ -90,7 +90,7 @@ class DrQ(AlgorithmArguments):
                 alpha_optimizer.step()
                 alpha = log_alpha.exp()
             else:
-                alpha = torch.ones(1)
+                alpha = log_alpha.exp()
                 alpha_loss = torch.zeros(1)
 
             stats['drq/alpha_loss'] = alpha_loss.item()
