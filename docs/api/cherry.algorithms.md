@@ -25,11 +25,6 @@
         - action_value_loss
         - policy_loss
 
-::: cherry.algorithms.drq.RandomShiftsAug
-    selection:
-      members:
-        - __init__
-
 ::: cherry.algorithms.DrQv2
     selection:
       members:
