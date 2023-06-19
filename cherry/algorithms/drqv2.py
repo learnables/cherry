@@ -12,16 +12,29 @@ from .drq import RandomShiftsAug
 class DrQv2(AlgorithmArguments):
 
     """
-    <a href="" class="source-link">[Source]</a>
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/drqv2.py" class="source-link">[Source]</a>
 
     ## Description
+
+    Utilities to implement DrQ-v2 from [1].
+
+    DrQ-v2 builds on DrQ but replaces the underlying SAC with TD3.
+    It is noticeably faster in terms of wall-clock time and sample complexity.
+
+    ## References
+
+    1. Yarats et al., "Mastering Visual Continuous Control: Improved Data-Augmented Reinforcement Learning", ICLR 2022.
+
     ## Arguments
 
-    * `batch_size` (int) - The number of samples to get from the replay.
-
-    ## Example
-    ~~~python
-    ~~~
+    * `batch_size` (int, *optional*, default=512) - Number of samples to get from the replay.
+    * `discount` (float, *optional*, default=0.99) - Discount factor.
+    * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
+    * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
+    * `nsteps` (int, *optional*, default=1) - Number of bootstrapping steps to compute the target values.
+    * `std_decay` (float, *optional*, default=0.0) - Exponential decay rate of the policy's standard deviation. A reasonable value for DMC is 0.99997.
+    * `min_std` (float, *optional*, default=0.1) - Minimum standard deviation for the policy.
     """
 
     batch_size: int = 512
@@ -50,6 +63,27 @@ class DrQv2(AlgorithmArguments):
         device=None,
         **kwargs,
     ):
+        """
+        ## Description
+
+        Implements a single DrQ-v2 update.
+
+        ## Arguments
+
+        * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
+        * `policy` (cherry.nn.Policy) - Policy to optimize.
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `target_action_value` (cherry.nn.ActionValue) - Target action value.
+        * `features` (torch.nn.Module) - Feature extractor for the policy and action value.
+        * `policy_optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
+        * `features_optimizer` (torch.optim.Optimizer) - Optimizer for the `features`.
+        * `update_policy` (bool, *optional*, default=True) - Whether to update the policy.
+        * `update_target` (bool, *optional*, default=True) - Whether to update the action value target network.
+        * `update_value` (bool, *optional*, default=True) - Whether to update the action value.
+        * `augmentation_transform` (torch.nn.Module, *optional*, default=None) - Data augmentation transform to augment image observations. Defaults to `RandomShiftsAug(4)` (as in the paper).
+        * `device` (torch.device) - The device used to compute the update.
+        """
+
         # Log debugging values
         stats = {}
 
