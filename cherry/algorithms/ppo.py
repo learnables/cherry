@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-**Description**
-
-Helper functions for implementing PPO.
-"""
-
 import dataclasses
 import torch
 import cherry
@@ -19,9 +13,41 @@ from .arguments import AlgorithmArguments
 class PPO(AlgorithmArguments):
 
     """
-    Those values are tuned for PPO on PyBullet environments.
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py" class="source-link">[Source]</a>
 
-    TODO: Add comments for each argument.
+    ## Description
+
+    Utilities to implement PPO from [1].
+
+    The idea behing PPO is to cheaply approximate TRPO's trust-region with the following objective:
+
+    $$
+    \\mathbb{E}[\\min(
+        \\frac{\\pi_{\\theta}}{\\pi_{\\textrm{old}}} \\cdot A,
+        \\mathrm{clip}(\\frac{\\pi_{\\theta}}{\\pi_{\\textrm{old}}} \\cdot A, 1-\\epsilon, 1+\\epsilon)
+    )],
+    $$
+
+    where \(\\pi_{\\theta}\) is the current policy and \(\\pi_{\\mathrm{old}}\) is the policy used to collect the online replay's data.
+
+    ## References
+
+    1. Schulman et al., “Proximal Policy Optimization Algorithms”, ArXiv 2017.
+
+    ## Arguments
+
+    Note: the following arguments were optimized for continuous control on PyBullet / MuJoCo.
+
+    * `num_steps` (int, *optional*, default=320) - Number of of PPO gradient steps in a single update.
+    * `batch_size` (int, *optional*, default=512) - Number of samples to get from the replay.
+    * `policy_clip` (float, *optional*, default=0.2) - Clip constant for the policy.
+    * `value_clip` (float, *optional*, default=0.2) - Clip constant for state value function.
+    * `value_weight` (float, *optional*, default=0.5) - Scaling factor fo the state value function penalty.
+    * `entropy_weight` (float, *optional*, default=0.0) - Scaling factor of the entropy penalty.
+    * `discount` (float, *optional*, default=0.99) - Discount factor.
+    * `gae_tau` (float, *optional*, default=0.95) - Bias-variance trade-off for the generalized advantage estimator.
+    * `gradient_norm` (float, *optional*, default=0.5) - Maximum gradient norm.
+    * `eps` (float, *optional*, default=0.5) - Numerical stability constant.
     """
 
     num_steps: int = 320
@@ -38,15 +64,9 @@ class PPO(AlgorithmArguments):
     @staticmethod
     def policy_loss(new_log_probs, old_log_probs, advantages, clip=0.1):
         """
-        <a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py" class="source-link">[Source]</a>
-
         ## Description
 
         The clipped policy loss of Proximal Policy Optimization.
-
-        ## References
-
-        1. Schulman et al. 2017. “Proximal Policy Optimization Algorithms.” arXiv [cs.LG].
 
         ## Arguments
 
@@ -62,18 +82,22 @@ class PPO(AlgorithmArguments):
         **Example**
 
         ~~~python
-        advantage = ch.pg.generalized_advantage(GAMMA,
-                                                TAU,
-                                                replay.reward(),
-                                                replay.done(),
-                                                replay.value(),
-                                                next_state_value)
+        advantage = ch.pg.generalized_advantage(
+            GAMMA,
+            TAU,
+            replay.reward(),
+            replay.done(),
+            replay.value(),
+            next_state_value,
+        )
         new_densities = policy(replay.state())
         new_logprobs = new_densities.log_prob(replay.action())
-        loss = policy_loss(new_logprobs,
-                           replay.logprob().detach(),
-                           advantage.detach(),
-                           clip=0.2)
+        loss = policy_loss(
+            new_logprobs,
+            replay.logprob().detach(),
+            advantage.detach(),
+            clip=0.2,
+        )
         ~~~
         """
         msg = 'new_log_probs, old_log_probs and advantages must have equal size.'
@@ -94,15 +118,9 @@ class PPO(AlgorithmArguments):
     @staticmethod
     def state_value_loss(new_values, old_values, rewards, clip=0.1):
         """
-        <a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py" class="source-link">[Source]</a>
-
         ## Description
 
         The clipped state-value loss of Proximal Policy Optimization.
-
-        ## References
-
-        1. Schulman et al. 2017. “Proximal Policy Optimization Algorithms.” arXiv [cs.LG].
 
         ## Arguments
 
@@ -151,11 +169,23 @@ class PPO(AlgorithmArguments):
     def update(
         self,
         replay,
-        optimizer,
         policy,
-        value_fn,
+        optimizer,
+        state_value,
         **kwargs,
     ):
+        """
+        ## Description
+
+        Implements a single PPO update.
+
+        ## Arguments
+
+        * `replay` (cherry.ExperienceReplay) - Online replay to sample transitions from.
+        * `policy` (cherry.nn.Policy) - Policy to optimize.
+        * `state_value` (cherry.nn.StateValue) - State value function \(V(s)\).
+        * `optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
+        """
         # Log debugging values
         stats = dotmap.DotMap()
 
@@ -178,14 +208,14 @@ class PPO(AlgorithmArguments):
                 )
                 # reshape to -1 here because maybe Normal distribution.
                 all_log_probs = all_log_probs.reshape(*all_states.shape[:2], -1)
-                all_values = value_fn(all_states.reshape(-1, *state_shape))
+                all_values = state_value(all_states.reshape(-1, *state_shape))
                 all_values = all_values.reshape(*all_states.shape[:2], 1)
             else:
                 all_log_probs = policy.log_prob(all_states, all_actions)
-                all_values = value_fn(all_states)
+                all_values = state_value(all_states)
 
         # Compute advantages and returns
-        next_state_value = value_fn(replay[-1].next_state)
+        next_state_value = state_value(replay[-1].next_state)
         all_advantages = cherry.pg.generalized_advantage(
             config.discount,
             config.gae_tau,
@@ -219,7 +249,7 @@ class PPO(AlgorithmArguments):
             advantages = batch.advantage()
 
             new_densities = policy(states)
-            new_values = value_fn(states)
+            new_values = state_value(states)
 
             # Compute losses
             new_log_probs = new_densities.log_prob(batch.action())

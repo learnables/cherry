@@ -12,16 +12,27 @@ from .sac import SAC
 class DrQ(AlgorithmArguments):
 
     """
-    <a href="" class="source-link">[Source]</a>
+    <a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/drq.py" class="source-link">[Source]</a>
 
     ## Description
+
+    Utilities to implement DrQ from [1].
+
+    DrQ (Data-regularized Q) extends SAC to more efficiently train policies and action values from pixels.
+
+    ## References
+
+    1. Kostrikov et al., "Image Augmentation Is All You Need: Regularizing Deep Reinforcement Learning from Pixels", ICLR 2021.
+
     ## Arguments
 
-    * `batch_size` (int) - The number of samples to get from the replay.
+    * `batch_size` (int, *optional*, default=512) - Number of samples to get from the replay.
+    * `discount` (float, *optional*, default=0.99) - Discount factor.
+    * `use_automatic_entropy_tuning` (bool, *optional*, default=True) - Whether to optimize the entropy weight \(\\alpha\).
+    * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
+    * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
 
-    ## Example
-    ~~~python
-    ~~~
     """
 
     batch_size: int = 512
@@ -53,6 +64,34 @@ class DrQ(AlgorithmArguments):
         device=None,
         **kwargs,
     ):
+
+        """
+        ## Description
+
+        Implements a single DrQ update.
+
+        ## Arguments
+
+        * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
+        * `policy` (cherry.nn.Policy) - Policy to optimize.
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `target_action_value` (cherry.nn.ActionValue) - Target action value.
+        * `features` (torch.nn.Module) - Feature extractor for the policy and action value.
+        * `target_features` (torch.nn.Module) - Feature extractor for the target action value.
+        * `log_alpha` (torch.Tensor) - SAC's (log) entropy weight.
+        * `target_entropy` (torch.Tensor) - SAC's target for the policy entropy (typically \(\\vert\\mathcal{A}\\vert\)).
+        * `policy_optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
+        * `action_value_optimizer` (torch.optim.Optimizer) - Optimizer for the `action_value`.
+        * `features_optimizer` (torch.optim.Optimizer) - Optimizer for the `features`.
+        * `alpha_optimizer` (torch.optim.Optimizer) - Optimizer for `log_alpha`.
+        * `update_policy` (bool, *optional*, default=True) - Whether to update the policy.
+        * `update_target` (bool, *optional*, default=False) - Whether to update the action value target network.
+        * `update_value` (bool, *optional*, default=True) - Whether to update the action value.
+        * `update_entropy` (bool, *optional*, default=True) - Whether to update the entropy weight.
+        * `augmentation_transform` (torch.nn.Module, *optional*, default=None) - Data augmentation transform to augment image observations. Defaults to `RandomShiftsAug(4)` (as in the paper).
+        * `device` (torch.device) - The device used to compute the update.
+        """
+
         stats = {}
 
         # unwrap hyper-parameters
@@ -219,14 +258,22 @@ class DrQ(AlgorithmArguments):
 
 class RandomShiftsAug(torch.nn.Module):
 
-    """
-    Take from DrQv2 implementation:
-
-    - Reference: Yarats et al., 2021, "Mastering Visual Continuous Control: Improved Data-Augmented Reinforcement Learning"
-    - Code: https://github.com/facebookresearch/drqv2
-    """
-
     def __init__(self, pad):
+        """
+
+        ## Description
+
+        Implements a fast (and on GPU) data augmentation of random image shifts.
+
+        ## References
+
+        1. Yarats et al., 2021, "Mastering Visual Continuous Control: Improved Data-Augmented Reinforcement Learning", ICLR 2022.
+        2. Adapted from the DrQv2 implementation: [link](https://github.com/facebookresearch/drqv2).
+
+        ## Arguments
+
+        * `pad` (int) - Shift size.
+        """
         super(RandomShiftsAug, self).__init__()
         self.pad = pad
 

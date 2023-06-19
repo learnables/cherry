@@ -8,7 +8,23 @@ import collections
 class AlgorithmArguments(collections.abc.Mapping):
 
     """
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/arguments.py" class="source-link">[Source]</a>
+
+    ## Description
+
     Utility functions to work with dataclass algorithms.
+
+    ## Example
+
+    ~~~python
+    @dataclasses.dataclass
+    class MyNewAlgorithm(AlgorithmArguments).
+
+        my_arg1: float = 0.0
+
+        def update(self, my_arg1, **kwargs):
+            pass
+    ~~~
     """
 
     # turns algorithm arguments into a mapping

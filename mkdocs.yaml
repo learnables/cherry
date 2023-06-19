@@ -83,7 +83,7 @@ plugins:
             separate_signature: false
             group_by_category: false
             member_order: 'source'
-            show_bases: true
+            show_bases: false
             show_if_no_docstring: true
             show_submodules: false
             heading_level: 3
