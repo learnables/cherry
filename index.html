@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="assets/images/favicons/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-4.6.3">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-4.6.3">
     
     
       
@@ -687,6 +687,21 @@ Instead, it provides you with low-level, common tools to write your own algorith
 Drawing from the UNIX philosophy, each tool strives to be as independent from the rest of the framework as possible.
 So if you don't like a specific tool, you don’t need to use it.</p>
 <p><strong>Features</strong></p>
+<p>Cherry extends PyTorch with only a handful of new core concepts.</p>
+<ul>
+<li>PyTorch Modules for reinforcement learning: <ul>
+<li><code>cherry.nn.Policy</code>:</li>
+<li><code>cherry.nn.ActionValue</code>:</li>
+<li><code>cherry.nn.StateValue</code>: </li>
+</ul>
+</li>
+<li>Data structures for reinforcement learning:<ul>
+<li><code>cherry.Transition</code>:</li>
+<li><code>cherry.ExperienceReplay</code>: </li>
+</ul>
+</li>
+</ul>
+<p>Cherry also includes additional features, to help implement existing and new RL algorithms.</p>
 <ul>
 <li>Pythonic and low-level interface <em>à la</em> Pytorch.</li>
 <li>Support for tabular (!) and function approximation algorithms.</li>
@@ -843,7 +858,7 @@ Make sure to send an email to <a href="mailto:smr.arnold@gmail.com">smr.arnold@g
     
       <script src="assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.2.3",url:{base:"."}})</script>
+      <script>app.initialize({version:"1.2.4",url:{base:"."}})</script>
       
         <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
       

@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicons/favicon.ico">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-4.6.3">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-4.6.3">
     
     
       
@@ -474,13 +474,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cherry.nn.action_value.ActionValue.all_action_values" class="md-nav__link">
-    all_action_values()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cherry.nn.action_value.ActionValue.forward" class="md-nav__link">
     forward()
   </a>
@@ -800,13 +793,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cherry.nn.action_value.ActionValue.all_action_values" class="md-nav__link">
-    all_action_values()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cherry.nn.action_value.ActionValue.forward" class="md-nav__link">
     forward()
   </a>
@@ -958,8 +944,7 @@
 
 <h3 id="cherry.nn.policy.Policy" class="doc doc-heading">
         <code>
-cherry.nn.policy.Policy            (<span title="torch.nn.modules.module.Module">Module</span>)
-        </code>
+cherry.nn.policy.Policy        </code>
 
 
 
@@ -1121,8 +1106,7 @@ and also automatically defines some helper functions
 
 <h3 id="cherry.nn.action_value.ActionValue" class="doc doc-heading">
         <code>
-cherry.nn.action_value.ActionValue            (<span title="torch.nn.modules.module.Module">Module</span>)
-        </code>
+cherry.nn.action_value.ActionValue        </code>
 
 
 
@@ -1159,41 +1143,8 @@ cherry.nn.action_value.ActionValue            (<span title="torch.nn.modules.mod
 
 
 
-<h4 id="cherry.nn.action_value.ActionValue.all_action_values" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">all_action_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
-
-
-<a href="#cherry.nn.action_value.ActionValue.all_action_values" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <h6 id="cherry.nn.action_value.ActionValue.all_action_values--description">Description<a class="headerlink" href="#cherry.nn.action_value.ActionValue.all_action_values--description" title="Permanent link">&para;</a></h6>
-<p>Given a state, returns the value of all possible actions.</p>
-<p>Useful when implementing variants of DQN.</p>
-<h6 id="cherry.nn.action_value.ActionValue.all_action_values--arguments">Arguments<a class="headerlink" href="#cherry.nn.action_value.ActionValue.all_action_values--arguments" title="Permanent link">&para;</a></h6>
-<ul>
-<li><code>state</code> (Tensor) -  State to be evaluated. Shape: (batch_size, state_dim)</li>
-<li><code>action</code> (Tensor) - Action to be evaluated. Shape: (batch_size, action_dim)</li>
-</ul>
-<h6 id="cherry.nn.action_value.ActionValue.all_action_values--returns">Returns<a class="headerlink" href="#cherry.nn.action_value.ActionValue.all_action_values--returns" title="Permanent link">&para;</a></h6>
-<ul>
-<li><code>value</code> (Tensor) - Value of taking <code>action</code> in <code>state</code>. Shape: (batch_size, 1)</li>
-</ul>
-
-    </div>
-
-  </div>
-
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
 <h4 id="cherry.nn.action_value.ActionValue.forward" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#cherry.nn.action_value.ActionValue.forward" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -1202,10 +1153,15 @@ cherry.nn.action_value.ActionValue            (<span title="torch.nn.modules.mod
 
       <h6 id="cherry.nn.action_value.ActionValue.forward--description">Description<a class="headerlink" href="#cherry.nn.action_value.ActionValue.forward--description" title="Permanent link">&para;</a></h6>
 <p>Returns the scalar value for taking action <code>action</code> in state <code>state</code>.</p>
+<p>If <code>action</code> is not given, should return the value for all actions (useful for DQN-like architectures).</p>
 <h6 id="cherry.nn.action_value.ActionValue.forward--arguments">Arguments<a class="headerlink" href="#cherry.nn.action_value.ActionValue.forward--arguments" title="Permanent link">&para;</a></h6>
 <ul>
 <li><code>state</code> (Tensor) - State to be evaluated.</li>
-<li><code>action</code> (Tensor) - Action to be evaluated.</li>
+<li><code>action</code> (Tensor, <em>optional</em>, default=None) - Action to be evaluated.</li>
+</ul>
+<h6 id="cherry.nn.action_value.ActionValue.forward--returns">Returns<a class="headerlink" href="#cherry.nn.action_value.ActionValue.forward--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>value</code> (Tensor) - Value of taking <code>action</code> in <code>state</code>. Shape: (batch_size, 1)</li>
 </ul>
 
     </div>
@@ -1230,8 +1186,7 @@ cherry.nn.action_value.ActionValue            (<span title="torch.nn.modules.mod
 
 <h3 id="cherry.nn.action_value.Twin" class="doc doc-heading">
         <code>
-cherry.nn.action_value.Twin            (<a title="cherry.nn.action_value.ActionValue" href="#cherry.nn.action_value.ActionValue">ActionValue</a>)
-        </code>
+cherry.nn.action_value.Twin        </code>
 
 
 
@@ -1358,8 +1313,7 @@ cherry.nn.action_value.Twin            (<a title="cherry.nn.action_value.ActionV
 
 <h3 id="cherry.nn.robotics_layers.RoboticsLinear" class="doc doc-heading">
         <code>
-cherry.nn.robotics_layers.RoboticsLinear            (<span title="torch.nn.modules.linear.Linear">Linear</span>)
-        </code>
+cherry.nn.robotics_layers.RoboticsLinear        </code>
 
 
 
@@ -1428,8 +1382,7 @@ cherry.nn.robotics_layers.RoboticsLinear            (<span title="torch.nn.modul
 
 <h3 id="cherry.nn.epsilon_greedy.EpsilonGreedy" class="doc doc-heading">
         <code>
-cherry.nn.epsilon_greedy.EpsilonGreedy            (<span title="torch.nn.modules.module.Module">Module</span>)
-        </code>
+cherry.nn.epsilon_greedy.EpsilonGreedy        </code>
 
 
 
@@ -1503,8 +1456,7 @@ factor is a learnable parameter or not.</li>
 
 <h3 id="cherry.nn.mlp.MLP" class="doc doc-heading">
         <code>
-cherry.nn.mlp.MLP            (<span title="torch.nn.modules.container.Sequential">Sequential</span>)
-        </code>
+cherry.nn.mlp.MLP        </code>
 
 
 
@@ -1573,8 +1525,7 @@ cherry.nn.mlp.MLP            (<span title="torch.nn.modules.container.Sequential
 
 <h3 id="cherry.nn.misc.Lambda" class="doc doc-heading">
         <code>
-cherry.nn.misc.Lambda            (<span title="torch.nn.modules.module.Module">Module</span>)
-        </code>
+cherry.nn.misc.Lambda        </code>
 
 
 
@@ -1714,7 +1665,7 @@ cherry.nn.misc.Lambda            (<span title="torch.nn.modules.module.Module">M
     
       <script src="../../assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.2.3",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.2.4",url:{base:"../.."}})</script>
       
         <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
       
