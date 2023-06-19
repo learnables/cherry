@@ -446,26 +446,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cherry.algorithms.drq.RandomShiftsAug" class="md-nav__link">
-    RandomShiftsAug
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cherry.algorithms.drq.RandomShiftsAug.__init__" class="md-nav__link">
-    __init__()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#cherry.algorithms.drqv2.DrQv2" class="md-nav__link">
     DrQv2
   </a>
@@ -918,26 +898,6 @@
           <li class="md-nav__item">
   <a href="#cherry.algorithms.drq.DrQ.update" class="md-nav__link">
     update()
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cherry.algorithms.drq.RandomShiftsAug" class="md-nav__link">
-    RandomShiftsAug
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cherry.algorithms.drq.RandomShiftsAug.__init__" class="md-nav__link">
-    __init__()
   </a>
   
 </li>
@@ -1497,72 +1457,6 @@ cherry.algorithms.drq.DrQ        </code>
 <li><code>update_entropy</code> (bool, <em>optional</em>, default=True) - Whether to update the entropy weight.</li>
 <li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations. Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
 <li><code>device</code> (torch.device) - The device used to compute the update.</li>
-</ul>
-
-    </div>
-
-  </div>
-
-
-
-
-
-  </div>
-
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-class">
-
-
-
-<h3 id="cherry.algorithms.drq.RandomShiftsAug" class="doc doc-heading">
-        <code>
-cherry.algorithms.drq.RandomShiftsAug        </code>
-
-
-
-<a href="#cherry.algorithms.drq.RandomShiftsAug" class="headerlink" title="Permanent link">&para;</a></h3>
-
-    <div class="doc doc-contents first">
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="cherry.algorithms.drq.RandomShiftsAug.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-special"><code>special</code></small>
-  </span>
-
-<a href="#cherry.algorithms.drq.RandomShiftsAug.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <h6 id="cherry.algorithms.drq.RandomShiftsAug.__init__--description">Description<a class="headerlink" href="#cherry.algorithms.drq.RandomShiftsAug.__init__--description" title="Permanent link">&para;</a></h6>
-<p>Implements a fast (and on GPU) data augmentation of random image shifts.</p>
-<h6 id="cherry.algorithms.drq.RandomShiftsAug.__init__--references">References<a class="headerlink" href="#cherry.algorithms.drq.RandomShiftsAug.__init__--references" title="Permanent link">&para;</a></h6>
-<ol>
-<li>Yarats et al., 2021, "Mastering Visual Continuous Control: Improved Data-Augmented Reinforcement Learning", ICLR 2022.</li>
-<li>Adapted from the DrQv2 implementation: <a href="https://github.com/facebookresearch/drqv2">link</a>.</li>
-</ol>
-<h6 id="cherry.algorithms.drq.RandomShiftsAug.__init__--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.drq.RandomShiftsAug.__init__--arguments" title="Permanent link">&para;</a></h6>
-<ul>
-<li><code>pad</code> (int) - Shift size.</li>
 </ul>
 
     </div>
