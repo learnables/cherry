@@ -7,7 +7,7 @@ dev:
 	python setup.py develop
 
 lint:
-	pycodestyle cherry/ --max-line-length=160
+	pycodestyle --max-line-length=160 --ignore=W605 cherry/
 
 lint-examples:
 	pycodestyle examples/ --max-line-length=80

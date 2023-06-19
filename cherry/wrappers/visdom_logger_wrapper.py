@@ -25,7 +25,6 @@ class VisdomLogger(Logger):
     * env: The environment to wrap.
     * interval: (int) Update frequency for episodes.
 
-
     """
 
     def __init__(self,
@@ -98,7 +97,7 @@ class VisdomLogger(Logger):
             z_buff = float(ribbon_data[0][i])
 
             for j, step_action in enumerate(ribbon_data):
-                x_in[j] = [i*2, i*2 + 1]
+                x_in[j] = [i * 2, i * 2 + 1]
                 y_in[j] = [j, j]
                 z_buff = 0.5 * z_buff + 0.5 * float(step_action[i])
                 z_in[j] = [z_buff, z_buff]
@@ -174,13 +173,14 @@ class VisdomLogger(Logger):
         # Create the plot
         if key not in self.values_plots:
             if opts is None:
-                opts = {'title': key,
-                        'layoutopts': {
-                            'plotly': {
-                                'xaxis': {'title': 'Log'},
-                            }
-                            }
+                opts = {
+                    'title': key,
+                    'layoutopts': {
+                        'plotly': {
+                            'xaxis': {'title': 'Log'},
                         }
+                    }
+                }
             elif 'title' not in opts:
                 opts['title'] = key
             self.values_plots[key] = self.visdom.line(X=np.empty(1),

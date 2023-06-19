@@ -43,7 +43,8 @@ class SAC(AlgorithmArguments):
     * `use_automatic_entropy_tuning` (bool, *optional*, default=True) - Whether to optimize the entropy weight \(\\alpha\).
     * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
     * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
-    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging;
+        see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
     """
 
     batch_size: int = 512
@@ -274,7 +275,7 @@ class SAC(AlgorithmArguments):
 
         * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
         * `policy` (cherry.nn.Policy) - Policy to optimize.
-        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.
         * `target_action_value` (cherry.nn.ActionValue) - Target action value.
         * `log_alpha` (torch.Tensor) - SAC's (log) entropy weight.
         * `target_entropy` (torch.Tensor) - SAC's target for the policy entropy (typically \(\\vert\\mathcal{A}\\vert\)).
@@ -290,7 +291,6 @@ class SAC(AlgorithmArguments):
         * `update_entropy` (bool, *optional*, default=True) - Whether to update the entropy weight.
         * `device` (torch.device) - The device used to compute the update.
         """
-
 
         # Log debugging values
         stats = dotmap.DotMap()

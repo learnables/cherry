@@ -41,7 +41,8 @@ class TD3(AlgorithmArguments):
     * `discount` (float, *optional*, default=0.99) - Discount factor.
     * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
     * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
-    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging;
+        see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
     * `nsteps` (int, *optional*, default=1) - Number of bootstrapping steps to compute the target values.
 
     """
@@ -77,7 +78,7 @@ class TD3(AlgorithmArguments):
 
         * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
         * `policy` (cherry.nn.Policy) - Policy to optimize.
-        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.
         * `target_action_value` (cherry.nn.ActionValue) - Target action value.
         * `policy_optimizer` (torch.optim.Optimizer) - Optimizer for the `policy`.
         * `action_value_optimizer` (torch.optim.Optimizer) - Optimizer for the `action_value`.

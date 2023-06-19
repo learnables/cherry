@@ -35,7 +35,7 @@ class NatureFeatures(nn.Sequential):
 
     """
 
-    def __init__(self, input_size=4, output_size=512, hidden_size=64*7*7):
+    def __init__(self, input_size=4, output_size=512, hidden_size=64 * 7 * 7):
         """
         ## Arguments
 

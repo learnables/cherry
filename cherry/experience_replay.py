@@ -416,7 +416,7 @@ class ExperienceReplay(list):
             else:  # Sample 'size' contiguous episodes
                 dones = self.done()
                 num_episodes = dones.sum().int().item()
-                end = random.randint(0, num_episodes-size)
+                end = random.randint(0, num_episodes - size)
                 # Find idx of the end-th done
                 count = 0
                 for idx, d in reversed(list(enumerate(dones))):

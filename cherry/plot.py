@@ -96,7 +96,7 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
 
     assert len(x_before) == len(y_before), \
         'x_before and y_before must have equal length.'
-    assert all(x_before[i] <= x_before[i+1] for i in range(len(x_before)-1)), \
+    assert all(x_before[i] <= x_before[i + 1] for i in range(len(x_before) - 1)), \
         'x_before needs to be sorted in ascending order.'
 
     # Resampling
@@ -106,16 +106,16 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
     y_count = np.zeros(size, dtype=float)
 
     # Weighting factor for data of previous steps
-    alpha = np.exp(-1./smoothing_temperature)
+    alpha = np.exp(-1. / smoothing_temperature)
     x_before_length = x_before[-1] - x_before[0]
     x_before_index = 0
-    decay_period = x_before_length/(size-1)*smoothing_temperature
+    decay_period = x_before_length / (size - 1) * smoothing_temperature
 
     for i in range(len(x_after)):
         # Compute current EMA value based on the value of previous time step
         if not i == 0:
-            y_after[i] = alpha * y_after[i-1]
-            y_count[i] = alpha * y_count[i-1]
+            y_after[i] = alpha * y_after[i - 1]
+            y_count[i] = alpha * y_count[i - 1]
 
         # Compute current EMA value by adding weighted average of old points
         # covered by the new point
@@ -123,14 +123,14 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
             if x_after[i] >= x_before[x_before_index]:
                 difference = x_after[i] - x_before[x_before_index]
                 # Weighting factor for y value of each old points
-                beta = np.exp(-(difference/decay_period))
+                beta = np.exp(- difference / decay_period)
                 y_after[i] += y_before[x_before_index] * beta
                 y_count[i] += beta
                 x_before_index += 1
             else:
                 break
 
-    y_after = y_after/y_count
+    y_after = y_after / y_count
     return x_after, y_after, y_count
 
 

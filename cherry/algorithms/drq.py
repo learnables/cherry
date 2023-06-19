@@ -31,7 +31,8 @@ class DrQ(AlgorithmArguments):
     * `use_automatic_entropy_tuning` (bool, *optional*, default=True) - Whether to optimize the entropy weight \(\\alpha\).
     * `policy_delay` (int, *optional*, default=1) - Delay between policy updates.
     * `target_delay` (int, *optional*, default=1) - Delay between action value updates.
-    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging; see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
+    * `target_polyak_weight` (float, *optional*, default=0.995) - Weight factor `alpha` for Polyak averaging;
+        see [cherry.models.polyak_average](/api/cherry.models/#cherry.models.utils.polyak_average).
 
     """
 
@@ -74,7 +75,7 @@ class DrQ(AlgorithmArguments):
 
         * `replay` (cherry.ExperienceReplay) - Offline replay to sample transitions from.
         * `policy` (cherry.nn.Policy) - Policy to optimize.
-        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. 
+        * `action_value` (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.
         * `target_action_value` (cherry.nn.ActionValue) - Target action value.
         * `features` (torch.nn.Module) - Feature extractor for the policy and action value.
         * `target_features` (torch.nn.Module) - Feature extractor for the target action value.
@@ -88,7 +89,8 @@ class DrQ(AlgorithmArguments):
         * `update_target` (bool, *optional*, default=False) - Whether to update the action value target network.
         * `update_value` (bool, *optional*, default=True) - Whether to update the action value.
         * `update_entropy` (bool, *optional*, default=True) - Whether to update the entropy weight.
-        * `augmentation_transform` (torch.nn.Module, *optional*, default=None) - Data augmentation transform to augment image observations. Defaults to `RandomShiftsAug(4)` (as in the paper).
+        * `augmentation_transform` (torch.nn.Module, *optional*, default=None) - Data augmentation transform to augment image observations.
+            Defaults to `RandomShiftsAug(4)` (as in the paper).
         * `device` (torch.device) - The device used to compute the update.
         """
 

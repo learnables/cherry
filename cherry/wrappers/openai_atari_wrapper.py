@@ -99,6 +99,7 @@ class FireResetEnv(Wrapper):
 
 
 class EpisodicLifeEnv(Wrapper):
+
     def __init__(self, env):
         """Make end-of-life == end-of-episode, but only reset on true game over.
         Done by DeepMind for the DQN and co. since it helps value estimation.
@@ -218,8 +219,8 @@ class FrameStack_(Wrapper):
 
     def reset(self):
         ob = self.env.reset()
-        for _ in range(self.k-1):
-            self.frames.append(ob*0.0)
+        for _ in range(self.k - 1):
+            self.frames.append(ob * 0.0)
         self.frames.append(ob)
         # The above is similar to ikostrikov's implementation
         # Below initializes everything with the same initial frame

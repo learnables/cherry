@@ -80,7 +80,6 @@ class TRPO(AlgorithmArguments):
         ratio = torch.exp(new_log_probs - old_log_probs)
         return - torch.mean(ratio * advantages)
 
-
     @staticmethod
     def hessian_vector_product(loss, parameters, damping=1e-5):
         """
@@ -145,7 +144,6 @@ class TRPO(AlgorithmArguments):
 
         return hvp
 
-
     @staticmethod
     def conjugate_gradient(Ax, b, num_iterations=10, tol=1e-10, eps=1e-8):
         """
@@ -198,7 +196,6 @@ class TRPO(AlgorithmArguments):
             vector_to_parameters(x, shape)
             x = shape
         return x
-
 
     @staticmethod
     def line_search(

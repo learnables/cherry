@@ -24,7 +24,6 @@ class A2C(AlgorithmArguments):
     $$
     """
 
-
     @staticmethod
     def policy_loss(log_probs, advantages):
         """
@@ -63,7 +62,6 @@ class A2C(AlgorithmArguments):
             if not log_probs.requires_grad:
                 debug.logger.warning('A2C:policy_loss: log_probs.requires_grad is False.')
         return -th.mean(log_probs * advantages)
-
 
     @staticmethod
     def state_value_loss(values, rewards):
