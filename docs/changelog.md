@@ -15,7 +15,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+
+## v0.2.0
+
+### Added
+
+* Introduce cherry.nn.Policy, cherry.nn.ActionValue, and cherry.nn.StateValue.
+* Algorithm class utilities for: A2C, PPO, TRPO, DDPG, TD3, SAC, and DrQ/DrQv2.
+* DMC examples for SAC, DrQ, and DrQv2.
+* N-steps returns sampling in ExperienceReplay.
+
+### Changed
+
+* Discontinue most of cherry.wrappers.
+
+### Fixed
+
 * Fixes return value of StateNormalizer and RewardNormalizer wrappers.
+* Requirements to generate docs.
 
 
 ## v0.1.4
