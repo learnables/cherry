@@ -1388,7 +1388,8 @@ cherry.algorithms.drq.DrQ        </code>
 <li><code>use_automatic_entropy_tuning</code> (bool, <em>optional</em>, default=True) - Whether to optimize the entropy weight <script type="math/tex">\alpha</script>.</li>
 <li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
 <li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
-<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging; see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
 </ul>
 
 
@@ -1441,7 +1442,7 @@ cherry.algorithms.drq.DrQ        </code>
 <ul>
 <li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
 <li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
-<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. </li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
 <li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
 <li><code>features</code> (torch.nn.Module) - Feature extractor for the policy and action value.</li>
 <li><code>target_features</code> (torch.nn.Module) - Feature extractor for the target action value.</li>
@@ -1455,7 +1456,8 @@ cherry.algorithms.drq.DrQ        </code>
 <li><code>update_target</code> (bool, <em>optional</em>, default=False) - Whether to update the action value target network.</li>
 <li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
 <li><code>update_entropy</code> (bool, <em>optional</em>, default=True) - Whether to update the entropy weight.</li>
-<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations. Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
+<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations.
+    Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
 <li><code>device</code> (torch.device) - The device used to compute the update.</li>
 </ul>
 
@@ -1507,7 +1509,8 @@ It is noticeably faster in terms of wall-clock time and sample complexity.</p>
 <li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
 <li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
 <li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
-<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging; see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
 <li><code>nsteps</code> (int, <em>optional</em>, default=1) - Number of bootstrapping steps to compute the target values.</li>
 <li><code>std_decay</code> (float, <em>optional</em>, default=0.0) - Exponential decay rate of the policy's standard deviation. A reasonable value for DMC is 0.99997.</li>
 <li><code>min_std</code> (float, <em>optional</em>, default=0.1) - Minimum standard deviation for the policy.</li>
@@ -1563,7 +1566,7 @@ It is noticeably faster in terms of wall-clock time and sample complexity.</p>
 <ul>
 <li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
 <li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
-<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. </li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
 <li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
 <li><code>features</code> (torch.nn.Module) - Feature extractor for the policy and action value.</li>
 <li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
@@ -1571,7 +1574,8 @@ It is noticeably faster in terms of wall-clock time and sample complexity.</p>
 <li><code>update_policy</code> (bool, <em>optional</em>, default=True) - Whether to update the policy.</li>
 <li><code>update_target</code> (bool, <em>optional</em>, default=True) - Whether to update the action value target network.</li>
 <li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
-<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations. Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
+<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations.
+    Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
 <li><code>device</code> (torch.device) - The device used to compute the update.</li>
 </ul>
 
@@ -1853,7 +1857,8 @@ This implementation also supports delaying updates to the action value and its t
 <li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
 <li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
 <li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
-<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging; see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
 <li><code>nsteps</code> (int, <em>optional</em>, default=1) - Number of bootstrapping steps to compute the target values.</li>
 </ul>
 
@@ -1907,7 +1912,7 @@ This implementation also supports delaying updates to the action value and its t
 <ul>
 <li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
 <li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
-<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. </li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
 <li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
 <li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
 <li><code>action_value_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>action_value</code>.</li>
@@ -2227,7 +2232,8 @@ For an example of such implementation refer to
 <li><code>use_automatic_entropy_tuning</code> (bool, <em>optional</em>, default=True) - Whether to optimize the entropy weight <script type="math/tex">\alpha</script>.</li>
 <li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
 <li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
-<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging; see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
 </ul>
 
 
@@ -2380,7 +2386,7 @@ of the Q function parameters.</p>
 <ul>
 <li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
 <li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
-<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin. </li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
 <li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
 <li><code>log_alpha</code> (torch.Tensor) - SAC's (log) entropy weight.</li>
 <li><code>target_entropy</code> (torch.Tensor) - SAC's target for the policy entropy (typically <script type="math/tex">\vert\mathcal{A}\vert</script>).</li>
