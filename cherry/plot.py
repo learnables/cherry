@@ -47,7 +47,7 @@ def ci95(values):
     mu = mean(values)
     sigma = stdev(values, xbar=mu)
     N = len(values)
-    bound = 2.0 * sigma / math.sqrt(N)
+    bound = 1.96 * sigma / math.sqrt(N)
     lower = mu - bound
     upper = mu + bound
     return lower, upper
