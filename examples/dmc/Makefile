@@ -69,3 +69,6 @@ drqv2:
 		--drqv2.min_std=0.1 \
 		--options.log_wandb \
 		--options.seed=1234
+
+plots:
+	python ./results/dmc_plot_results.py

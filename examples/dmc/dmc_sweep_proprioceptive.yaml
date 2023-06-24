@@ -26,7 +26,7 @@ metric:
   goal: maximize
 parameters:
   options.seed:
-      values: [101, 102, 103, 104, 105]
+      values: [1101, 1102, 1103, 1104, 1105]
   options.algorithm:
       values: [sac]
   options.learning_rate:
