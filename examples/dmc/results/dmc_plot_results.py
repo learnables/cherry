@@ -157,14 +157,15 @@ labels = {
 
 
 def main():
-    for task in [
+    grid_plot = pl.Container(rows=2, cols=3, height=2*2600.0, width=3*2600.0)
+    for i, task in enumerate([
         'ball_in_cup-catch',
         'cartpole-swingup',
         'reacher-easy',
         'finger-spin',
         'cheetah-run',
         'walker-walk',
-    ]:
+    ]):
         task_domain, task_name = task.split('-')
         task_domain = task_domain.replace('_', ' ').capitalize()
         task_name = task_name.replace('_', ' ').capitalize()
@@ -178,6 +179,7 @@ def main():
             'ylims': (0.0, 1000.0),
             'y_notation': 'decimal',
             'legend': {
+                'title': 'Algorithm',
                 'inset': True,
                 'loc': 'best',
                 'show': True,
@@ -203,7 +205,20 @@ def main():
                 'shade': 'ci95',
             })
         plot = pl.wandb_plots.wandb_plot(config)
+
+        # save individual figures
         plot.save(f'results/{task}.png')
+
+        # modify for grid figure
+        plot.set_subtitle('')
+        if i < 3:
+            plot.set_axis(x='')
+        if i in [1, 2, 4, 5]:
+            plot.set_axis(y='')
+        if i != 5:
+            plot.set_legend(show=False)
+        grid_plot.set_plot(i // 3, i % 3, plot)
+    grid_plot.save('results/all.png')
 
 
 if __name__ == "__main__":
