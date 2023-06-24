@@ -81,8 +81,6 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 
 ## Installation
 
-**Note** Cherry is considered in early alpha release. Stuff might break.
-
 ```
 pip install cherry-rl
 ```
@@ -97,7 +95,6 @@ Documentation and tutorials are available on cherry’s website: [http://cherry-
 
 ## Contributing
 
-First, thanks for your consideration in contributing to cherry.
 Here are a couple of guidelines we strive to follow.
 
 * It's always a good idea to open an issue first, where we can discuss how to best proceed.
@@ -107,9 +104,6 @@ Here are a couple of guidelines we strive to follow.
     * it ensures that the functionality is correctly implemented,
     * it shows users how to use your functionality, and
     * it gives a concrete example when discussing the best way to merge your implementation.
-
-We don't have forums, but are happy to discuss with you on slack.
-Make sure to send an email to [smr.arnold@gmail.com](mailto:smr.arnold@gmail.com) to get an invite.
 
 ## Acknowledgements
 

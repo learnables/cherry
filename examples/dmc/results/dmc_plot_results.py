@@ -207,7 +207,7 @@ def main():
         plot = pl.wandb_plots.wandb_plot(config)
 
         # save individual figures
-        plot.save(f'results/{task}.png')
+        # plot.save(f'results/{task}.png')
 
         # modify for grid figure
         plot.set_subtitle('')
