@@ -89,7 +89,8 @@ plugins:
             heading_level: 3
 
 markdown_extensions:
-  - mdx_math
+  - mdx_math:
+      enable_dollar_delimiter: True
   - admonition
   - pymdownx.superfences
   - pymdownx.details

@@ -33,9 +33,8 @@ To learn more about the tools and philosophy behind cherry, check out our [Getti
 The following snippet showcases a few of the tools offered by cherry.
 Many more high-quality examples are available in the [examples/](./examples/) folder.
 
-
 <details>
-<summary><h4>Defining a <code>cherry.nn.Policy</summary></code></h4></summary>
+<summary><b>Defining a <code>cherry.nn.Policy</code></b></summary>
 
 ~~~python
 class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
@@ -56,6 +55,33 @@ action = policy.act(obs)  # sampled from policy's distribution
 deterministic_action = policy.act(obs, deterministic=True)  # distribution's mode
 ~~~
 </details>
+
+<details>
+<summary><b>Building a <code>cherry.ExperienceReplay</code> of <code>cherry.Transition</code></b></summary>
+
+~~~python
+# building the replay
+replay = cherry.ExperienceReplay()
+state = env.reset()
+for t in range(1000):
+   action = policy.act(state)
+   next_state, reward, done, info = env.step(action)
+   replay.append(state, action, reward, next_state, done)
+   next_state = state
+
+# manipulating the replay
+replay = replay[-256:]  # indexes like a list
+batch = replay.sample(32, contiguous=True)  # sample transitions into a replay
+batch = batch.to('cuda') # move replay to device
+for transition in reversed(batch): # iterate over a replay
+   transition.reward *= 0.99
+
+# get all states, actions, and rewards as PyTorch tensors.
+loss = - torch.sum(policy(batch.state()).log_prob(batch.action()) * batch.reward())
+~~~
+</details>
+
+
 
 ## Installation
 

@@ -1,4 +1,4 @@
-<p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="150px" /></p>
+<p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="128px" /></p>
 
 --------------------------------------------------------------------------------
 
@@ -15,73 +15,75 @@ So if you don't like a specific tool, you don’t need to use it.
 
 Cherry extends PyTorch with only a handful of new core concepts.
 
-* PyTorch Modules for reinforcement learning: 
-    * `cherry.nn.Policy`:
-    * `cherry.nn.ActionValue`:
-    * `cherry.nn.StateValue`: 
-* Data structures for reinforcement learning:
-    * `cherry.Transition`:
-    * `cherry.ExperienceReplay`: 
-
-Cherry also includes additional features, to help implement existing and new RL algorithms.
-
-* Pythonic and low-level interface *à la* Pytorch.
-* Support for tabular (!) and function approximation algorithms.
-* Various OpenAI Gym environment wrappers.
-* Helper functions for popular algorithms. (e.g. A2C, DDPG, TRPO, PPO, SAC)
-* Logging, visualization, and debugging tools.
-* Painless and efficient distributed training on CPUs and GPUs.
-* Unit, integration, and regression tested, continuously integrated.
+* PyTorch modules for reinforcement learning: 
+    * [`cherry.nn.Policy`](http://cherry-rl.net/api/cherry.nn/#cherry.nn.policy.Policy): base class for $\pi(a \mid s)$ policies.
+    * [`cherry.nn.ActionValue`](http://cherry-rl.net/api/cherry.nn/#cherry.nn.action_value.ActionValue): base class for $Q(s, a)$ action-value functions.
+* Data structures for reinforcement learning compatible with PyTorch:
+    * [`cherry.Transition`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.Transition): namedtuple to store $(s_t, a_t, r_t, s_{t+1})$ transitions (and more).
+    * [`cherry.ExperienceReplay`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay): a list-like buffer to store and sample transitions.
+ * Low-level interface *à la* PyTorch to write and debug your algorithms.
+    * [`cherry.td.*`](http://cherry-rl.net/api/cherry.td/) and [`cherry.pg.*`](http://cherry-rl.net/api/cherry.pg/): temporal difference and policy gradient utilities.
+    * [`cherry.algorithms.*`](http://cherry-rl.net/api/cherry.algorithms/): helper functions for popular algorithms ([PPO](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.ppo.PPO), [TD3](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.td3.TD3), [DrQ](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.drq.DrQ), and [more](http://cherry-rl.net/api/cherry.algorithms/#cherryalgorithms)).
+    * [`cherry.debug.*`](http://cherry-rl.net/api/cherry.debug/) and [`cherry.plot.*`](http://cherry-rl.net/api/cherry.plot/): logging, visualization, and debugging tools.
 
 To learn more about the tools and philosophy behind cherry, check out our [Getting Started tutorial](http://cherry-rl.net/tutorials/getting_started/).
 
-## Example
+## Overview and Examples
 
-The following snippet showcases some of the tools offered by cherry.
-
-~~~python
-import cherry as ch
-
-# Wrap environments
-env = gym.make('CartPole-v0')
-env = ch.envs.Logger(env, interval=1000)
-env = ch.envs.Torch(env)
-
-policy = PolicyNet()
-optimizer = optim.Adam(policy.parameters(), lr=1e-2)
-replay = ch.ExperienceReplay()  # Manage transitions
-
-for step in range(1000):
-    state = env.reset()
-    while True:
-        mass = Categorical(policy(state))
-        action = mass.sample()
-        log_prob = mass.log_prob(action)
-        next_state, reward, done, _ = env.step(action)
-
-        # Build the ExperienceReplay
-        replay.append(state, action, reward, next_state, done, log_prob=log_prob)
-        if done:
-            break
-        else:
-            state = next_state
-
-    # Discounting and normalizing rewards
-    rewards = ch.td.discount(0.99, replay.reward(), replay.done())
-    rewards = ch.normalize(rewards)
-
-    loss = -th.sum(replay.log_prob() * rewards)
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    replay.empty()
-~~~
-
+The following snippet showcases a few of the tools offered by cherry.
 Many more high-quality examples are available in the [examples/](./examples/) folder.
 
-## Installation
+<details>
+<summary><b>Defining a <code>cherry.nn.Policy</code></b></summary>
 
-**Note** Cherry is considered in early alpha release. Stuff might break.
+~~~python
+class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
+   
+   def __init__(self, feature_extractor, actor):
+      super(VisionGaussianPolicy, self).__init__()
+      self.feature_extractor = feature_extractor
+      self.actor = actor
+
+   def forward(self, obs):
+      mean = self.actor(self.feature_extractor(obs))
+      std = 0.1 * torch.ones_like(mean)
+      return cherry.distributions.TanhNormal(mean, std)  # policies always return a distribution
+
+policy = VisionPolicy(MyResnetExtractor(), MyMLPActor())
+dist = policy(obs)
+action = policy.act(obs)  # sampled from policy's distribution
+deterministic_action = policy.act(obs, deterministic=True)  # distribution's mode
+~~~
+</details>
+
+<details>
+<summary><b>Building a <code>cherry.ExperienceReplay</code> of <code>cherry.Transition</code></b></summary>
+
+~~~python
+# building the replay
+replay = cherry.ExperienceReplay()
+state = env.reset()
+for t in range(1000):
+   action = policy.act(state)
+   next_state, reward, done, info = env.step(action)
+   replay.append(state, action, reward, next_state, done)
+   next_state = state
+
+# manipulating the replay
+replay = replay[-256:]  # indexes like a list
+batch = replay.sample(32, contiguous=True)  # sample transitions into a replay
+batch = batch.to('cuda') # move replay to device
+for transition in reversed(batch): # iterate over a replay
+   transition.reward *= 0.99
+
+# get all states, actions, and rewards as PyTorch tensors.
+loss = - torch.sum(policy(batch.state()).log_prob(batch.action()) * batch.reward())
+~~~
+</details>
+
+
+
+## Installation
 
 ```
 pip install cherry-rl
@@ -97,7 +99,6 @@ Documentation and tutorials are available on cherry’s website: [http://cherry-
 
 ## Contributing
 
-First, thanks for your consideration in contributing to cherry.
 Here are a couple of guidelines we strive to follow.
 
 * It's always a good idea to open an issue first, where we can discuss how to best proceed.
@@ -107,9 +108,6 @@ Here are a couple of guidelines we strive to follow.
     * it ensures that the functionality is correctly implemented,
     * it shows users how to use your functionality, and
     * it gives a concrete example when discussing the best way to merge your implementation.
-
-We don't have forums, but are happy to discuss with you on slack.
-Make sure to send an email to [smr.arnold@gmail.com](mailto:smr.arnold@gmail.com) to get an invite.
 
 ## Acknowledgements
 
