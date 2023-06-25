@@ -30,14 +30,14 @@ jobs:
               with:
                 ref: ${{ github.ref }}
             - name: Set up Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v3
               with:
                 python-version: ${{ matrix.python }}
                 architecture: x64
             - name: Install Dependencies
               run: |
                   python3 --version
-                  python3 -m pip install -U pip
+                  python3 -m pip install -U pip setuptools
                   # pip3 install --install-option="--no-cython-compile" cython
                   pip3 install torch==${{ matrix.pytorch }}
                   pip3 install torchvision==${{ matrix.torchvision }}
