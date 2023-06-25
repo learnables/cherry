@@ -23,7 +23,7 @@ Cherry extends PyTorch with only a handful of new core concepts.
     * [`cherry.ExperienceReplay`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay): a list-like buffer to store and sample transitions.
  * Low-level interface *à la* PyTorch to write and debug your algorithms.
     * [`cherry.td.*`](http://cherry-rl.net/api/cherry.td/) and [`cherry.pg.*`](http://cherry-rl.net/api/cherry.pg/): temporal difference and policy gradient utilities.
-    * [`cherry.algorithms.*`](http://cherry-rl.net/api/cherry.algorithms/): helper functions for popular algorithms ([PPO](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.ppo.PPO), [TD3](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.td3.TD3), [DrQ](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.drq.DrQ), and [more](http://cherry-rl.net/api/cherry.algorithms/#cherryalgorithms)).
+    * [`cherry.algorithms.*`](http://cherry-rl.net/api/cherry.algorithms/): helper functions for popular algorithms ([PPO](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.ppo.PPO), [TD3](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.td3.TD3), [DrQ](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.drq.DrQ), and [more](http://cherry-rl.net/api/cherry.algorithms/)).
     * [`cherry.debug.*`](http://cherry-rl.net/api/cherry.debug/) and [`cherry.plot.*`](http://cherry-rl.net/api/cherry.plot/): logging, visualization, and debugging tools.
 
 To learn more about the tools and philosophy behind cherry, check out our [Getting Started tutorial](http://cherry-rl.net/tutorials/getting_started/).
@@ -33,12 +33,11 @@ To learn more about the tools and philosophy behind cherry, check out our [Getti
 The following snippet showcases a few of the tools offered by cherry.
 Many more high-quality examples are available in the [examples/](./examples/) folder.
 
-<details>
-<summary><b>Defining a <code>cherry.nn.Policy</code></b></summary>
+#### Defining a [`cherry.nn.Policy`](http://cherry-rl.net/api/cherry.nn/#cherry.nn.policy.Policy)
 
 ~~~python
 class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
-   
+
    def __init__(self, feature_extractor, actor):
       super(VisionGaussianPolicy, self).__init__()
       self.feature_extractor = feature_extractor
@@ -50,14 +49,12 @@ class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
       return cherry.distributions.TanhNormal(mean, std)  # policies always return a distribution
 
 policy = VisionPolicy(MyResnetExtractor(), MyMLPActor())
-dist = policy(obs)
 action = policy.act(obs)  # sampled from policy's distribution
 deterministic_action = policy.act(obs, deterministic=True)  # distribution's mode
+action_distribution = policy(obs)  # work with the policy's distribution
 ~~~
-</details>
 
-<details>
-<summary><b>Building a <code>cherry.ExperienceReplay</code> of <code>cherry.Transition</code></b></summary>
+#### Building a [`cherry.ExperienceReplay`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay) of [`cherry.Transition`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.Transition)
 
 ~~~python
 # building the replay
@@ -77,11 +74,23 @@ for transition in reversed(batch): # iterate over a replay
    transition.reward *= 0.99
 
 # get all states, actions, and rewards as PyTorch tensors.
-loss = - torch.sum(policy(batch.state()).log_prob(batch.action()) * batch.reward())
+reinforce_loss = - torch.sum(policy(batch.state()).log_prob(batch.action()) * batch.reward())
 ~~~
-</details>
 
+#### Designing algorithms with [`cherry.td`](http://cherry-rl.net/api/cherry.td/), [`cherry.pg`](http://cherry-rl.net/api/cherry.pg/), and [`cherry.algorithms`](http://cherry-rl.net/api/cherry.algorithms/)
 
+~~~python
+# defining a new algorithm
+@dataclasses.dataclass
+class A2C(cherry.algorithms.AlgorithmArguments):
+
+   discount: float = 0.99
+   
+   def update(self, replay):
+      pass
+
+# using our A2C
+~~~
 
 ## Installation
 
