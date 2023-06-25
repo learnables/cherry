@@ -1,4 +1,4 @@
-<p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="150px" /></p>
+<p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="128px" /></p>
 
 --------------------------------------------------------------------------------
 
@@ -15,23 +15,16 @@ So if you don't like a specific tool, you don’t need to use it.
 
 Cherry extends PyTorch with only a handful of new core concepts.
 
-* PyTorch Modules for reinforcement learning: 
-    * `cherry.nn.Policy`:
-    * `cherry.nn.ActionValue`:
-    * `cherry.nn.StateValue`: 
-* Data structures for reinforcement learning:
-    * `cherry.Transition`:
-    * `cherry.ExperienceReplay`: 
-
-Cherry also includes additional features, to help implement existing and new RL algorithms.
-
-* Pythonic and low-level interface *à la* Pytorch.
-* Support for tabular (!) and function approximation algorithms.
-* Various OpenAI Gym environment wrappers.
-* Helper functions for popular algorithms. (e.g. A2C, DDPG, TRPO, PPO, SAC)
-* Logging, visualization, and debugging tools.
-* Painless and efficient distributed training on CPUs and GPUs.
-* Unit, integration, and regression tested, continuously integrated.
+* PyTorch modules for reinforcement learning: 
+    * [`cherry.nn.Policy`](http://cherry-rl.net/api/cherry.nn/#cherry.nn.policy.Policy): base class for $\pi(a \mid s)$ policies.
+    * [`cherry.nn.ActionValue`](http://cherry-rl.net/api/cherry.nn/#cherry.nn.action_value.ActionValue): base class for $Q(s, a)$ action-value functions.
+* Data structures for reinforcement learning compatible with PyTorch:
+    * [`cherry.Transition`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.Transition): namedtuple to store $(s_t, a_t, r_t, s_{t+1})$ transitions (and more).
+    * [`cherry.ExperienceReplay`](http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay): a list-like buffer to store and sample transitions.
+ * Low-level interface *à la* PyTorch to write and debug your algorithms.
+    * [`cherry.td.*`](http://cherry-rl.net/api/cherry.td/) and [`cherry.pg.*`](http://cherry-rl.net/api/cherry.pg/): temporal difference and policy gradient utilities.
+    * [`cherry.algorithms.*`](http://cherry-rl.net/api/cherry.algorithms/): helper functions for popular algorithms ([PPO](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.ppo.PPO), [TD3](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.td3.TD3), [DrQ](http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.drq.DrQ), and [more](http://cherry-rl.net/api/cherry.algorithms/#cherryalgorithms)).
+    * [`cherry.debug.*`](http://cherry-rl.net/api/cherry.debug/) and [`cherry.plot.*`](http://cherry-rl.net/api/cherry.plot/): logging, visualization, and debugging tools.
 
 To learn more about the tools and philosophy behind cherry, check out our [Getting Started tutorial](http://cherry-rl.net/tutorials/getting_started/).
 
@@ -42,7 +35,7 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 
 
 <details>
-<summary><code>Using cherry.nn.Policy</summary>code></summary>
+<summary><h4>Defining a <code>cherry.nn.Policy</summary></code></h4></summary>
 
 ~~~python
 class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
