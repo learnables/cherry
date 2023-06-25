@@ -87,7 +87,7 @@ class MyA2C:
    
    def update(self, replay, policy, state_value, optimizer):
       # discount rewards
-      values = state_value(replay.actions())
+      values = state_value(replay.action())
       discounted_rewards = cherry.td.discount(
          self.discount, replay.reward(), replay.done(), bootstrap=values[-1].detach()
       )
@@ -99,7 +99,7 @@ class MyA2C:
       )
       value_loss = cherry.algorithms.A2C.state_value_loss(values, discounted_rewards)
 
-      # Take optimization step
+      # Optimization step
       optimizer.zero_grad()
       (policy_loss + value_loss).backward()
       optimizer.step()
@@ -114,7 +114,7 @@ for step in range(1000):
    my_a2c.update(replay, my_policy, linear_value, adam)
 ~~~
 
-## Installation
+## Install
 
 ```
 pip install cherry-rl
