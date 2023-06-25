@@ -114,7 +114,7 @@ for step in range(1000):
    my_a2c.update(replay, my_policy, linear_value, adam)
 ~~~
 
-## Installation
+## Install
 
 ```
 pip install cherry-rl
