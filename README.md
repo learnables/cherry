@@ -103,6 +103,7 @@ class MyA2C:
       optimizer.zero_grad()
       (policy_loss + value_loss).backward()
       optimizer.step()
+      return {'a2c/policy_loss': policy_loss, 'a2c/value_loss': value_loss}
 
 # using MyA2C
 my_a2c = MyA2C(discount=0.95)
