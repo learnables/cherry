@@ -42,7 +42,7 @@ Many more high-quality examples are available in the [examples/](./examples/) fo
 
 
 <details>
-<summary><b>Defining and Using a Policy</b></summary>
+<summary><code>Using cherry.nn.Policy</summary>code></summary>
 
 ~~~python
 class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
