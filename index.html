@@ -826,6 +826,7 @@ Many more high-quality examples are available in the <a href="./examples/">examp
       <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
       <span class="p">(</span><span class="n">policy_loss</span> <span class="o">+</span> <span class="n">value_loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
       <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+      <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;a2c/policy_loss&#39;</span><span class="p">:</span> <span class="n">policy_loss</span><span class="p">,</span> <span class="s1">&#39;a2c/value_loss&#39;</span><span class="p">:</span> <span class="n">value_loss</span><span class="p">}</span>
 
 <span class="c1"># using MyA2C</span>
 <span class="n">my_a2c</span> <span class="o">=</span> <span class="n">MyA2C</span><span class="p">(</span><span class="n">discount</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
