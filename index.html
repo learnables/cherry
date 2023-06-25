@@ -120,7 +120,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#example" tabindex="0" class="md-skip">
+      <a href="#overview-and-examples" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -131,7 +131,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="http://learnables.github.io/cherry/" title="cherry" aria-label="cherry" class="md-header-nav__button md-logo">
           
-            <img alt="logo" src="assets/images/cherry.png" width="24" height="24">
+            <img alt="logo" src="assets/images/cherry_cropped.png" width="24" height="24">
           
         </a>
       </div>
@@ -223,7 +223,7 @@
   <label class="md-nav__title md-nav__title--site" for="__drawer">
     <a href="http://learnables.github.io/cherry/" title="cherry" class="md-nav__button md-logo">
       
-        <img alt="logo" src="assets/images/cherry.png" width="48" height="48">
+        <img alt="logo" src="assets/images/cherry_cropped.png" width="48" height="48">
       
     </a>
     cherry
@@ -280,15 +280,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#overview-and-examples" class="md-nav__link">
+    Overview and Examples
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-cherrynnpolicy" class="md-nav__link">
+    Defining a cherry.nn.Policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-a-cherryexperiencereplay-of-cherrytransition" class="md-nav__link">
+    Building a cherry.ExperienceReplay of cherry.Transition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#designing-algorithms-with-cherrytd-cherrypg-and-cherryalgorithms" class="md-nav__link">
+    Designing algorithms with cherry.td, cherry.pg, and cherry.algorithms
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#install" class="md-nav__link">
+    Install
   </a>
   
 </li>
@@ -610,15 +637,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#overview-and-examples" class="md-nav__link">
+    Overview and Examples
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defining-a-cherrynnpolicy" class="md-nav__link">
+    Defining a cherry.nn.Policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-a-cherryexperiencereplay-of-cherrytransition" class="md-nav__link">
+    Building a cherry.ExperienceReplay of cherry.Transition
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#designing-algorithms-with-cherrytd-cherrypg-and-cherryalgorithms" class="md-nav__link">
+    Designing algorithms with cherry.td, cherry.pg, and cherry.algorithms
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
+  <a href="#install" class="md-nav__link">
+    Install
   </a>
   
 </li>
@@ -677,7 +731,7 @@
                 
                   <h1>Home</h1>
                 
-                <p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="150px" /></p>
+                <p align="center"><img src="http://cherry-rl.net/assets/images/cherry_full.png" height="128px" /></p>
 
 <hr />
 <p><a href="https://travis-ci.org/learnables/cherry"><img alt="Build Status" src="https://travis-ci.org/learnables/cherry.svg?branch=master" /></a></p>
@@ -689,70 +743,100 @@ So if you don't like a specific tool, you don’t need to use it.</p>
 <p><strong>Features</strong></p>
 <p>Cherry extends PyTorch with only a handful of new core concepts.</p>
 <ul>
-<li>PyTorch Modules for reinforcement learning: <ul>
-<li><code>cherry.nn.Policy</code>:</li>
-<li><code>cherry.nn.ActionValue</code>:</li>
-<li><code>cherry.nn.StateValue</code>: </li>
+<li>PyTorch modules for reinforcement learning: <ul>
+<li><a href="http://cherry-rl.net/api/cherry.nn/#cherry.nn.policy.Policy"><code>cherry.nn.Policy</code></a>: base class for <script type="math/tex">\pi(a \mid s)</script> policies.</li>
+<li><a href="http://cherry-rl.net/api/cherry.nn/#cherry.nn.action_value.ActionValue"><code>cherry.nn.ActionValue</code></a>: base class for <script type="math/tex">Q(s, a)</script> action-value functions.</li>
 </ul>
 </li>
-<li>Data structures for reinforcement learning:<ul>
-<li><code>cherry.Transition</code>:</li>
-<li><code>cherry.ExperienceReplay</code>: </li>
+<li>Data structures for reinforcement learning compatible with PyTorch:<ul>
+<li><a href="http://cherry-rl.net/api/cherry/#cherry.experience_replay.Transition"><code>cherry.Transition</code></a>: namedtuple to store <script type="math/tex">(s_t, a_t, r_t, s_{t+1})</script> transitions (and more).</li>
+<li><a href="http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay"><code>cherry.ExperienceReplay</code></a>: a list-like buffer to store and sample transitions.</li>
 </ul>
 </li>
+<li>Low-level interface <em>à la</em> PyTorch to write and debug your algorithms.<ul>
+<li><a href="http://cherry-rl.net/api/cherry.td/"><code>cherry.td.*</code></a> and <a href="http://cherry-rl.net/api/cherry.pg/"><code>cherry.pg.*</code></a>: temporal difference and policy gradient utilities.</li>
+<li><a href="http://cherry-rl.net/api/cherry.algorithms/"><code>cherry.algorithms.*</code></a>: helper functions for popular algorithms (<a href="http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.ppo.PPO">PPO</a>, <a href="http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.td3.TD3">TD3</a>, <a href="http://cherry-rl.net/api/cherry.algorithms/#cherry.algorithms.drq.DrQ">DrQ</a>, and <a href="http://cherry-rl.net/api/cherry.algorithms/">more</a>).</li>
+<li><a href="http://cherry-rl.net/api/cherry.debug/"><code>cherry.debug.*</code></a> and <a href="http://cherry-rl.net/api/cherry.plot/"><code>cherry.plot.*</code></a>: logging, visualization, and debugging tools.</li>
 </ul>
-<p>Cherry also includes additional features, to help implement existing and new RL algorithms.</p>
-<ul>
-<li>Pythonic and low-level interface <em>à la</em> Pytorch.</li>
-<li>Support for tabular (!) and function approximation algorithms.</li>
-<li>Various OpenAI Gym environment wrappers.</li>
-<li>Helper functions for popular algorithms. (e.g. A2C, DDPG, TRPO, PPO, SAC)</li>
-<li>Logging, visualization, and debugging tools.</li>
-<li>Painless and efficient distributed training on CPUs and GPUs.</li>
-<li>Unit, integration, and regression tested, continuously integrated.</li>
+</li>
 </ul>
 <p>To learn more about the tools and philosophy behind cherry, check out our <a href="http://cherry-rl.net/tutorials/getting_started/">Getting Started tutorial</a>.</p>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
-<p>The following snippet showcases some of the tools offered by cherry.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">cherry</span> <span class="k">as</span> <span class="nn">ch</span>
+<h2 id="overview-and-examples">Overview and Examples<a class="headerlink" href="#overview-and-examples" title="Permanent link">&para;</a></h2>
+<p>The following snippet showcases a few of the tools offered by cherry.
+Many more high-quality examples are available in the <a href="./examples/">examples/</a> folder.</p>
+<h4 id="defining-a-cherrynnpolicy">Defining a <a href="http://cherry-rl.net/api/cherry.nn/#cherry.nn.policy.Policy"><code>cherry.nn.Policy</code></a><a class="headerlink" href="#defining-a-cherrynnpolicy" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VisionPolicy</span><span class="p">(</span><span class="n">cherry</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Policy</span><span class="p">):</span>  <span class="c1"># inherits from torch.nn.Module</span>
 
-<span class="c1"># Wrap environments</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;CartPole-v0&#39;</span><span class="p">)</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">Logger</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">Torch</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_extractor</span><span class="p">,</span> <span class="n">actor</span><span class="p">):</span>
+      <span class="nb">super</span><span class="p">(</span><span class="n">VisionGaussianPolicy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">feature_extractor</span> <span class="o">=</span> <span class="n">feature_extractor</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">actor</span> <span class="o">=</span> <span class="n">actor</span>
 
-<span class="n">policy</span> <span class="o">=</span> <span class="n">PolicyNet</span><span class="p">()</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
-<span class="n">replay</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">ExperienceReplay</span><span class="p">()</span>  <span class="c1"># Manage transitions</span>
+   <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+      <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_extractor</span><span class="p">(</span><span class="n">obs</span><span class="p">))</span>
+      <span class="n">std</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">cherry</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">TanhNormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>  <span class="c1"># policies always return a distribution</span>
 
-<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">mass</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">policy</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">mass</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
-        <span class="n">log_prob</span> <span class="o">=</span> <span class="n">mass</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-        <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-
-        <span class="c1"># Build the ExperienceReplay</span>
-        <span class="n">replay</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">log_prob</span><span class="o">=</span><span class="n">log_prob</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
-            <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
-
-    <span class="c1"># Discounting and normalizing rewards</span>
-    <span class="n">rewards</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">td</span><span class="o">.</span><span class="n">discount</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span> <span class="n">replay</span><span class="o">.</span><span class="n">done</span><span class="p">())</span>
-    <span class="n">rewards</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">rewards</span><span class="p">)</span>
-
-    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">th</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">log_prob</span><span class="p">()</span> <span class="o">*</span> <span class="n">rewards</span><span class="p">)</span>
-    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-    <span class="n">replay</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">VisionPolicy</span><span class="p">(</span><span class="n">MyResnetExtractor</span><span class="p">(),</span> <span class="n">MyMLPActor</span><span class="p">())</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>  <span class="c1"># sampled from policy&#39;s distribution</span>
+<span class="n">deterministic_action</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># distribution&#39;s mode</span>
+<span class="n">action_distribution</span> <span class="o">=</span> <span class="n">policy</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>  <span class="c1"># work with the policy&#39;s distribution</span>
 </code></pre></div>
-<p>Many more high-quality examples are available in the <a href="./examples/">examples/</a> folder.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p><strong>Note</strong> Cherry is considered in early alpha release. Stuff might break.</p>
+<h4 id="building-a-cherryexperiencereplay-of-cherrytransition">Building a <a href="http://cherry-rl.net/api/cherry/#cherry.experience_replay.ExperienceReplay"><code>cherry.ExperienceReplay</code></a> of <a href="http://cherry-rl.net/api/cherry/#cherry.experience_replay.Transition"><code>cherry.Transition</code></a><a class="headerlink" href="#building-a-cherryexperiencereplay-of-cherrytransition" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># building the replay</span>
+<span class="n">replay</span> <span class="o">=</span> <span class="n">cherry</span><span class="o">.</span><span class="n">ExperienceReplay</span><span class="p">()</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+   <span class="n">action</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+   <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+   <span class="n">replay</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span>
+   <span class="n">next_state</span> <span class="o">=</span> <span class="n">state</span>
+
+<span class="c1"># manipulating the replay</span>
+<span class="n">replay</span> <span class="o">=</span> <span class="n">replay</span><span class="p">[</span><span class="o">-</span><span class="mi">256</span><span class="p">:]</span>  <span class="c1"># indexes like a list</span>
+<span class="n">batch</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">contiguous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># sample transitions into a replay</span>
+<span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span> <span class="c1"># move replay to device</span>
+<span class="k">for</span> <span class="n">transition</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">batch</span><span class="p">):</span> <span class="c1"># iterate over a replay</span>
+   <span class="n">transition</span><span class="o">.</span><span class="n">reward</span> <span class="o">*=</span> <span class="mf">0.99</span>
+
+<span class="c1"># get all states, actions, and rewards as PyTorch tensors.</span>
+<span class="n">reinforce_loss</span> <span class="o">=</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">policy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">())</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">())</span> <span class="o">*</span> <span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">())</span>
+</code></pre></div>
+<h4 id="designing-algorithms-with-cherrytd-cherrypg-and-cherryalgorithms">Designing algorithms with <a href="http://cherry-rl.net/api/cherry.td/"><code>cherry.td</code></a>, <a href="http://cherry-rl.net/api/cherry.pg/"><code>cherry.pg</code></a>, and <a href="http://cherry-rl.net/api/cherry.algorithms/"><code>cherry.algorithms</code></a><a class="headerlink" href="#designing-algorithms-with-cherrytd-cherrypg-and-cherryalgorithms" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># defining a new algorithm</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MyA2C</span><span class="p">:</span>
+   <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span>
+
+   <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">state_value</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
+      <span class="c1"># discount rewards</span>
+      <span class="n">values</span> <span class="o">=</span> <span class="n">state_value</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">action</span><span class="p">())</span>
+      <span class="n">discounted_rewards</span> <span class="o">=</span> <span class="n">cherry</span><span class="o">.</span><span class="n">td</span><span class="o">.</span><span class="n">discount</span><span class="p">(</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">discount</span><span class="p">,</span> <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span> <span class="n">replay</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span> <span class="n">bootstrap</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+      <span class="p">)</span>
+
+      <span class="c1"># Compute losses</span>
+      <span class="n">policy_loss</span> <span class="o">=</span> <span class="n">cherry</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">A2C</span><span class="o">.</span><span class="n">policy_loss</span><span class="p">(</span>
+         <span class="n">log_probs</span><span class="o">=</span><span class="n">policy</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">state</span><span class="p">())</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">action</span><span class="p">()),</span>
+         <span class="n">advantages</span><span class="o">=</span><span class="n">discounted_rewards</span> <span class="o">-</span> <span class="n">values</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+      <span class="p">)</span>
+      <span class="n">value_loss</span> <span class="o">=</span> <span class="n">cherry</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">A2C</span><span class="o">.</span><span class="n">state_value_loss</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">discounted_rewards</span><span class="p">)</span>
+
+      <span class="c1"># Optimization step</span>
+      <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+      <span class="p">(</span><span class="n">policy_loss</span> <span class="o">+</span> <span class="n">value_loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+      <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="c1"># using MyA2C</span>
+<span class="n">my_a2c</span> <span class="o">=</span> <span class="n">MyA2C</span><span class="p">(</span><span class="n">discount</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+<span class="n">my_policy</span> <span class="o">=</span> <span class="n">MyPolicy</span><span class="p">()</span>
+<span class="n">linear_value</span> <span class="o">=</span> <span class="n">cherry</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">LinearValue</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">adam</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">policy</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+   <span class="n">replay</span> <span class="o">=</span> <span class="n">collect_experience</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+   <span class="n">my_a2c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">replay</span><span class="p">,</span> <span class="n">my_policy</span><span class="p">,</span> <span class="n">linear_value</span><span class="p">,</span> <span class="n">adam</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>pip install cherry-rl
 </code></pre></div>
 <h2 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h2>
@@ -760,8 +844,7 @@ So if you don't like a specific tool, you don’t need to use it.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>Documentation and tutorials are available on cherry’s website: <a href="http://cherry-rl.net">http://cherry-rl.net</a>.</p>
 <h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>First, thanks for your consideration in contributing to cherry.
-Here are a couple of guidelines we strive to follow.</p>
+<p>Here are a couple of guidelines we strive to follow.</p>
 <ul>
 <li>It's always a good idea to open an issue first, where we can discuss how to best proceed.</li>
 <li>If you want to contribute a new example using cherry, it would preferably stand in a single file.</li>
@@ -773,8 +856,6 @@ Here are a couple of guidelines we strive to follow.</p>
 </ul>
 </li>
 </ul>
-<p>We don't have forums, but are happy to discuss with you on slack.
-Make sure to send an email to <a href="mailto:smr.arnold@gmail.com">smr.arnold@gmail.com</a> to get an invite.</p>
 <h2 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permanent link">&para;</a></h2>
 <p>Cherry draws inspiration from many reinforcement learning implementations, including</p>
 <ul>
