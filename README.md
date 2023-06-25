@@ -35,49 +35,34 @@ Cherry also includes additional features, to help implement existing and new RL 
 
 To learn more about the tools and philosophy behind cherry, check out our [Getting Started tutorial](http://cherry-rl.net/tutorials/getting_started/).
 
-## Example
+## Overview and Examples
 
-The following snippet showcases some of the tools offered by cherry.
+The following snippet showcases a few of the tools offered by cherry.
+Many more high-quality examples are available in the [examples/](./examples/) folder.
+
+
+<details>
+<summary><b>Defining and Using a Policy</b></summary>
 
 ~~~python
-import cherry as ch
+class VisionPolicy(cherry.nn.Policy):  # inherits from torch.nn.Module
+   
+   def __init__(self, feature_extractor, actor):
+      super(VisionGaussianPolicy, self).__init__()
+      self.feature_extractor = feature_extractor
+      self.actor = actor
 
-# Wrap environments
-env = gym.make('CartPole-v0')
-env = ch.envs.Logger(env, interval=1000)
-env = ch.envs.Torch(env)
+   def forward(self, obs):
+      mean = self.actor(self.feature_extractor(obs))
+      std = 0.1 * torch.ones_like(mean)
+      return cherry.distributions.TanhNormal(mean, std)  # policies always return a distribution
 
-policy = PolicyNet()
-optimizer = optim.Adam(policy.parameters(), lr=1e-2)
-replay = ch.ExperienceReplay()  # Manage transitions
-
-for step in range(1000):
-    state = env.reset()
-    while True:
-        mass = Categorical(policy(state))
-        action = mass.sample()
-        log_prob = mass.log_prob(action)
-        next_state, reward, done, _ = env.step(action)
-
-        # Build the ExperienceReplay
-        replay.append(state, action, reward, next_state, done, log_prob=log_prob)
-        if done:
-            break
-        else:
-            state = next_state
-
-    # Discounting and normalizing rewards
-    rewards = ch.td.discount(0.99, replay.reward(), replay.done())
-    rewards = ch.normalize(rewards)
-
-    loss = -th.sum(replay.log_prob() * rewards)
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    replay.empty()
+policy = VisionPolicy(MyResnetExtractor(), MyMLPActor())
+dist = policy(obs)
+action = policy.act(obs)  # sampled from policy's distribution
+deterministic_action = policy.act(obs, deterministic=True)  # distribution's mode
 ~~~
-
-Many more high-quality examples are available in the [examples/](./examples/) folder.
+</details>
 
 ## Installation
 
