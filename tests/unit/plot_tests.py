@@ -2039,8 +2039,8 @@ class TestPlot(unittest.TestCase):
             ci = plot.ci95(numbers)
             mu = mean(numbers)
             std = stdev(numbers, xbar=mu)
-            lower = mu - 2.0 * std / math.sqrt(length)
-            upper = mu + 2.0 * std / math.sqrt(length)
+            lower = mu - 1.96 * std / math.sqrt(length)
+            upper = mu + 1.96 * std / math.sqrt(length)
             self.assertTrue(ci[0] - lower <= 1e-6)
             self.assertTrue(ci[1] - upper <= 1e-6)
 
