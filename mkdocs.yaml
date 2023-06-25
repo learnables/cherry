@@ -33,7 +33,7 @@ repo_url: 'https://github.com/learnables/cherry'
 edit_uri: ''
 theme:
   name: 'material'
-  logo: 'assets/images/cherry.png'
+  logo: 'assets/images/cherry_cropped.png'
   favicon: 'assets/images/favicons/favicon.ico'
   palette:
     primary: 'white'

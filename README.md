@@ -82,14 +82,41 @@ reinforce_loss = - torch.sum(policy(batch.state()).log_prob(batch.action()) * ba
 ~~~python
 # defining a new algorithm
 @dataclasses.dataclass
-class A2C(cherry.algorithms.AlgorithmArguments):
+class MyA2C(cherry.algorithms.AlgorithmArguments):
 
    discount: float = 0.99
+   value_weight: float = 0.1
    
-   def update(self, replay):
-      pass
+   def update(self, replay, policy, state_value, optimizer):
+      # discount rewards
+      values = state_value(replay.actions())
+      discounted_rewards = cherry.td.discount(
+         self.discount, replay.reward(), replay.done(), bootstrap=values[-1].detach()
+      )
+      if cherry.debug.IS_DEBUGGING and discounted_rewards.requires_grad:
+         debug.logger.warning('A2C:update: discounted_rewards.requires_grad is True.')
 
-# using our A2C
+      # Compute losses
+      policy_loss = cherry.algorithms.A2C.policy_loss(
+         log_probs=policy(replay.state()).log_prob(replay.action()),
+         advantages=discounted_rewards - values.detach(),
+      )
+      value_loss = cherry.algorithms.A2C.state_value_loss(values, discounted_rewards)
+
+      # Take optimization step
+      optimizer.zero_grad()
+      (policy_loss + self.value_weight * value_loss).backward()
+      optimizer.step()
+
+# using MyA2C
+cherry.debug.debug('./debug/') # enable debugging
+my_a2c = MyA2C(discount=0.95, value_weight=0.5)
+my_policy = MyPolicy()
+linear_value = cherry.models.LinearValue(128)
+adam = torch.optim.Adam(policy.parameters())
+for step in range(1000):
+   replay = collect_experience(policy)
+   my_a2c.update(replay, my_policy, linear_value, adam)
 ~~~
 
 ## Installation

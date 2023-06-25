@@ -75,3 +75,7 @@ div.doc-contents {
 [data-md-color-scheme="slate"] .md-typeset hr {
     border-bottom-color: rgb(230, 230, 230);
 }
+
+h4 {
+    font-weight: normal !important;
+}
