@@ -36,5 +36,6 @@ setup(
         'numpy>=1.15.4',
         'gym>=0.10.9',
         'torch>=1.0.0',
+        'dotmap',
     ],
 )

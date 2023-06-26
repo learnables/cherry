@@ -1,0 +1,105 @@
+nav:
+  - Home: index.md
+  - Tutorials:
+    - Getting Started with Cherry: tutorials/getting_started.md
+    # - debugging: tutorials/debugging_rl.md
+    # - distributed: tutorials/distributed_ppo.md
+    # - recurrent_a2c: tutorials/recurrent_a2c.md
+  - Documentation:
+    - cherry: api/cherry.md
+    - cherry.algorithms: api/cherry.algorithms.md
+    - cherry.debug: api/cherry.debug.md
+    - cherry.distributions: api/cherry.distributions.md
+    - cherry.envs: api/cherry.envs.md
+    - cherry.models: api/cherry.models.md
+    - cherry.nn: api/cherry.nn.md
+    - cherry.nn.init: api/cherry.nn.init.md
+    - cherry.optim: api/cherry.optim.md
+    - cherry.pg: api/cherry.pg.md
+    - cherry.plot: api/cherry.plot.md
+    - cherry.td: api/cherry.td.md
+    - cherry.wrappers: api/cherry.wrappers.md
+  - Changelog: changelog.md
+  - Examples: https://github.com/learnables/cherry/tree/master/examples
+  - GitHub: https://github.com/learnables/cherry/
+
+docs_dir: ./docs
+site_name: cherry
+site_url: http://learnables.github.io/cherry
+site_author: 'Séb Arnold'
+google_analytics: ['UA-68693545-3', 'seba-1511.github.com']
+repo_name: 'learnables/cherry'
+repo_url: 'https://github.com/learnables/cherry'
+edit_uri: ''
+theme:
+  name: 'material'
+  logo: 'assets/images/cherry_cropped.png'
+  favicon: 'assets/images/favicons/favicon.ico'
+  palette:
+    primary: 'white'
+    accent: 'deep orange'
+  font:
+      text: 'Source Sans Pro'
+      code: 'Ubuntu Mono'
+  features:
+    - header.autohide
+
+extra_javascript:
+    - https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js
+    - https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js
+
+extra_css:
+    - https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css
+    - 'assets/css/custom.css'
+
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/seba-1511'
+    - type: 'twitter'
+      link: 'https://twitter.com/seba1511'
+    - type: 'bug'
+      link: 'https://github.com/learnables/cherry/issues/new'
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          # setup_commands:
+              # - import pytkdocs_tweaks
+              # - pytkdocs_tweaks.main()
+          selection:
+              inherited_members: true
+          rendering:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: true
+            show_category_heading: true
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: false
+            group_by_category: false
+            member_order: 'source'
+            show_bases: false
+            show_if_no_docstring: true
+            show_submodules: false
+            heading_level: 3
+
+markdown_extensions:
+  - mdx_math:
+      enable_dollar_delimiter: True
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - codehilite:
+      guess_lang: true
+      linenums: true
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - markdown_katex:
+      no_inline_svg: True
+      insert_fonts_css: True

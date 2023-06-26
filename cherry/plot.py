@@ -14,22 +14,23 @@ from statistics import mean, stdev
 
 def ci95(values):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/plot.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Computes the 95% confidence interval around the given values.
 
-    **Arguments**
+    ## Arguments
 
-    * **values** (list) - List of values for which to compute the
+    * `values` (list) - List of values for which to compute the
       95% confidence interval.
 
-    **Returns**
+    ## Returns
 
-    * **(float, float)** The lower and upper bounds of the confidence interval.
+    * `(float, float)` The lower and upper bounds of the confidence interval.
 
-    **Example**
+    ## Example
+
     ~~~python
     from statistics import mean
     smoothed = []
@@ -46,7 +47,7 @@ def ci95(values):
     mu = mean(values)
     sigma = stdev(values, xbar=mu)
     N = len(values)
-    bound = 2.0 * sigma / math.sqrt(N)
+    bound = 1.96 * sigma / math.sqrt(N)
     lower = mu - bound
     upper = mu + bound
     return lower, upper
@@ -54,33 +55,34 @@ def ci95(values):
 
 def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/plot.py" class="source-link">[Source]</a>
 
-    **Decription**
+    ## Decription
 
     One side (regular) exponential moving average for smoothing a curve
 
     It evenly resamples points baesd on x-axis and then averages y values with
     weighting factor decreasing exponentially.
 
-    **Arguments**
-
-    * **x_before** (ndarray) - x values. Required to be in accending order.
-    * **y_before** (ndarray) - y values. Required to have same size as x_before.
-    * **smoothing_temperature** (float, *optional*, default=1.0) - the number of previous
-      steps trusted. Used to calculate the decay factor.
-
-    **Return**
-
-    * **x_after** (ndarray) - x values after resampling.
-    * **y_after** (ndarray) - y values after smoothing.
-    * **y_count** (ndarray) - decay values at each steps.
-
-    **Credit**
+    ## Credit
 
     Adapted from OpenAI's baselines implementation.
 
-    **Example**
+    ## Arguments
+
+    * `x_before` (ndarray) - x values. Required to be in accending order.
+    * `y_before` (ndarray) - y values. Required to have same size as x_before.
+    * `smoothing_temperature` (float, *optional*, default=1.0) - the number of previous
+      steps trusted. Used to calculate the decay factor.
+
+    ## Return
+
+    * `x_after` (ndarray) - x values after resampling.
+    * `y_after` (ndarray) - y values after smoothing.
+    * `y_count` (ndarray) - decay values at each steps.
+
+    ## Example
+
     ~~~python
     from cherry.plot import _one_sided_smoothing as osmooth
     x_smoothed, y_smoothed, y_counts = osmooth(x_original,
@@ -94,7 +96,7 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
 
     assert len(x_before) == len(y_before), \
         'x_before and y_before must have equal length.'
-    assert all(x_before[i] <= x_before[i+1] for i in range(len(x_before)-1)), \
+    assert all(x_before[i] <= x_before[i + 1] for i in range(len(x_before) - 1)), \
         'x_before needs to be sorted in ascending order.'
 
     # Resampling
@@ -104,16 +106,16 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
     y_count = np.zeros(size, dtype=float)
 
     # Weighting factor for data of previous steps
-    alpha = np.exp(-1./smoothing_temperature)
+    alpha = np.exp(-1. / smoothing_temperature)
     x_before_length = x_before[-1] - x_before[0]
     x_before_index = 0
-    decay_period = x_before_length/(size-1)*smoothing_temperature
+    decay_period = x_before_length / (size - 1) * smoothing_temperature
 
     for i in range(len(x_after)):
         # Compute current EMA value based on the value of previous time step
-        if(i != 0):
-            y_after[i] = alpha * y_after[i-1]
-            y_count[i] = alpha * y_count[i-1]
+        if not i == 0:
+            y_after[i] = alpha * y_after[i - 1]
+            y_count[i] = alpha * y_count[i - 1]
 
         # Compute current EMA value by adding weighted average of old points
         # covered by the new point
@@ -121,45 +123,44 @@ def _one_sided_smoothing(x_before, y_before, smoothing_temperature=1.0):
             if x_after[i] >= x_before[x_before_index]:
                 difference = x_after[i] - x_before[x_before_index]
                 # Weighting factor for y value of each old points
-                beta = np.exp(-(difference/decay_period))
+                beta = np.exp(- difference / decay_period)
                 y_after[i] += y_before[x_before_index] * beta
                 y_count[i] += beta
                 x_before_index += 1
             else:
                 break
 
-    y_after = y_after/y_count
+    y_after = y_after / y_count
     return x_after, y_after, y_count
 
 
 def exponential_smoothing(x, y=None, temperature=1.0):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/plot.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/plot.py" class="source-link">[Source]</a>
 
-    **Decription**
+    ## Decription
 
     Two-sided exponential moving average for smoothing a curve.
 
     It performs regular exponential moving average twice from two different
     sides and then combines the results together.
 
-    **Arguments**
-
-    * **x** (ndarray/tensor/list) - x values, in accending order.
-    * **y** (ndarray/tensor/list) - y values.
-    * **temperature** (float, *optional*, default=1.0) - The higher,
-      the smoother.
-
-    **Return**
-
-    * ndarray - x values after resampling.
-    * ndarray - y values after smoothing.
-
-    **Credit**
+    ## Credit
 
     Adapted from OpenAI's baselines implementation.
 
-    **Example**
+    ## Arguments
+
+    * `x` (ndarray/tensor/list) - x values, in accending order.
+    * `y` (ndarray/tensor/list) - y values.
+    * `temperature` (float, *optional*, default=1.0) - The higher, the smoother.
+
+    ## Return
+
+    * x_smoothed (ndarray) - x values after resampling.
+    * y_smoothed (ndarray) - y values after smoothing.
+
+    ## Example
 
     ~~~python
     from cherry.plot import exponential_smoothing

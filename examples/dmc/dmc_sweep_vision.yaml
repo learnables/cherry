@@ -1,0 +1,37 @@
+
+entity: arnolds
+project: cherry-dmc-benchmarks
+program: train.py
+name: walker-walk-vision
+command: 
+    - python
+    - ${program}
+    - --tasks.domain_name=walker
+    - --tasks.task_name=walk
+    - --tasks.vision_states=1
+    - --policy.projector_size=50
+    - --qvalue.projector_size=50
+    - --drq.target_polyak_weight=0.995
+    - --drq.batch_size=512
+    - --drq.use_automatic_entropy_tuning=0
+    - --drqv2.target_polyak_weight=0.995
+    - --drqv2.batch_size=512
+    - --drqv2.nsteps=1
+    - --drqv2.std_decay=0.999954
+    - --drqv2.min_std=0.1
+    - --options.num_updates=200000
+    - --options.replay_size=1000000
+    - --options.deterministic_eval
+    - --options.log_alpha=-10.0
+    - --options.log_wandb=1
+    - ${args}
+
+method: grid
+metric:
+  name: test_rewards
+  goal: maximize
+parameters:
+  options.seed:
+      values: [1101, 1102, 1103, 1104, 1105]
+  options.algorithm:
+      values: [drq, drqv2]

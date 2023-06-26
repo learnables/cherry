@@ -10,9 +10,15 @@ import cherry.envs as envs
 
 import gym
 from gym.vector import AsyncVectorEnv
-from gym.envs.unittest import MemorizeDigits
 
+from memorize_digits import MemorizeDigits
 from dummy_env import Dummy
+
+gym.envs.registration.register(
+    id="MemorizeDigits-v0",
+    entry_point="memorize_digits:MemorizeDigits",
+    reward_threshold=20,
+)
 
 
 NUM_STEPS = 10
@@ -101,7 +107,7 @@ class TestRunnerWrapper(unittest.TestCase):
         for return_info in [False, True]:
             for use_logger in [False, True]:
                 for use_torch in [False, True]:
-                    for base_env in [Dummy, MemorizeDigits, 'MemorizeDigits-v0', 'CartPole-v0']:
+                    for base_env in [Dummy, MemorizeDigits, 'MemorizeDigits-v0', 'CartPole-v1']:
                         for n_envs in [2, 4]:
                             for n_episodes in [1, 2, 3, 4]:
                                 for retry in [False, True]:
@@ -175,7 +181,7 @@ class TestRunnerWrapper(unittest.TestCase):
                 action_shape = (1, )
             else:
                 action_shape = action_shape.shape
-            done_shape = tuple()
+            done_shape = (1, )
 
             # Check shapes
             states = replay.state()

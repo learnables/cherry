@@ -4,13 +4,17 @@
 An implementation of Soft Actor-Critic.
 """
 
-from OpenGL import GLU
+try:
+    from OpenGL import GLU
+    import roboschool
+except:
+    print('Failed to import OpenGL')
 import copy
 import random
 import numpy as np
 import gym
 import pybullet_envs
-import roboschool
+import tqdm
 
 import torch as th
 import torch.nn as nn
@@ -21,11 +25,12 @@ import cherry as ch
 import cherry.envs as envs
 import cherry.distributions as distributions
 from cherry.algorithms import sac
+import wandb
 
 SEED = 42
 RENDER = False
 BATCH_SIZE = 256
-TOTAL_STEPS = 100000000
+TOTAL_STEPS = 1_000_000
 MIN_REPLAY = 1000
 REPLAY_SIZE = 1000000
 
@@ -109,7 +114,8 @@ def update(env,
            critic_qf1_optimizer,
            critic_qf2_optimizer,
            alpha_optimizer,
-           target_entropy):
+           target_entropy,
+           step):
 
     global DELAY, STEP
     STEP += 1
@@ -161,11 +167,13 @@ def update(env,
 
     
     # Log debugging values
-    env.log('alpha Loss:', alpha_loss.item())
-    env.log('alpha: ', alpha.item())
-    env.log("QF1 Loss: ", critic_qf1_loss.item())
-    env.log("QF2 Loss: ", critic_qf2_loss.item())
-    env.log("Average Rewards: ", batch.reward().mean().item())
+    wandb.log({
+        'alpha Loss': alpha_loss.item(),
+        'alpha': alpha.item(),
+        "QF1 Loss": critic_qf1_loss.item(),
+        "QF2 Loss": critic_qf2_loss.item(),
+        "Average Rewards": batch.reward().mean().item(),
+    }, step=step)
 
     # Update Critic Networks
     critic_qf1_optimizer.zero_grad()
@@ -184,7 +192,7 @@ def update(env,
                           critic_qf2(batch.state(), actions))
         policy_loss = sac.policy_loss(log_probs, q_values, alpha)
 
-        env.log("Policy Loss: ", policy_loss.item())
+        wandb.log({"Policy Loss": policy_loss.item()}, step=step)
 
         policy_optimizer.zero_grad()
         policy_loss.backward()
@@ -204,8 +212,8 @@ def main(env='HalfCheetahBulletEnv-v0'):
     random.seed(SEED)
     np.random.seed(SEED)
     th.manual_seed(SEED)
+    th.set_num_threads(2)
     env = gym.make(env)
-    env = envs.VisdomLogger(env, interval=1000)
     env = envs.ActionSpaceScaler(env)
     env = envs.Torch(env)
     env = envs.Runner(env)
@@ -235,9 +243,16 @@ def main(env='HalfCheetahBulletEnv-v0'):
     replay = ch.ExperienceReplay()
     get_action = lambda state: policy(state).rsample()
 
-    for step in range(TOTAL_STEPS):
+    episode_reward = 0.0
+    for step in tqdm.trange(TOTAL_STEPS):
         # Collect next step
         ep_replay = env.run(get_action, steps=1, render=RENDER)
+        episode_reward += ep_replay[-1].reward
+        if ep_replay[-1].done:
+            wandb.log({
+                'Episode Rewards': episode_reward,
+            }, step=step)
+            episode_reward = 0.0
 
         # Update policy
         replay += ep_replay
@@ -255,7 +270,9 @@ def main(env='HalfCheetahBulletEnv-v0'):
                    qf1_opt,
                    qf2_opt,
                    alpha_opt,
-                   target_entropy)
+                   target_entropy,
+                   step,
+            )
 
 if __name__ == '__main__':
     env_name = 'CartPoleBulletEnv-v0'
@@ -263,4 +280,10 @@ if __name__ == '__main__':
     env_name = 'HalfCheetahBulletEnv-v0'
     #env_name = 'MinitaurTrottingEnv-v0'
     env_name = 'RoboschoolAtlasForwardWalk-v1'
+    env_name = 'Ant-v3'
+    #env_name = 'HalfCheetah-v3'
+    wandb.init(
+        project='qmcrl',
+        name='baseline-' + env_name,
+    )
     main(env_name)

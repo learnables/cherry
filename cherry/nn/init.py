@@ -7,26 +7,26 @@ import torch.nn as nn
 
 def robotics_init_(module, gain=None):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Default initialization for robotic control.
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.
 
-    **Arguments**
+    ## Arguments
 
-    * **module** (nn.Module) - Module to initialize.
-    * **gain** (float, *optional*, default=sqrt(2.0)) - Gain of orthogonal initialization.
+    * `module` (nn.Module) - Module to initialize.
+    * `gain` (float, *optional*, default=sqrt(2.0)) - Gain of orthogonal initialization.
 
-    **Returns**
+    ## Returns
 
     * Module, whose weight and bias have been modified in-place.
 
-    **Example**
+    ## Example
 
     ~~~python
     linear = nn.Linear(23, 5)
@@ -37,34 +37,36 @@ def robotics_init_(module, gain=None):
     with th.no_grad():
         if gain is None:
             gain = np.sqrt(2.0)
-        nn.init.orthogonal_(module.weight.data, gain=gain)
-        nn.init.constant_(module.bias.data, 0.0)
+        if hasattr(module, 'weight'):
+            nn.init.orthogonal_(module.weight.data, gain=gain)
+        if hasattr(module, 'bias'):
+            nn.init.constant_(module.bias.data, 0.0)
         return module
 
 
 def atari_init_(module, gain=None):
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/init.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Default initialization for Atari environments.
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation, itself inspired from OpenAI Baslines.
 
-    **Arguments**
+    ## Arguments
 
-    * **module** (nn.Module) - Module to initialize.
-    * **gain** (float, *optional*, default=None) - Gain of orthogonal initialization.
+    * `module` (nn.Module) - Module to initialize.
+    * `gain` (float, *optional*, default=None) - Gain of orthogonal initialization.
     Default is computed for ReLU activation with `torch.nn.init.calculate_gain('relu')`.
 
-    **Returns**
+    ## Returns
 
     * Module, whose weight and bias have been modified in-place.
 
-    **Example**
+    ## Example
 
     ~~~python
     linear = nn.Linear(23, 5)
@@ -74,6 +76,8 @@ def atari_init_(module, gain=None):
     """
     if gain is None:
         gain = nn.init.calculate_gain('relu')
-    nn.init.orthogonal_(module.weight.data, gain=gain)
-    nn.init.constant_(module.bias.data, 0.0)
+    if hasattr(module, 'weight'):
+        nn.init.orthogonal_(module.weight.data, gain=gain)
+    if hasattr(module, 'bias'):
+        nn.init.constant_(module.bias.data, 0.0)
     return module

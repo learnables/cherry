@@ -7,34 +7,35 @@ Utilities to implement temporal difference algorithms.
 """
 
 import torch as th
+import cherry as ch
 
 from cherry._utils import _reshape_helper
 
 
 def discount(gamma, rewards, dones, bootstrap=0.0):
     """
-    **Description**
+    ## Description
 
     Discounts rewards at an rate of gamma.
 
-    **References**
+    ## References
 
     1. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
-    **Arguments**
+    ## Arguments
 
-    * **gamma** (float) - Discount factor.
-    * **rewards** (tensor) - Tensor of rewards.
-    * **dones** (tensor) - Tensor indicating episode termination.
+    * `gamma` (float) - Discount factor.
+    * `rewards` (tensor) - Tensor of rewards.
+    * `dones` (tensor) - Tensor indicating episode termination.
       Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.
-    * **bootstrap** (float, *optional*, default=0.0) - Bootstrap the last
+    * `bootstrap` (float, *optional*, default=0.0) - Bootstrap the last
       reward with this value.
 
-    **Returns**
+    ## Returns
 
     * tensor - Tensor of discounted rewards.
 
-    **Example**
+    ## Example
 
     ~~~python
     rewards = th.ones(23, 1) * 8
@@ -48,10 +49,14 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
     """
     rewards = _reshape_helper(rewards)
-    dones = _reshape_helper(dones)
+    dones = _reshape_helper(dones).reshape_as(rewards)
 
     msg = 'dones and rewards must have equal length.'
     assert rewards.size(0) == dones.size(0), msg
+
+    if not isinstance(bootstrap, (int, float)):
+        bootstrap = ch.totensor(bootstrap).reshape_as(rewards[0].unsqueeze(0))
+
     R = th.zeros_like(rewards) + bootstrap
     discounted = th.zeros_like(rewards)
     length = discounted.size(0)
@@ -64,26 +69,26 @@ def discount(gamma, rewards, dones, bootstrap=0.0):
 
 def temporal_difference(gamma, rewards, dones, values, next_values):
     """
-    **Description**
+    ## Description
 
     Returns the temporal difference residual.
 
-    **Reference**
+    ## Reference
 
     1. Sutton, Richard S. 1988. “Learning to Predict by the Methods of Temporal Differences.” Machine Learning 3 (1): 9–44.
     2. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
-    **Arguments**
+    ## Arguments
 
-    * **gamma** (float) - Discount factor.
-    * **rewards** (tensor) - Tensor of rewards.
-    * **dones** (tensor) - Tensor indicating episode termination.
+    * `gamma` (float) - Discount factor.
+    * `rewards` (tensor) - Tensor of rewards.
+    * `dones` (tensor) - Tensor indicating episode termination.
       Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.
-    * **values** (tensor) - Values for the states producing the rewards.
-    * **next_values** (tensor) - Values of the state obtained after the
+    * `values` (tensor) - Values for the states producing the rewards.
+    * `next_values` (tensor) - Values of the state obtained after the
       transition from the state used to compute the last value in `values`.
 
-    **Example**
+    ## Example
 
     ~~~python
     values = vf(replay.states())
@@ -96,10 +101,10 @@ def temporal_difference(gamma, rewards, dones, values, next_values):
     ~~~
     """
 
-    rewards = _reshape_helper(rewards)
-    dones = _reshape_helper(dones)
     values = _reshape_helper(values)
     next_values = _reshape_helper(next_values)
+    rewards = _reshape_helper(rewards).reshape_as(values)
+    dones = _reshape_helper(dones).reshape_as(values)
 
     not_dones = 1.0 - dones
     return rewards + gamma * not_dones * next_values - values

@@ -122,3 +122,6 @@ examples/bsuite/figs/**
 
 # ignore .vscode
 .vscode
+.all_objects.cache
+wandb/**
+**/wandb/**

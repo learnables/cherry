@@ -166,7 +166,8 @@ class TestExperienceReplay(unittest.TestCase):
                 total_episodes = self.replay.done().sum().int().item()
                 for num_episodes in [total_episodes, total_episodes//2, 1]:
                     sample = self.replay.sample(size=num_episodes,
-                                                episodes=True)
+                                                episodes=True,
+                                                contiguous=True)
                     num_sampled_episodes = sample.done().sum().int().item()
                     self.assertEqual(num_sampled_episodes, num_episodes)
                     for i, sars in enumerate(sample[:-1]):
@@ -294,12 +295,12 @@ class TestExperienceReplay(unittest.TestCase):
         self.assertEqual(len(replay), len(self.replay))
 
         for cr, sr in zip(replay, self.replay):
-            self.assertTrue(cr.state is sr.state)
-            self.assertTrue(cr.action is sr.action)
-            self.assertTrue(cr.next_state is sr.next_state)
-            self.assertTrue(cr.reward is sr.reward)
-            self.assertTrue(cr.vector is sr.vector)
-            self.assertTrue(cr.vector is sr.vector)
+            self.assertTrue(close(cr.state, sr.state))
+            self.assertTrue(close(cr.action, sr.action))
+            self.assertTrue(close(cr.next_state, sr.next_state))
+            self.assertTrue(close(cr.reward, sr.reward))
+            self.assertTrue(close(cr.vector, sr.vector))
+            self.assertTrue(close(cr.vector, sr.vector))
 
         # Test cuda
         if th.cuda.is_available():
@@ -368,6 +369,129 @@ class TestExperienceReplay(unittest.TestCase):
             double_dtype = cuda_replay[0].state.double().dtype
             for sars in double:
                 self.assertTrue(sars.state.dtype == double_dtype)
+
+    def test_flatten(self):
+        def original_flatten(replay):  # slow but correct
+            if not replay.vectorized:
+                return replay
+            flat_replay = ch.ExperienceReplay(device=replay.device, vectorized=False)
+            for sars in replay._storage:
+                for i in range(sars.done.shape[0]):
+                    for field in sars._fields:
+                        if getattr(sars, field) is None:
+                            __import__('pdb').set_trace()
+                    transition = {
+                        field: getattr(sars, field)[i] for field in sars._fields
+                    }
+                    # need to add dimension back because of indexing above.
+                    transition = {
+                        k: v.unsqueeze(0)
+                        if ch._utils._istensorable(v) else v
+                        for k, v in transition.items()
+                    }
+                    flat_replay.append(**transition)
+            return flat_replay
+
+        num_envs = 8
+        batch_size = 2^5
+        replay_size = 2^6
+        s_shape = (num_envs, 9, 84, 84)
+        a_shape = (num_envs, 84)
+
+        for device in ['cpu', 'cuda']:
+            if not th.cuda.is_available() and device == 'cuda':
+                continue
+
+            # generate data
+            replay = ch.ExperienceReplay(vectorized=True)
+            for step in range(replay_size):
+                action = th.randn(*a_shape)
+                state = th.randn(*s_shape)
+                done = th.randint(low=0, high=1, size=(num_envs, 1))
+                reward = th.randn((num_envs, 1))
+                info = {
+                    'success': [0.0, ] * num_envs,
+                    'numpy': np.random.randn(num_envs, 23, 4)
+                        }
+                replay.append(state, action, reward, state, done, **info)
+            replay.to(device)
+
+            # test the two flatten are identical
+            for batch in [replay, replay.sample(batch_size)]:
+                b1 = original_flatten(batch)
+                b2 = batch.flatten()
+                for sars1, sars2 in zip(b1, b2):
+                    for field in sars1._fields:
+                        val1 = getattr(sars1, field)
+                        val2 = getattr(sars2, field)
+                        self.assertTrue(
+                            (val1.double() - val2.double()).norm().item() < 1e-8,
+                            'flatten values mismatch',
+                        )
+                        self.assertTrue(
+                            val1.shape == val2.shape,
+                            'flatten shape mismatch',
+                        )
+                        self.assertTrue(
+                            val1.device == val2.device,
+                            'flatten device misatch',
+                        )
+
+    def test_nsteps(self):
+        episode_length = 10
+        num_episodes = 20
+        tensor = th.ones(10)
+        replay = ch.ExperienceReplay()
+        for i in range(1, 1+(num_episodes * episode_length)):
+            replay.append(
+                state=tensor * i,
+                action=tensor * i,
+                reward=i,
+                next_state=tensor * i,
+                done=bool(i % episode_length == 0),
+                extra1=tensor + 1,
+                extra2=tensor + 2,
+                extra3=tensor + 3,
+                idx=i-1,
+            )
+        for bsz in [0, 1, 16]:
+            for nsteps in [1, 3, 15]:
+                for contiguous in [False, True]:
+                    for episodes in [False, True]:
+                        for discount in [0.0, 0.5, 1.0, 1]:
+                            batch = replay.sample(
+                                size=bsz,
+                                contiguous=contiguous,
+                                episodes=episodes,
+                                nsteps=nsteps,
+                                discount=discount,
+                            )
+
+                            # test basic things
+                            length = bsz * episode_length if episodes else bsz
+                            self.assertEqual(len(batch), length)
+                            if episodes:
+                                num_eps = sum([replay[sars.idx.int().item()].done for sars in batch])
+                                self.assertEqual(bsz, num_eps)
+                            for i, sars in enumerate(batch):
+                                self.assertTrue(close(sars.extra1, tensor+1))
+                                self.assertTrue(close(sars.extra2, tensor+2))
+                                self.assertTrue(close(sars.extra3, tensor+3))
+                                if contiguous and i < length - 1:
+                                    self.assertTrue(batch[i].idx + 1 == batch[i+1].idx)
+
+                            # test next_state, done, discounting works
+                            for sars in batch:
+                                idx = sars.idx.int().item()
+                                sars_reward = 0.0
+                                for n in range(nsteps):
+                                    next_sars = replay[idx+n]
+                                    sars_reward = sars_reward + discount**n * next_sars.reward.item()
+                                    if next_sars.done:
+                                        break
+                                self.assertTrue(close(sars.next_state, next_sars.next_state))
+                                self.assertTrue(close(sars.done, next_sars.done))
+                                self.assertTrue(close(sars.reward, sars_reward))
 
 
 if __name__ == '__main__':

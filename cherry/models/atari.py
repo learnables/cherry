@@ -18,32 +18,34 @@ class Flatten(nn.Module):
 class NatureFeatures(nn.Sequential):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     The convolutional body of the DQN architecture.
 
-    **References**
+    ## References
 
     1. Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”
     2. Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
 
-    **Arguments**
-
-    * **input_size** (int) - Number of channels.
-      (Stacked frames in original implementation.)
-    * **output_size** (int, *optional*, default=512) - Size of the output
-      representation.
-    * **hidden_size** (int, *optional*, default=1568) - Size of the representation
-      after the convolutional layers
     """
 
-    def __init__(self, input_size=4, output_size=512, hidden_size=64*7*7):
+    def __init__(self, input_size=4, output_size=512, hidden_size=64 * 7 * 7):
+        """
+        ## Arguments
+
+        * `input_size` (int) - Number of channels.
+          (Stacked frames in original implementation.)
+        * `output_size` (int, *optional*, default=512) - Size of the output
+          representation.
+        * `hidden_size` (int, *optional*, default=1568) - Size of the representation
+          after the convolutional layers
+        """
         super(NatureFeatures, self).__init__(
             atari_init_(nn.Conv2d(input_size, 32, 8, stride=4, padding=0)),
             nn.ReLU(),
@@ -60,25 +62,25 @@ class NatureFeatures(nn.Sequential):
 class NatureActor(nn.Linear):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     The actor head of the A3C architecture.
 
-    **References**
+    ## References
 
     1. Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”
     2. Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
 
-    **Arguments**
+    ## Arguments
 
-    * **input_size** (int) - Size of input of the fully connected layers
-    * **output_size** (int) - Size of the action space.
+    * `input_size` (int) - Size of input of the fully connected layers
+    * `output_size` (int) - Size of the action space.
     """
 
     def __init__(self, input_size, output_size):
@@ -89,27 +91,28 @@ class NatureActor(nn.Linear):
 class NatureCritic(nn.Linear):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     The critic head of the A3C architecture.
 
-    **References**
+    ## References
 
     1. Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”
     2. Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”
 
-    **Credit**
+    ## Credit
 
     Adapted from Ilya Kostrikov's implementation.
-
-    **Arguments**
-
-    * **input_size** (int) - Size of input of the fully connected layers
-    * **output_size** (int, *optional*, default=1) - Size of the value.
     """
 
     def __init__(self, input_size, output_size=1):
+        """
+        ## Arguments
+
+        * `input_size` (int) - Size of input of the fully connected layers
+        * `output_size` (int, *optional*, default=1) - Size of the value.
+        """
         super(NatureCritic, self).__init__(input_size, output_size)
         atari_init_(self, gain=1.0)

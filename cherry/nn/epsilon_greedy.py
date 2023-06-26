@@ -8,24 +8,18 @@ from torch.distributions import Bernoulli, Categorical
 class EpsilonGreedy(nn.Module):
 
     """
-    [[Source]](https://github.com/seba-1511/cherry/blob/master/cherry/nn/epsilon_greedy.py)
+    <a href="https://github.com/seba-1511/cherry/blob/master/cherry/nn/epsilon_greedy.py" class="source-link">[Source]</a>
 
-    **Description**
+    ## Description
 
     Samples actions from a uniform distribution with probability `epsilon` or
     the one maximizing the input with probability `1 - epsilon`.
 
-    **References**
+    ## References
 
     1. Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.
 
-    **Arguments**
-
-    * **epsilon** (float, *optional*, default=0.05) - The epsilon factor.
-    * **learnable** (bool, *optional*, default=False) - Whether the epsilon
-    factor is a learnable parameter or not.
-
-    **Example**
+    ## Example
 
     ~~~python
     egreedy = EpsilonGreedy()
@@ -36,6 +30,13 @@ class EpsilonGreedy(nn.Module):
     """
 
     def __init__(self, epsilon=0.05, learnable=False):
+        """
+        ## Arguments
+
+        * `epsilon` (float, *optional*, default=0.05) - The epsilon factor.
+        * `learnable` (bool, *optional*, default=False) - Whether the epsilon
+        factor is a learnable parameter or not.
+        """
         super(EpsilonGreedy, self).__init__()
         msg = 'EpsilonGreedy: epsilon is not in a valid range.'
         assert epsilon >= 0.0 and epsilon <= 1.0, msg
