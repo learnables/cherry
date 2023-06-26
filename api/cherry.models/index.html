@@ -1,0 +1,2226 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+        <link rel="canonical" href="http://learnables.github.io/cherry/api/cherry.models/">
+      
+      
+        <meta name="author" content="Séb Arnold">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicons/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>cherry.models - cherry</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700%7CUbuntu+Mono&display=fallback">
+        <style>body,input{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-68693545-3", "seba-1511.github.com")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#cherrymodels" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="http://learnables.github.io/cherry/" title="cherry" aria-label="cherry" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="../../assets/images/cherry_cropped.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              cherry
+            </span>
+            <span class="md-header-nav__topic">
+              
+                cherry.models
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="http://learnables.github.io/cherry/" title="cherry" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="../../assets/images/cherry_cropped.png" width="48" height="48">
+      
+    </a>
+    cherry
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/getting_started/" title="Getting Started with Cherry" class="md-nav__link">
+      Getting Started with Cherry
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry/" title="cherry" class="md-nav__link">
+      cherry
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.algorithms/" title="cherry.algorithms" class="md-nav__link">
+      cherry.algorithms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.debug/" title="cherry.debug" class="md-nav__link">
+      cherry.debug
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.distributions/" title="cherry.distributions" class="md-nav__link">
+      cherry.distributions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.envs/" title="cherry.envs" class="md-nav__link">
+      cherry.envs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        cherry.models
+      </label>
+    
+    <a href="./" title="cherry.models" class="md-nav__link md-nav__link--active">
+      cherry.models
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.models.utils.polyak_average" class="md-nav__link">
+    polyak_average()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.models.utils.RandomPolicy" class="md-nav__link">
+    RandomPolicy
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.utils.RandomPolicy.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelsatari" class="md-nav__link">
+    cherry.models.atari
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures" class="md-nav__link">
+    NatureFeatures
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor" class="md-nav__link">
+    NatureActor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic" class="md-nav__link">
+    NatureCritic
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelsrobotics" class="md-nav__link">
+    cherry.models.robotics
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP" class="md-nav__link">
+    RoboticsMLP
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor" class="md-nav__link">
+    RoboticsActor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue" class="md-nav__link">
+    LinearValue
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.fit" class="md-nav__link">
+    fit()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelstabular" class="md-nav__link">
+    cherry.models.tabular
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction" class="md-nav__link">
+    StateValueFunction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction" class="md-nav__link">
+    ActionValueFunction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn/" title="cherry.nn" class="md-nav__link">
+      cherry.nn
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn.init/" title="cherry.nn.init" class="md-nav__link">
+      cherry.nn.init
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.optim/" title="cherry.optim" class="md-nav__link">
+      cherry.optim
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.pg/" title="cherry.pg" class="md-nav__link">
+      cherry.pg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.plot/" title="cherry.plot" class="md-nav__link">
+      cherry.plot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.td/" title="cherry.td" class="md-nav__link">
+      cherry.td
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.wrappers/" title="cherry.wrappers" class="md-nav__link">
+      cherry.wrappers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/tree/master/examples" title="Examples" class="md-nav__link">
+      Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/" title="GitHub" class="md-nav__link">
+      GitHub
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.models.utils.polyak_average" class="md-nav__link">
+    polyak_average()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.models.utils.RandomPolicy" class="md-nav__link">
+    RandomPolicy
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.utils.RandomPolicy.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelsatari" class="md-nav__link">
+    cherry.models.atari
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures" class="md-nav__link">
+    NatureFeatures
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureFeatures.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor" class="md-nav__link">
+    NatureActor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureActor.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic" class="md-nav__link">
+    NatureCritic
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.atari.NatureCritic.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelsrobotics" class="md-nav__link">
+    cherry.models.robotics
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP" class="md-nav__link">
+    RoboticsMLP
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsMLP.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor" class="md-nav__link">
+    RoboticsActor
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.RoboticsActor.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue" class="md-nav__link">
+    LinearValue
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.fit" class="md-nav__link">
+    fit()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.robotics.LinearValue.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherrymodelstabular" class="md-nav__link">
+    cherry.models.tabular
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction" class="md-nav__link">
+    StateValueFunction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.StateValueFunction.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction" class="md-nav__link">
+    ActionValueFunction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.models.tabular.ActionValueFunction.forward" class="md-nav__link">
+    forward()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="cherrymodels">cherry.models<a class="headerlink" href="#cherrymodels" title="Permanent link">&para;</a></h1>
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="cherry.models.utils.polyak_average" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cherry</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">polyak_average</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.utils.polyak_average" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.utils.polyak_average--description">Description<a class="headerlink" href="#cherry.models.utils.polyak_average--description" title="Permanent link">&para;</a></h5>
+<p>Shifts the parameters of source towards those of target.</p>
+<p>Note: the parameter <code>alpha</code> indicates the convex combination weight of the source.
+(i.e. the old parameters are kept at a rate of <code>alpha</code>.)</p>
+<h5 id="cherry.models.utils.polyak_average--references">References<a class="headerlink" href="#cherry.models.utils.polyak_average--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Polyak, B., and A. Juditsky. 1992. “Acceleration of Stochastic Approximation by Averaging.”</li>
+</ol>
+<h5 id="cherry.models.utils.polyak_average--arguments">Arguments<a class="headerlink" href="#cherry.models.utils.polyak_average--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>source</code> (Module) - The module to be shifted.</li>
+<li><code>target</code> (Module) - The module indicating the shift direction.</li>
+<li><code>alpha</code> (float) - Strength of the shift.</li>
+</ul>
+<h5 id="cherry.models.utils.polyak_average--example">Example<a class="headerlink" href="#cherry.models.utils.polyak_average--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">target_qf</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">34</span><span class="p">)</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">34</span><span class="p">)</span>
+<span class="n">ch</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">polyak_average</span><span class="p">(</span><span class="n">target_qf</span><span class="p">,</span> <span class="n">qf</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.utils.RandomPolicy" class="doc doc-heading">
+        <code>
+cherry.models.utils.RandomPolicy        </code>
+
+
+
+<a href="#cherry.models.utils.RandomPolicy" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/utils.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.utils.RandomPolicy--description">Description<a class="headerlink" href="#cherry.models.utils.RandomPolicy--description" title="Permanent link">&para;</a></h5>
+<p>Policy that randomly samples actions from the environment action space.</p>
+<h5 id="cherry.models.utils.RandomPolicy--example">Example<a class="headerlink" href="#cherry.models.utils.RandomPolicy--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">policy</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">RandomPolicy</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">envs</span><span class="o">.</span><span class="n">Runner</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="n">replay</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2048</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.utils.RandomPolicy.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.utils.RandomPolicy.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.utils.RandomPolicy.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.utils.RandomPolicy.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>env</code> (Environment) - Environment from which to sample actions.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h2 id="cherrymodelsatari">cherry.models.atari<a class="headerlink" href="#cherrymodelsatari" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.atari.NatureFeatures" class="doc doc-heading">
+        <code>
+cherry.models.atari.NatureFeatures        </code>
+
+
+
+<a href="#cherry.models.atari.NatureFeatures" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.atari.NatureFeatures--description">Description<a class="headerlink" href="#cherry.models.atari.NatureFeatures--description" title="Permanent link">&para;</a></h5>
+<p>The convolutional body of the DQN architecture.</p>
+<h5 id="cherry.models.atari.NatureFeatures--references">References<a class="headerlink" href="#cherry.models.atari.NatureFeatures--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”</li>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”</li>
+</ol>
+<h5 id="cherry.models.atari.NatureFeatures--credit">Credit<a class="headerlink" href="#cherry.models.atari.NatureFeatures--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Ilya Kostrikov's implementation.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureFeatures.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">3136</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureFeatures.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.atari.NatureFeatures.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.atari.NatureFeatures.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>input_size</code> (int) - Number of channels.
+  (Stacked frames in original implementation.)</li>
+<li><code>output_size</code> (int, <em>optional</em>, default=512) - Size of the output
+  representation.</li>
+<li><code>hidden_size</code> (int, <em>optional</em>, default=1568) - Size of the representation
+  after the convolutional layers</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureFeatures.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureFeatures.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<p>.. note::
+    Although the recipe for forward pass needs to be defined within
+    this function, one should call the :class:<code>Module</code> instance afterwards
+    instead of this since the former takes care of running the
+    registered hooks while the latter silently ignores them.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.atari.NatureActor" class="doc doc-heading">
+        <code>
+cherry.models.atari.NatureActor        </code>
+
+
+
+<a href="#cherry.models.atari.NatureActor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.atari.NatureActor--description">Description<a class="headerlink" href="#cherry.models.atari.NatureActor--description" title="Permanent link">&para;</a></h5>
+<p>The actor head of the A3C architecture.</p>
+<h5 id="cherry.models.atari.NatureActor--references">References<a class="headerlink" href="#cherry.models.atari.NatureActor--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”</li>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”</li>
+</ol>
+<h5 id="cherry.models.atari.NatureActor--credit">Credit<a class="headerlink" href="#cherry.models.atari.NatureActor--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Ilya Kostrikov's implementation.</p>
+<h5 id="cherry.models.atari.NatureActor--arguments">Arguments<a class="headerlink" href="#cherry.models.atari.NatureActor--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>input_size</code> (int) - Size of input of the fully connected layers</li>
+<li><code>output_size</code> (int) - Size of the action space.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureActor.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureActor.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureActor.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureActor.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<p>.. note::
+    Although the recipe for forward pass needs to be defined within
+    this function, one should call the :class:<code>Module</code> instance afterwards
+    instead of this since the former takes care of running the
+    registered hooks while the latter silently ignores them.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.atari.NatureCritic" class="doc doc-heading">
+        <code>
+cherry.models.atari.NatureCritic        </code>
+
+
+
+<a href="#cherry.models.atari.NatureCritic" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/atari.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.atari.NatureCritic--description">Description<a class="headerlink" href="#cherry.models.atari.NatureCritic--description" title="Permanent link">&para;</a></h5>
+<p>The critic head of the A3C architecture.</p>
+<h5 id="cherry.models.atari.NatureCritic--references">References<a class="headerlink" href="#cherry.models.atari.NatureCritic--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Mnih et al. 2015. “Human-Level Control through Deep Reinforcement Learning.”</li>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.”</li>
+</ol>
+<h5 id="cherry.models.atari.NatureCritic--credit">Credit<a class="headerlink" href="#cherry.models.atari.NatureCritic--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Ilya Kostrikov's implementation.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureCritic.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureCritic.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.atari.NatureCritic.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.atari.NatureCritic.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>input_size</code> (int) - Size of input of the fully connected layers</li>
+<li><code>output_size</code> (int, <em>optional</em>, default=1) - Size of the value.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.atari.NatureCritic.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
+  </span>
+
+<a href="#cherry.models.atari.NatureCritic.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<p>.. note::
+    Although the recipe for forward pass needs to be defined within
+    this function, one should call the :class:<code>Module</code> instance afterwards
+    instead of this since the former takes care of running the
+    registered hooks while the latter silently ignores them.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h2 id="cherrymodelsrobotics">cherry.models.robotics<a class="headerlink" href="#cherrymodelsrobotics" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.robotics.RoboticsMLP" class="doc doc-heading">
+        <code>
+cherry.models.robotics.RoboticsMLP        </code>
+
+
+
+<a href="#cherry.models.robotics.RoboticsMLP" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.robotics.RoboticsMLP--description">Description<a class="headerlink" href="#cherry.models.robotics.RoboticsMLP--description" title="Permanent link">&para;</a></h5>
+<p>A multi-layer perceptron with proper initialization for robotic control.</p>
+<h5 id="cherry.models.robotics.RoboticsMLP--credit">Credit<a class="headerlink" href="#cherry.models.robotics.RoboticsMLP--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Ilya Kostrikov's implementation.</p>
+<h5 id="cherry.models.robotics.RoboticsMLP--example">Example<a class="headerlink" href="#cherry.models.robotics.RoboticsMLP--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">target_qf</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">robotics</span><span class="o">.</span><span class="n">RoboticsMLP</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span>
+                                         <span class="mi">34</span><span class="p">,</span>
+                                         <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.RoboticsMLP.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">layer_sizes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.robotics.RoboticsMLP.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.robotics.RoboticsMLP.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.robotics.RoboticsMLP.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>inputs_size</code> (int) - Size of input.</li>
+<li><code>output_size</code> (int) - Size of output.</li>
+<li><code>layer_sizes</code> (list, <em>optional</em>, default=None) - A list of ints,
+  each indicating the size of a hidden layer.
+  (Defaults to two hidden layers of 64 units.)</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.RoboticsMLP.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.robotics.RoboticsMLP.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<p>.. note::
+    Although the recipe for forward pass needs to be defined within
+    this function, one should call the :class:<code>Module</code> instance afterwards
+    instead of this since the former takes care of running the
+    registered hooks while the latter silently ignores them.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.robotics.RoboticsActor" class="doc doc-heading">
+        <code>
+cherry.models.robotics.RoboticsActor        </code>
+
+
+
+<a href="#cherry.models.robotics.RoboticsActor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.robotics.RoboticsActor--description">Description<a class="headerlink" href="#cherry.models.robotics.RoboticsActor--description" title="Permanent link">&para;</a></h5>
+<p>A multi-layer perceptron with initialization designed for choosing
+actions in continuous robotic environments.</p>
+<h5 id="cherry.models.robotics.RoboticsActor--credit">Credit<a class="headerlink" href="#cherry.models.robotics.RoboticsActor--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Ilya Kostrikov's implementation.</p>
+<h5 id="cherry.models.robotics.RoboticsActor--example">Example<a class="headerlink" href="#cherry.models.robotics.RoboticsActor--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">policy_mean</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">robotics</span><span class="o">.</span><span class="n">Actor</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span>
+                                      <span class="mi">8</span><span class="p">,</span>
+                                      <span class="n">layer_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.RoboticsActor.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">,</span> <span class="n">layer_sizes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.robotics.RoboticsActor.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.robotics.RoboticsActor.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.robotics.RoboticsActor.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>inputs_size</code> (int) - Size of input.</li>
+<li><code>output_size</code> (int) - Size of action size.</li>
+<li><code>layer_sizes</code> (list, <em>optional</em>, default=None) - A list of ints,
+  each indicating the size of a hidden layer.
+  (Defaults to two hidden layers of 64 units.)</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.RoboticsActor.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-inherited"><code>inherited</code></small>
+  </span>
+
+<a href="#cherry.models.robotics.RoboticsActor.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<p>.. note::
+    Although the recipe for forward pass needs to be defined within
+    this function, one should call the :class:<code>Module</code> instance afterwards
+    instead of this since the former takes care of running the
+    registered hooks while the latter silently ignores them.</p>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.robotics.LinearValue" class="doc doc-heading">
+        <code>
+cherry.models.robotics.LinearValue        </code>
+
+
+
+<a href="#cherry.models.robotics.LinearValue" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/robotics.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.robotics.LinearValue--description">Description<a class="headerlink" href="#cherry.models.robotics.LinearValue--description" title="Permanent link">&para;</a></h5>
+<p>A linear state-value function, whose parameters are found by minimizing
+least-squares.</p>
+<h5 id="cherry.models.robotics.LinearValue--credit">Credit<a class="headerlink" href="#cherry.models.robotics.LinearValue--credit" title="Permanent link">&para;</a></h5>
+<p>Adapted from Tristan Deleu's implementation.</p>
+<h5 id="cherry.models.robotics.LinearValue--references">References<a class="headerlink" href="#cherry.models.robotics.LinearValue--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Duan et al. 2016. “Benchmarking Deep Reinforcement Learning for Continuous Control.”</li>
+<li><a href="https://github.com/tristandeleu/pytorch-maml-rl">https://github.com/tristandeleu/pytorch-maml-rl</a></li>
+</ol>
+<h5 id="cherry.models.robotics.LinearValue--example">Example<a class="headerlink" href="#cherry.models.robotics.LinearValue--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">states</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">state</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">()</span>
+<span class="n">dones</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
+<span class="n">returns</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">td</span><span class="o">.</span><span class="n">discount</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">)</span>
+<span class="n">baseline</span> <span class="o">=</span> <span class="n">LinearValue</span><span class="p">(</span><span class="n">input_size</span><span class="p">)</span>
+<span class="n">baseline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">returns</span><span class="p">)</span>
+<span class="n">next_values</span> <span class="o">=</span> <span class="n">baseline</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">next_states</span><span class="p">())</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.LinearValue.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">reg</span> <span class="o">=</span> <span class="mf">1e-05</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.robotics.LinearValue.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.robotics.LinearValue.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.robotics.LinearValue.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>inputs_size</code> (int) - Size of input.</li>
+<li><code>reg</code> (float, <em>optional</em>, default=1e-5) - Regularization coefficient.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.LinearValue.fit" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">returns</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.robotics.LinearValue.fit" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.robotics.LinearValue.fit--description">Description<a class="headerlink" href="#cherry.models.robotics.LinearValue.fit--description" title="Permanent link">&para;</a></h6>
+<p>Fits the parameters of the linear model by the method of least-squares.</p>
+<h6 id="cherry.models.robotics.LinearValue.fit--arguments">Arguments<a class="headerlink" href="#cherry.models.robotics.LinearValue.fit--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>states</code> (tensor) - States collected with the policy to evaluate.</li>
+<li><code>returns</code> (tensor) - Returns associated with those states (ie, discounted rewards).</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.robotics.LinearValue.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.robotics.LinearValue.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.robotics.LinearValue.forward--description">Description<a class="headerlink" href="#cherry.models.robotics.LinearValue.forward--description" title="Permanent link">&para;</a></h6>
+<p>Computes the value of a state using the linear function approximator.</p>
+<h6 id="cherry.models.robotics.LinearValue.forward--arguments">Arguments<a class="headerlink" href="#cherry.models.robotics.LinearValue.forward--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>state</code> (Tensor) - The state to evaluate.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+<h2 id="cherrymodelstabular">cherry.models.tabular<a class="headerlink" href="#cherrymodelstabular" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.tabular.StateValueFunction" class="doc doc-heading">
+        <code>
+cherry.models.tabular.StateValueFunction        </code>
+
+
+
+<a href="#cherry.models.tabular.StateValueFunction" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.tabular.StateValueFunction--description">Description<a class="headerlink" href="#cherry.models.tabular.StateValueFunction--description" title="Permanent link">&para;</a></h5>
+<p>Stores a table of state values, V(s), one for each state.</p>
+<p>Assumes that the states are one-hot encoded.
+Also, the returned values are differentiable and can be used in
+conjunction with PyTorch's optimizers.</p>
+<h5 id="cherry.models.tabular.StateValueFunction--references">References<a class="headerlink" href="#cherry.models.tabular.StateValueFunction--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<h5 id="cherry.models.tabular.StateValueFunction--example">Example<a class="headerlink" href="#cherry.models.tabular.StateValueFunction--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">vf</span> <span class="o">=</span> <span class="n">StateValueFunction</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">state_size</span><span class="p">)</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">onehot</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">state_size</span><span class="p">)</span>
+<span class="n">state_value</span> <span class="o">=</span> <span class="n">vf</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.tabular.StateValueFunction.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_size</span><span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.tabular.StateValueFunction.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.tabular.StateValueFunction.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.tabular.StateValueFunction.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>state_size</code> (int) - The number of states in the environment.</li>
+<li><code>init</code> (function, <em>optional</em>, default=None) - The initialization scheme for
+    the values in the table. (Default is 0.)</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.tabular.StateValueFunction.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.tabular.StateValueFunction.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.tabular.StateValueFunction.forward--description">Description<a class="headerlink" href="#cherry.models.tabular.StateValueFunction.forward--description" title="Permanent link">&para;</a></h6>
+<p>Returns the state value of a one-hot encoded state.</p>
+<h6 id="cherry.models.tabular.StateValueFunction.forward--arguments">Arguments<a class="headerlink" href="#cherry.models.tabular.StateValueFunction.forward--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>state</code> (Tensor) - State to be evaluated.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.models.tabular.ActionValueFunction" class="doc doc-heading">
+        <code>
+cherry.models.tabular.ActionValueFunction        </code>
+
+
+
+<a href="#cherry.models.tabular.ActionValueFunction" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.models.tabular.ActionValueFunction--description">Description<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction--description" title="Permanent link">&para;</a></h5>
+<p>Stores a table of action values, Q(s, a), one for each
+(state, action) pair.</p>
+<p>Assumes that the states and actions are one-hot encoded.
+Also, the returned values are differentiable and can be used in
+conjunction with PyTorch's optimizers.</p>
+<h5 id="cherry.models.tabular.ActionValueFunction--references">References<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Richard Sutton and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<h5 id="cherry.models.tabular.ActionValueFunction--example">Example<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="n">qf</span> <span class="o">=</span> <span class="n">ActionValueFunction</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">state_size</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_size</span><span class="p">)</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">onehot</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">state_size</span><span class="p">)</span>
+<span class="n">all_action_values</span> <span class="o">=</span> <span class="n">qf</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">onehot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">action_size</span><span class="p">)</span>
+<span class="n">action_value</span> <span class="o">=</span> <span class="n">qf</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.tabular.ActionValueFunction.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_size</span><span class="p">,</span> <span class="n">action_size</span><span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.models.tabular.ActionValueFunction.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.tabular.ActionValueFunction.__init__--arguments">Arguments<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction.__init__--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>state_size</code> (int) - The number of states in the environment.</li>
+<li><code>action_size</code> (int) - The number of actions per state.</li>
+<li><code>init</code> (function, <em>optional</em>, default=None) - The initialization scheme for the values in the table. (Default is 0.)</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.models.tabular.ActionValueFunction.forward" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#cherry.models.tabular.ActionValueFunction.forward" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.models.tabular.ActionValueFunction.forward--description">Description<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction.forward--description" title="Permanent link">&para;</a></h6>
+<p>Returns the action value of a one-hot encoded state and one-hot encoded action.</p>
+<h6 id="cherry.models.tabular.ActionValueFunction.forward--arguments">Arguments<a class="headerlink" href="#cherry.models.tabular.ActionValueFunction.forward--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>state</code> (Tensor) - State to be evaluated.</li>
+<li><code>action</code> (Tensor) - Action to be evaluated.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../cherry.envs/" title="cherry.envs" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                cherry.envs
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../cherry.nn/" title="cherry.nn" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                cherry.nn
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/seba-1511" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/seba1511" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+      <a href="https://github.com/learnables/cherry/issues/new" target="_blank" rel="noopener" title="bug" class="md-footer-social__link fa fa-bug"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.2.4",url:{base:"../.."}})</script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js"></script>
+      
+    
+  </body>
+</html>

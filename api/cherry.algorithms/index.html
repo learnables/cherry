@@ -1,0 +1,2517 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+        <link rel="canonical" href="http://learnables.github.io/cherry/api/cherry.algorithms/">
+      
+      
+        <meta name="author" content="Séb Arnold">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicons/favicon.ico">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-4.6.3">
+    
+    
+      
+        <title>cherry.algorithms - cherry</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.adb8469c.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700%7CUbuntu+Mono&display=fallback">
+        <style>body,input{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    
+      <link rel="stylesheet" href="../../assets/css/custom.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-68693545-3", "seba-1511.github.com")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#cherryalgorithms" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="http://learnables.github.io/cherry/" title="cherry" aria-label="cherry" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="../../assets/images/cherry_cropped.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              cherry
+            </span>
+            <span class="md-header-nav__topic">
+              
+                cherry.algorithms
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="http://learnables.github.io/cherry/" title="cherry" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="../../assets/images/cherry_cropped.png" width="48" height="48">
+      
+    </a>
+    cherry
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/learnables/cherry" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    learnables/cherry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorials
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../tutorials/getting_started/" title="Getting Started with Cherry" class="md-nav__link">
+      Getting Started with Cherry
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Documentation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Documentation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry/" title="cherry" class="md-nav__link">
+      cherry
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        cherry.algorithms
+      </label>
+    
+    <a href="./" title="cherry.algorithms" class="md-nav__link md-nav__link--active">
+      cherry.algorithms
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.arguments.AlgorithmArguments" class="md-nav__link">
+    AlgorithmArguments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C" class="md-nav__link">
+    A2C
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.ddpg.DDPG" class="md-nav__link">
+    DDPG
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ddpg.DDPG.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ" class="md-nav__link">
+    DrQ
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2" class="md-nav__link">
+    DrQv2
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO" class="md-nav__link">
+    PPO
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3" class="md-nav__link">
+    TD3
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO" class="md-nav__link">
+    TRPO
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.conjugate_gradient" class="md-nav__link">
+    conjugate_gradient()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.hessian_vector_product" class="md-nav__link">
+    hessian_vector_product()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.line_search" class="md-nav__link">
+    line_search()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC" class="md-nav__link">
+    SAC
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.action_value_loss" class="md-nav__link">
+    action_value_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.debug/" title="cherry.debug" class="md-nav__link">
+      cherry.debug
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.distributions/" title="cherry.distributions" class="md-nav__link">
+      cherry.distributions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.envs/" title="cherry.envs" class="md-nav__link">
+      cherry.envs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.models/" title="cherry.models" class="md-nav__link">
+      cherry.models
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn/" title="cherry.nn" class="md-nav__link">
+      cherry.nn
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.nn.init/" title="cherry.nn.init" class="md-nav__link">
+      cherry.nn.init
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.optim/" title="cherry.optim" class="md-nav__link">
+      cherry.optim
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.pg/" title="cherry.pg" class="md-nav__link">
+      cherry.pg
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.plot/" title="cherry.plot" class="md-nav__link">
+      cherry.plot
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.td/" title="cherry.td" class="md-nav__link">
+      cherry.td
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cherry.wrappers/" title="cherry.wrappers" class="md-nav__link">
+      cherry.wrappers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/tree/master/examples" title="Examples" class="md-nav__link">
+      Examples
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/learnables/cherry/" title="GitHub" class="md-nav__link">
+      GitHub
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.arguments.AlgorithmArguments" class="md-nav__link">
+    AlgorithmArguments
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C" class="md-nav__link">
+    A2C
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.a2c.A2C.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.ddpg.DDPG" class="md-nav__link">
+    DDPG
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ddpg.DDPG.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ" class="md-nav__link">
+    DrQ
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drq.DrQ.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2" class="md-nav__link">
+    DrQv2
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.drqv2.DrQv2.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO" class="md-nav__link">
+    PPO
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.state_value_loss" class="md-nav__link">
+    state_value_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.ppo.PPO.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3" class="md-nav__link">
+    TD3
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.td3.TD3.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO" class="md-nav__link">
+    TRPO
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.conjugate_gradient" class="md-nav__link">
+    conjugate_gradient()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.hessian_vector_product" class="md-nav__link">
+    hessian_vector_product()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.line_search" class="md-nav__link">
+    line_search()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.trpo.TRPO.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC" class="md-nav__link">
+    SAC
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.action_value_loss" class="md-nav__link">
+    action_value_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.policy_loss" class="md-nav__link">
+    policy_loss()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cherry.algorithms.sac.SAC.update" class="md-nav__link">
+    update()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="cherryalgorithms">cherry.algorithms<a class="headerlink" href="#cherryalgorithms" title="Permanent link">&para;</a></h1>
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.arguments.AlgorithmArguments" class="doc doc-heading">
+        <code>
+cherry.algorithms.arguments.AlgorithmArguments        </code>
+
+
+
+<a href="#cherry.algorithms.arguments.AlgorithmArguments" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/arguments.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.arguments.AlgorithmArguments--description">Description<a class="headerlink" href="#cherry.algorithms.arguments.AlgorithmArguments--description" title="Permanent link">&para;</a></h5>
+<p>Utility functions to work with dataclass algorithms.</p>
+<h5 id="cherry.algorithms.arguments.AlgorithmArguments--example">Example<a class="headerlink" href="#cherry.algorithms.arguments.AlgorithmArguments--example" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MyNewAlgorithm</span><span class="p">(</span><span class="n">AlgorithmArguments</span><span class="p">)</span><span class="o">.</span>
+
+    <span class="n">my_arg1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_arg1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.a2c.A2C" class="doc doc-heading">
+        <code>
+cherry.algorithms.a2c.A2C        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.a2c.A2C" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/a2c.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.a2c.A2C--description">Description<a class="headerlink" href="#cherry.algorithms.a2c.A2C--description" title="Permanent link">&para;</a></h5>
+<p>Helper functions for implementing A2C.</p>
+<p>A2C simply computes the gradient of the policy as follows:</p>
+<p>
+<script type="math/tex; mode=display">
+\mathbb{E} \left[ (Q(s, a) - V(s)) \cdot \nabla_\theta \log \pi_\theta (a \vert s) \right].
+</script>
+</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.a2c.A2C.policy_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">policy_loss</span><span class="p">(</span><span class="n">log_probs</span><span class="p">,</span> <span class="n">advantages</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.a2c.A2C.policy_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.a2c.A2C.policy_loss--description">Description<a class="headerlink" href="#cherry.algorithms.a2c.A2C.policy_loss--description" title="Permanent link">&para;</a></h6>
+<p>The policy loss of the Advantage Actor-Critic.</p>
+<p>This function simply performs an element-wise multiplication and a mean reduction.</p>
+<h6 id="cherry.algorithms.a2c.A2C.policy_loss--references">References<a class="headerlink" href="#cherry.algorithms.a2c.A2C.policy_loss--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.” arXiv [cs.LG].</li>
+</ol>
+<h6 id="cherry.algorithms.a2c.A2C.policy_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.a2c.A2C.policy_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>log_probs</code> (tensor) - Log-density of the selected actions.</li>
+<li><code>advantages</code> (tensor) - Advantage of the action-state pairs.</li>
+</ul>
+<h6 id="cherry.algorithms.a2c.A2C.policy_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.a2c.A2C.policy_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.a2c.A2C.policy_loss--example">Example<a class="headerlink" href="#cherry.algorithms.a2c.A2C.policy_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">advantages</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">advantage</span><span class="p">()</span>
+<span class="n">log_probs</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">log_prob</span><span class="p">()</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">a2c</span><span class="o">.</span><span class="n">policy_loss</span><span class="p">(</span><span class="n">log_probs</span><span class="p">,</span> <span class="n">advantages</span><span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.a2c.A2C.state_value_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">state_value_loss</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">rewards</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.a2c.A2C.state_value_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.a2c.A2C.state_value_loss--description">Description<a class="headerlink" href="#cherry.algorithms.a2c.A2C.state_value_loss--description" title="Permanent link">&para;</a></h6>
+<p>The state-value loss of the Advantage Actor-Critic.</p>
+<p>This function is equivalent to a MSELoss.</p>
+<h6 id="cherry.algorithms.a2c.A2C.state_value_loss--references">References<a class="headerlink" href="#cherry.algorithms.a2c.A2C.state_value_loss--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Mnih et al. 2016. “Asynchronous Methods for Deep Reinforcement Learning.” arXiv [cs.LG].</li>
+</ol>
+<h6 id="cherry.algorithms.a2c.A2C.state_value_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.a2c.A2C.state_value_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>values</code> (tensor) - Predicted values for some states.</li>
+<li><code>rewards</code> (tensor) - Observed rewards for those states.</li>
+</ul>
+<h6 id="cherry.algorithms.a2c.A2C.state_value_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.a2c.A2C.state_value_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The value loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.a2c.A2C.state_value_loss--example">Example<a class="headerlink" href="#cherry.algorithms.a2c.A2C.state_value_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">values</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+<span class="n">rewards</span> <span class="o">=</span> <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">()</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">a2c</span><span class="o">.</span><span class="n">state_value_loss</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">rewards</span><span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.ddpg.DDPG" class="doc doc-heading">
+        <code>
+cherry.algorithms.ddpg.DDPG        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ddpg.DDPG" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/ddpg.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.ddpg.DDPG--description">Description<a class="headerlink" href="#cherry.algorithms.ddpg.DDPG--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement deep deterministic policy gradient algorithms from [1].</p>
+<h5 id="cherry.algorithms.ddpg.DDPG--references">References<a class="headerlink" href="#cherry.algorithms.ddpg.DDPG--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Lillicrap et al., "Continuous Control with Deep Reinforcement Learning", ICLR 2016.</li>
+</ol>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.ddpg.DDPG.state_value_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">state_value_loss</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">next_values</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ddpg.DDPG.state_value_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.ddpg.DDPG.state_value_loss--description">Description<a class="headerlink" href="#cherry.algorithms.ddpg.DDPG.state_value_loss--description" title="Permanent link">&para;</a></h6>
+<p>The discounted Bellman loss, computed as:</p>
+<p>
+<script type="math/tex; mode=display">
+\vert\vert R + (1 - \textrm{dones}) \cdot \gamma \cdot V(s_{t+1}) - V(s_t) \vert\vert^2
+</script>
+</p>
+<h6 id="cherry.algorithms.ddpg.DDPG.state_value_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.ddpg.DDPG.state_value_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>values</code> (tensor) - State values for timestep t.</li>
+<li><code>next_values</code> (tensor) - State values for timestep t+1.</li>
+<li><code>rewards</code> (tensor) - Vector of rewards for timestep t.</li>
+<li><code>dones</code> (tensor) - Termination flag.</li>
+<li><code>gamma</code> (float) - Discount factor.</li>
+</ul>
+<h6 id="cherry.algorithms.ddpg.DDPG.state_value_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.ddpg.DDPG.state_value_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The state value loss above.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.drq.DrQ" class="doc doc-heading">
+        <code>
+cherry.algorithms.drq.DrQ        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.drq.DrQ" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/drq.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.drq.DrQ--description">Description<a class="headerlink" href="#cherry.algorithms.drq.DrQ--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement DrQ from [1].</p>
+<p>DrQ (Data-regularized Q) extends SAC to more efficiently train policies and action values from pixels.</p>
+<h5 id="cherry.algorithms.drq.DrQ--references">References<a class="headerlink" href="#cherry.algorithms.drq.DrQ--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Kostrikov et al., "Image Augmentation Is All You Need: Regularizing Deep Reinforcement Learning from Pixels", ICLR 2021.</li>
+</ol>
+<h5 id="cherry.algorithms.drq.DrQ--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.drq.DrQ--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>batch_size</code> (int, <em>optional</em>, default=512) - Number of samples to get from the replay.</li>
+<li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
+<li><code>use_automatic_entropy_tuning</code> (bool, <em>optional</em>, default=True) - Whether to optimize the entropy weight <script type="math/tex">\alpha</script>.</li>
+<li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
+<li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.drq.DrQ.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">use_automatic_entropy_tuning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">policy_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">target_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">target_polyak_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.algorithms.drq.DrQ.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.drq.DrQ.update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">action_value</span><span class="p">,</span> <span class="n">target_action_value</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target_features</span><span class="p">,</span> <span class="n">log_alpha</span><span class="p">,</span> <span class="n">target_entropy</span><span class="p">,</span> <span class="n">policy_optimizer</span><span class="p">,</span> <span class="n">action_value_optimizer</span><span class="p">,</span> <span class="n">features_optimizer</span><span class="p">,</span> <span class="n">alpha_optimizer</span><span class="p">,</span> <span class="n">update_policy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_target</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">update_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_entropy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">augmentation_transform</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#cherry.algorithms.drq.DrQ.update" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.drq.DrQ.update--description">Description<a class="headerlink" href="#cherry.algorithms.drq.DrQ.update--description" title="Permanent link">&para;</a></h6>
+<p>Implements a single DrQ update.</p>
+<h6 id="cherry.algorithms.drq.DrQ.update--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.drq.DrQ.update--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
+<li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
+<li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
+<li><code>features</code> (torch.nn.Module) - Feature extractor for the policy and action value.</li>
+<li><code>target_features</code> (torch.nn.Module) - Feature extractor for the target action value.</li>
+<li><code>log_alpha</code> (torch.Tensor) - SAC's (log) entropy weight.</li>
+<li><code>target_entropy</code> (torch.Tensor) - SAC's target for the policy entropy (typically <script type="math/tex">\vert\mathcal{A}\vert</script>).</li>
+<li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
+<li><code>action_value_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>action_value</code>.</li>
+<li><code>features_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>features</code>.</li>
+<li><code>alpha_optimizer</code> (torch.optim.Optimizer) - Optimizer for <code>log_alpha</code>.</li>
+<li><code>update_policy</code> (bool, <em>optional</em>, default=True) - Whether to update the policy.</li>
+<li><code>update_target</code> (bool, <em>optional</em>, default=False) - Whether to update the action value target network.</li>
+<li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
+<li><code>update_entropy</code> (bool, <em>optional</em>, default=True) - Whether to update the entropy weight.</li>
+<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations.
+    Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
+<li><code>device</code> (torch.device) - The device used to compute the update.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.drqv2.DrQv2" class="doc doc-heading">
+        <code>
+cherry.algorithms.drqv2.DrQv2        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.drqv2.DrQv2" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/drqv2.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.drqv2.DrQv2--description">Description<a class="headerlink" href="#cherry.algorithms.drqv2.DrQv2--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement DrQ-v2 from [1].</p>
+<p>DrQ-v2 builds on DrQ but replaces the underlying SAC with TD3.
+It is noticeably faster in terms of wall-clock time and sample complexity.</p>
+<h5 id="cherry.algorithms.drqv2.DrQv2--references">References<a class="headerlink" href="#cherry.algorithms.drqv2.DrQv2--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Yarats et al., "Mastering Visual Continuous Control: Improved Data-Augmented Reinforcement Learning", ICLR 2022.</li>
+</ol>
+<h5 id="cherry.algorithms.drqv2.DrQv2--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.drqv2.DrQv2--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>batch_size</code> (int, <em>optional</em>, default=512) - Number of samples to get from the replay.</li>
+<li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
+<li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
+<li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>nsteps</code> (int, <em>optional</em>, default=1) - Number of bootstrapping steps to compute the target values.</li>
+<li><code>std_decay</code> (float, <em>optional</em>, default=0.0) - Exponential decay rate of the policy's standard deviation. A reasonable value for DMC is 0.99997.</li>
+<li><code>min_std</code> (float, <em>optional</em>, default=0.1) - Minimum standard deviation for the policy.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.drqv2.DrQv2.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">policy_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">target_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">target_polyak_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">std_decay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.algorithms.drqv2.DrQv2.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.drqv2.DrQv2.update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">action_value</span><span class="p">,</span> <span class="n">target_action_value</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">policy_optimizer</span><span class="p">,</span> <span class="n">action_value_optimizer</span><span class="p">,</span> <span class="n">features_optimizer</span><span class="p">,</span> <span class="n">update_policy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_target</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">augmentation_transform</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#cherry.algorithms.drqv2.DrQv2.update" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.drqv2.DrQv2.update--description">Description<a class="headerlink" href="#cherry.algorithms.drqv2.DrQv2.update--description" title="Permanent link">&para;</a></h6>
+<p>Implements a single DrQ-v2 update.</p>
+<h6 id="cherry.algorithms.drqv2.DrQv2.update--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.drqv2.DrQv2.update--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
+<li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
+<li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
+<li><code>features</code> (torch.nn.Module) - Feature extractor for the policy and action value.</li>
+<li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
+<li><code>features_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>features</code>.</li>
+<li><code>update_policy</code> (bool, <em>optional</em>, default=True) - Whether to update the policy.</li>
+<li><code>update_target</code> (bool, <em>optional</em>, default=True) - Whether to update the action value target network.</li>
+<li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
+<li><code>augmentation_transform</code> (torch.nn.Module, <em>optional</em>, default=None) - Data augmentation transform to augment image observations.
+    Defaults to <code>RandomShiftsAug(4)</code> (as in the paper).</li>
+<li><code>device</code> (torch.device) - The device used to compute the update.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.ppo.PPO" class="doc doc-heading">
+        <code>
+cherry.algorithms.ppo.PPO        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ppo.PPO" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/ppo.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.ppo.PPO--description">Description<a class="headerlink" href="#cherry.algorithms.ppo.PPO--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement PPO from [1].</p>
+<p>The idea behing PPO is to cheaply approximate TRPO's trust-region with the following objective:</p>
+<p>
+<script type="math/tex; mode=display">
+\mathbb{E}[\min(
+    \frac{\pi_{\theta}}{\pi_{\textrm{old}}} \cdot A,
+    \mathrm{clip}(\frac{\pi_{\theta}}{\pi_{\textrm{old}}} \cdot A, 1-\epsilon, 1+\epsilon)
+)],
+</script>
+</p>
+<p>where <script type="math/tex">\pi_{\theta}</script> is the current policy and <script type="math/tex">\pi_{\mathrm{old}}</script> is the policy used to collect the online replay's data.</p>
+<h5 id="cherry.algorithms.ppo.PPO--references">References<a class="headerlink" href="#cherry.algorithms.ppo.PPO--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Schulman et al., “Proximal Policy Optimization Algorithms”, ArXiv 2017.</li>
+</ol>
+<h5 id="cherry.algorithms.ppo.PPO--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.ppo.PPO--arguments" title="Permanent link">&para;</a></h5>
+<p>Note: the following arguments were optimized for continuous control on PyBullet / MuJoCo.</p>
+<ul>
+<li><code>num_steps</code> (int, <em>optional</em>, default=320) - Number of of PPO gradient steps in a single update.</li>
+<li><code>batch_size</code> (int, <em>optional</em>, default=512) - Number of samples to get from the replay.</li>
+<li><code>policy_clip</code> (float, <em>optional</em>, default=0.2) - Clip constant for the policy.</li>
+<li><code>value_clip</code> (float, <em>optional</em>, default=0.2) - Clip constant for state value function.</li>
+<li><code>value_weight</code> (float, <em>optional</em>, default=0.5) - Scaling factor fo the state value function penalty.</li>
+<li><code>entropy_weight</code> (float, <em>optional</em>, default=0.0) - Scaling factor of the entropy penalty.</li>
+<li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
+<li><code>gae_tau</code> (float, <em>optional</em>, default=0.95) - Bias-variance trade-off for the generalized advantage estimator.</li>
+<li><code>gradient_norm</code> (float, <em>optional</em>, default=0.5) - Maximum gradient norm.</li>
+<li><code>eps</code> (float, <em>optional</em>, default=0.5) - Numerical stability constant.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.ppo.PPO.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">320</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> <span class="n">policy_clip</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">value_clip</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">value_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">entropy_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">gae_tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-08</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ppo.PPO.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.ppo.PPO.policy_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">policy_loss</span><span class="p">(</span><span class="n">new_log_probs</span><span class="p">,</span> <span class="n">old_log_probs</span><span class="p">,</span> <span class="n">advantages</span><span class="p">,</span> <span class="n">clip</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ppo.PPO.policy_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.ppo.PPO.policy_loss--description">Description<a class="headerlink" href="#cherry.algorithms.ppo.PPO.policy_loss--description" title="Permanent link">&para;</a></h6>
+<p>The clipped policy loss of Proximal Policy Optimization.</p>
+<h6 id="cherry.algorithms.ppo.PPO.policy_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.ppo.PPO.policy_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>new_log_probs</code> (tensor) - The log-density of actions from the target policy.</li>
+<li><code>old_log_probs</code> (tensor) - The log-density of actions from the behaviour policy.</li>
+<li><code>advantages</code> (tensor) - Advantage of the actions.</li>
+<li><code>clip</code> (float, <em>optional</em>, default=0.1) - The clipping coefficient.</li>
+</ul>
+<h6 id="cherry.algorithms.ppo.PPO.policy_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.ppo.PPO.policy_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>loss (tensor) - The clipped policy loss for the given arguments.</li>
+</ul>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">advantage</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">generalized_advantage</span><span class="p">(</span>
+    <span class="n">GAMMA</span><span class="p">,</span>
+    <span class="n">TAU</span><span class="p">,</span>
+    <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span>
+    <span class="n">replay</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span>
+    <span class="n">replay</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span>
+    <span class="n">next_state_value</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">new_densities</span> <span class="o">=</span> <span class="n">policy</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">state</span><span class="p">())</span>
+<span class="n">new_logprobs</span> <span class="o">=</span> <span class="n">new_densities</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">action</span><span class="p">())</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">policy_loss</span><span class="p">(</span>
+    <span class="n">new_logprobs</span><span class="p">,</span>
+    <span class="n">replay</span><span class="o">.</span><span class="n">logprob</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+    <span class="n">advantage</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+    <span class="n">clip</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.ppo.PPO.state_value_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">state_value_loss</span><span class="p">(</span><span class="n">new_values</span><span class="p">,</span> <span class="n">old_values</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">clip</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.ppo.PPO.state_value_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.ppo.PPO.state_value_loss--description">Description<a class="headerlink" href="#cherry.algorithms.ppo.PPO.state_value_loss--description" title="Permanent link">&para;</a></h6>
+<p>The clipped state-value loss of Proximal Policy Optimization.</p>
+<h6 id="cherry.algorithms.ppo.PPO.state_value_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.ppo.PPO.state_value_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>new_values</code> (tensor) - State values from the optimized value function.</li>
+<li><code>old_values</code> (tensor) - State values from the reference value function.</li>
+<li><code>rewards</code> (tensor) -  Observed rewards.</li>
+<li><code>clip</code> (float, <em>optional</em>, default=0.1) - The clipping coefficient.</li>
+</ul>
+<h6 id="cherry.algorithms.ppo.PPO.state_value_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.ppo.PPO.state_value_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>loss (tensor) - The clipped value loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.ppo.PPO.state_value_loss--example">Example<a class="headerlink" href="#cherry.algorithms.ppo.PPO.state_value_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">values</span> <span class="o">=</span> <span class="n">v_function</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">())</span>
+<span class="n">value_loss</span> <span class="o">=</span> <span class="n">ppo</span><span class="o">.</span><span class="n">state_value_loss</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">,</span>
+    <span class="n">batch</span><span class="o">.</span><span class="n">value</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+    <span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span>
+    <span class="n">clip</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.ppo.PPO.update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">state_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#cherry.algorithms.ppo.PPO.update" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.ppo.PPO.update--description">Description<a class="headerlink" href="#cherry.algorithms.ppo.PPO.update--description" title="Permanent link">&para;</a></h6>
+<p>Implements a single PPO update.</p>
+<h6 id="cherry.algorithms.ppo.PPO.update--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.ppo.PPO.update--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>replay</code> (cherry.ExperienceReplay) - Online replay to sample transitions from.</li>
+<li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
+<li><code>state_value</code> (cherry.nn.StateValue) - State value function <script type="math/tex">V(s)</script>.</li>
+<li><code>optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.td3.TD3" class="doc doc-heading">
+        <code>
+cherry.algorithms.td3.TD3        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.td3.TD3" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/td3.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.td3.TD3--description">Description<a class="headerlink" href="#cherry.algorithms.td3.TD3--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement TD3 from [1].</p>
+<p>The main idea behind TD3 is to extend DDPG with <em>twin</em> action value functions.
+Namely, the action values are computed with:</p>
+<p>
+<script type="math/tex; mode=display">
+\min_{i=1, 2} Q_i(s_t, \pi(s_t) + \epsilon),
+</script>
+</p>
+<p>where <script type="math/tex">\pi</script> is a deterministic policy and <script type="math/tex">\epsilon</script> is (typically) sampled from a Gaussian distribution.
+See <a href="/api/cherry.nn/#cherry.nn.action_value.Twin">cherry.nn.Twin</a> to easily implement such twin Q-functions.</p>
+<p>The authors also suggest to delay the updates to the policy.
+This simply boils down to applying 1 policy update every N times the action value function is updated.
+This implementation also supports delaying updates to the action value and its target network.</p>
+<h5 id="cherry.algorithms.td3.TD3--references">References<a class="headerlink" href="#cherry.algorithms.td3.TD3--references" title="Permanent link">&para;</a></h5>
+<ol>
+<li>Fujimoto et al., "Addressing Function Approximation Error in Actor-Critic Methods", ICML 2018.</li>
+</ol>
+<h5 id="cherry.algorithms.td3.TD3--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.td3.TD3--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>batch_size</code> (int, <em>optional</em>, default=512) - Number of samples to get from the replay.</li>
+<li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
+<li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
+<li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+<li><code>nsteps</code> (int, <em>optional</em>, default=1) - Number of bootstrapping steps to compute the target values.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.td3.TD3.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">policy_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">target_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">target_polyak_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.995</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.algorithms.td3.TD3.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.td3.TD3.update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">action_value</span><span class="p">,</span> <span class="n">target_action_value</span><span class="p">,</span> <span class="n">policy_optimizer</span><span class="p">,</span> <span class="n">action_value_optimizer</span><span class="p">,</span> <span class="n">update_policy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_target</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#cherry.algorithms.td3.TD3.update" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.td3.TD3.update--description">Description<a class="headerlink" href="#cherry.algorithms.td3.TD3.update--description" title="Permanent link">&para;</a></h6>
+<p>Implements a single TD3 update.</p>
+<h6 id="cherry.algorithms.td3.TD3.update--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.td3.TD3.update--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
+<li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
+<li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
+<li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
+<li><code>action_value_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>action_value</code>.</li>
+<li><code>update_policy</code> (bool, <em>optional</em>, default=True) - Whether to update the policy.</li>
+<li><code>update_target</code> (bool, <em>optional</em>, default=True) - Whether to update the action value target network.</li>
+<li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
+<li><code>device</code> (torch.device) - The device used to compute the update.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.trpo.TRPO" class="doc doc-heading">
+        <code>
+cherry.algorithms.trpo.TRPO        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.trpo.TRPO" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <h5 id="cherry.algorithms.trpo.TRPO--description">Description<a class="headerlink" href="#cherry.algorithms.trpo.TRPO--description" title="Permanent link">&para;</a></h5>
+<p>Helper functions for implementing Trust-Region Policy Optimization.</p>
+<p>Recall that TRPO strives to solve the following objective:</p>
+<p>
+<script type="math/tex; mode=display">
+\max_\theta \quad \mathbb{E}\left[ \frac{\pi_\theta}{\pi_\text{old}} \cdot A  \right] \\
+\text{subject to} \quad D_\text{KL}(\pi_\text{old} \vert \vert \pi_\theta) \leq \delta.
+</script>
+</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.trpo.TRPO.conjugate_gradient" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">conjugate_gradient</span><span class="p">(</span><span class="n">Ax</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">num_iterations</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-08</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.trpo.TRPO.conjugate_gradient" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
+<h6 id="cherry.algorithms.trpo.TRPO.conjugate_gradient--description">Description<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.conjugate_gradient--description" title="Permanent link">&para;</a></h6>
+<p>Computes <script type="math/tex">x = A^{-1}b</script> using the conjugate gradient algorithm.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.conjugate_gradient--credit">Credit<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.conjugate_gradient--credit" title="Permanent link">&para;</a></h6>
+<p>Adapted from Kai Arulkumaran's implementation, with additions inspired from John Schulman's implementation.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.conjugate_gradient--references">References<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.conjugate_gradient--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.</li>
+<li>Shewchuk et al. 1994. “An Introduction to the Conjugate Gradient Method without the Agonizing Pain.” CMU.</li>
+</ol>
+<h6 id="cherry.algorithms.trpo.TRPO.conjugate_gradient--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.conjugate_gradient--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>Ax</code> (callable) - Given a vector x, computes A@x.</li>
+<li><code>b</code> (tensor or list) - The reference vector.</li>
+<li><code>num_iterations</code> (int, <em>optional</em>, default=10) - Number of conjugate gradient iterations.</li>
+<li><code>tol</code> (float, <em>optional</em>, default=1e-10) - Tolerance for proposed solution.</li>
+<li><code>eps</code> (float, <em>optional</em>, default=1e-8) - Numerical stability constant.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.conjugate_gradient--returns">Returns<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.conjugate_gradient--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>x</code> (tensor or list) - The solution to Ax = b, as a list if b is a list else a tensor.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.trpo.TRPO.hessian_vector_product" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">hessian_vector_product</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">damping</span> <span class="o">=</span> <span class="mf">1e-05</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.trpo.TRPO.hessian_vector_product" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
+<h6 id="cherry.algorithms.trpo.TRPO.hessian_vector_product--description">Description<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.hessian_vector_product--description" title="Permanent link">&para;</a></h6>
+<p>Returns a callable that computes the product of the Hessian of loss
+(w.r.t. parameters) with another vector, using Pearlmutter's trick.</p>
+<p>Note that parameters and the argument of the callable can be tensors
+or list of tensors.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.hessian_vector_product--references">References<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.hessian_vector_product--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Pearlmutter, B. A. 1994. “Fast Exact Multiplication by the Hessian.” Neural Computation.</li>
+</ol>
+<h6 id="cherry.algorithms.trpo.TRPO.hessian_vector_product--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.hessian_vector_product--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>loss</code> (tensor) - The loss of which to compute the Hessian.</li>
+<li><code>parameters</code> (tensor or list) - The tensors to take the gradient with respect to.</li>
+<li><code>damping</code> (float, <em>optional</em>, default=1e-5) - Damping of the Hessian-vector product.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.hessian_vector_product--returns">Returns<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.hessian_vector_product--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>hvp(other)</code> (callable) - A function to compute the Hessian-vector product,
+    given a vector or list <code>other</code>.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.trpo.TRPO.line_search" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">line_search</span><span class="p">(</span><span class="n">params_init</span><span class="p">,</span> <span class="n">params_update</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">stop_criterion</span><span class="p">,</span> <span class="n">initial_stepsize</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">backtrack_factor</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">max_iterations</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.trpo.TRPO.line_search" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/trpo.py">[Source]</a></p>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--description">Description<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--description" title="Permanent link">&para;</a></h6>
+<p>Computes line-search for model parameters given a parameter update and a stopping criterion.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--credit">Credit<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--credit" title="Permanent link">&para;</a></h6>
+<p>Adapted from Kai Arulkumaran's implementation, with additions inspired from John Schulman's implementation.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--references">References<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Nocedal and Wright. 2006. "Numerical Optimization, 2nd edition". Springer.</li>
+</ol>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>params_init</code> (tensor or iteratble) - Initial parameter values.</li>
+<li><code>params_update</code> (tensor or iteratble) - Update direction.</li>
+<li><code>model</code> (Module) - The model to be updated.</li>
+<li><code>stop_criterion</code> (callable) - Given a model, decided whether to stop the line-search.</li>
+<li><code>initial_stepsize</code> (float, <em>optional</em>, default=1.0) - Initial stepsize of search.</li>
+<li><code>backtrack_factor</code> (float, <em>optional</em>, default=0.5) - Backtracking factor.</li>
+<li><code>max_iterations</code> (int, <em>optional</em>, default=15) - Max number of backtracking iterations.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--returns">Returns<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>new_model</code> (Module) - The updated model if line-search is successful, else the model with initial parameter values.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.line_search--example">Example<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.line_search--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">ls_criterion</span><span class="p">(</span><span class="n">new_policy</span><span class="p">):</span>
+    <span class="n">new_density</span> <span class="o">=</span> <span class="n">new_policy</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+    <span class="n">new_kl</span> <span class="o">=</span> <span class="n">kl_divergence</span><span class="p">(</span><span class="n">old_density</span><span class="p">,</span> <span class="n">new_densityl</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">new_loss</span> <span class="o">=</span> <span class="o">-</span> <span class="n">qvalue</span><span class="p">(</span><span class="n">new_density</span><span class="o">.</span><span class="n">sample</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_loss</span> <span class="o">&lt;</span> <span class="n">policy_loss</span> <span class="ow">and</span> <span class="n">new_kl</span> <span class="o">&lt;</span> <span class="n">max_kl</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">policy</span> <span class="o">=</span> <span class="n">trpo</span><span class="o">.</span><span class="n">line_search</span><span class="p">(</span>
+        <span class="n">params_init</span><span class="o">=</span><span class="n">policy</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span>
+        <span class="n">params_update</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span>
+        <span class="n">criterion</span><span class="o">=</span><span class="n">ls_criterion</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.trpo.TRPO.policy_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">policy_loss</span><span class="p">(</span><span class="n">new_log_probs</span><span class="p">,</span> <span class="n">old_log_probs</span><span class="p">,</span> <span class="n">advantages</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.trpo.TRPO.policy_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/algorithms/a2c.py">[Source]</a></p>
+<h6 id="cherry.algorithms.trpo.TRPO.policy_loss--description">Description<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.policy_loss--description" title="Permanent link">&para;</a></h6>
+<p>The policy loss for Trust-Region Policy Optimization.</p>
+<p>This is also known as the surrogate loss.</p>
+<h6 id="cherry.algorithms.trpo.TRPO.policy_loss--references">References<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.policy_loss--references" title="Permanent link">&para;</a></h6>
+<ol>
+<li>Schulman et al. 2015. “Trust Region Policy Optimization.” ICML 2015.</li>
+</ol>
+<h6 id="cherry.algorithms.trpo.TRPO.policy_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.policy_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>new_log_probs</code> (tensor) - The log-density of actions from the target policy.</li>
+<li><code>old_log_probs</code> (tensor) - The log-density of actions from the behaviour policy.</li>
+<li><code>advantages</code> (tensor) - Advantage of the actions.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.policy_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.policy_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.trpo.TRPO.policy_loss--example">Example<a class="headerlink" href="#cherry.algorithms.trpo.TRPO.policy_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">advantage</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">pg</span><span class="o">.</span><span class="n">generalized_advantage</span><span class="p">(</span><span class="n">GAMMA</span><span class="p">,</span>
+                                        <span class="n">TAU</span><span class="p">,</span>
+                                        <span class="n">replay</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span>
+                                        <span class="n">replay</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span>
+                                        <span class="n">replay</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span>
+                                        <span class="n">next_state_value</span><span class="p">)</span>
+<span class="n">new_densities</span> <span class="o">=</span> <span class="n">policy</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">state</span><span class="p">())</span>
+<span class="n">new_logprobs</span> <span class="o">=</span> <span class="n">new_densities</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">replay</span><span class="o">.</span><span class="n">action</span><span class="p">())</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">policy_loss</span><span class="p">(</span><span class="n">new_logprobs</span><span class="p">,</span>
+                   <span class="n">replay</span><span class="o">.</span><span class="n">logprob</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+                   <span class="n">advantage</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="cherry.algorithms.sac.SAC" class="doc doc-heading">
+        <code>
+cherry.algorithms.sac.SAC        </code>
+
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#cherry.algorithms.sac.SAC" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents first">
+
+      <p><a href="https://github.com/learnables/cherry/blob/master/cherry/algorithms/sac.py" class="source-link">[Source]</a></p>
+<h5 id="cherry.algorithms.sac.SAC--description">Description<a class="headerlink" href="#cherry.algorithms.sac.SAC--description" title="Permanent link">&para;</a></h5>
+<p>Utilities to implement SAC from [1].</p>
+<p>The <code>update()</code> function updates the function approximators in the following order:</p>
+<ol>
+<li>Entropy weight update.</li>
+<li>Action-value update.</li>
+<li>State-value update. (Optional, c.f. below)</li>
+<li>Policy update.</li>
+</ol>
+<p>Note that most recent implementations of SAC omit step 3. above by using
+the Bellman residual instead of modelling a state-value function.
+For an example of such implementation refer to
+<a href="https://github.com/learnables/cherry/blob/master/examples/pybullet/delayed_tsac_pybullet.py">this link</a>.</p>
+<h5 id="cherry.algorithms.sac.SAC--references">References<a class="headerlink" href="#cherry.algorithms.sac.SAC--references" title="Permanent link">&para;</a></h5>
+<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div class="codehilite"><pre><span></span><code><span class="nv">New</span> <span class="nv">actions</span> <span class="nv">are</span> <span class="nv">sampled</span> <span class="nv">from</span> <span class="nv">the</span> <span class="nv">target</span> <span class="nv">policy</span>, <span class="nv">and</span> <span class="nv">those</span> <span class="nv">are</span> <span class="nv">used</span> <span class="nv">to</span> <span class="nv">compute</span> <span class="nv">the</span> <span class="nv">Q</span><span class="o">-</span><span class="nv">values</span>.
+<span class="k">While</span> <span class="nv">we</span> <span class="nv">should</span> <span class="nv">back</span><span class="o">-</span><span class="nv">propagate</span> <span class="nv">through</span> <span class="nv">the</span> <span class="nv">Q</span><span class="o">-</span><span class="nv">values</span> <span class="nv">to</span> <span class="nv">the</span> <span class="nv">policy</span> <span class="nv">parameters</span>, <span class="nv">we</span> <span class="nv">shouldn</span><span class="s1">&#39;</span><span class="s">t</span>
+<span class="nv">use</span> <span class="nv">that</span> <span class="nv">gradient</span> <span class="nv">to</span> <span class="nv">optimize</span> <span class="nv">the</span> <span class="nv">Q</span> <span class="nv">parameters</span>.
+<span class="nv">This</span> <span class="nv">is</span> <span class="nv">often</span> <span class="nv">avoided</span> <span class="nv">by</span> <span class="nv">either</span> <span class="nv">using</span> <span class="nv">a</span> <span class="nv">target</span> <span class="nv">Q</span> <span class="nv">function</span>, <span class="nv">or</span> <span class="nv">by</span> <span class="nv">zero</span><span class="o">-</span><span class="nv">ing</span> <span class="nv">out</span> <span class="nv">the</span> <span class="nv">gradients</span>
+<span class="nv">of</span> <span class="nv">the</span> <span class="nv">Q</span> <span class="nv">function</span> <span class="nv">parameters</span>.
+</code></pre></div>
+</td></tr></table>
+<h5 id="cherry.algorithms.sac.SAC--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.sac.SAC--arguments" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>batch_size</code> (int, <em>optional</em>, default=512) - Number of samples to get from the replay.</li>
+<li><code>discount</code> (float, <em>optional</em>, default=0.99) - Discount factor.</li>
+<li><code>use_automatic_entropy_tuning</code> (bool, <em>optional</em>, default=True) - Whether to optimize the entropy weight <script type="math/tex">\alpha</script>.</li>
+<li><code>policy_delay</code> (int, <em>optional</em>, default=1) - Delay between policy updates.</li>
+<li><code>target_delay</code> (int, <em>optional</em>, default=1) - Delay between action value updates.</li>
+<li><code>target_polyak_weight</code> (float, <em>optional</em>, default=0.995) - Weight factor <code>alpha</code> for Polyak averaging;
+    see <a href="/api/cherry.models/#cherry.models.utils.polyak_average">cherry.models.polyak_average</a>.</li>
+</ul>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.sac.SAC.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="n">discount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">use_automatic_entropy_tuning</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">policy_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">target_delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">target_polyak_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#cherry.algorithms.sac.SAC.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.sac.SAC.action_value_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">action_value_loss</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">next_value</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">dones</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.sac.SAC.action_value_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.sac.SAC.action_value_loss--description">Description<a class="headerlink" href="#cherry.algorithms.sac.SAC.action_value_loss--description" title="Permanent link">&para;</a></h6>
+<p>The action-value loss of the Soft Actor-Critic.</p>
+<p><code>value</code> should be the value of the current state-action pair, estimated via the Q-function.
+<code>next_value</code> is the expected value of the next state; it can be estimated via a V-function,
+or alternatively by computing the Q-value of the next observed state-action pair.
+In the latter case, make sure that the action is sampled according to the current policy,
+not the one used to gather the data.</p>
+<h6 id="cherry.algorithms.sac.SAC.action_value_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.sac.SAC.action_value_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>value</code> (tensor) - Action values of the actual transition.</li>
+<li><code>next_value</code> (tensor) - State values of the resulting state.</li>
+<li><code>rewards</code> (tensor) - Observed rewards of the transition.</li>
+<li><code>dones</code> (tensor) - Which states were terminal.</li>
+<li><code>gamma</code> (float) - Discount factor.</li>
+</ul>
+<h6 id="cherry.algorithms.sac.SAC.action_value_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.sac.SAC.action_value_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.sac.SAC.action_value_loss--example">Example<a class="headerlink" href="#cherry.algorithms.sac.SAC.action_value_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">value</span> <span class="o">=</span> <span class="n">qf</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">(),</span> <span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+<span class="n">next_value</span> <span class="o">=</span> <span class="n">targe_vf</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">next_state</span><span class="p">())</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">action_value_loss</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
+                         <span class="n">next_value</span><span class="p">,</span>
+                         <span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">(),</span>
+                         <span class="n">batch</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span>
+                         <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.sac.SAC.policy_loss" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">policy_loss</span><span class="p">(</span><span class="n">log_probs</span><span class="p">,</span> <span class="n">q_curr</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#cherry.algorithms.sac.SAC.policy_loss" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.sac.SAC.policy_loss--description">Description<a class="headerlink" href="#cherry.algorithms.sac.SAC.policy_loss--description" title="Permanent link">&para;</a></h6>
+<p>The policy loss of the Soft Actor-Critic.</p>
+<p>New actions are sampled from the target policy, and those are used to compute the Q-values.
+While we should back-propagate through the Q-values to the policy parameters, we shouldn't
+use that gradient to optimize the Q parameters.
+This is often avoided by either using a target Q function, or by zero-ing out the gradients
+of the Q function parameters.</p>
+<h6 id="cherry.algorithms.sac.SAC.policy_loss--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.sac.SAC.policy_loss--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>log_probs</code> (tensor) - Log-density of the selected actions.</li>
+<li><code>q_curr</code> (tensor) - Q-values of state-action pairs.</li>
+<li><code>alpha</code> (float, <em>optional</em>, default=1.0) - Entropy weight.</li>
+</ul>
+<h6 id="cherry.algorithms.sac.SAC.policy_loss--returns">Returns<a class="headerlink" href="#cherry.algorithms.sac.SAC.policy_loss--returns" title="Permanent link">&para;</a></h6>
+<ul>
+<li>(tensor) - The policy loss for the given arguments.</li>
+</ul>
+<h6 id="cherry.algorithms.sac.SAC.policy_loss--example">Example<a class="headerlink" href="#cherry.algorithms.sac.SAC.policy_loss--example" title="Permanent link">&para;</a></h6>
+<div class="highlight"><pre><span></span><code><span class="n">densities</span> <span class="o">=</span> <span class="n">policy</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">())</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="n">densities</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+<span class="n">log_probs</span> <span class="o">=</span> <span class="n">densities</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+<span class="n">q_curr</span> <span class="o">=</span> <span class="n">q_function</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">(),</span> <span class="n">actions</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">policy_loss</span><span class="p">(</span><span class="n">log_probs</span><span class="p">,</span> <span class="n">q_curr</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</code></pre></div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="cherry.algorithms.sac.SAC.update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">policy</span><span class="p">,</span> <span class="n">action_value</span><span class="p">,</span> <span class="n">target_action_value</span><span class="p">,</span> <span class="n">log_alpha</span><span class="p">,</span> <span class="n">target_entropy</span><span class="p">,</span> <span class="n">policy_optimizer</span><span class="p">,</span> <span class="n">features_optimizer</span><span class="p">,</span> <span class="n">action_value_optimizer</span><span class="p">,</span> <span class="n">alpha_optimizer</span><span class="p">,</span> <span class="n">features</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_features</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">update_policy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_target</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">update_value</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">update_entropy</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#cherry.algorithms.sac.SAC.update" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <h6 id="cherry.algorithms.sac.SAC.update--description">Description<a class="headerlink" href="#cherry.algorithms.sac.SAC.update--description" title="Permanent link">&para;</a></h6>
+<p>Implements a single SAC update.</p>
+<h6 id="cherry.algorithms.sac.SAC.update--arguments">Arguments<a class="headerlink" href="#cherry.algorithms.sac.SAC.update--arguments" title="Permanent link">&para;</a></h6>
+<ul>
+<li><code>replay</code> (cherry.ExperienceReplay) - Offline replay to sample transitions from.</li>
+<li><code>policy</code> (cherry.nn.Policy) - Policy to optimize.</li>
+<li><code>action_value</code> (cherry.nn.ActionValue) - Twin action value to optimize; see cherry.nn.Twin.</li>
+<li><code>target_action_value</code> (cherry.nn.ActionValue) - Target action value.</li>
+<li><code>log_alpha</code> (torch.Tensor) - SAC's (log) entropy weight.</li>
+<li><code>target_entropy</code> (torch.Tensor) - SAC's target for the policy entropy (typically <script type="math/tex">\vert\mathcal{A}\vert</script>).</li>
+<li><code>policy_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>policy</code>.</li>
+<li><code>action_value_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>action_value</code>.</li>
+<li><code>features_optimizer</code> (torch.optim.Optimizer) - Optimizer for the <code>features</code>.</li>
+<li><code>alpha_optimizer</code> (torch.optim.Optimizer) - Optimizer for <code>log_alpha</code>.</li>
+<li><code>features</code> (torch.nn.Module, <em>optional</em>, default=None) - Feature extractor for the policy and action value.</li>
+<li><code>target_features</code> (torch.nn.Module, <em>optional</em>, default=None) - Feature extractor for the target action value.</li>
+<li><code>update_policy</code> (bool, <em>optional</em>, default=True) - Whether to update the policy.</li>
+<li><code>update_target</code> (bool, <em>optional</em>, default=False) - Whether to update the action value target network.</li>
+<li><code>update_value</code> (bool, <em>optional</em>, default=True) - Whether to update the action value.</li>
+<li><code>update_entropy</code> (bool, <em>optional</em>, default=True) - Whether to update the entropy weight.</li>
+<li><code>device</code> (torch.device) - The device used to compute the update.</li>
+</ul>
+
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../cherry/" title="cherry" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                cherry
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../cherry.debug/" title="cherry.debug" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                cherry.debug
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/seba-1511" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/seba1511" target="_blank" rel="noopener" title="twitter" class="md-footer-social__link fa fa-twitter"></a>
+    
+      <a href="https://github.com/learnables/cherry/issues/new" target="_blank" rel="noopener" title="bug" class="md-footer-social__link fa fa-bug"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.2.4",url:{base:"../.."}})</script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js"></script>
+      
+    
+  </body>
+</html>
