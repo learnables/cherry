@@ -33,8 +33,11 @@ class SAC(AlgorithmArguments):
 
     ## References
 
-    1. Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].
-    2. Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].
+        New actions are sampled from the target policy, and those are used to compute the Q-values.
+        While we should back-propagate through the Q-values to the policy parameters, we shouldn't
+        use that gradient to optimize the Q parameters.
+        This is often avoided by either using a target Q function, or by zero-ing out the gradients
+        of the Q function parameters.
 
     ## Arguments
 
