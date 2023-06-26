@@ -1,98 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>http://learnables.github.io/cherry/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/changelog/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.algorithms/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.algorithms/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.debug/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.debug/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.distributions/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.distributions/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.envs/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.envs/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.models/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.models/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.nn.init/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.nn.init/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.nn/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.nn/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.optim/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.optim/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.pg/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.pg/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.plot/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.plot/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/docs/cherry.td/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.td/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/tutorials/debugging_rl/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/api/cherry.wrappers/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/tutorials/distributed_ppo/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/tutorials/debugging_rl/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/tutorials/getting_started/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>http://learnables.github.io/cherry/tutorials/distributed_ppo/</loc>
-         <lastmod>2023-06-25</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>http://learnables.github.io/cherry/tutorials/getting_started/</loc>
-         <lastmod>2023-06-25</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>http://learnables.github.io/cherry/tutorials/recurrent_a2c/</loc>
-         <lastmod>2023-06-25</lastmod>
+         <loc>http://cherry-rl.net/tutorials/recurrent_a2c/</loc>
+         <lastmod>2023-06-26</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

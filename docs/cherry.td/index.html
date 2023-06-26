@@ -6,17 +6,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <meta name="author" content="Seb Arnold">
-        
-        <link rel="shortcut icon" href="/img/favicon.ico">
-        <title>cherry</title>
-        <link href="/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/css/font-awesome.min.css" rel="stylesheet">
-        <link href="/css/base.css" rel="stylesheet">
+        <link rel="canonical" href="http://cherry-rl.net/docs/cherry.td/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>cherry.td - cherry</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
         <link href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css" rel="stylesheet">
 
-        <script src="/js/jquery-1.10.2.min.js" defer></script>
-        <script src="/js/bootstrap.min.js" defer></script>
+        <script src="../../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script>
         <script>
@@ -33,7 +33,7 @@
     <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="/.">cherry</a>
+                <a class="navbar-brand" href="../..">cherry</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -44,67 +44,67 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="navitem">
-                                <a href="/." class="nav-link">Home</a>
+                                <a href="../.." class="nav-link">Home</a>
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Tutorials <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="/tutorials/getting_started/" class="dropdown-item">Getting Started with Cherry</a>
+    <a href="../../tutorials/getting_started/" class="dropdown-item">Getting Started with Cherry</a>
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="/docs/cherry/" class="dropdown-item">cherry</a>
+    <a href="../cherry/" class="dropdown-item">cherry</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.algorithms/" class="dropdown-item">cherry.algorithms</a>
+    <a href="../cherry.algorithms/" class="dropdown-item">cherry.algorithms</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.debug/" class="dropdown-item">cherry.debug</a>
+    <a href="../cherry.debug/" class="dropdown-item">cherry.debug</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.distributions/" class="dropdown-item">cherry.distributions</a>
+    <a href="../cherry.distributions/" class="dropdown-item">cherry.distributions</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.envs/" class="dropdown-item">cherry.envs</a>
+    <a href="../cherry.envs/" class="dropdown-item">cherry.envs</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.models/" class="dropdown-item">cherry.models</a>
+    <a href="../cherry.models/" class="dropdown-item">cherry.models</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.nn/" class="dropdown-item">cherry.nn</a>
+    <a href="../cherry.nn/" class="dropdown-item">cherry.nn</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.nn.init/" class="dropdown-item">cherry.nn.init</a>
+    <a href="../cherry.nn.init/" class="dropdown-item">cherry.nn.init</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.optim/" class="dropdown-item">cherry.optim</a>
+    <a href="../cherry.optim/" class="dropdown-item">cherry.optim</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.pg/" class="dropdown-item">cherry.pg</a>
+    <a href="../cherry.pg/" class="dropdown-item">cherry.pg</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.plot/" class="dropdown-item">cherry.plot</a>
+    <a href="../cherry.plot/" class="dropdown-item">cherry.plot</a>
 </li>
                                     
 <li>
-    <a href="/docs/cherry.td/" class="dropdown-item">cherry.td</a>
+    <a href="./" class="dropdown-item active">cherry.td</a>
 </li>
                                 </ul>
                             </li>
@@ -122,6 +122,16 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../cherry.plot/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>
@@ -129,15 +139,97 @@
 
         <div class="container">
             <div class="row">
-
-    <div class="row-fluid">
-      <div id="main-content" class="span12">
-        <h1 id="404-page-not-found" style="text-align: center">404</h1>
-        <p style="text-align: center"><strong>Page not found</strong></p>
-      </div>
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
     </div>
 
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#cherrytd" class="nav-link">cherry.td</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#discount" class="nav-link">discount</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#temporal_difference" class="nav-link">temporal_difference</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
 
+<h1 id="cherrytd">cherry.td</h1>
+<p><strong>Description</strong></p>
+<p>Utilities to implement temporal difference algorithms.</p>
+<h2 id="discount">discount</h2>
+<pre><code class="language-python">discount(gamma, rewards, dones, bootstrap=0.0)
+</code></pre>
+<p><strong>Description</strong></p>
+<p>Discounts rewards at an rate of gamma.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
+<li><strong>rewards</strong> (tensor) - Tensor of rewards.</li>
+<li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
+  Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
+<li><strong>bootstrap</strong> (float, <em>optional</em>, default=0.0) - Bootstrap the last
+  reward with this value.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>tensor - Tensor of discounted rewards.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="language-python">rewards = th.ones(23, 1) * 8
+dones = th.zeros_like(rewards)
+dones[-1] += 1.0
+discounted = ch.rl.discount(0.99,
+                            rewards,
+                            dones,
+                            bootstrap=1.0)
+</code></pre>
+<h2 id="temporal_difference">temporal_difference</h2>
+<pre><code class="language-python">temporal_difference(gamma, rewards, dones, values, next_values)
+</code></pre>
+<p><strong>Description</strong></p>
+<p>Returns the temporal difference residual.</p>
+<p><strong>Reference</strong></p>
+<ol>
+<li>Sutton, Richard S. 1988. “Learning to Predict by the Methods of Temporal Differences.” Machine Learning 3 (1): 9–44.</li>
+<li>Sutton, Richard, and Andrew Barto. 2018. Reinforcement Learning, Second Edition. The MIT Press.</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>gamma</strong> (float) - Discount factor.</li>
+<li><strong>rewards</strong> (tensor) - Tensor of rewards.</li>
+<li><strong>dones</strong> (tensor) - Tensor indicating episode termination.
+  Entry is 1 if the transition led to a terminal (absorbing) state, 0 else.</li>
+<li><strong>values</strong> (tensor) - Values for the states producing the rewards.</li>
+<li><strong>next_values</strong> (tensor) - Values of the state obtained after the
+  transition from the state used to compute the last value in <code>values</code>.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="language-python">values = vf(replay.states())
+next_values = vf(replay.next_states())
+td_errors = temporal_difference(0.99,
+                                replay.reward(),
+                                replay.done(),
+                                values,
+                                next_values)
+</code></pre></div>
             </div>
         </div>
 
@@ -146,13 +238,13 @@
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>
-            var base_url = "/",
+            var base_url = "../..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="/js/base.js" defer></script>
+        <script src="../../js/base.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
         <script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/mathtex-script-type.min.js" defer></script>
-        <script src="/search/main.js" defer></script>
+        <script src="../../search/main.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

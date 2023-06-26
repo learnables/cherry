@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <meta name="author" content="Seb Arnold">
-        <link rel="canonical" href="http://cherry-rl.net/tutorials/distributed_ppo/">
+        <link rel="canonical" href="http://cherry-rl.net/docs/cherry.distributions/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Distributed Training with PPO - cherry</title>
+        <title>cherry.distributions - cherry</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/font-awesome.min.css" rel="stylesheet">
         <link href="../../css/base.css" rel="stylesheet">
@@ -51,60 +51,60 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../getting_started/" class="dropdown-item">Getting Started with Cherry</a>
+    <a href="../../tutorials/getting_started/" class="dropdown-item">Getting Started with Cherry</a>
 </li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown active">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Documentation <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="../../docs/cherry/" class="dropdown-item">cherry</a>
+    <a href="../cherry/" class="dropdown-item">cherry</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.algorithms/" class="dropdown-item">cherry.algorithms</a>
+    <a href="../cherry.algorithms/" class="dropdown-item">cherry.algorithms</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.debug/" class="dropdown-item">cherry.debug</a>
+    <a href="../cherry.debug/" class="dropdown-item">cherry.debug</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.distributions/" class="dropdown-item">cherry.distributions</a>
+    <a href="./" class="dropdown-item active">cherry.distributions</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.envs/" class="dropdown-item">cherry.envs</a>
+    <a href="../cherry.envs/" class="dropdown-item">cherry.envs</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.models/" class="dropdown-item">cherry.models</a>
+    <a href="../cherry.models/" class="dropdown-item">cherry.models</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.nn/" class="dropdown-item">cherry.nn</a>
+    <a href="../cherry.nn/" class="dropdown-item">cherry.nn</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.nn.init/" class="dropdown-item">cherry.nn.init</a>
+    <a href="../cherry.nn.init/" class="dropdown-item">cherry.nn.init</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.optim/" class="dropdown-item">cherry.optim</a>
+    <a href="../cherry.optim/" class="dropdown-item">cherry.optim</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.pg/" class="dropdown-item">cherry.pg</a>
+    <a href="../cherry.pg/" class="dropdown-item">cherry.pg</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.plot/" class="dropdown-item">cherry.plot</a>
+    <a href="../cherry.plot/" class="dropdown-item">cherry.plot</a>
 </li>
                                     
 <li>
-    <a href="../../docs/cherry.td/" class="dropdown-item">cherry.td</a>
+    <a href="../cherry.td/" class="dropdown-item">cherry.td</a>
 </li>
                                 </ul>
                             </li>
@@ -122,6 +122,16 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../cherry.debug/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../cherry.envs/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                     </ul>
                 </div>
             </div>
@@ -140,8 +150,20 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-level="1"><a href="#distributed-training-with-ppo" class="nav-link">Distributed Training with PPO</a>
+            <li class="nav-item" data-level="1"><a href="#cherrydistributions" class="nav-link">cherry.distributions</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#reparameterization" class="nav-link">Reparameterization</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#actiondistribution" class="nav-link">ActionDistribution</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#tanhnormal" class="nav-link">TanhNormal</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -149,14 +171,85 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="distributed-training-with-ppo">Distributed Training with PPO</h1>
-<p>Objectives:</p>
+<h1 id="cherrydistributions">cherry.distributions</h1>
+<p><strong>Description</strong></p>
+<p>A set of common distributions.</p>
+<h2 id="reparameterization">Reparameterization</h2>
+<pre><code class="language-python">Reparameterization(density)
+</code></pre>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Unifies interface for distributions that support <code>rsample</code> and those that do not.</p>
+<p>When calling <code>sample()</code>, this class checks whether <code>density</code> has a <code>rsample()</code> member,
+and defaults to call <code>sample()</code> if it does not.</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Kingma and Welling. 2013. “Auto-Encoding Variational Bayes.” arXiv [stat.ML].</li>
+</ol>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>Show how to use the control models,</li>
-<li>Show how to setup the distributed optimizer,</li>
-<li>Showcase the PPO methods.</li>
+<li><strong>density</strong> (Distribution) - The distribution to wrap.</li>
 </ul>
-<p>Pretty short too.</p></div>
+<p><strong>Example</strong></p>
+<pre><code class="language-python">density = Normal(mean, std)
+reparam = Reparameterization(density)
+sample = reparam.sample()  # Uses Normal.rsample()
+</code></pre>
+<h2 id="actiondistribution">ActionDistribution</h2>
+<pre><code class="language-python">ActionDistribution(env, logstd=None, use_probs=False, reparam=False)
+</code></pre>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/distributions.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>A helper module to automatically choose the proper policy distribution,
+based on the Gym environment <code>action_space</code>.</p>
+<p>For <code>Discrete</code> action spaces, it uses a <code>Categorical</code> distribution, otherwise
+it uses a <code>Normal</code> which uses a diagonal covariance matrix.</p>
+<p>This class enables to write single version policy body that will be compatible
+with a variety of environments.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>env</strong> (Environment) - Gym environment for which actions will be sampled.</li>
+<li><strong>logstd</strong> (float/tensor, <em>optional</em>, default=0) - The log standard
+deviation for the <code>Normal</code> distribution.</li>
+<li><strong>use_probs</strong> (bool, <em>optional</em>, default=False) - Whether to use probabilities or logits
+for the <code>Categorical</code> case.</li>
+<li><strong>reparam</strong> (bool, <em>optional</em>, default=False) - Whether to use reparameterization in the
+<code>Normal</code> case.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="language-python">env = gym.make('CartPole-v1')
+action_dist = ActionDistribution(env)
+</code></pre>
+<h2 id="tanhnormal">TanhNormal</h2>
+<pre><code class="language-python">TanhNormal(normal_mean, normal_std)
+</code></pre>
+<p><a href="https://github.com/seba-1511/cherry/blob/master/cherry/models/tabular.py">[Source]</a></p>
+<p><strong>Description</strong></p>
+<p>Implements a Normal distribution followed by a Tanh, often used with the Soft Actor-Critic.</p>
+<p>This implementation also exposes <code>sample_and_log_prob</code> and <code>rsample_and_log_prob</code>,
+which returns both samples and log-densities.
+The log-densities are computed using the pre-activation values for numerical stability.</p>
+<p><strong>Credit</strong></p>
+<p>Adapted from Vitchyr Pong's RLkit:
+https://github.com/vitchyr/rlkit/blob/master/rlkit/torch/distributions.py</p>
+<p><strong>References</strong></p>
+<ol>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv [cs.LG].</li>
+<li>Haarnoja et al. 2018. “Soft Actor-Critic Algorithms and Applications.” arXiv [cs.LG].</li>
+</ol>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>normal_mean</strong> (tensor) - Mean of the Normal distribution.</li>
+<li><strong>normal_std</strong> (tensor) - Standard deviation of the Normal distribution.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="language-python">mean = th.zeros(5)
+std = th.ones(5)
+dist = TanhNormal(mean, std)
+samples = dist.rsample()
+logprobs = dist.log_prob(samples)  # Numerically unstable :(
+samples, logprobs = dist.rsample_and_log_prob()  # Stable :)
+</code></pre></div>
             </div>
         </div>
 
